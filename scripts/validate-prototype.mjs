@@ -14,7 +14,7 @@ const referencedIds = [...script.matchAll(/\$\('#([^']+)'\)/g)].map(match => mat
 const missingIds = [...new Set(referencedIds.filter(id => !ids.includes(id)))];
 if (missingIds.length) throw new Error(`Missing DOM IDs: ${missingIds.join(', ')}`);
 
-const signPaths = [...html.matchAll(/assets\/signs\/[a-z-]+\.jpg/g)].map(match => match[0]);
+const signPaths = [...html.matchAll(/assets\/signs\/(?:generated\/)?[0-9a-z-]+\.jpg/g)].map(match => match[0]);
 for (const signPath of new Set(signPaths)) {
   if (!fs.existsSync(new URL(`../${signPath}`, import.meta.url))) {
     throw new Error(`Missing sign asset: ${signPath}`);

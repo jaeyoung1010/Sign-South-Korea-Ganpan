@@ -5,10 +5,11 @@ import process from 'node:process';
 const root = path.resolve(import.meta.dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 
-const learnToastRule = html.match(/\.toast\.above-actions\s*\{([^}]*)\}/i)?.[1] ?? '';
+const learnToastRules = [...html.matchAll(/\.toast\.above-actions\s*\{([^}]*)\}/gi)];
+const learnToastRule = learnToastRules.at(-1)?.[1] ?? '';
 const checks = [
-  ['learning toast is anchored near the top safe area', /top:\s*calc\(var\(--safe-top\)\s*\+\s*148px\)\s*;/i],
-  ['learning toast is no longer anchored to the bottom', /bottom:\s*auto\s*;/i],
+  ['learning toast is no longer anchored over the photo', /top:\s*auto\s*;/i],
+  ['learning toast sits above the action area', /bottom:\s*calc\(96px\s*\+\s*var\(--safe-bottom\)\)\s*;/i],
 ];
 
 const failures = checks
@@ -20,4 +21,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Learning toast validation passed: feedback sits above the sign photo.');
+console.log('Learning toast validation passed: feedback stays below the sign photo and above the action area.');

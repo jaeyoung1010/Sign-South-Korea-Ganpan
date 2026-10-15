@@ -28,7 +28,7 @@ requireMatch('right drag shows Review cue', /reviewOverlay['"]\)\.style\.opacity
 requireMatch('Got it cue stays visible on a left drag', /\.swipe-overlay\.got\s*\{[^}]*right:\s*22px/i);
 requireMatch('Review cue stays visible on a right drag', /\.swipe-overlay\.review\s*\{[^}]*left:\s*22px/i);
 requireMatch('Got it exits left and Review exits right', /rating\s*===\s*['"]got['"]\s*\?\s*-125\s*:\s*125/);
-requireMatch('answer sheet reaches the device bottom', /\.learn-card\.answer-open \.card-scroll\s*\{[^}]*bottom:\s*0\s*;/i);
+requireMatch('answer stays in its own lower card region', /\.learn-card\.answer-open \.card-scroll\s*\{[^}]*top:\s*62%\s*;[^}]*bottom:\s*0\s*;/i);
 
 if (failures.length) {
   console.error(`Swipe-only validation failed:\n${failures.join('\n')}`);

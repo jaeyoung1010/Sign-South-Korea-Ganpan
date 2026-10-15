@@ -24,16 +24,26 @@ try {
 }
 
 const phrases = [
-  { file: "bunsik.mp3", text: "분식" },
-  { file: "exit.mp3", text: "출구" },
-  { file: "pharmacy.mp3", text: "약국" },
-  { file: "no-parking.mp3", text: "주차 금지" },
-  { file: "restroom.mp3", text: "화장실" },
-  { file: "convenience-store.mp3", text: "편의점" },
-  { file: "entrance.mp3", text: "입구" },
-  { file: "open.mp3", text: "영업중" },
-  { file: "no-smoking.mp3", text: "금연" },
-  { file: "sale.mp3", text: "세일" },
+  { file: "01-hongdae-entrance.mp3", text: "홍대입구" },
+  { file: "02-gyeongbokgung.mp3", text: "경복궁" },
+  { file: "03-bukchon-hanok-village.mp3", text: "북촌한옥마을" },
+  { file: "04-namsan-seoul-tower.mp3", text: "남산서울타워" },
+  { file: "05-myeongdong.mp3", text: "명동" },
+  { file: "06-gwangjang-market.mp3", text: "광장시장" },
+  { file: "07-namdaemun-market.mp3", text: "남대문시장" },
+  { file: "08-itaewon.mp3", text: "이태원" },
+  { file: "09-hangang-park.mp3", text: "한강공원" },
+  { file: "10-seongsu-dong.mp3", text: "성수동" },
+  { file: "11-insadong.mp3", text: "인사동" },
+  { file: "12-ikseon-dong.mp3", text: "익선동" },
+  { file: "13-dongdaemun-design-plaza.mp3", text: "동대문디자인플라자" },
+  { file: "14-haeundae.mp3", text: "해운대" },
+  { file: "15-gamcheon-culture-village.mp3", text: "감천문화마을" },
+  { file: "16-jeonju-hanok-village.mp3", text: "전주한옥마을" },
+  { file: "17-jeju-olle-trail.mp3", text: "제주올레길" },
+  { file: "18-bulguksa.mp3", text: "불국사" },
+  { file: "19-busan-station.mp3", text: "부산역" },
+  { file: "20-seoul-station.mp3", text: "서울역" },
 ];
 
 function requireApiKey() {
