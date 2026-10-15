@@ -1,0 +1,1559 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff7fd">
+  <title>Sign Korean — Interactive prototype</title>
+  <style>
+    :root {
+      --primary: #ff5e8e;
+      --primary-dark: #d92c6c;
+      --primary-soft: #ffe4ee;
+      --review: #ff5e8e;
+      --review-dark: #a91d56;
+      --review-soft: #fff0f6;
+      --got: #2dd4bf;
+      --got-dark: #087f72;
+      --got-soft: #d9fbf3;
+      --danger: #c72f55;
+      --ink: #201a24;
+      --muted: #62566b;
+      --faint: #9b8da2;
+      --border: #d7c5df;
+      --surface: #fffafd;
+      --background: #fff7fd;
+      --canvas: #eadcff;
+      --y2k-yellow: #ffed85;
+      --y2k-lilac: #eadcff;
+      --outline: #3b2c43;
+      --diary-grid:
+        linear-gradient(rgba(153, 111, 188, .09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(153, 111, 188, .09) 1px, transparent 1px),
+        radial-gradient(circle at 18% 14%, rgba(255, 94, 142, .12) 0 2px, transparent 2.5px),
+        radial-gradient(circle at 82% 34%, rgba(124, 77, 255, .10) 0 2px, transparent 2.5px);
+      --shadow: 0 18px 50px rgba(78, 44, 88, .15);
+      --card-shadow: 3px 4px 0 var(--outline), 0 12px 28px rgba(87, 49, 96, .12);
+      --game-shadow: 4px 5px 0 var(--outline);
+      --game-shadow-sm: 2px 3px 0 var(--outline);
+      --safe-top: max(14px, env(safe-area-inset-top));
+      --safe-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background-color: #f4eaff;
+      background-image: var(--diary-grid), linear-gradient(135deg, #f4eaff 0%, #fff7fd 52%, #e8fff8 100%);
+      background-size: 26px 26px, 26px 26px, 104px 104px, 132px 132px, auto;
+      font-family: "Arial Rounded MT Bold", "Plus Jakarta Sans", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, [tabindex]:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 3px solid rgba(255, 94, 142, .42);
+      outline-offset: 2px;
+    }
+    .icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .icon.fill { fill: currentColor; stroke: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .hidden { display: none !important; }
+
+    .prototype-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 310px auto;
+      align-items: center;
+      justify-content: center;
+      gap: 52px;
+      padding: 24px;
+    }
+    .prototype-panel {
+      align-self: center;
+      color: #263244;
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .prototype-panel h1 { margin: 0; font-size: 34px; line-height: 1.08; letter-spacing: -.04em; }
+    .prototype-panel .intro { margin: 16px 0 22px; color: #596579; font-size: 15px; line-height: 1.65; }
+    .panel-card {
+      padding: 16px;
+      background: rgba(255,255,255,.74);
+      border: 1px solid rgba(255,255,255,.88);
+      border-radius: 20px;
+      box-shadow: 0 16px 36px rgba(70, 87, 110, .1);
+      backdrop-filter: blur(18px);
+    }
+    .panel-card h2 { margin: 0 0 12px; font-size: 13px; }
+    .screen-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .screen-links button, .reset-prototype {
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid #dce3eb;
+      border-radius: 10px;
+      background: white;
+      color: #445065;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .16s ease, border-color .16s ease, color .16s ease;
+    }
+    .screen-links button:hover, .reset-prototype:hover { transform: translateY(-1px); border-color: #aebcd0; color: var(--primary); }
+    .reset-prototype { width: 100%; margin-top: 10px; color: var(--danger); }
+    .panel-tip { margin: 14px 2px 0; color: #748094; font-size: 12px; line-height: 1.5; }
+
+    .device {
+      position: relative;
+      width: 390px;
+      height: min(844px, calc(100vh - 32px));
+      min-height: 680px;
+      overflow: hidden;
+      contain: paint;
+      background: var(--background);
+      border: 8px solid #17202d;
+      border-radius: 46px;
+      box-shadow: 0 28px 90px rgba(25, 41, 61, .3), inset 0 0 0 1px #3a4657;
+    }
+    .device::before {
+      content: "";
+      position: absolute;
+      z-index: 50;
+      top: 8px;
+      left: 50%;
+      width: 108px;
+      height: 27px;
+      transform: translateX(-50%);
+      background: #17202d;
+      border-radius: 17px;
+      pointer-events: none;
+    }
+    .app {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 38px;
+      -webkit-clip-path: inset(0 round 38px);
+      clip-path: inset(0 round 38px);
+      isolation: isolate;
+      background: var(--background);
+    }
+    .screen {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: none;
+      flex-direction: column;
+      min-height: 0;
+      background-color: var(--background);
+      background-image: var(--diary-grid);
+      background-size: 26px 26px, 26px 26px, 104px 104px, 132px 132px;
+      animation: screenIn .22s ease both;
+    }
+    .screen.active { display: flex; }
+    @keyframes screenIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    .status-space { height: calc(var(--safe-top) + 18px); flex: 0 0 auto; }
+    .appbar {
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      padding: 0 10px;
+      flex: 0 0 auto;
+    }
+    .appbar-title { text-align: center; font-size: 15px; font-weight: 800; }
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .icon-btn:hover { background: #eef2f7; }
+    .text-btn { min-height: 44px; padding: 8px 2px; border: 0; background: transparent; color: var(--primary); font-size: 14px; font-weight: 800; cursor: pointer; }
+    .primary-btn, .secondary-btn, .danger-btn {
+      width: 100%;
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border: 2px solid var(--outline);
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+    }
+    .primary-btn { color: var(--ink); background: var(--primary); box-shadow: var(--game-shadow-sm); }
+    .primary-btn:hover { background: var(--primary-dark); }
+    .primary-btn:active, .secondary-btn:active, .danger-btn:active { transform: translate(2px, 3px); box-shadow: none; }
+    .secondary-btn { color: #273449; background: white; border: 1px solid var(--border); }
+    .secondary-btn:hover { background: #f8fafc; }
+    .danger-btn { color: white; background: var(--danger); }
+    .primary-btn:disabled, .secondary-btn:disabled { opacity: .42; cursor: default; box-shadow: none; }
+    .content-scroll { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: none; }
+    .content-scroll::-webkit-scrollbar { display: none; }
+    .bottom-pad { height: calc(18px + var(--safe-bottom)); }
+
+    /* onboarding */
+    .onboarding { background: #fff; }
+    .onboarding .stepper { display: flex; gap: 6px; padding: 0 24px; }
+    .onboarding .stepper span { height: 4px; flex: 1; border-radius: 99px; background: #e2e8f0; }
+    .onboarding .stepper span.on { background: var(--primary); }
+    .hero-collage {
+      position: relative;
+      height: 300px;
+      margin: 24px 20px 20px;
+      overflow: hidden;
+      border-radius: 26px;
+      background: #dbeafe;
+      box-shadow: var(--card-shadow);
+    }
+    .hero-collage img { position: absolute; width: 70%; height: 68%; object-fit: cover; border: 4px solid white; border-radius: 20px; box-shadow: 0 10px 30px rgba(17,24,39,.22); }
+    .hero-collage img:nth-child(1) { left: -8%; top: 12%; transform: rotate(-6deg); }
+    .hero-collage img:nth-child(2) { right: -10%; top: 2%; transform: rotate(7deg); }
+    .hero-collage img:nth-child(3) { left: 16%; bottom: -12%; transform: rotate(1deg); }
+    .onboarding-copy { padding: 0 24px; }
+    .onboarding-copy h1 { margin: 0 0 12px; font-size: 32px; line-height: 1.12; letter-spacing: -.035em; }
+    .onboarding-copy p { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.5; }
+    .sticky-actions { flex: 0 0 auto; padding: 16px 20px calc(16px + var(--safe-bottom)); background: linear-gradient(to top, white 72%, rgba(255,255,255,0)); }
+    .sticky-actions .caption { margin: 9px 0 0; color: var(--muted); text-align: center; font-size: 12px; }
+
+    .tutorial-wrap { padding: 14px 22px 24px; text-align: center; }
+    .tutorial-wrap h1, .choice-wrap h1 { margin: 8px 0 8px; font-size: 25px; line-height: 1.2; letter-spacing: -.025em; }
+    .tutorial-wrap > p, .choice-wrap > p { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+    .mini-card { overflow: hidden; border: 1px solid var(--border); border-radius: 22px; background: white; box-shadow: var(--card-shadow); text-align: left; }
+    .mini-card img { width: 100%; height: 210px; display: block; object-fit: cover; }
+    .mini-card-body { padding: 16px; }
+    .mini-card-body .ko { margin: 0 0 5px; font-size: 25px; font-weight: 900; }
+    .mini-card-body .en { margin: 0; color: var(--muted); font-size: 15px; }
+    .tutorial-directions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .direction-pill { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 46px; border-radius: 13px; font-size: 14px; font-weight: 800; }
+    .direction-pill.review { color: var(--review-dark); background: var(--review-soft); }
+    .direction-pill.got { color: var(--got-dark); background: var(--got-soft); }
+
+    .choice-wrap { padding: 12px 20px 24px; }
+    .choice-list { display: grid; gap: 10px; }
+    .choice-card {
+      width: 100%;
+      min-height: 78px;
+      display: grid;
+      grid-template-columns: 1fr 24px;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      text-align: left;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .choice-card.selected { border-color: var(--primary); background: var(--primary-soft); }
+    .choice-card strong { display: block; margin-bottom: 3px; font-size: 16px; }
+    .choice-card small { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .radio-dot { width: 22px; height: 22px; border: 2px solid #bdc6d3; border-radius: 50%; }
+    .selected .radio-dot { border: 6px solid var(--primary); background: white; }
+    .interest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .interest-card {
+      min-height: 102px;
+      padding: 14px;
+      text-align: left;
+      border: 1.5px solid var(--border);
+      border-radius: 17px;
+      background: white;
+      cursor: pointer;
+    }
+    .interest-card.selected { border-color: var(--primary); background: var(--primary-soft); }
+    .interest-card .interest-icon { width: 34px; height: 34px; display: grid; place-items: center; margin-bottom: 10px; color: var(--primary); background: #eff6ff; border-radius: 11px; }
+    .interest-card strong { display: block; font-size: 13px; line-height: 1.25; }
+
+    /* main navigation */
+    .main-screen { padding-bottom: calc(68px + var(--safe-bottom)); }
+    .brandbar { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 6px; }
+    .wordmark { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 900; letter-spacing: -.02em; }
+    .logo-mark { width: 30px; height: 30px; display: grid; place-items: center; color: white; background: var(--primary); border-radius: 10px; transform: rotate(-4deg); box-shadow: 0 5px 12px rgba(29,78,216,.2); }
+    .streak { display: flex; align-items: center; gap: 4px; color: #9a5b09; font-size: 13px; font-weight: 800; }
+    .streak .icon { width: 18px; height: 18px; fill: #f59e0b; stroke: #f59e0b; }
+    .home-content { padding: 12px 20px 28px; }
+    .home-content h1 { margin: 8px 0 5px; font-size: 28px; line-height: 1.15; letter-spacing: -.035em; }
+    .home-content > p { margin: 0 0 20px; color: var(--muted); font-size: 15px; }
+    .session-card { position: relative; overflow: hidden; padding: 21px; color: white; background: linear-gradient(145deg, #244fd0, #163a9d); border-radius: 24px; box-shadow: 0 18px 35px rgba(29,78,216,.25); }
+    .session-card::after { content: "가"; position: absolute; right: -5px; bottom: -42px; color: rgba(255,255,255,.08); font-size: 150px; font-weight: 900; transform: rotate(-8deg); }
+    .session-card > * { position: relative; z-index: 1; }
+    .session-label { margin: 0 0 9px; color: #cbdcff; font-size: 11px; font-weight: 900; letter-spacing: .13em; }
+    .session-card h2 { margin: 0 0 6px; font-size: 23px; letter-spacing: -.02em; }
+    .session-card .meta { margin: 0 0 18px; color: #dce7ff; font-size: 14px; }
+    .mix-row { display: flex; gap: 8px; margin-bottom: 18px; }
+    .mix-chip { padding: 7px 10px; color: #e7eeff; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.12); border-radius: 99px; font-size: 12px; font-weight: 700; }
+    .session-card .primary-btn { color: var(--primary); background: white; box-shadow: none; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin: 27px 0 12px; }
+    .section-head h2 { margin: 0; font-size: 17px; }
+    .section-head button { border: 0; background: none; color: var(--primary); font-size: 13px; font-weight: 800; cursor: pointer; }
+    .category-row { display: flex; gap: 10px; margin-right: -20px; padding-right: 20px; overflow: auto; scrollbar-width: none; }
+    .category-row::-webkit-scrollbar { display: none; }
+    .category-tile { min-width: 116px; min-height: 96px; padding: 14px; border: 1px solid var(--border); border-radius: 17px; background: white; text-align: left; cursor: pointer; }
+    .category-tile .tile-icon { width: 33px; height: 33px; display: grid; place-items: center; margin-bottom: 10px; color: var(--primary); background: var(--primary-soft); border-radius: 10px; }
+    .category-tile strong { display: block; font-size: 13px; }
+    .category-tile small { color: var(--muted); font-size: 11px; }
+    .week-card { padding: 16px; border: 1px solid var(--border); border-radius: 18px; background: white; }
+    .week-bars { height: 78px; display: grid; grid-template-columns: repeat(7, 1fr); align-items: end; gap: 9px; }
+    .day { height: 100%; display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 5px; }
+    .bar { width: 100%; max-width: 18px; min-height: 5px; align-self: end; border-radius: 5px; background: #dbe5f3; }
+    .bar.done { background: var(--primary); }
+    .day span { color: var(--muted); font-size: 10px; }
+
+    .bottom-nav {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(66px + var(--safe-bottom));
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: start;
+      padding: 7px 18px var(--safe-bottom);
+      border-top: 2px solid var(--outline);
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(18px);
+    }
+    .nav-btn { min-height: 52px; display: grid; place-items: center; align-content: center; gap: 2px; padding: 3px; color: #7b8494; border: 0; background: none; border-radius: 12px; cursor: pointer; font-size: 10px; font-weight: 700; }
+    .nav-btn.active { color: var(--primary); }
+    .nav-btn .icon { width: 22px; height: 22px; }
+
+    /* Immersive learn flow: full-bleed photo, overlay controls, one-card-at-a-time swipe. */
+    .learn-screen { isolation: isolate; color: white; background: #08111f; }
+    .learn-screen > .status-space { height: 0; }
+    .learn-top {
+      position: absolute;
+      z-index: 20;
+      top: calc(var(--safe-top) + 18px);
+      left: 0;
+      right: 0;
+      pointer-events: none;
+    }
+    .learn-top .appbar { min-height: 48px; color: white; text-shadow: 0 1px 10px rgba(0,0,0,.35); }
+    .learn-top .appbar > * { pointer-events: auto; }
+    .learn-top .icon-btn {
+      width: 42px;
+      height: 42px;
+      color: white;
+      background: rgba(9, 16, 28, .38);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 50%;
+      box-shadow: 0 5px 18px rgba(0,0,0,.12);
+      backdrop-filter: blur(14px);
+    }
+    .learn-top .icon-btn:hover { background: rgba(9, 16, 28, .58); }
+    .learn-progress { height: 4px; margin: 6px 20px 0; overflow: hidden; background: rgba(255,255,255,.3); border-radius: 99px; }
+    .learn-progress span { display: block; width: 10%; height: 100%; border-radius: inherit; background: white; box-shadow: 0 0 10px rgba(255,255,255,.4); transition: width .26s ease; }
+    .learn-stage { position: absolute; z-index: 1; inset: 0; min-height: 0; overflow: hidden; background: #08111f; }
+    .next-card-preview {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      background: #101827;
+      transform: scale(.985);
+      filter: brightness(.72);
+      transition: transform .22s ease, filter .22s ease;
+      will-change: transform;
+    }
+    .next-card-preview img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
+    .preview-backdrop, .photo-backdrop { object-fit: cover; filter: blur(22px) saturate(.85); transform: scale(1.1); opacity: .92; }
+    .preview-main, .photo-main { object-fit: contain; }
+    .preview-main { z-index: 1; }
+    .next-card-preview::after { content: ""; position: absolute; inset: 0; background: rgba(5,10,18,.16); }
+    .learn-card {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      display: block;
+      overflow: hidden;
+      background: #101827;
+      touch-action: pan-y;
+      transform-origin: 50% 100%;
+      will-change: transform, opacity;
+    }
+    .learn-card.dragging { transition: none !important; }
+    .learn-card.settling { transition: transform .22s cubic-bezier(.22,.76,.32,1), opacity .2s ease; }
+    .learn-card .photo-wrap { position: absolute; z-index: 0; inset: 0; min-height: 0; overflow: hidden; background: #101827; }
+    .learn-card .photo-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
+    .learn-card .photo-wrap .photo-backdrop { object-fit: cover; }
+    .learn-card .photo-wrap .photo-main { object-fit: contain; }
+    .photo-main { z-index: 1; }
+    .learn-card .photo-wrap::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(4,9,18,.48) 0%, rgba(4,9,18,.03) 30%, rgba(4,9,18,.12) 54%, rgba(4,9,18,.9) 100%);
+      pointer-events: none;
+    }
+    .focus-frame { position: absolute; z-index: 2; border: 2px solid rgba(255,255,255,.96); border-radius: 11px; box-shadow: 0 0 0 999px rgba(4,10,20,.11), 0 3px 18px rgba(0,0,0,.34); pointer-events: none; }
+    .zoom-btn {
+      position: absolute;
+      z-index: 4;
+      top: calc(var(--safe-top) + 90px);
+      right: 14px;
+      color: white;
+      background: rgba(9,16,28,.42);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 50%;
+      backdrop-filter: blur(14px);
+    }
+    .zoom-btn:hover { background: rgba(9,16,28,.64); }
+    .card-scroll {
+      position: absolute;
+      z-index: 5;
+      left: 0;
+      right: 0;
+      bottom: calc(84px + var(--safe-bottom));
+      max-height: 47%;
+      overflow: auto;
+      padding: 112px 22px 25px;
+      color: white;
+      background: linear-gradient(180deg, transparent 0%, rgba(5,10,19,.62) 37%, rgba(5,10,19,.96) 100%);
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+      transition: max-height .24s ease, padding .24s ease, background .24s ease;
+    }
+    .learn-card.answer-open .card-scroll {
+      bottom: 0;
+      max-height: 54%;
+      padding: 13px 22px calc(30px + var(--safe-bottom));
+      color: var(--ink);
+      background: rgba(252,253,255,.94);
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -18px 45px rgba(0,0,0,.16);
+      backdrop-filter: blur(24px) saturate(1.12);
+    }
+    .learn-card.answer-open .card-scroll::before {
+      content: "";
+      display: block;
+      width: 38px;
+      height: 4px;
+      margin: 0 auto 15px;
+      border-radius: 99px;
+      background: #cbd2dc;
+    }
+    .card-scroll::-webkit-scrollbar { display: none; }
+    .chips { display: flex; gap: 7px; margin-bottom: 13px; }
+    .chip { padding: 6px 9px; border: 1px solid rgba(255,255,255,.2); border-radius: 99px; color: white; background: rgba(16,24,39,.4); font-size: 10px; font-weight: 900; letter-spacing: .08em; backdrop-filter: blur(10px); }
+    .card-question { max-width: 310px; margin: 0 0 8px; color: white; font-size: 30px; line-height: 1.06; letter-spacing: -.04em; text-shadow: 0 2px 18px rgba(0,0,0,.3); }
+    .card-hint { margin: 0; color: rgba(255,255,255,.76); font-size: 14px; line-height: 1.45; }
+    .answer-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #7a8493; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .answer-meta span:last-child { color: var(--got); letter-spacing: 0; text-transform: none; }
+    .answer-head { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; }
+    .answer-head .icon-btn { color: var(--primary); background: var(--primary-soft); }
+    .answer-ko { margin: 0; font-size: 32px; line-height: 1.15; letter-spacing: -.035em; }
+    .answer-en { margin: 4px 0 17px; color: var(--muted); font-size: 17px; }
+    .learn-card.answer-open .card-hint { color: var(--muted); }
+    .answer-section { margin-top: 17px; }
+    .answer-section h3 { margin: 0 0 9px; color: #768194; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .word-row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid #e7ebf0; }
+    .word-row strong { font-size: 15px; }
+    .word-row span { color: var(--muted); font-size: 14px; }
+    .street-note { padding: 13px 14px; color: #315072; background: #eef6ff; border-radius: 13px; font-size: 13px; line-height: 1.48; }
+    .swipe-overlay { position: absolute; z-index: 8; top: calc(var(--safe-top) + 112px); padding: 9px 13px; border: 3px solid currentColor; border-radius: 11px; opacity: 0; font-size: 18px; font-weight: 1000; letter-spacing: .08em; pointer-events: none; background: rgba(255,255,255,.92); box-shadow: 0 8px 24px rgba(0,0,0,.16); }
+    .swipe-overlay.review { left: 22px; color: var(--review); transform: rotate(-8deg); }
+    .swipe-overlay.got { right: 22px; color: var(--got); transform: rotate(8deg); }
+    .learn-actions {
+      position: absolute;
+      z-index: 25;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      min-height: calc(84px + var(--safe-bottom));
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      padding: 11px 16px calc(11px + var(--safe-bottom));
+      background: linear-gradient(to top, rgba(4,9,18,.96) 0%, rgba(4,9,18,.72) 64%, transparent 100%);
+    }
+    .learn-actions .primary-btn { min-height: 56px; border-radius: 18px; }
+    #revealActions .primary-btn { color: #111827; background: rgba(255,255,255,.96); box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+    #revealActions .primary-btn:hover { background: white; }
+
+    /* completion, progress, settings */
+    .done-screen { background: #fff; }
+    .done-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: calc(var(--safe-top) + 28px) 24px 22px; overflow: auto; text-align: center; }
+    .done-mark { width: 70px; height: 70px; display: grid; place-items: center; margin: 0 auto 18px; color: white; background: var(--got); border-radius: 24px; transform: rotate(-3deg); box-shadow: 0 16px 28px rgba(15,118,110,.22); }
+    .done-mark .icon { width: 35px; height: 35px; stroke-width: 2.5; }
+    .done-wrap h1 { margin: 0 0 18px; font-size: 25px; }
+    .done-number { margin: 0; font-size: 64px; line-height: .9; font-weight: 900; letter-spacing: -.05em; }
+    .done-label { margin: 8px 0 24px; color: var(--muted); }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .score-box { padding: 14px; border-radius: 16px; text-align: left; }
+    .score-box.got { color: var(--got-dark); background: var(--got-soft); }
+    .score-box.review { color: var(--review-dark); background: var(--review-soft); }
+    .score-box small { display: block; margin-bottom: 5px; font-weight: 700; }
+    .score-box strong { font-size: 24px; }
+    .next-review { margin: 15px 0; padding: 14px; border: 1px solid var(--border); border-radius: 16px; text-align: left; }
+    .next-review small { color: var(--muted); }
+    .next-review strong { display: block; margin-top: 3px; }
+    .done-actions { display: grid; gap: 9px; margin-top: auto; padding-top: 12px; }
+
+    .page-head { padding: 4px 20px 12px; }
+    .page-head h1 { margin: 0; font-size: 28px; letter-spacing: -.035em; }
+    .page-body { padding: 8px 20px 30px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .stat-card { min-width: 0; padding: 13px 11px; border: 1px solid var(--border); border-radius: 16px; background: white; }
+    .stat-card small { display: block; color: var(--muted); font-size: 10px; font-weight: 700; }
+    .stat-card strong { display: block; margin-top: 5px; font-size: 23px; }
+    .progress-section { margin-top: 25px; }
+    .progress-section h2 { margin: 0 0 11px; font-size: 17px; }
+    .category-progress { display: grid; gap: 10px; }
+    .progress-row { padding: 14px; border: 1px solid var(--border); border-radius: 15px; background: white; cursor: pointer; }
+    .progress-row-head { display: flex; justify-content: space-between; margin-bottom: 9px; font-size: 13px; font-weight: 800; }
+    .progress-row-head span:last-child { color: var(--muted); font-weight: 600; }
+    .tiny-progress { height: 6px; overflow: hidden; background: #e9edf2; border-radius: 99px; }
+    .tiny-progress span { display: block; height: 100%; background: var(--primary); border-radius: inherit; }
+    .review-list { display: grid; gap: 9px; }
+    .review-item { width: 100%; display: grid; grid-template-columns: 64px 1fr 20px; gap: 12px; align-items: center; padding: 9px; text-align: left; border: 1px solid var(--border); border-radius: 15px; background: white; cursor: pointer; }
+    .review-item img { width: 64px; height: 58px; object-fit: cover; border-radius: 10px; }
+    .review-item strong { display: block; margin-bottom: 3px; font-size: 15px; }
+    .review-item small { color: var(--muted); font-size: 12px; }
+
+    .settings-list { overflow: hidden; border: 1px solid var(--border); border-radius: 17px; background: white; }
+    .settings-section-label { margin: 22px 2px 8px; color: #7d8796; font-size: 11px; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+    .setting-row { width: 100%; min-height: 57px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 10px 14px; text-align: left; border: 0; border-bottom: 1px solid #edf0f4; background: white; cursor: pointer; }
+    .setting-row:last-child { border-bottom: 0; }
+    .setting-row strong { font-size: 14px; }
+    .setting-row small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .setting-value { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; }
+    .switch { position: relative; width: 46px; height: 28px; flex: 0 0 auto; border: 0; border-radius: 99px; background: #cbd2dc; cursor: pointer; transition: background .16s ease; }
+    .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,.18); transition: transform .16s ease; }
+    .switch.on { background: var(--primary); }
+    .switch.on::after { transform: translateX(18px); }
+
+    /* overlays */
+    .overlay { position: absolute; z-index: 80; inset: 0; display: none; align-items: flex-end; justify-content: center; background: rgba(17,24,39,.54); backdrop-filter: blur(2px); }
+    .overlay.open { display: flex; animation: fadeIn .18s ease both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .sheet { width: 100%; max-height: 88%; overflow: auto; padding: 10px 20px calc(20px + var(--safe-bottom)); background: white; border-radius: 26px 26px 0 0; animation: sheetUp .22s ease both; }
+    @keyframes sheetUp { from { transform: translateY(22px); } to { transform: none; } }
+    .sheet-handle { width: 42px; height: 5px; margin: 0 auto 17px; background: #d9dee6; border-radius: 99px; }
+    .sheet h2 { margin: 0 0 7px; font-size: 21px; }
+    .sheet > p { margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .sheet-actions { display: grid; gap: 9px; margin-top: 18px; }
+    .radio-list { display: grid; gap: 8px; }
+    .radio-option { min-height: 58px; display: grid; grid-template-columns: 1fr 22px; align-items: center; padding: 11px 13px; border: 1px solid var(--border); border-radius: 14px; background: white; cursor: pointer; }
+    .radio-option.selected { border-color: var(--primary); background: var(--primary-soft); }
+    .radio-option strong { font-size: 14px; }
+    .radio-option small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .radio-option .dot { width: 20px; height: 20px; border: 2px solid #bbc4d0; border-radius: 50%; }
+    .radio-option.selected .dot { border: 6px solid var(--primary); }
+    .report-options { display: grid; gap: 2px; }
+    .report-option { display: flex; align-items: center; gap: 10px; min-height: 45px; padding: 5px 0; cursor: pointer; }
+    .report-option input { width: 19px; height: 19px; accent-color: var(--primary); }
+    .report-option span { font-size: 14px; }
+    textarea { width: 100%; min-height: 90px; margin-top: 12px; padding: 12px; resize: vertical; border: 1px solid var(--border); border-radius: 13px; color: var(--ink); background: #fafbfd; }
+    .helper { margin-top: 6px !important; font-size: 11px !important; }
+
+    .image-viewer { position: absolute; z-index: 90; inset: 0; display: none; overflow: hidden; color: white; background: #090d13; }
+    .image-viewer.open { display: flex; flex-direction: column; }
+    .viewer-top { height: calc(58px + var(--safe-top)); display: grid; grid-template-columns: 48px 1fr 48px; align-items: end; padding: var(--safe-top) 10px 2px; }
+    .viewer-top .icon-btn { color: white; }
+    .viewer-top span { align-self: center; text-align: center; font-size: 14px; font-weight: 800; }
+    .viewer-image-wrap { flex: 1; min-height: 0; display: grid; place-items: center; overflow: auto; touch-action: pinch-zoom; }
+    .viewer-image-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .viewer-label { align-self: center; margin: 10px 20px calc(12px + var(--safe-bottom)); padding: 9px 14px; color: white; background: rgba(255,255,255,.12); border-radius: 99px; font-weight: 800; }
+
+    .toast {
+      position: absolute;
+      z-index: 100;
+      left: 16px;
+      right: 16px;
+      bottom: calc(18px + var(--safe-bottom));
+      min-height: 52px;
+      display: none;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 10px 10px 15px;
+      color: white;
+      background: #1f2937;
+      border-radius: 14px;
+      box-shadow: 0 14px 35px rgba(17,24,39,.32);
+      font-size: 13px;
+    }
+    .toast.show { display: grid; animation: toastIn .2s ease both; }
+    .toast.above-actions { top: calc(var(--safe-top) + 148px); bottom: auto; }
+    .toast.above-nav { bottom: calc(76px + var(--safe-bottom)); }
+    .toast button { min-width: 58px; min-height: 36px; border: 0; border-radius: 9px; color: #a9c6ff; background: transparent; font-weight: 900; cursor: pointer; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+    /* Pastel diary-game theme inspired by the approved reference. */
+    .prototype-panel { color: var(--ink); }
+    .prototype-panel .intro, .panel-tip { color: var(--muted); }
+    .panel-card {
+      background: rgba(255, 250, 253, .88);
+      border: 2px solid var(--outline);
+      box-shadow: var(--game-shadow);
+      backdrop-filter: blur(18px);
+    }
+    .screen-links button, .reset-prototype {
+      border: 2px solid var(--outline);
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--surface);
+      box-shadow: 1px 2px 0 var(--outline);
+      font-weight: 900;
+    }
+    .screen-links button:nth-child(3n + 1) { background: var(--primary-soft); }
+    .screen-links button:nth-child(3n + 2) { background: var(--got-soft); }
+    .screen-links button:nth-child(3n) { background: #fff8c8; }
+    .screen-links button:hover, .reset-prototype:hover { color: var(--primary-dark); border-color: var(--outline); }
+    .screen-links button:active, .reset-prototype:active { transform: translate(1px, 2px); box-shadow: none; }
+
+    .device {
+      border-color: var(--outline);
+      background: var(--background);
+      box-shadow: 7px 9px 0 var(--outline), 0 28px 80px rgba(73, 43, 86, .25);
+    }
+    .device::before { background: var(--outline); }
+    .app { background-color: var(--background); background-image: var(--diary-grid); background-size: 26px 26px, 26px 26px, 104px 104px, 132px 132px; }
+    .appbar-title, .wordmark, h1, h2, h3, strong { color: var(--ink); }
+    .icon-btn {
+      color: var(--ink);
+      background: rgba(255, 250, 253, .92);
+      border: 2px solid var(--outline);
+      border-radius: 50%;
+      box-shadow: 1px 2px 0 var(--outline);
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .icon-btn:hover { background: var(--primary-soft); }
+    .icon-btn:active { transform: translate(1px, 2px); box-shadow: none; }
+    .text-btn { color: var(--primary-dark); font-weight: 900; }
+    .secondary-btn { color: var(--ink); background: var(--surface); box-shadow: var(--game-shadow-sm); }
+    .secondary-btn:hover { background: var(--primary-soft); }
+    .danger-btn { color: white; background: var(--danger); box-shadow: var(--game-shadow-sm); }
+    .primary-btn:hover { color: white; background: var(--primary-dark); }
+    .primary-btn:disabled, .secondary-btn:disabled { border-color: #b9aabd; background: #ece5ee; color: #807484; }
+
+    .onboarding, .done-screen { background-color: var(--background); background-image: var(--diary-grid); background-size: 26px 26px, 26px 26px, 104px 104px, 132px 132px; }
+    .onboarding .stepper { gap: 7px; }
+    .onboarding .stepper span { height: 7px; border: 1.5px solid var(--outline); background: var(--surface); box-shadow: 1px 1px 0 var(--outline); }
+    .onboarding .stepper span.on { background: var(--primary); }
+    .hero-collage {
+      border: 2px solid var(--outline);
+      background: linear-gradient(145deg, var(--y2k-lilac), #ffe5f1 52%, #dffff6);
+      box-shadow: var(--game-shadow);
+    }
+    .hero-collage::before, .hero-collage::after {
+      position: absolute;
+      z-index: 5;
+      color: #fff06f;
+      -webkit-text-stroke: 1.5px var(--outline);
+      filter: drop-shadow(2px 2px 0 var(--outline));
+      pointer-events: none;
+    }
+    .hero-collage::before { content: "✦"; top: 13px; left: 15px; font-size: 28px; }
+    .hero-collage::after { content: "♥"; right: 16px; bottom: 14px; color: var(--primary); font-size: 25px; }
+    .hero-collage img { border: 3px solid var(--outline); box-shadow: 3px 4px 0 var(--outline); }
+    .sticky-actions { background: linear-gradient(to top, var(--background) 74%, rgba(255,247,253,0)); }
+    .mini-card {
+      border: 2px solid var(--outline);
+      background: var(--surface);
+      box-shadow: var(--game-shadow);
+    }
+    .mini-card img { border-bottom: 2px solid var(--outline); }
+    .direction-pill, .choice-card, .interest-card {
+      border: 2px solid var(--outline);
+      box-shadow: var(--game-shadow-sm);
+      font-weight: 900;
+    }
+    .direction-pill.review { color: var(--ink); background: var(--primary-soft); }
+    .direction-pill.got { color: var(--ink); background: var(--got-soft); }
+    .choice-card, .interest-card { background: var(--surface); }
+    .choice-card.selected, .interest-card.selected { border-color: var(--outline); background: var(--primary-soft); box-shadow: 3px 4px 0 var(--primary-dark); }
+    .radio-dot { border-color: var(--outline); background: white; }
+    .selected .radio-dot { border-color: var(--primary-dark); }
+    .interest-card .interest-icon {
+      color: var(--ink);
+      background: var(--y2k-yellow);
+      border: 1.5px solid var(--outline);
+      box-shadow: 1px 2px 0 var(--outline);
+    }
+
+    .brandbar { padding-top: 2px; }
+    .logo-mark {
+      color: var(--ink);
+      background: var(--primary);
+      border: 2px solid var(--outline);
+      box-shadow: 2px 3px 0 var(--outline);
+    }
+    .streak {
+      min-height: 34px;
+      padding: 5px 10px;
+      color: var(--ink);
+      background: var(--y2k-yellow);
+      border: 2px solid var(--outline);
+      border-radius: 999px;
+      box-shadow: 1px 2px 0 var(--outline);
+    }
+    .streak .icon { fill: #ff7a45; stroke: #ff7a45; }
+    .session-card {
+      color: var(--ink);
+      background: linear-gradient(145deg, #fffafd 0%, #ffe3ee 54%, #e7ddff 100%);
+      border: 2px solid var(--outline);
+      box-shadow: var(--game-shadow);
+    }
+    .session-card::before {
+      content: "✦";
+      position: absolute;
+      top: 14px;
+      right: 17px;
+      z-index: 1;
+      color: #ffca28;
+      font-size: 24px;
+      text-shadow: 2px 2px 0 var(--outline);
+    }
+    .session-card::after { color: rgba(255, 94, 142, .11); }
+    .session-label { color: var(--primary-dark); }
+    .session-card .meta { color: var(--muted); }
+    .mix-chip { color: var(--ink); background: rgba(255,255,255,.76); border: 1.5px solid var(--outline); }
+    .session-card .primary-btn { color: var(--ink); background: var(--primary); box-shadow: var(--game-shadow-sm); }
+    .category-tile, .week-card, .stat-card, .progress-row, .review-item {
+      border: 2px solid var(--outline);
+      background: var(--surface);
+      box-shadow: var(--game-shadow-sm);
+    }
+    .category-tile:nth-child(3n + 2) { background: #f0fff9; }
+    .category-tile:nth-child(3n) { background: #fffbea; }
+    .category-tile:active, .progress-row:active, .review-item:active { transform: translate(1px, 2px); box-shadow: none; }
+    .category-tile .tile-icon { color: var(--ink); background: var(--y2k-lilac); border: 1.5px solid var(--outline); }
+    .category-tile:nth-child(2) .tile-icon { background: var(--got-soft); }
+    .category-tile:nth-child(3) .tile-icon { background: var(--y2k-yellow); }
+    .week-card { background: #fffafd; }
+    .bar { border: 1px solid var(--outline); background: #efe8f2; }
+    .bar.done { background: linear-gradient(to top, var(--primary), #ff9fbd); }
+
+    .bottom-nav {
+      background: rgba(255,250,253,.97);
+      box-shadow: 0 -4px 0 rgba(59,44,67,.05);
+      backdrop-filter: blur(18px);
+    }
+    .nav-btn { color: #756a79; font-weight: 900; }
+    .nav-btn .icon { width: 23px; height: 23px; }
+    .nav-btn.active { color: var(--ink); }
+    .nav-btn.active .icon {
+      padding: 3px;
+      overflow: visible;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      border: 1.5px solid var(--outline);
+      border-radius: 8px;
+      box-shadow: 1px 2px 0 var(--outline);
+    }
+
+    .learn-screen { background: #100c15; background-image: none; }
+    .learn-top .icon-btn, .zoom-btn {
+      color: var(--ink);
+      background: rgba(255,250,253,.92);
+      border: 2px solid var(--outline);
+      box-shadow: 2px 3px 0 rgba(24,16,28,.78);
+    }
+    .learn-top .icon-btn:hover, .zoom-btn:hover { color: var(--ink); background: var(--primary-soft); }
+    .learn-progress { height: 8px; margin-inline: 22px; border: 2px solid var(--outline); background: rgba(255,255,255,.78); box-shadow: 1px 2px 0 rgba(24,16,28,.72); }
+    .learn-progress span { background: linear-gradient(90deg, var(--primary), #ff9ebc 58%, var(--got)); box-shadow: none; }
+    .focus-frame { border: 3px solid #fff5a6; border-radius: 13px; box-shadow: 0 0 0 999px rgba(4,10,20,.1), 3px 4px 0 rgba(32,26,36,.72); }
+    .chip { color: var(--ink); background: rgba(255,237,133,.92); border: 2px solid var(--outline); box-shadow: 1px 2px 0 rgba(32,26,36,.8); }
+    .chip:nth-child(2) { background: rgba(217,251,243,.94); }
+    .learn-card.answer-open .card-scroll {
+      background: rgba(255,250,253,.97);
+      border-top: 3px solid var(--outline);
+      box-shadow: 0 -6px 0 rgba(255,94,142,.26), 0 -18px 45px rgba(0,0,0,.18);
+    }
+    .learn-card.answer-open .card-scroll::before { background: var(--primary); border: 1px solid var(--outline); }
+    .answer-head .icon-btn { color: var(--ink); background: var(--y2k-yellow); }
+    .word-row { border-top-color: #e4d4e9; }
+    .street-note { color: var(--ink); background: var(--got-soft); border: 2px solid var(--outline); border-radius: 16px; box-shadow: 1px 2px 0 var(--outline); }
+    .swipe-overlay { color: var(--ink); border-color: var(--outline); border-radius: 999px; box-shadow: var(--game-shadow); }
+    .swipe-overlay.review { color: var(--review-dark); background: #fff0f6; }
+    .swipe-overlay.got { color: var(--got-dark); background: #e6fff8; }
+    .learn-actions .primary-btn { border-radius: 999px; }
+    #revealActions .primary-btn { color: var(--ink); background: var(--y2k-yellow); border: 2px solid var(--outline); box-shadow: var(--game-shadow-sm); }
+    #revealActions .primary-btn:hover { color: var(--ink); background: #ffe45f; }
+
+    .done-mark {
+      color: var(--ink);
+      background: var(--got);
+      border: 2px solid var(--outline);
+      box-shadow: var(--game-shadow);
+    }
+    .done-number { color: var(--primary-dark); text-shadow: 3px 3px 0 #ffd3e1; }
+    .score-box, .next-review {
+      border: 2px solid var(--outline);
+      box-shadow: var(--game-shadow-sm);
+    }
+    .score-box.got { color: var(--ink); background: var(--got-soft); }
+    .score-box.review { color: var(--ink); background: var(--review-soft); }
+    .next-review { background: var(--surface); }
+    .stat-card:nth-child(2) { background: var(--got-soft); }
+    .stat-card:nth-child(3) { background: #fff8c8; }
+    .tiny-progress { height: 9px; border: 1.5px solid var(--outline); background: #f0e8f2; }
+    .tiny-progress span { background: linear-gradient(90deg, var(--primary), #ff9dbc); }
+    .review-item img { border: 1.5px solid var(--outline); }
+    .settings-list {
+      border: 2px solid var(--outline);
+      background: var(--surface);
+      box-shadow: var(--game-shadow-sm);
+    }
+    .setting-row { border-bottom-color: #e8d8eb; background: var(--surface); }
+    .setting-row:hover { background: var(--primary-soft); }
+    .switch { border: 2px solid var(--outline); background: #d8cddd; box-shadow: 1px 2px 0 var(--outline); }
+    .switch::after { top: 2px; left: 2px; width: 20px; height: 20px; border: 1px solid var(--outline); box-shadow: none; }
+    .switch.on { background: var(--got); }
+
+    .overlay { background: rgba(42,25,49,.56); }
+    .sheet {
+      background-color: var(--background);
+      background-image: var(--diary-grid);
+      background-size: 26px 26px, 26px 26px, 104px 104px, 132px 132px;
+      border: 2px solid var(--outline);
+      border-bottom: 0;
+      box-shadow: 0 -7px 0 rgba(59,44,67,.18);
+    }
+    .sheet-handle { background: var(--primary); border: 1px solid var(--outline); }
+    .radio-option { border: 2px solid var(--outline); background: var(--surface); box-shadow: 1px 2px 0 var(--outline); }
+    .radio-option.selected { border-color: var(--outline); background: var(--primary-soft); }
+    .radio-option .dot { border-color: var(--outline); }
+    textarea { border: 2px solid var(--outline); background: var(--surface); box-shadow: inset 1px 2px 0 rgba(59,44,67,.08); }
+    .viewer-top .icon-btn { color: white; background: rgba(32,26,36,.72); border-color: rgba(255,255,255,.72); box-shadow: none; }
+    .viewer-label { border: 2px solid white; background: rgba(255,94,142,.72); }
+    .toast { color: var(--ink); background: var(--surface); border: 2px solid var(--outline); border-radius: 999px; box-shadow: var(--game-shadow); }
+    .toast button { color: var(--primary-dark); }
+
+    @media (max-width: 820px) {
+      .prototype-shell { grid-template-columns: 1fr; min-height: 100dvh; padding: 16px; }
+      .prototype-panel { display: none; }
+      .device { justify-self: center; width: 390px; max-width: 100%; height: min(844px, calc(100dvh - 32px)); }
+    }
+
+    @media (max-width: 520px) {
+      body { background: var(--background); }
+      .prototype-shell { display: block; min-height: 100dvh; padding: 0; }
+      .device { width: 100%; max-width: none; height: 100dvh; min-height: 600px; border: 0; border-radius: 0; box-shadow: none; }
+      .device::before { display: none; }
+      .app { border-radius: 0; -webkit-clip-path: inset(0); clip-path: inset(0); }
+    }
+
+    @media (max-height: 730px) and (min-width: 821px) {
+      .device { min-height: 640px; border-radius: 38px; }
+      .device::before { height: 22px; }
+      .photo-wrap { min-height: 185px; }
+      .hero-collage { height: 230px; margin-top: 12px; }
+      .onboarding-copy h1 { font-size: 27px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H4.5A1.5 1.5 0 0 1 3 19.5z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10m8 10V4m8 16v-7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.52-1H3v-4h.08A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88L4.2 7.06l2.83-2.83.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.08V3h4v.08a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.25.62.84 1 1.52 1H21v4h-.08c-.68 0-1.27.39-1.52 1Z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3"/></symbol>
+    <symbol id="i-zoom" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M8 21H3v-5m13 5h5v-5"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM15 9a4 4 0 0 1 0 6m2.5-9a8 8 0 0 1 0 12"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M4 12h9a7 7 0 0 1 7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 22c4 0 7-3 7-7 0-3-1.5-5.5-4.5-8 .2 2-1 3.5-2.2 4.2.2-3.6-2-6.4-5-9.2.2 4-2.3 6.5-2.3 10.5C5 18 8.2 22 12 22Z"/></symbol>
+    <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0Zm3 9h10M8 7V3m4 4V2m4 5V4"/></symbol>
+    <symbol id="i-train" viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 0 1 2 2v11a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2Zm-2 9h16M8 19l-2 3m10-3 2 3M8 7h.01M16 7h.01"/></symbol>
+    <symbol id="i-shop" viewBox="0 0 24 24"><path d="M4 10v10h16V10M3 10l2-6h14l2 6c0 2-3 3-4.5 1.5C15 13 12 12 12 10c0 2-3 3-4.5 1.5C6 13 3 12 3 10Z"/></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5l8-3 8 3v16M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01M8 15h.01M16 15h.01M10 21v-5h4v5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19zM12 9v5m0 3h.01"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8 12h4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-sign" viewBox="0 0 24 24"><path d="M5 4h14v7H5zM12 11v10M8 21h8"/></symbol>
+  </svg>
+
+  <main class="prototype-shell">
+    <aside class="prototype-panel" aria-label="Prototype navigation">
+      <p class="eyebrow">Interactive design file</p>
+      <h1>Sign Korean</h1>
+      <p class="intro">A tap-and-swipe prototype for learning the Korean found on real streets. Use the shortcuts or follow the full onboarding flow.</p>
+      <div class="panel-card">
+        <h2>Jump to a screen</h2>
+        <div class="screen-links">
+          <button data-jump="welcome">Onboarding</button>
+          <button data-jump="home">Learn home</button>
+          <button data-jump="learn">Card session</button>
+          <button data-jump="done">Completion</button>
+          <button data-jump="progress">Progress</button>
+          <button data-jump="settings">Settings</button>
+        </div>
+        <button class="reset-prototype" id="resetPrototype">Reset prototype</button>
+      </div>
+      <p class="panel-tip">Tip: reveal an answer, then swipe left for Got it or right for Review.</p>
+    </aside>
+
+    <section class="device" aria-label="Mobile app prototype">
+      <div class="app" id="app">
+        <section class="screen onboarding active" id="screen-welcome" data-screen="welcome">
+          <div class="status-space"></div>
+          <div class="stepper" aria-label="Step 1 of 4"><span class="on"></span><span></span><span></span><span></span></div>
+          <div class="content-scroll">
+            <div class="hero-collage" aria-hidden="true">
+              <img src="assets/signs/bunsik.jpg" alt="">
+              <img src="assets/signs/exit.jpg" alt="">
+              <img src="assets/signs/pharmacy.jpg" alt="">
+            </div>
+            <div class="onboarding-copy">
+              <h1>Read Korea in the real world</h1>
+              <p>Learn the Korean you’ll actually see on streets, shops, and stations.</p>
+            </div>
+          </div>
+          <div class="sticky-actions">
+            <button class="primary-btn" data-next="tutorial">Get started</button>
+            <p class="caption">You can use the app without an account.</p>
+          </div>
+        </section>
+
+        <section class="screen onboarding" id="screen-tutorial" data-screen="tutorial">
+          <div class="status-space"></div>
+          <div class="stepper" aria-label="Step 2 of 4"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+          <div class="appbar"><button class="icon-btn" data-next="welcome" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><div class="appbar-title">How it works</div><span></span></div>
+          <div class="content-scroll tutorial-wrap">
+            <h1>Look, check, then swipe</h1>
+            <p>Guess what the sign means before you reveal the answer.</p>
+            <div class="mini-card" id="tutorialCard">
+              <img src="assets/signs/bunsik.jpg" alt="A Korean snack bar storefront with the sign hidden for practice">
+              <div class="mini-card-body">
+                <div id="tutorialPrompt">
+                  <p class="card-question">What does this sign say?</p>
+                  <button class="primary-btn" id="tutorialReveal">Show answer</button>
+                </div>
+                <div id="tutorialAnswer" class="hidden">
+                  <p class="ko" lang="ko">분식</p>
+                  <p class="en">Snack bar · casual Korean comfort food</p>
+                  <div class="tutorial-directions">
+                    <button class="direction-pill review" data-tutorial-rate><svg class="icon"><use href="#i-undo"/></svg> Review</button>
+                    <button class="direction-pill got" data-tutorial-rate><svg class="icon"><use href="#i-check"/></svg> Got it</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sticky-actions"><button class="primary-btn" id="tutorialContinue" disabled data-next="level">Continue</button></div>
+        </section>
+
+        <section class="screen onboarding" id="screen-level" data-screen="level">
+          <div class="status-space"></div>
+          <div class="stepper" aria-label="Step 3 of 4"><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+          <div class="appbar"><button class="icon-btn" data-next="tutorial" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><div class="appbar-title">Your Korean</div><button class="text-btn" id="skipLevel">Skip</button></div>
+          <div class="content-scroll choice-wrap">
+            <h1>How comfortable are you with Hangul?</h1>
+            <p>This only changes which signs you see first.</p>
+            <div class="choice-list" id="levelChoices">
+              <button class="choice-card" data-value="beginner"><span><strong>Beginner</strong><small>I can read Hangul slowly.</small></span><span class="radio-dot"></span></button>
+              <button class="choice-card" data-value="elementary"><span><strong>Elementary</strong><small>I can read common words and short phrases.</small></span><span class="radio-dot"></span></button>
+              <button class="choice-card" data-value="unsure"><span><strong>Not sure</strong><small>Start me with easier signs.</small></span><span class="radio-dot"></span></button>
+            </div>
+          </div>
+          <div class="sticky-actions"><button class="primary-btn" id="levelContinue" disabled data-next="interests">Continue</button></div>
+        </section>
+
+        <section class="screen onboarding" id="screen-interests" data-screen="interests">
+          <div class="status-space"></div>
+          <div class="stepper" aria-label="Step 4 of 4"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+          <div class="appbar"><button class="icon-btn" data-next="level" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><div class="appbar-title">Your interests</div><span></span></div>
+          <div class="content-scroll choice-wrap">
+            <h1>What do you want to read first?</h1>
+            <p>Choose any. You’ll still see a useful mix.</p>
+            <div class="interest-grid" id="interestChoices">
+              <button class="interest-card" data-interest="Food"><span class="interest-icon"><svg class="icon"><use href="#i-bowl"/></svg></span><strong>Food & restaurants</strong></button>
+              <button class="interest-card" data-interest="Cafés"><span class="interest-icon">☕</span><strong>Cafés & drinks</strong></button>
+              <button class="interest-card" data-interest="Transport"><span class="interest-icon"><svg class="icon"><use href="#i-train"/></svg></span><strong>Transport</strong></button>
+              <button class="interest-card" data-interest="Shopping"><span class="interest-icon"><svg class="icon"><use href="#i-shop"/></svg></span><strong>Shopping</strong></button>
+              <button class="interest-card" data-interest="Places"><span class="interest-icon"><svg class="icon"><use href="#i-building"/></svg></span><strong>Everyday places</strong></button>
+              <button class="interest-card" data-interest="Notices"><span class="interest-icon"><svg class="icon"><use href="#i-alert"/></svg></span><strong>Warnings & notices</strong></button>
+            </div>
+          </div>
+          <div class="sticky-actions"><button class="primary-btn" id="startLearning">Start learning</button></div>
+        </section>
+
+        <section class="screen main-screen" id="screen-home" data-screen="home">
+          <div class="status-space"></div>
+          <div class="brandbar">
+            <div class="wordmark"><span class="logo-mark"><svg class="icon"><use href="#i-sign"/></svg></span>Sign Korean</div>
+            <div class="streak"><svg class="icon"><use href="#i-flame"/></svg><span>3 days</span></div>
+          </div>
+          <div class="content-scroll home-content">
+            <h1>Ready to read Korea?</h1>
+            <p>A short street-reading session is waiting.</p>
+            <article class="session-card">
+              <p class="session-label">TODAY'S SESSION</p>
+              <h2 id="homeSessionTitle">10 street signs</h2>
+              <p class="meta" id="homeSessionMeta">About 4 minutes</p>
+              <div class="mix-row"><span class="mix-chip">3 review</span><span class="mix-chip">7 new</span></div>
+              <button class="primary-btn" id="startSession">Start session</button>
+            </article>
+            <div class="section-head"><h2>Explore by category</h2><button id="showAllCategories">See all</button></div>
+            <div class="category-row">
+              <button class="category-tile" data-category="FOOD"><span class="tile-icon"><svg class="icon"><use href="#i-bowl"/></svg></span><strong>Food</strong><small>62 signs</small></button>
+              <button class="category-tile" data-category="TRANSPORT"><span class="tile-icon"><svg class="icon"><use href="#i-train"/></svg></span><strong>Transport</strong><small>38 signs</small></button>
+              <button class="category-tile" data-category="SHOPPING"><span class="tile-icon"><svg class="icon"><use href="#i-shop"/></svg></span><strong>Shopping</strong><small>44 signs</small></button>
+              <button class="category-tile" data-category="NOTICE"><span class="tile-icon"><svg class="icon"><use href="#i-alert"/></svg></span><strong>Notices</strong><small>51 signs</small></button>
+            </div>
+            <div class="section-head"><h2>Your week</h2><button data-next="progress">Details</button></div>
+            <div class="week-card" aria-label="Signs practiced over the last seven days">
+              <div class="week-bars"><div class="day"><i class="bar done" style="height:35%"></i><span>M</span></div><div class="day"><i class="bar done" style="height:62%"></i><span>T</span></div><div class="day"><i class="bar done" style="height:42%"></i><span>W</span></div><div class="day"><i class="bar done" style="height:85%"></i><span>T</span></div><div class="day"><i class="bar" style="height:8%"></i><span>F</span></div><div class="day"><i class="bar" style="height:8%"></i><span>S</span></div><div class="day"><i class="bar" style="height:8%"></i><span>S</span></div></div>
+            </div>
+            <div class="bottom-pad"></div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main navigation">
+            <button class="nav-btn active" data-next="home"><svg class="icon"><use href="#i-home"/></svg><span>Learn</span></button>
+            <button class="nav-btn" data-next="progress"><svg class="icon"><use href="#i-chart"/></svg><span>Progress</span></button>
+            <button class="nav-btn" data-next="settings"><svg class="icon"><use href="#i-settings"/></svg><span>Settings</span></button>
+          </nav>
+        </section>
+
+        <section class="screen learn-screen" id="screen-learn" data-screen="learn">
+          <div class="status-space"></div>
+          <div class="learn-top">
+            <div class="appbar"><button class="icon-btn" id="leaveSession" aria-label="Leave session"><svg class="icon"><use href="#i-close"/></svg></button><div class="appbar-title" id="learnCounter">1 of 10</div><button class="icon-btn" id="moreCard" aria-label="More options"><svg class="icon"><use href="#i-more"/></svg></button></div>
+            <div class="learn-progress" aria-hidden="true"><span id="learnProgress"></span></div>
+          </div>
+          <div class="learn-stage" id="learnStage">
+            <article class="next-card-preview" id="nextCardPreview" aria-hidden="true">
+              <img class="preview-backdrop" id="nextCardBackdrop" src="assets/signs/exit.jpg" alt="">
+              <img class="preview-main" id="nextCardImage" src="assets/signs/exit.jpg" alt="">
+            </article>
+            <article class="learn-card" id="learnCard">
+              <div class="swipe-overlay review" id="reviewOverlay">REVIEW</div>
+              <div class="swipe-overlay got" id="gotOverlay">GOT IT</div>
+              <div class="photo-wrap">
+                <img class="photo-backdrop" id="cardBackdrop" src="assets/signs/bunsik.jpg" alt="" aria-hidden="true">
+                <img class="photo-main" id="cardImage" src="assets/signs/bunsik.jpg" alt="A Korean storefront sign. Focus area highlighted.">
+                <span class="focus-frame" id="focusFrame" aria-hidden="true"></span>
+                <button class="icon-btn zoom-btn" id="zoomImage" aria-label="Enlarge sign photo"><svg class="icon"><use href="#i-zoom"/></svg></button>
+              </div>
+              <div class="card-scroll" id="cardScroll">
+                <div id="questionPanel">
+                  <div class="chips"><span class="chip" id="cardCategory">FOOD</span><span class="chip">BEGINNER</span></div>
+                  <h2 class="card-question">What does this sign say?</h2>
+                  <p class="card-hint">Say it out loud, then check the answer.</p>
+                </div>
+                <div id="answerPanel" class="hidden">
+                  <div class="answer-meta"><span>Answer</span><span>← Got it · Review →</span></div>
+                  <div class="answer-head"><h2 class="answer-ko" id="cardKorean" lang="ko">분식</h2><button class="icon-btn" id="playAudio" aria-label="Play Korean pronunciation"><svg class="icon"><use href="#i-volume"/></svg></button></div>
+                  <p class="answer-en" id="cardEnglish">Snack bar</p>
+                  <p class="card-hint hidden" id="cardRomanization"></p>
+                  <section class="answer-section"><h3>Words</h3><div id="wordRows"></div></section>
+                  <section class="answer-section"><h3>Street note</h3><div class="street-note" id="cardNote"></div></section>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="learn-actions" id="revealActions"><button class="primary-btn" id="revealAnswer">Show answer</button></div>
+        </section>
+
+        <section class="screen done-screen" id="screen-done" data-screen="done">
+          <div class="done-wrap">
+            <div class="done-mark"><svg class="icon"><use href="#i-check"/></svg></div>
+            <h1>Session complete</h1>
+            <p class="done-number">10</p>
+            <p class="done-label">signs practiced</p>
+            <div class="score-grid">
+              <div class="score-box got"><small>✓ Got it</small><strong id="doneGot">7</strong></div>
+              <div class="score-box review"><small>↶ Review</small><strong id="doneReview">3</strong></div>
+            </div>
+            <div class="next-review"><small>Next review</small><strong id="nextReviewText">3 signs tomorrow</strong></div>
+            <div class="done-actions"><button class="primary-btn" id="backHome">Back home</button><button class="secondary-btn" id="seeReviewCards">See review cards</button></div>
+          </div>
+        </section>
+
+        <section class="screen main-screen" id="screen-progress" data-screen="progress">
+          <div class="status-space"></div>
+          <div class="page-head"><h1>Progress</h1></div>
+          <div class="content-scroll page-body">
+            <div class="stat-grid"><div class="stat-card"><small>Learned</small><strong id="statLearned">24</strong></div><div class="stat-card"><small>Mastered</small><strong>8</strong></div><div class="stat-card"><small>Due now</small><strong id="statDue">3</strong></div></div>
+            <section class="progress-section"><h2>This week</h2><div class="week-card"><div class="week-bars"><div class="day"><i class="bar done" style="height:35%"></i><span>M</span></div><div class="day"><i class="bar done" style="height:62%"></i><span>T</span></div><div class="day"><i class="bar done" style="height:42%"></i><span>W</span></div><div class="day"><i class="bar done" style="height:85%"></i><span>T</span></div><div class="day"><i class="bar done" style="height:28%"></i><span>F</span></div><div class="day"><i class="bar" style="height:8%"></i><span>S</span></div><div class="day"><i class="bar" style="height:8%"></i><span>S</span></div></div></div></section>
+            <section class="progress-section"><h2>By category</h2><div class="category-progress"><div class="progress-row"><div class="progress-row-head"><span>Food & restaurants</span><span>12 learned</span></div><div class="tiny-progress"><span style="width:58%"></span></div></div><div class="progress-row"><div class="progress-row-head"><span>Transport</span><span>7 learned</span></div><div class="tiny-progress"><span style="width:38%"></span></div></div><div class="progress-row"><div class="progress-row-head"><span>Warnings & notices</span><span>5 learned</span></div><div class="tiny-progress"><span style="width:27%"></span></div></div></div></section>
+            <section class="progress-section"><div class="section-head" style="margin-top:0"><h2>Needs review</h2><button id="reviewAll">See all</button></div><div class="review-list" id="reviewList"></div></section>
+            <div class="bottom-pad"></div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn" data-next="home"><svg class="icon"><use href="#i-home"/></svg><span>Learn</span></button><button class="nav-btn active" data-next="progress"><svg class="icon"><use href="#i-chart"/></svg><span>Progress</span></button><button class="nav-btn" data-next="settings"><svg class="icon"><use href="#i-settings"/></svg><span>Settings</span></button></nav>
+        </section>
+
+        <section class="screen main-screen" id="screen-settings" data-screen="settings">
+          <div class="status-space"></div>
+          <div class="page-head"><h1>Settings</h1></div>
+          <div class="content-scroll page-body">
+            <p class="settings-section-label">Learning</p>
+            <div class="settings-list">
+              <button class="setting-row" id="sessionLength"><span><strong>Session length</strong><small>Choose 5, 10, or 20 signs</small></span><span class="setting-value"><span id="lengthValue">10 signs</span><svg class="icon"><use href="#i-next"/></svg></span></button>
+              <div class="setting-row"><span><strong>Show romanization</strong><small>Display pronunciation in Latin letters</small></span><button class="switch" id="romanizationSwitch" role="switch" aria-checked="false" aria-label="Show romanization"></button></div>
+              <div class="setting-row"><span><strong>Auto-play audio</strong><small>Play after showing the answer</small></span><button class="switch" id="audioSwitch" role="switch" aria-checked="false" aria-label="Auto-play audio"></button></div>
+            </div>
+            <p class="settings-section-label">Reminders</p>
+            <div class="settings-list"><button class="setting-row" id="reminderSetting"><span><strong>Review reminder</strong><small>Only when signs are ready</small></span><span class="setting-value"><span id="reminderValue">Off</span><svg class="icon"><use href="#i-next"/></svg></span></button></div>
+            <p class="settings-section-label">Account</p>
+            <div class="settings-list"><button class="setting-row" id="accountSetting"><span><strong>Account & sync</strong><small>Keep your progress safe</small></span><span class="setting-value">Guest<svg class="icon"><use href="#i-next"/></svg></span></button></div>
+            <p class="settings-section-label">Accessibility</p>
+            <div class="settings-list"><div class="setting-row"><span><strong>Reduce in-app motion</strong><small>Use simple fades for card changes</small></span><button class="switch" id="motionSwitch" role="switch" aria-checked="false" aria-label="Reduce in-app motion"></button></div></div>
+            <p class="settings-section-label">About</p>
+            <div class="settings-list"><button class="setting-row" data-toast="Privacy policy would open here."><strong>Privacy policy</strong><svg class="icon"><use href="#i-next"/></svg></button><button class="setting-row" data-toast="Terms of use would open here."><strong>Terms of use</strong><svg class="icon"><use href="#i-next"/></svg></button><div class="setting-row"><strong>App version</strong><span class="setting-value">Prototype 0.2</span></div></div>
+            <div class="bottom-pad"></div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn" data-next="home"><svg class="icon"><use href="#i-home"/></svg><span>Learn</span></button><button class="nav-btn" data-next="progress"><svg class="icon"><use href="#i-chart"/></svg><span>Progress</span></button><button class="nav-btn active" data-next="settings"><svg class="icon"><use href="#i-settings"/></svg><span>Settings</span></button></nav>
+        </section>
+
+        <div class="overlay" id="genericSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+          <div class="sheet" id="sheetContent"><div class="sheet-handle"></div><h2 id="sheetTitle">Sheet</h2><p id="sheetBody"></p><div id="sheetDynamic"></div><div class="sheet-actions" id="sheetActions"></div></div>
+        </div>
+
+        <div class="overlay" id="reportSheet" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+          <form class="sheet" id="reportForm"><div class="sheet-handle"></div><h2 id="reportTitle">Report this card</h2><p>What seems wrong?</p><div class="report-options"><label class="report-option"><input type="radio" name="report" value="Korean text is wrong"><span>Korean text is wrong</span></label><label class="report-option"><input type="radio" name="report" value="English meaning is wrong"><span>English meaning is wrong</span></label><label class="report-option"><input type="radio" name="report" value="Audio is wrong"><span>Audio is wrong</span></label><label class="report-option"><input type="radio" name="report" value="Image is inappropriate or private"><span>Image is inappropriate or private</span></label><label class="report-option"><input type="radio" name="report" value="Something else"><span>Something else</span></label></div><textarea maxlength="500" placeholder="Add details (optional)"></textarea><p class="helper">Please don’t include personal information.</p><div class="sheet-actions"><button class="primary-btn" id="sendReport" type="submit" disabled>Send report</button><button class="secondary-btn" type="button" data-close="reportSheet">Cancel</button></div></form>
+        </div>
+
+        <div class="image-viewer" id="imageViewer" role="dialog" aria-modal="true" aria-label="Sign photo">
+          <div class="viewer-top"><button class="icon-btn" id="closeViewer" aria-label="Close image"><svg class="icon"><use href="#i-close"/></svg></button><span>Sign photo</span><span></span></div>
+          <div class="viewer-image-wrap"><img id="viewerImage" src="assets/signs/bunsik.jpg" alt="Enlarged Korean sign"></div>
+          <div class="viewer-label hidden" id="viewerLabel" lang="ko">분식</div>
+        </div>
+
+        <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText">Saved</span><button id="toastAction" class="hidden">Undo</button></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const cards = [
+      { word:'분식', roman:'bunsik', meaning:'Snack bar', category:'FOOD', image:'assets/signs/bunsik.jpg', audio:'assets/audio/eunkyung/bunsik.mp3', focus:[37,5,43,28], words:[['분식','casual Korean snack food']], note:'A 분식 place serves quick, affordable comfort food such as tteokbokki, gimbap, and ramyeon.' },
+      { word:'출구', roman:'chulgu', meaning:'Exit', category:'TRANSPORT', image:'assets/signs/exit.jpg', audio:'assets/audio/eunkyung/exit.mp3', focus:[45,12,30,32], words:[['출','to go out'],['구','opening · way']], note:'Look for 출구 in subway stations, underground malls, and public buildings.' },
+      { word:'약국', roman:'yakguk', meaning:'Pharmacy', category:'EVERYDAY PLACE', image:'assets/signs/pharmacy.jpg', audio:'assets/audio/eunkyung/pharmacy.mp3', focus:[30,4,47,29], words:[['약','medicine'],['국','shop or bureau in this word']], note:'Korean pharmacies usually have a green cross and the word 약국 on the storefront.' },
+      { word:'주차 금지', roman:'jucha geumji', meaning:'No parking', category:'NOTICE', image:'assets/signs/no-parking.jpg', audio:'assets/audio/eunkyung/no-parking.mp3', focus:[19,17,50,48], words:[['주차','parking'],['금지','prohibited']], note:'This notice is common near building entrances, narrow alleys, and loading areas.' },
+      { word:'화장실', roman:'hwajangsil', meaning:'Restroom', category:'EVERYDAY PLACE', image:'assets/signs/restroom.jpg', audio:'assets/audio/eunkyung/restroom.mp3', focus:[35,42,33,31], words:[['화장실','restroom · toilet']], note:'You may also see 남 for men and 여 for women near restroom entrances.' },
+      { word:'편의점', roman:'pyeonuijeom', meaning:'Convenience store', category:'SHOPPING', image:'assets/signs/convenience-store.jpg', audio:'assets/audio/eunkyung/convenience-store.mp3', focus:[30,3,43,27], words:[['편의','convenience'],['점','shop']], note:'Convenience stores in Korea often sell snacks, meals, transit cards, and daily necessities.' },
+      { word:'입구', roman:'ipgu', meaning:'Entrance', category:'EVERYDAY PLACE', image:'assets/signs/entrance.jpg', audio:'assets/audio/eunkyung/entrance.mp3', focus:[24,20,38,50], words:[['입','to enter'],['구','opening · way']], note:'입구 means entrance. The opposite, exit, is 출구.' },
+      { word:'영업중', roman:'yeongeop jung', meaning:'Open for business', category:'SHOPPING', image:'assets/signs/open.jpg', audio:'assets/audio/eunkyung/open.mp3', focus:[25,32,52,40], words:[['영업','business operations'],['중','in progress']], note:'A shop displaying 영업중 is currently open. 영업 종료 means business has ended.' },
+      { word:'금연', roman:'geumyeon', meaning:'No smoking', category:'NOTICE', image:'assets/signs/no-smoking.jpg', audio:'assets/audio/eunkyung/no-smoking.mp3', focus:[36,15,28,56], words:[['금','to prohibit'],['연','smoke']], note:'Most indoor public places in Korea are smoke-free. Look for designated smoking areas instead.' },
+      { word:'세일', roman:'seil', meaning:'Sale', category:'SHOPPING', image:'assets/signs/sale.jpg', audio:'assets/audio/eunkyung/sale.mp3', focus:[29,22,43,47], words:[['세일','sale (from English)']], note:'세일 is a Korean loanword from “sale.” You may also see 할인, meaning discount.' }
+    ];
+
+    const state = {
+      screen: 'welcome',
+      level: null,
+      interests: new Set(),
+      index: 0,
+      answerOpen: false,
+      ratings: [],
+      history: [],
+      sessionLength: 10,
+      romanization: false,
+      autoAudio: false,
+      reduceMotion: false,
+      reminder: false,
+      audioPlayer: null,
+      toastTimer: null,
+      resume: false
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+    function showScreen(name) {
+      state.screen = name;
+      $$('.screen').forEach(screen => screen.classList.toggle('active', screen.dataset.screen === name));
+      if (name === 'home') renderHome();
+      if (name === 'progress') renderProgress();
+      if (name === 'settings') renderSettings();
+      if (name === 'learn') renderCard();
+    }
+
+    function showToast(message, actionLabel = '', action = null) {
+      const toast = $('#toast');
+      toast.classList.toggle('above-actions', state.screen === 'learn');
+      toast.classList.toggle('above-nav', ['home','progress','settings'].includes(state.screen));
+      $('#toastText').textContent = message;
+      const btn = $('#toastAction');
+      btn.textContent = actionLabel;
+      btn.classList.toggle('hidden', !actionLabel);
+      btn.onclick = action || null;
+      toast.classList.add('show');
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function closeToast() { $('#toast').classList.remove('show'); clearTimeout(state.toastTimer); }
+
+    function renderHome() {
+      const paused = state.resume && state.index > 0 && state.index < state.sessionLength;
+      $('#homeSessionTitle').textContent = paused ? 'Pick up where you left off' : `${state.sessionLength} street signs`;
+      $('#homeSessionMeta').textContent = paused ? `${state.index} of ${state.sessionLength} signs complete` : `About ${state.sessionLength === 5 ? 2 : state.sessionLength === 10 ? 4 : 8} minutes`;
+      $('#startSession').textContent = paused ? 'Resume session' : 'Start session';
+    }
+
+    function startSession(reset = false, category = null) {
+      if (reset || state.index >= state.sessionLength) {
+        state.index = 0; state.ratings = []; state.history = []; state.resume = false;
+      }
+      if (category) {
+        const first = cards.findIndex(card => card.category === category);
+        state.index = first >= 0 ? first : 0;
+        state.ratings = []; state.history = [];
+        showToast(`${category.toLowerCase()} practice selected`);
+      }
+      state.answerOpen = false;
+      showScreen('learn');
+    }
+
+    function currentCard() { return cards[state.index % cards.length]; }
+
+    function renderCard() {
+      const card = currentCard();
+      const nextCard = cards[(state.index + 1) % cards.length];
+      const position = Math.min(state.index + 1, state.sessionLength);
+      $('#learnCounter').textContent = `${position} of ${state.sessionLength}`;
+      $('#learnProgress').style.width = `${(position / state.sessionLength) * 100}%`;
+      $('#cardImage').src = card.image;
+      $('#cardBackdrop').src = card.image;
+      $('#nextCardImage').src = nextCard.image;
+      $('#nextCardBackdrop').src = nextCard.image;
+      $('#cardImage').alt = state.answerOpen ? `Storefront sign reading ${card.word}.` : 'A Korean street sign. Focus area highlighted.';
+      $('#cardCategory').textContent = card.category;
+      $('#cardKorean').textContent = card.word;
+      $('#cardEnglish').textContent = card.meaning;
+      $('#cardRomanization').textContent = card.roman;
+      $('#cardRomanization').classList.toggle('hidden', !state.romanization);
+      $('#cardNote').textContent = card.note;
+      $('#wordRows').innerHTML = card.words.map(([ko,en]) => `<div class="word-row"><strong lang="ko">${ko}</strong><span>${en}</span></div>`).join('');
+      positionFocusFrame(card);
+      $('#questionPanel').classList.toggle('hidden', state.answerOpen);
+      $('#answerPanel').classList.toggle('hidden', !state.answerOpen);
+      $('#learnCard').classList.toggle('answer-open', state.answerOpen);
+      $('#learnCard').classList.toggle('question-open', !state.answerOpen);
+      $('#revealActions').classList.toggle('hidden', state.answerOpen);
+      $('#cardScroll').scrollTop = 0;
+      resetCardTransform();
+      requestAnimationFrame(() => positionFocusFrame(currentCard()));
+      if (state.answerOpen && state.autoAudio) speakCurrent();
+    }
+
+    function positionFocusFrame(card = currentCard()) {
+      const image = $('#cardImage');
+      const wrap = image.parentElement;
+      if (!image.naturalWidth || !wrap.clientWidth || !wrap.clientHeight) return;
+      const scale = Math.min(wrap.clientWidth / image.naturalWidth, wrap.clientHeight / image.naturalHeight);
+      const renderedWidth = image.naturalWidth * scale;
+      const renderedHeight = image.naturalHeight * scale;
+      const offsetX = (wrap.clientWidth - renderedWidth) / 2;
+      const offsetY = (wrap.clientHeight - renderedHeight) / 2;
+      const [x,y,w,h] = card.focus;
+      Object.assign($('#focusFrame').style, {
+        left: `${offsetX + renderedWidth * x / 100}px`,
+        top: `${offsetY + renderedHeight * y / 100}px`,
+        width: `${renderedWidth * w / 100}px`,
+        height: `${renderedHeight * h / 100}px`
+      });
+    }
+
+    function revealAnswer() {
+      state.answerOpen = true;
+      renderCard();
+    }
+
+    function rateCard(rating) {
+      if (!state.answerOpen) { showToast('Check the answer first'); return; }
+      const oldIndex = state.index;
+      const card = currentCard();
+      state.ratings.push({ cardIndex: oldIndex, word: card.word, rating });
+      state.history.push({ index: oldIndex, rating });
+      const element = $('#learnCard');
+      element.classList.add('settling');
+      element.style.transform = `translateX(${rating === 'got' ? -125 : 125}%) rotate(${rating === 'got' ? -10 : 10}deg)`;
+      element.style.opacity = '0';
+      setTimeout(() => {
+        state.index += 1;
+        state.answerOpen = false;
+        if (state.index >= state.sessionLength) finishSession();
+        else renderCard();
+      }, state.reduceMotion ? 20 : 210);
+      showToast(rating === 'review' ? 'Marked as Review' : 'Marked as Got it', 'Undo', undoRating);
+    }
+
+    function undoRating() {
+      if (!state.history.length) return;
+      const last = state.history.pop();
+      state.ratings.pop();
+      state.index = last.index;
+      state.answerOpen = true;
+      showScreen('learn');
+      showToast('Last choice undone');
+    }
+
+    function finishSession() {
+      const reviewCount = state.ratings.filter(item => item.rating === 'review').length;
+      const gotCount = state.ratings.filter(item => item.rating === 'got').length;
+      $('#doneGot').textContent = gotCount;
+      $('#doneReview').textContent = reviewCount;
+      $('#nextReviewText').textContent = reviewCount ? `${reviewCount} ${reviewCount === 1 ? 'sign' : 'signs'} tomorrow` : 'No reviews due tomorrow';
+      $('#seeReviewCards').classList.toggle('hidden', reviewCount === 0);
+      state.resume = false;
+      showScreen('done');
+    }
+
+    function resetCardTransform() {
+      const card = $('#learnCard');
+      card.classList.remove('dragging','settling');
+      card.style.transform = '';
+      card.style.opacity = '';
+      $('#reviewOverlay').style.opacity = 0;
+      $('#gotOverlay').style.opacity = 0;
+      $('#nextCardPreview').style.transform = '';
+      $('#nextCardPreview').style.filter = '';
+    }
+
+    function speakCurrent() {
+      if (state.audioPlayer) {
+        state.audioPlayer.pause();
+        state.audioPlayer.currentTime = 0;
+      }
+      const audio = new Audio(currentCard().audio);
+      state.audioPlayer = audio;
+      audio.addEventListener('error', () => {
+        if (state.audioPlayer === audio) state.audioPlayer = null;
+        showToast('Typecast audio has not been generated yet.');
+      }, { once: true });
+      audio.addEventListener('ended', () => {
+        if (state.audioPlayer === audio) state.audioPlayer = null;
+      }, { once: true });
+      audio.play().catch(() => showToast('Tap the audio button again to play.'));
+    }
+
+    function openImageViewer() {
+      const card = currentCard();
+      $('#viewerImage').src = card.image;
+      $('#viewerLabel').textContent = card.word;
+      $('#viewerLabel').classList.toggle('hidden', !state.answerOpen);
+      $('#imageViewer').classList.add('open');
+    }
+
+    function openGenericSheet({ title, body = '', dynamic = '', actions = [] }) {
+      $('#sheetTitle').textContent = title;
+      $('#sheetBody').textContent = body;
+      $('#sheetBody').classList.toggle('hidden', !body);
+      $('#sheetDynamic').innerHTML = dynamic;
+      const actionBox = $('#sheetActions');
+      actionBox.innerHTML = '';
+      actions.forEach(({ label, type = 'secondary', onClick }) => {
+        const button = document.createElement('button');
+        button.className = type === 'primary' ? 'primary-btn' : type === 'danger' ? 'danger-btn' : 'secondary-btn';
+        button.textContent = label;
+        button.onclick = onClick;
+        actionBox.appendChild(button);
+      });
+      $('#genericSheet').classList.add('open');
+    }
+    function closeGenericSheet() { $('#genericSheet').classList.remove('open'); }
+
+    function renderProgress() {
+      const reviews = state.ratings.filter(item => item.rating === 'review');
+      $('#statLearned').textContent = 24 + state.ratings.length;
+      $('#statDue').textContent = Math.max(3, reviews.length);
+      const list = reviews.length ? reviews.slice(-3).reverse().map(item => cards[item.cardIndex % cards.length]) : [cards[3], cards[4], cards[8]];
+      $('#reviewList').innerHTML = list.map((card, i) => `<button class="review-item" data-review-index="${cards.indexOf(card)}"><img src="${card.image}" alt=""><span><strong lang="ko">${card.word}</strong><small>${card.meaning}</small></span><svg class="icon"><use href="#i-next"/></svg></button>`).join('');
+      $$('.review-item').forEach(item => item.addEventListener('click', () => openCardDetail(Number(item.dataset.reviewIndex))));
+    }
+
+    function openCardDetail(index) {
+      const card = cards[index];
+      openGenericSheet({
+        title: card.word,
+        body: card.meaning,
+        dynamic: `<img src="${card.image}" alt="${card.word}" style="width:100%;height:190px;object-fit:cover;border-radius:16px;margin-bottom:14px"><div class="street-note">${card.note}</div>`,
+        actions: [{ label:'Practice this sign', type:'primary', onClick:() => { closeGenericSheet(); state.index = index; state.answerOpen = false; showScreen('learn'); } }, { label:'Close', onClick:closeGenericSheet }]
+      });
+    }
+
+    function renderSettings() {
+      $('#lengthValue').textContent = `${state.sessionLength} signs`;
+      $('#reminderValue').textContent = state.reminder ? '7:00 PM' : 'Off';
+      setSwitch($('#romanizationSwitch'), state.romanization);
+      setSwitch($('#audioSwitch'), state.autoAudio);
+      setSwitch($('#motionSwitch'), state.reduceMotion);
+    }
+    function setSwitch(el, value) { el.classList.toggle('on', value); el.setAttribute('aria-checked', String(value)); }
+
+    function openSessionLength() {
+      const options = [5,10,20].map(length => `<button class="radio-option ${length === state.sessionLength ? 'selected' : ''}" data-length="${length}"><span><strong>${length} signs</strong><small>About ${length === 5 ? 2 : length === 10 ? 4 : 8} minutes</small></span><span class="dot"></span></button>`).join('');
+      openGenericSheet({ title:'Session length', body:'Choose a default. You can change this anytime.', dynamic:`<div class="radio-list">${options}</div>`, actions:[{ label:'Done', type:'primary', onClick:closeGenericSheet }] });
+      $$('[data-length]', $('#sheetDynamic')).forEach(option => option.addEventListener('click', () => { state.sessionLength = Number(option.dataset.length); openSessionLength(); renderSettings(); }));
+    }
+
+    function openReminder() {
+      openGenericSheet({
+        title:'Review reminder',
+        body:'We’ll only notify you when a review is ready.',
+        dynamic:`<div class="settings-list"><div class="setting-row"><span><strong>Remind me to review</strong><small>Every day at 7:00 PM</small></span><button class="switch ${state.reminder ? 'on' : ''}" id="sheetReminder" role="switch" aria-checked="${state.reminder}"></button></div></div>`,
+        actions:[{ label:'Done', type:'primary', onClick:closeGenericSheet }]
+      });
+      $('#sheetReminder').onclick = () => { state.reminder = !state.reminder; setSwitch($('#sheetReminder'), state.reminder); renderSettings(); showToast(state.reminder ? 'Reminder set for 7:00 PM' : 'Reminder turned off'); };
+    }
+
+    function openAccount() {
+      openGenericSheet({
+        title:"You're learning as a guest",
+        body:'Your progress is saved on this device. Connect an account to sync and restore it.',
+        dynamic:'<div class="street-note">✓ Progress stays on this device<br>✓ No email stored<br>✓ Connect anytime</div>',
+        actions:[{ label:'Connect account', type:'primary', onClick:() => { closeGenericSheet(); showToast('Account connection is simulated in this prototype.'); } }, { label:'Not now', onClick:closeGenericSheet }]
+      });
+    }
+
+    function openLeaveSheet() {
+      openGenericSheet({ title:'Leave this session?', body:`Your progress on ${state.index} completed ${state.index === 1 ? 'sign is' : 'signs are'} saved.`, actions:[{label:'Keep learning', type:'primary', onClick:closeGenericSheet},{label:'Leave for now', onClick:() => { state.resume = state.index > 0; closeGenericSheet(); showScreen('home'); }}] });
+    }
+
+    function openReport() { $('#reportSheet').classList.add('open'); }
+
+    // Direct navigation and onboarding
+    $$('[data-next]').forEach(el => el.addEventListener('click', () => showScreen(el.dataset.next)));
+    $$('[data-jump]').forEach(el => el.addEventListener('click', () => {
+      const target = el.dataset.jump;
+      if (target === 'learn') startSession(true); else showScreen(target);
+    }));
+    $('#tutorialReveal').addEventListener('click', () => { $('#tutorialPrompt').classList.add('hidden'); $('#tutorialAnswer').classList.remove('hidden'); });
+    $$('[data-tutorial-rate]').forEach(el => el.addEventListener('click', () => { $('#tutorialContinue').disabled = false; }));
+    $$('.choice-card').forEach(el => el.addEventListener('click', () => { $$('.choice-card').forEach(c => c.classList.remove('selected')); el.classList.add('selected'); state.level = el.dataset.value; $('#levelContinue').disabled = false; }));
+    $('#skipLevel').addEventListener('click', () => { state.level = 'beginner'; showScreen('interests'); });
+    $$('.interest-card').forEach(el => el.addEventListener('click', () => { el.classList.toggle('selected'); if (el.classList.contains('selected')) state.interests.add(el.dataset.interest); else state.interests.delete(el.dataset.interest); }));
+    $('#startLearning').addEventListener('click', () => { try { localStorage.setItem('signKoreanOnboarded','1'); } catch(e) {} showScreen('home'); });
+
+    // Home and main nav
+    $('#startSession').addEventListener('click', () => startSession(!state.resume));
+    $$('.category-tile').forEach(el => el.addEventListener('click', () => startSession(true, el.dataset.category)));
+    $('#showAllCategories').addEventListener('click', () => showToast('More category filters would open here.'));
+
+    // Learning actions
+    $('#revealAnswer').addEventListener('click', revealAnswer);
+    $('#playAudio').addEventListener('click', speakCurrent);
+    $('#zoomImage').addEventListener('click', openImageViewer);
+    $('#closeViewer').addEventListener('click', () => $('#imageViewer').classList.remove('open'));
+    $('#leaveSession').addEventListener('click', openLeaveSheet);
+    $('#moreCard').addEventListener('click', openReport);
+
+    // Swipe handling
+    let drag = null;
+    const learnCard = $('#learnCard');
+    $('#cardImage').addEventListener('load', () => positionFocusFrame(currentCard()));
+    window.addEventListener('resize', () => { if (state.screen === 'learn') positionFocusFrame(currentCard()); });
+    learnCard.addEventListener('pointerdown', event => {
+      if (event.target.closest('button')) return;
+      drag = { id:event.pointerId, startX:event.clientX, startY:event.clientY, dx:0, dy:0, axis:null };
+      learnCard.setPointerCapture(event.pointerId);
+      learnCard.classList.add('dragging');
+    });
+    learnCard.addEventListener('pointermove', event => {
+      if (!drag || drag.id !== event.pointerId) return;
+      const stageBounds = $('#learnStage').getBoundingClientRect();
+      const outsideDevice = event.clientX < stageBounds.left || event.clientX > stageBounds.right || event.clientY < stageBounds.top || event.clientY > stageBounds.bottom;
+      const boundedX = Math.max(stageBounds.left, Math.min(stageBounds.right, event.clientX));
+      const boundedY = Math.max(stageBounds.top, Math.min(stageBounds.bottom, event.clientY));
+      const rawDx = event.clientX - drag.startX;
+      const rawDy = event.clientY - drag.startY;
+      drag.dx = boundedX - drag.startX;
+      drag.dy = boundedY - drag.startY;
+      if (!drag.axis && Math.hypot(rawDx, rawDy) > 12) drag.axis = Math.abs(rawDx) > Math.abs(rawDy) * 1.2 ? 'x' : 'y';
+      if (drag.axis !== 'x') {
+        if (outsideDevice) {
+          if (learnCard.hasPointerCapture(event.pointerId)) learnCard.releasePointerCapture(event.pointerId);
+          endDrag(event);
+        }
+        return;
+      }
+      event.preventDefault();
+      const limited = state.answerOpen ? drag.dx : Math.max(-30, Math.min(30, drag.dx));
+      learnCard.style.transform = `translateX(${limited}px) rotate(${limited / 22}deg)`;
+      const strength = Math.min(1, Math.abs(limited) / 90);
+      $('#nextCardPreview').style.transform = `scale(${0.985 + strength * 0.015})`;
+      $('#nextCardPreview').style.filter = `brightness(${0.72 + strength * 0.28})`;
+      $('#reviewOverlay').style.opacity = limited > 0 ? strength : 0;
+      $('#gotOverlay').style.opacity = limited < 0 ? strength : 0;
+      if (outsideDevice) {
+        if (learnCard.hasPointerCapture(event.pointerId)) learnCard.releasePointerCapture(event.pointerId);
+        endDrag(event);
+      }
+    });
+    function endDrag(event) {
+      if (!drag || drag.id !== event.pointerId) return;
+      const dx = drag.dx; const horizontal = drag.axis === 'x'; drag = null;
+      learnCard.classList.remove('dragging');
+      if (!state.answerOpen && horizontal && Math.abs(dx) > 28) { resetCardTransform(); showToast('Check the answer first'); return; }
+      if (state.answerOpen && horizontal && Math.abs(dx) > 88) rateCard(dx < 0 ? 'got' : 'review');
+      else resetCardTransform();
+    }
+    learnCard.addEventListener('pointerup', endDrag);
+    learnCard.addEventListener('pointercancel', endDrag);
+
+    // Completion and progress
+    $('#backHome').addEventListener('click', () => { state.index = state.sessionLength; showScreen('home'); });
+    $('#seeReviewCards').addEventListener('click', () => showScreen('progress'));
+    $('#reviewAll').addEventListener('click', () => showToast('Showing all cards marked Review.'));
+
+    // Settings
+    $('#sessionLength').addEventListener('click', openSessionLength);
+    $('#reminderSetting').addEventListener('click', openReminder);
+    $('#accountSetting').addEventListener('click', openAccount);
+    $('#romanizationSwitch').addEventListener('click', () => { state.romanization = !state.romanization; renderSettings(); showToast(state.romanization ? 'Romanization turned on' : 'Romanization turned off'); });
+    $('#audioSwitch').addEventListener('click', () => { state.autoAudio = !state.autoAudio; renderSettings(); });
+    $('#motionSwitch').addEventListener('click', () => { state.reduceMotion = !state.reduceMotion; renderSettings(); });
+    $$('[data-toast]').forEach(el => el.addEventListener('click', () => showToast(el.dataset.toast)));
+
+    // Sheets and report
+    $('#genericSheet').addEventListener('click', event => { if (event.target === $('#genericSheet')) closeGenericSheet(); });
+    $('#reportSheet').addEventListener('click', event => { if (event.target === $('#reportSheet')) $('#reportSheet').classList.remove('open'); });
+    $$('[data-close]').forEach(el => el.addEventListener('click', () => $('#' + el.dataset.close).classList.remove('open')));
+    $$('input[name="report"]').forEach(input => input.addEventListener('change', () => $('#sendReport').disabled = false));
+    $('#reportForm').addEventListener('submit', event => { event.preventDefault(); $('#reportSheet').classList.remove('open'); event.currentTarget.reset(); $('#sendReport').disabled = true; showToast("Thanks. We'll review this card."); });
+
+    $('#resetPrototype').addEventListener('click', () => {
+      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:10, romanization:false, autoAudio:false, reduceMotion:false, reminder:false, resume:false });
+      state.interests = new Set();
+      $$('.selected').forEach(el => el.classList.remove('selected'));
+      $('#levelContinue').disabled = true;
+      $('#tutorialContinue').disabled = true;
+      $('#tutorialPrompt').classList.remove('hidden'); $('#tutorialAnswer').classList.add('hidden');
+      try { localStorage.removeItem('signKoreanOnboarded'); } catch(e) {}
+      showScreen('welcome');
+    });
+
+    document.addEventListener('keydown', event => {
+      if (state.screen !== 'learn') return;
+      if (event.key === 'Escape') openLeaveSheet();
+      if (!state.answerOpen) return;
+      if (event.key === 'ArrowLeft') rateCard('got');
+      if (event.key === 'ArrowRight') rateCard('review');
+    });
+
+    renderProgress();
+    renderSettings();
+  </script>
+</body>
+</html>
