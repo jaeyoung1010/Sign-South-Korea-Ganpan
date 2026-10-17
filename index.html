@@ -1691,7 +1691,7 @@
     $('#reportForm').addEventListener('submit', event => { event.preventDefault(); $('#reportSheet').classList.remove('open'); event.currentTarget.reset(); $('#sendReport').disabled = true; showToast("Thanks. We'll review this card."); });
 
     $('#resetPrototype').addEventListener('click', () => {
-      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:10, romanization:false, autoAudio:false, audioVoice:'typecast', reduceMotion:false, reminder:false, resume:false });
+      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:20, romanization:false, autoAudio:false, audioVoice:'typecast', reduceMotion:false, reminder:false, resume:false });
       state.interests = new Set();
       $$('.selected').forEach(el => el.classList.remove('selected'));
       $('#levelContinue').disabled = true;
