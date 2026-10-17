@@ -17,11 +17,13 @@ if (missingDetails.length) throw new Error(`Missing detail sections: ${missingDe
 if (unlistedDetails.length) throw new Error(`Unlisted detail sections: ${unlistedDetails.join(', ')}`);
 
 const requiredStatements = [
-  '간판 이미지는 학습 화면 전체를 덮는 방식으로 표시한다.',
-  '왼쪽은 `Review`, 오른쪽은 `Got it`으로 고정한다.',
+  '간판 이미지는 학습 카드의 가로 폭을 채우며 원본의 핵심 글자를 자르지 않는다.',
+  '왼쪽 스와이프는 Got it, 오른쪽 스와이프는 Review다.',
   '정답 확인 이후에만 판정이 가능하다.',
   '카드는 기기 프레임 밖의 포인터를 계속 따라가지 않는다.',
-  '스와이프가 필요한 모든 기능에는 직접 실행 가능한 대체 조작이 있어야 한다.'
+  '정답 상태에 Got it·Review 화면 버튼을 제공하지 않는다.',
+  '보이는 판정 버튼 대신 TalkBack 사용자 지정 액션과 물리 키보드 화살표를 접근성 대체 조작으로 제공한다.',
+  'Typecast 은경과 Gemini Flash Kore를 설정에서 선택한다.'
 ];
 
 for (const statement of requiredStatements) {

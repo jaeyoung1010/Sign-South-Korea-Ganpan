@@ -20,6 +20,7 @@ requireAbsent('removed rating buttons have no event listeners', /\$\(['"]#(?:rev
 requireAbsent('prototype tip does not promise removed buttons', /buttons offer the same actions/i);
 requireMatch('answer gives both swipe directions', /<span>←\s*Got it\s*·\s*Review\s*→<\/span>/i);
 requireMatch('prototype tip teaches both swipe outcomes', /Tip:[^<]*left[^<]*Got it[^<]*right[^<]*Review/i);
+requireMatch('tutorial teaches Got it on the left and Review on the right', /tutorial-directions[\s\S]*?←\s*Got it[\s\S]*?Review\s*→/i);
 requireMatch('left swipe rates Got it and right swipe rates Review', /rateCard\(dx\s*<\s*0\s*\?\s*['"]got['"]\s*:\s*['"]review['"]\)/);
 requireMatch('left keyboard arrow rates Got it', /event\.key\s*===\s*['"]ArrowLeft['"]\)\s*rateCard\(['"]got['"]\)/);
 requireMatch('right keyboard arrow rates Review', /event\.key\s*===\s*['"]ArrowRight['"]\)\s*rateCard\(['"]review['"]\)/);
