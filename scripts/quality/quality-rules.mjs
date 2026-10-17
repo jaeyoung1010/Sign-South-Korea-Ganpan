@@ -103,4 +103,3 @@ export function findLikelySecrets(text) {
 
   return findings;
 }
-
