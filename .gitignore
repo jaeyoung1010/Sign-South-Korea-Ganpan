@@ -1,7 +1,27 @@
-# Local secrets
+# Android and Gradle
+.gradle/
+**/build/
+local.properties
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing and secrets
+*.jks
+*.keystore
+keystore.properties
 .env
 .env.*
 !.env.example
+
+# Operating system
+.DS_Store
+
+# Tool output
+lint-results*.xml
+detekt*.xml
 
 # Generated temporary files
 assets/audio/**/*.tmp
