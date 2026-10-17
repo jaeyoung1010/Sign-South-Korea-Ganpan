@@ -1221,6 +1221,7 @@
               <button class="setting-row" id="sessionLength"><span><strong>Session length</strong><small>Choose 5, 10, or 20 signs</small></span><span class="setting-value"><span id="lengthValue">20 signs</span><svg class="icon"><use href="#i-next"/></svg></span></button>
               <div class="setting-row"><span><strong>Show romanization</strong><small>Display pronunciation in Latin letters</small></span><button class="switch" id="romanizationSwitch" role="switch" aria-checked="false" aria-label="Show romanization"></button></div>
               <div class="setting-row"><span><strong>Auto-play audio</strong><small>Play after showing the answer</small></span><button class="switch" id="audioSwitch" role="switch" aria-checked="false" aria-label="Auto-play audio"></button></div>
+              <button class="setting-row" id="voiceSetting"><span><strong>Pronunciation voice</strong><small>Choose a downloaded voice set</small></span><span class="setting-value"><span id="voiceValue">Typecast · 은경</span><svg class="icon"><use href="#i-next"/></svg></span></button>
             </div>
             <p class="settings-section-label">Reminders</p>
             <div class="settings-list"><button class="setting-row" id="reminderSetting"><span><strong>Review reminder</strong><small>Only when signs are ready</small></span><span class="setting-value"><span id="reminderValue">Off</span><svg class="icon"><use href="#i-next"/></svg></span></button></div>
@@ -1289,6 +1290,10 @@
       sessionLength: 20,
       romanization: false,
       autoAudio: false,
+      audioVoice: (() => {
+        try { return localStorage.getItem('signKoreanAudioVoice') === 'gemini' ? 'gemini' : 'typecast'; }
+        catch (error) { return 'typecast'; }
+      })(),
       reduceMotion: false,
       reminder: false,
       audioPlayer: null,
@@ -1462,11 +1467,17 @@
         state.audioPlayer.pause();
         state.audioPlayer.currentTime = 0;
       }
-      const audio = new Audio(currentCard().audio);
+      const card = currentCard();
+      const isGemini = state.audioVoice === 'gemini';
+      const audioSource = isGemini
+        ? card.audio.replace('assets/audio/eunkyung/', 'assets/audio/gemini/').replace(/\.mp3$/, '.wav')
+        : card.audio;
+      const providerName = isGemini ? 'Gemini Flash TTS' : 'Typecast';
+      const audio = new Audio(audioSource);
       state.audioPlayer = audio;
       audio.addEventListener('error', () => {
         if (state.audioPlayer === audio) state.audioPlayer = null;
-        showToast('Typecast audio has not been generated yet.');
+        showToast(`${providerName} audio has not been generated yet.`);
       }, { once: true });
       audio.addEventListener('ended', () => {
         if (state.audioPlayer === audio) state.audioPlayer = null;
@@ -1522,6 +1533,7 @@
     function renderSettings() {
       $('#lengthValue').textContent = `${state.sessionLength} signs`;
       $('#reminderValue').textContent = state.reminder ? '7:00 PM' : 'Off';
+      $('#voiceValue').textContent = state.audioVoice === 'gemini' ? 'Gemini Flash · Kore' : 'Typecast · 은경';
       setSwitch($('#romanizationSwitch'), state.romanization);
       setSwitch($('#audioSwitch'), state.autoAudio);
       setSwitch($('#motionSwitch'), state.reduceMotion);
@@ -1532,6 +1544,23 @@
       const options = [5,10,20].map(length => `<button class="radio-option ${length === state.sessionLength ? 'selected' : ''}" data-length="${length}"><span><strong>${length} signs</strong><small>About ${length === 5 ? 2 : length === 10 ? 4 : 8} minutes</small></span><span class="dot"></span></button>`).join('');
       openGenericSheet({ title:'Session length', body:'Choose a default. You can change this anytime.', dynamic:`<div class="radio-list">${options}</div>`, actions:[{ label:'Done', type:'primary', onClick:closeGenericSheet }] });
       $$('[data-length]', $('#sheetDynamic')).forEach(option => option.addEventListener('click', () => { state.sessionLength = Number(option.dataset.length); openSessionLength(); renderSettings(); }));
+    }
+
+    function openVoiceSetting() {
+      const voices = [
+        { id:'typecast', name:'Typecast · 은경', note:'Existing downloaded MP3 pronunciation set' },
+        { id:'gemini', name:'Gemini Flash · Kore', note:'Downloaded WAV files generated with Gemini TTS' }
+      ];
+      const options = voices.map(voice => `<button class="radio-option ${voice.id === state.audioVoice ? 'selected' : ''}" data-voice="${voice.id}"><span><strong>${voice.name}</strong><small>${voice.note}</small></span><span class="dot"></span></button>`).join('');
+      openGenericSheet({ title:'Pronunciation voice', body:'Audio is generated in advance and stored in the app. No live streaming is used.', dynamic:`<div class="radio-list">${options}</div>`, actions:[{ label:'Done', type:'primary', onClick:closeGenericSheet }] });
+      $$('[data-voice]', $('#sheetDynamic')).forEach(option => option.addEventListener('click', () => {
+        state.audioVoice = option.dataset.voice;
+        if (state.audioPlayer) { state.audioPlayer.pause(); state.audioPlayer = null; }
+        try { localStorage.setItem('signKoreanAudioVoice', state.audioVoice); } catch (error) {}
+        closeGenericSheet();
+        renderSettings();
+        showToast(state.audioVoice === 'gemini' ? 'Gemini Flash voice selected' : 'Typecast voice selected');
+      }));
     }
 
     function openReminder() {
@@ -1646,6 +1675,7 @@
 
     // Settings
     $('#sessionLength').addEventListener('click', openSessionLength);
+    $('#voiceSetting').addEventListener('click', openVoiceSetting);
     $('#reminderSetting').addEventListener('click', openReminder);
     $('#accountSetting').addEventListener('click', openAccount);
     $('#romanizationSwitch').addEventListener('click', () => { state.romanization = !state.romanization; renderSettings(); showToast(state.romanization ? 'Romanization turned on' : 'Romanization turned off'); });
@@ -1661,13 +1691,13 @@
     $('#reportForm').addEventListener('submit', event => { event.preventDefault(); $('#reportSheet').classList.remove('open'); event.currentTarget.reset(); $('#sendReport').disabled = true; showToast("Thanks. We'll review this card."); });
 
     $('#resetPrototype').addEventListener('click', () => {
-      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:10, romanization:false, autoAudio:false, reduceMotion:false, reminder:false, resume:false });
+      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:10, romanization:false, autoAudio:false, audioVoice:'typecast', reduceMotion:false, reminder:false, resume:false });
       state.interests = new Set();
       $$('.selected').forEach(el => el.classList.remove('selected'));
       $('#levelContinue').disabled = true;
       $('#tutorialContinue').disabled = true;
       $('#tutorialPrompt').classList.remove('hidden'); $('#tutorialAnswer').classList.add('hidden');
-      try { localStorage.removeItem('signKoreanOnboarded'); } catch(e) {}
+      try { localStorage.removeItem('signKoreanOnboarded'); localStorage.removeItem('signKoreanAudioVoice'); } catch(e) {}
       showScreen('welcome');
     });
 

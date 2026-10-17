@@ -1,0 +1,117 @@
+{
+  "provider": "Google Gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "style": "clear and natural Korean pronunciation at a calm learning pace",
+  "language": "Korean (auto-detected)",
+  "generated_at": "2026-10-17T08:06:24.182Z",
+  "output": {
+    "audio_format": "wav",
+    "mime_type": "audio/wav",
+    "sample_rate": 24000,
+    "channels": 1,
+    "bit_depth": 16
+  },
+  "files": [
+    {
+      "file": "01-hongdae-entrance.wav",
+      "text": "홍대입구",
+      "bytes": 111712
+    },
+    {
+      "file": "02-gyeongbokgung.wav",
+      "text": "경복궁",
+      "bytes": 96352
+    },
+    {
+      "file": "03-bukchon-hanok-village.wav",
+      "text": "북촌한옥마을",
+      "bytes": 165472
+    },
+    {
+      "file": "04-namsan-seoul-tower.wav",
+      "text": "남산서울타워",
+      "bytes": 130912
+    },
+    {
+      "file": "05-myeongdong.wav",
+      "text": "명동",
+      "bytes": 69472
+    },
+    {
+      "file": "06-gwangjang-market.wav",
+      "text": "광장시장",
+      "bytes": 119392
+    },
+    {
+      "file": "07-namdaemun-market.wav",
+      "text": "남대문시장",
+      "bytes": 121312
+    },
+    {
+      "file": "08-itaewon.wav",
+      "text": "이태원",
+      "bytes": 88672
+    },
+    {
+      "file": "09-hangang-park.wav",
+      "text": "한강공원",
+      "bytes": 100192
+    },
+    {
+      "file": "10-seongsu-dong.wav",
+      "text": "성수동",
+      "bytes": 86752
+    },
+    {
+      "file": "11-insadong.wav",
+      "text": "인사동",
+      "bytes": 142432
+    },
+    {
+      "file": "12-ikseon-dong.wav",
+      "text": "익선동",
+      "bytes": 102112
+    },
+    {
+      "file": "13-dongdaemun-design-plaza.wav",
+      "text": "동대문디자인플라자",
+      "bytes": 182754
+    },
+    {
+      "file": "14-haeundae.wav",
+      "text": "해운대",
+      "bytes": 86754
+    },
+    {
+      "file": "15-gamcheon-culture-village.wav",
+      "text": "감천문화마을",
+      "bytes": 152034
+    },
+    {
+      "file": "16-jeonju-hanok-village.wav",
+      "text": "전주한옥마을",
+      "bytes": 167394
+    },
+    {
+      "file": "17-jeju-olle-trail.wav",
+      "text": "제주올레길",
+      "bytes": 128994
+    },
+    {
+      "file": "18-bulguksa.wav",
+      "text": "불국사",
+      "bytes": 100194
+    },
+    {
+      "file": "19-busan-station.wav",
+      "text": "부산역",
+      "bytes": 80994
+    },
+    {
+      "file": "20-seoul-station.wav",
+      "text": "서울역",
+      "bytes": 86754
+    }
+  ]
+}
