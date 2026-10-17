@@ -1,6 +1,19 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
-import { findDynamicVersions, findLikelySecrets } from './quality-rules.mjs';
+import { collectTextFiles, findDynamicVersions, findLikelySecrets } from './quality-rules.mjs';
+
+test('dotenv variants are included in credential scans', (context) => {
+  const fixtureDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'sign-korean-quality-'));
+  context.after(() => fs.rmSync(fixtureDirectory, { recursive: true, force: true }));
+
+  const dotenvVariant = path.join(fixtureDirectory, '.env.production');
+  fs.writeFileSync(dotenvVariant, 'API_KEY=replace_with_your_key\n');
+
+  assert.deepEqual(collectTextFiles(fixtureDirectory), [dotenvVariant]);
+});
 
 test('fixed dependency versions pass', () => {
   assert.deepEqual(findDynamicVersions('agp = "9.4.0"'), []);
@@ -25,4 +38,3 @@ test('provider-shaped tokens fail without embedding a usable token', () => {
   const syntheticToken = `sk-${'x'.repeat(24)}`;
   assert.equal(findLikelySecrets(syntheticToken).length, 1);
 });
-

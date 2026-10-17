@@ -48,7 +48,12 @@ export function collectTextFiles(rootDirectory) {
       const absolutePath = path.join(directory, entry.name);
       if (entry.isDirectory()) {
         visit(absolutePath);
-      } else if (entry.isFile() && textExtensions.has(path.extname(entry.name))) {
+      } else if (
+        entry.isFile() &&
+        (entry.name === '.env' ||
+          entry.name.startsWith('.env.') ||
+          textExtensions.has(path.extname(entry.name)))
+      ) {
         files.push(absolutePath);
       }
     }
@@ -68,7 +73,6 @@ export function findDynamicVersions(text) {
   });
   return findings;
 }
-
 function isPlaceholder(value) {
   const normalized = value.toLowerCase();
   return placeholderFragments.some((fragment) => normalized.includes(fragment));

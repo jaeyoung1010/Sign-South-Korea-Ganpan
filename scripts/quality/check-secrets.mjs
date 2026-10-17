@@ -20,4 +20,3 @@ if (findings.length > 0) {
 }
 
 console.log(`Secret scan passed (${candidates.length} text files).`);
-

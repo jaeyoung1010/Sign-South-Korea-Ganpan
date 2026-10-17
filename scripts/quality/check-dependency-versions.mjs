@@ -22,4 +22,3 @@ if (findings.length > 0) {
 }
 
 console.log(`Dependency version validation passed (${candidates.length} files).`);
-

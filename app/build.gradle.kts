@@ -4,16 +4,22 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+val minimumSdk =
+    libs.versions.min.sdk
+        .get()
+        .toInt()
+
 android {
     namespace = "com.signkorean.app"
     compileSdk = 37
 
     defaultConfig {
         applicationId = "com.signkorean.app"
-        minSdk = 26
+        minSdk = minimumSdk
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
+        buildConfigField("int", "MIN_SUPPORTED_API", minimumSdk.toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -33,6 +39,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
