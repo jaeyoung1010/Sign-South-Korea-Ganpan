@@ -1,9 +1,13 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 abstract class VerifyModuleBoundaries : DefaultTask() {
@@ -30,6 +34,23 @@ abstract class VerifyModuleBoundaries : DefaultTask() {
 
         check(violations.isEmpty()) {
             "Module boundary violations:\n${violations.joinToString(separator = "\n")}"
+        }
+    }
+}
+
+abstract class VerifyReleaseQaExclusion : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val mergedReleaseManifest: RegularFileProperty
+
+    @TaskAction
+    fun verify() {
+        val manifest = mergedReleaseManifest.get().asFile.readText()
+        val forbiddenComponents = listOf("DebugQaActivity", "DebugResetReceiver")
+        val includedComponents = forbiddenComponents.filter(manifest::contains)
+
+        check(includedComponents.isEmpty()) {
+            "Release manifest must exclude debug QA components: ${includedComponents.joinToString()}"
         }
     }
 }
@@ -105,8 +126,20 @@ tasks.register("qualityGate") {
     )
 }
 
+val verifyReleaseQaExclusion =
+    tasks.register<VerifyReleaseQaExclusion>("verifyReleaseQaExclusion") {
+        group = "verification"
+        description = "Verifies that debug-only QA components are absent from the release manifest."
+        dependsOn(":app:processReleaseManifest")
+        mergedReleaseManifest.set(
+            layout.projectDirectory.file(
+                "app/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml",
+            ),
+        )
+    }
+
 tasks.named("check") {
-    dependsOn(qualityToolTests, validateDependencyVersions, secretScan, tasks.named("spotlessCheck"))
+    dependsOn(qualityToolTests, validateDependencyVersions, secretScan, tasks.named("spotlessCheck"), verifyReleaseQaExclusion)
 }
 
 val allowedDependenciesByModule =
@@ -160,7 +193,7 @@ gradle.projectsEvaluated {
         }
 
     tasks.named("qualityGate") {
-        dependsOn(verifyModuleBoundaries)
+        dependsOn(verifyModuleBoundaries, verifyReleaseQaExclusion)
     }
     tasks.named("check") {
         dependsOn(verifyModuleBoundaries)

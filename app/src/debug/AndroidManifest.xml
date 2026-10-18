@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name=".qa.DebugQaActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="debug"
+                    android:path="/qa"
+                    android:scheme="signkorean" />
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name=".qa.DebugResetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.signkorean.app.action.DEBUG_RESET" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
