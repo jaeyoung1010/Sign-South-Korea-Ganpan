@@ -72,6 +72,14 @@ class TestSupportToolsTest {
     }
 
     @Test
+    fun `temporary database helper cleanup is idempotent`() {
+        val database = TemporaryDatabase.create()
+
+        database.close()
+        database.close()
+    }
+
+    @Test
     fun `main dispatcher rule runs queued main work deterministically`() =
         runTest {
             var completed = false
