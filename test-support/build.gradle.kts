@@ -8,4 +8,6 @@ kotlin {
 
 dependencies {
     api(project(":domain"))
+    api(libs.junit4)
+    api(libs.kotlinx.coroutines.test)
 }

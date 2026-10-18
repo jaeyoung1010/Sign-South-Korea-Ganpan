@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.hilt.android)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(project(":data"))
     implementation(project(":designsystem"))
     implementation(project(":domain"))

@@ -99,6 +99,8 @@ tasks.register("qualityGate") {
         ":app:testDebugUnitTest",
         ":domain:test",
         ":data:testDebugUnitTest",
+        ":designsystem:testDebugUnitTest",
+        ":test-support:test",
         ":app:assembleDebug",
     )
 }

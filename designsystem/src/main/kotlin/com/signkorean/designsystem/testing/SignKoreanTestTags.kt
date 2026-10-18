@@ -1,0 +1,15 @@
+package com.signkorean.designsystem.testing
+
+object SignKoreanTestTags {
+    const val LEARN_CARD_STACK = "learn.card.stack"
+    const val LEARN_ACTIVE_CARD = "learn.card.active"
+    const val LEARN_REVEAL_ANSWER = "learn.answer.reveal"
+    const val LEARN_PLAY_AUDIO = "learn.audio.play"
+    const val LEARN_ZOOM_IMAGE = "learn.image.zoom"
+    const val LEARN_CLOSE_SESSION = "learn.session.close"
+    const val GLOBAL_FEEDBACK = "global.feedback"
+    const val LEARN_UNDO_RATING = "learn.rating.undo"
+    const val SETTINGS_VOICE = "settings.voice"
+
+    fun learnCard(cardId: String): String = "learn.card.$cardId"
+}
