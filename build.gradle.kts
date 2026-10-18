@@ -133,14 +133,14 @@ val allowedDependenciesByModule =
     )
 
 gradle.projectsEvaluated {
-    val mainConfigurations = setOf("api", "implementation", "compileOnly")
     val declaredDependencies: Map<String, Set<String>> =
         subprojects.associate { subproject: Project ->
             val dependencies: Set<String> =
                 buildSet {
                     subproject.configurations
-                        .filter { configuration -> configuration.name in mainConfigurations }
-                        .forEach { configuration ->
+                        .filterNot { configuration ->
+                            configuration.name.contains("test", ignoreCase = true)
+                        }.forEach { configuration ->
                             configuration.dependencies.forEach { dependency ->
                                 if (dependency is ProjectDependency) add(dependency.path)
                             }
