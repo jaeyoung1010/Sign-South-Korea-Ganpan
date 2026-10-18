@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val minimumSdk =
@@ -77,6 +78,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.hilt.android)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.kotlinx.serialization.core)
     implementation(project(":data"))
     implementation(project(":designsystem"))
     implementation(project(":domain"))

@@ -1,6 +1,7 @@
 package com.signkorean.app.qa
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.edit
+import com.signkorean.app.MainActivity
+import com.signkorean.app.navigation.AppNavigationIntent
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
@@ -60,6 +63,10 @@ class DebugQaActivity : ComponentActivity() {
                                     onClick = {
                                         selectedScreen = screen
                                         DebugQaPreferences.write(this@DebugQaActivity, screen)
+                                        startActivity(
+                                            Intent(this@DebugQaActivity, MainActivity::class.java)
+                                                .putExtra(AppNavigationIntent.EXTRA_DEBUG_SCREEN, screen),
+                                        )
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                     style = GameButtonStyle.Secondary,
@@ -82,18 +89,7 @@ class DebugQaActivity : ComponentActivity() {
 }
 
 internal object DebugQaScreens {
-    val all =
-        listOf(
-            "screen-welcome",
-            "screen-tutorial",
-            "screen-level",
-            "screen-interests",
-            "screen-home",
-            "screen-learn",
-            "screen-done",
-            "screen-progress",
-            "screen-settings",
-        )
+    val all: List<String> = AppNavigationIntent.prototypeScreenIds
 
     fun first(): String = all.first()
 }
