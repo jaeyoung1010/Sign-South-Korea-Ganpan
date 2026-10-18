@@ -1,5 +1,6 @@
 package com.signkorean.data.asset
 
+import com.signkorean.domain.model.BundleValidationReport
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LocalizedCardCopy
 import com.signkorean.domain.model.LocalizedWordPart
@@ -18,9 +19,32 @@ class BundleContentAdapter(
 
     override fun getCards(): List<SignCard> = validatedBundle.cards
 
+    override fun getCard(cardId: String): SignCard? = validatedBundle.cards.firstOrNull { it.id == cardId }
+
     override fun getLocalizedCopy(languageTag: String): List<LocalizedCardCopy> =
         validatedBundle.localizedCards[languageTag]
             ?: throw BundleValidationException("Unsupported bundled language: $languageTag")
+
+    override fun validateBundle(): BundleValidationReport =
+        BundleValidationReport(
+            cardCount = validatedBundle.cards.size,
+            imageCount =
+                validatedBundle.cards
+                    .map(SignCard::imageAssetUri)
+                    .distinct()
+                    .size,
+            typecastAudioCount =
+                validatedBundle.cards
+                    .map { it.audioAssetUris.getValue(VoiceId.TYPECAST_EUNKYUNG) }
+                    .distinct()
+                    .size,
+            geminiAudioCount =
+                validatedBundle.cards
+                    .map { it.audioAssetUris.getValue(VoiceId.GEMINI_KORE) }
+                    .distinct()
+                    .size,
+            languages = validatedBundle.localizedCards.keys,
+        )
 
     private fun validateAndLoad(): ValidatedBundle {
         val manifestText = assetSource.readText(MANIFEST_PATH)
@@ -28,6 +52,7 @@ class BundleContentAdapter(
         requireValidation(manifest.contentVersion > 0) { "contentVersion must be positive" }
         requireValidation(manifest.cardCount == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT cards" }
         requireValidation(manifest.languages.toSet() == REQUIRED_LANGUAGE_TAGS) { "supported languages must be en and ja" }
+        requireValidation(manifest.languages.distinct().size == manifest.languages.size) { "duplicate language in manifest" }
         requireValidation(manifest.checksums.keys == REQUIRED_CONTENT_PATHS) { "manifest must checksum every content file" }
 
         val contentTexts = REQUIRED_CONTENT_PATHS.associateWith(assetSource::readText)
@@ -42,7 +67,12 @@ class BundleContentAdapter(
                 val path = localizedPath(languageTag)
                 decode<List<LocalizedCardCopyJson>>(contentTexts.getValue(path), path)
                     .also {
-                        validateLocalizedCards(it, languageTag, baseCards.map(BaseCardJson::id).toSet(), manifest.contentVersion)
+                        validateLocalizedCards(
+                            copies = it,
+                            languageTag = languageTag,
+                            cardsById = baseCards.associateBy(BaseCardJson::id),
+                            contentVersion = manifest.contentVersion,
+                        )
                     }.map(LocalizedCardCopyJson::toDomain)
             }
         return ValidatedBundle(baseCards.map(BaseCardJson::toDomain), localizedCards)
@@ -75,11 +105,11 @@ class BundleContentAdapter(
     private fun validateLocalizedCards(
         copies: List<LocalizedCardCopyJson>,
         languageTag: String,
-        cardIds: Set<String>,
+        cardsById: Map<String, BaseCardJson>,
         contentVersion: Int,
     ) {
         requireValidation(copies.size == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT $languageTag localized cards" }
-        requireValidation(copies.map(LocalizedCardCopyJson::cardId).toSet() == cardIds) {
+        requireValidation(copies.map(LocalizedCardCopyJson::cardId).toSet() == cardsById.keys) {
             "$languageTag localized card IDs do not match base cards"
         }
         requireValidation(copies.map(LocalizedCardCopyJson::cardId).distinct().size == copies.size) { "duplicate localized card id" }
@@ -96,6 +126,9 @@ class BundleContentAdapter(
             requireValidation(
                 copy.imageAltTextQuestion.isNotBlank() && copy.imageAltTextAnswer.isNotBlank(),
             ) { "alt text missing for ${copy.cardId}" }
+            requireValidation(!copy.imageAltTextQuestion.contains(cardsById.getValue(copy.cardId).korean)) {
+                "question alt text reveals the answer for ${copy.cardId}"
+            }
         }
     }
 

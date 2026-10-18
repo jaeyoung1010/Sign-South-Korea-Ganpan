@@ -40,3 +40,11 @@ data class LocalizedCardCopy(
     val searchTerms: List<String>,
     val contentVersion: Int,
 )
+
+data class BundleValidationReport(
+    val cardCount: Int,
+    val imageCount: Int,
+    val typecastAudioCount: Int,
+    val geminiAudioCount: Int,
+    val languages: Set<String>,
+)

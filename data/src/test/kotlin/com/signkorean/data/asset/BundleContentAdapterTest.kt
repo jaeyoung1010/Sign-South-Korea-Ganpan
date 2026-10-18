@@ -11,8 +11,14 @@ class BundleContentAdapterTest {
         val adapter = BundleContentAdapter(ClasspathAssetSource())
 
         val cards = adapter.getCards()
+        val report = adapter.validateBundle()
 
-        assertEquals(20, cards.size)
+        assertEquals(20, report.cardCount)
+        assertEquals(20, report.imageCount)
+        assertEquals(20, report.typecastAudioCount)
+        assertEquals(20, report.geminiAudioCount)
+        assertEquals(setOf("en", "ja"), report.languages)
+        assertEquals(report.cardCount, cards.size)
         assertEquals((1..20).toList(), cards.map { it.order })
         assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
         assertEquals(20, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
@@ -66,6 +72,27 @@ class BundleContentAdapterTest {
     }
 
     @Test
+    fun `rejects question alt text that reveals the answer`() {
+        val assets = validAssets().toMutableMap()
+        assets[EN_CARDS_PATH] =
+            assets.getValue(EN_CARDS_PATH).replaceFirst(
+                "A Korean street sign with its text highlighted.",
+                "A sign reading 홍대입구.",
+            )
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "reveals the answer")
+    }
+
+    @Test
+    fun `rejects a manifest with a duplicate language`() {
+        val assets = validAssets().toMutableMap()
+        assets[MANIFEST_PATH] = assets.getValue(MANIFEST_PATH).replaceFirst("[\"en\", \"ja\"]", "[\"en\", \"ja\", \"en\"]")
+
+        assertFailsValidation(assets, "duplicate language")
+    }
+
+    @Test
     fun `rejects a missing audio asset`() {
         val assets = validAssets().toMutableMap()
         assets.remove("audio/gemini/20-seoul-station.wav")
@@ -81,8 +108,8 @@ class BundleContentAdapterTest {
                 .getValue(
                     MANIFEST_PATH,
                 ).replaceFirst(
-                    "fc2d88088a501237bdfffb69d9e64b4974375df077ac37775a294156eb4fb326",
-                    "0000000000000000000000000000000000000000000000000000000000000000",
+                    "\"content/cards.base.json\": \"[0-9a-f]{64}\"".toRegex(),
+                    "\"content/cards.base.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
                 )
 
         assertFailsValidation(assets, "checksum")
