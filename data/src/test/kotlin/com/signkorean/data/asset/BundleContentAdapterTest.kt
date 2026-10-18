@@ -1,0 +1,100 @@
+package com.signkorean.data.asset
+
+import com.signkorean.domain.model.VoiceId
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class BundleContentAdapterTest {
+    @Test
+    fun `release bundle validates 20 cards 20 images 20 Typecast files and 20 Gemini files`() {
+        val adapter = BundleContentAdapter(ClasspathAssetSource())
+
+        val cards = adapter.getCards()
+
+        assertEquals(20, cards.size)
+        assertEquals((1..20).toList(), cards.map { it.order })
+        assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
+        assertEquals(20, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
+        assertEquals(20, cards.count { VoiceId.GEMINI_KORE in it.audioAssetUris })
+        assertTrue(cards.all { it.audioAssetUris.values.all { uri -> uri.startsWith("file:///android_asset/") } })
+    }
+
+    @Test
+    fun `loads a complete localized copy for English and Japanese`() {
+        val adapter = BundleContentAdapter(ClasspathAssetSource())
+        val cardIds = adapter.getCards().map { it.id }.toSet()
+
+        assertEquals(cardIds, adapter.getLocalizedCopy("en").map { it.cardId }.toSet())
+        assertEquals(cardIds, adapter.getLocalizedCopy("ja").map { it.cardId }.toSet())
+        assertTrue(adapter.getLocalizedCopy("en").all { it.wordParts.isNotEmpty() })
+        assertTrue(adapter.getLocalizedCopy("ja").all { it.wordParts.isNotEmpty() })
+    }
+
+    @Test
+    fun `rejects duplicate card IDs`() {
+        val assets = validAssets().toMutableMap()
+        assets[BASE_CARDS_PATH] = assets.getValue(BASE_CARDS_PATH).replaceFirst("02-gyeongbokgung", "01-hongdae-entrance")
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "duplicate card id")
+    }
+
+    @Test
+    fun `rejects an out of bounds focus rectangle`() {
+        val assets = validAssets().toMutableMap()
+        assets[BASE_CARDS_PATH] = assets.getValue(BASE_CARDS_PATH).replaceFirst("\"x\":40", "\"x\":101")
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "focus")
+    }
+
+    @Test
+    fun `rejects a locale card without word parts`() {
+        val assets = validAssets().toMutableMap()
+        assets[EN_CARDS_PATH] =
+            assets
+                .getValue(
+                    EN_CARDS_PATH,
+                ).replaceFirst(
+                    "\"wordParts\":[{\"korean\":\"홍대\",\"meaning\":\"Hongik University · Hongdae\"},{\"korean\":\"입구\",\"meaning\":\"entrance\"}]",
+                    "\"wordParts\":[]",
+                )
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "wordParts")
+    }
+
+    @Test
+    fun `rejects a missing audio asset`() {
+        val assets = validAssets().toMutableMap()
+        assets.remove("audio/gemini/20-seoul-station.wav")
+
+        assertFailsValidation(assets, "missing asset")
+    }
+
+    @Test
+    fun `rejects a manifest checksum mismatch`() {
+        val assets = validAssets().toMutableMap()
+        assets[MANIFEST_PATH] =
+            assets
+                .getValue(
+                    MANIFEST_PATH,
+                ).replaceFirst(
+                    "fc2d88088a501237bdfffb69d9e64b4974375df077ac37775a294156eb4fb326",
+                    "0000000000000000000000000000000000000000000000000000000000000000",
+                )
+
+        assertFailsValidation(assets, "checksum")
+    }
+
+    private fun assertFailsValidation(
+        assets: Map<String, String>,
+        expectedMessage: String,
+    ) {
+        val error = runCatching { BundleContentAdapter(FakeAssetSource(assets)).getCards() }.exceptionOrNull()
+
+        assertTrue(error is BundleValidationException)
+        assertTrue(error?.message.orEmpty().contains(expectedMessage, ignoreCase = true))
+    }
+}

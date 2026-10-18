@@ -1,0 +1,10 @@
+{
+  "contentVersion": 1,
+  "cardCount": 20,
+  "languages": ["en", "ja"],
+  "checksums": {
+    "content/cards.base.json": "fc2d88088a501237bdfffb69d9e64b4974375df077ac37775a294156eb4fb326",
+    "content/en/cards.json": "2ef7e133b5304d76c503d7a8ae71713d88025f0bd92518e12b3a3e46b5ae9f27",
+    "content/ja/cards.json": "8bce075b0fdf1cd27d0ed050a904bcd30f8aebf8f7f72bf9c6dad3e65b2f031b"
+  }
+}
