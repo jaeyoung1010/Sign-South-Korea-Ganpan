@@ -9,6 +9,8 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import java.nio.charset.StandardCharsets
+import java.util.zip.ZipFile
 
 abstract class VerifyModuleBoundaries : DefaultTask() {
     @get:Input
@@ -43,6 +45,10 @@ abstract class VerifyReleaseQaExclusion : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val mergedReleaseManifest: RegularFileProperty
 
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val releaseApk: RegularFileProperty
+
     @TaskAction
     fun verify() {
         val manifest = mergedReleaseManifest.get().asFile.readText()
@@ -51,6 +57,25 @@ abstract class VerifyReleaseQaExclusion : DefaultTask() {
 
         check(includedComponents.isEmpty()) {
             "Release manifest must exclude debug QA components: ${includedComponents.joinToString()}"
+        }
+
+        val forbiddenApkStrings = forbiddenComponents + "Interactive QA menu"
+        ZipFile(releaseApk.get().asFile).use { apk ->
+            val releaseDex =
+                apk
+                    .entries()
+                    .asSequence()
+                    .filter { entry -> entry.name.startsWith("classes") && entry.name.endsWith(".dex") }
+                    .joinToString(separator = "") { entry ->
+                        apk.getInputStream(entry).use { input ->
+                            String(input.readBytes(), StandardCharsets.UTF_8)
+                        }
+                    }
+            val includedStrings = forbiddenApkStrings.filter(releaseDex::contains)
+
+            check(includedStrings.isEmpty()) {
+                "Release APK must exclude debug QA strings: ${includedStrings.joinToString()}"
+            }
         }
     }
 }
@@ -109,7 +134,7 @@ val secretScan =
 
 tasks.register("qualityGate") {
     group = "verification"
-    description = "Builds the debug APK and runs all Phase 1 and Phase 2 quality checks."
+    description = "Builds the app and runs all Phase 1 through Phase 4 quality checks."
     dependsOn(
         qualityToolTests,
         validateDependencyVersions,
@@ -130,12 +155,13 @@ val verifyReleaseQaExclusion =
     tasks.register<VerifyReleaseQaExclusion>("verifyReleaseQaExclusion") {
         group = "verification"
         description = "Verifies that debug-only QA components are absent from the release manifest."
-        dependsOn(":app:processReleaseManifest")
+        dependsOn(":app:assembleRelease")
         mergedReleaseManifest.set(
             layout.projectDirectory.file(
                 "app/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml",
             ),
         )
+        releaseApk.set(layout.projectDirectory.file("app/build/outputs/apk/release/app-release-unsigned.apk"))
     }
 
 tasks.named("check") {
