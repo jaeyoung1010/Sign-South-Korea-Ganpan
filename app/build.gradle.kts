@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 val minimumSdk =
@@ -21,7 +23,7 @@ android {
         versionName = "0.1.0"
         buildConfigField("int", "MIN_SUPPORTED_API", minimumSdk.toString())
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.signkorean.app.HiltTestRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -72,6 +74,17 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.hilt.android)
+    implementation(project(":data"))
+    implementation(project(":designsystem"))
+    implementation(project(":domain"))
+    implementation(project(":feature-learn"))
+    implementation(project(":feature-onboarding"))
+    implementation(project(":feature-progress"))
+    implementation(project(":feature-settings"))
+    implementation(project(":platform"))
+
+    ksp(libs.hilt.android.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -82,6 +95,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(project(":test-support"))
+    kspAndroidTest(libs.hilt.android.compiler)
 }
 
 detekt {

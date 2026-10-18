@@ -1,10 +1,48 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.Project
+import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.TaskAction
+
+abstract class VerifyModuleBoundaries : DefaultTask() {
+    @get:Input
+    abstract val declaredModuleDependencies: MapProperty<String, Set<String>>
+
+    @get:Input
+    abstract val allowedModuleDependencies: MapProperty<String, Set<String>>
+
+    @TaskAction
+    fun verify() {
+        val allowedDependencies = allowedModuleDependencies.get()
+        val violations =
+            declaredModuleDependencies
+                .get()
+                .toSortedMap()
+                .flatMap { (module, dependencies) ->
+                    val allowed = allowedDependencies.getValue(module)
+                    dependencies
+                        .minus(allowed)
+                        .sorted()
+                        .map { dependency -> "$module must not depend on $dependency" }
+                }
+
+        check(violations.isEmpty()) {
+            "Module boundary violations:\n${violations.joinToString(separator = "\n")}"
+        }
+    }
+}
 
 plugins {
     base
     alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.ksp) apply false
     alias(libs.plugins.spotless)
 }
 
@@ -50,7 +88,7 @@ val secretScan =
 
 tasks.register("qualityGate") {
     group = "verification"
-    description = "Builds the debug APK and runs all Phase 1 quality checks."
+    description = "Builds the debug APK and runs all Phase 1 and Phase 2 quality checks."
     dependsOn(
         qualityToolTests,
         validateDependencyVersions,
@@ -59,10 +97,70 @@ tasks.register("qualityGate") {
         ":app:detekt",
         ":app:lintDebug",
         ":app:testDebugUnitTest",
+        ":domain:test",
+        ":data:testDebugUnitTest",
         ":app:assembleDebug",
     )
 }
 
 tasks.named("check") {
     dependsOn(qualityToolTests, validateDependencyVersions, secretScan, tasks.named("spotlessCheck"))
+}
+
+val allowedDependenciesByModule =
+    mapOf(
+        ":domain" to emptySet(),
+        ":data" to setOf(":domain"),
+        ":platform" to setOf(":domain"),
+        ":designsystem" to emptySet(),
+        ":feature-onboarding" to setOf(":domain", ":designsystem"),
+        ":feature-learn" to setOf(":domain", ":designsystem"),
+        ":feature-progress" to setOf(":domain", ":designsystem"),
+        ":feature-settings" to setOf(":domain", ":designsystem"),
+        ":test-support" to setOf(":domain"),
+        ":app" to
+            setOf(
+                ":domain",
+                ":data",
+                ":platform",
+                ":designsystem",
+                ":feature-onboarding",
+                ":feature-learn",
+                ":feature-progress",
+                ":feature-settings",
+                ":test-support",
+            ),
+    )
+
+gradle.projectsEvaluated {
+    val mainConfigurations = setOf("api", "implementation", "compileOnly")
+    val declaredDependencies: Map<String, Set<String>> =
+        subprojects.associate { subproject: Project ->
+            val dependencies: Set<String> =
+                buildSet {
+                    subproject.configurations
+                        .filter { configuration -> configuration.name in mainConfigurations }
+                        .forEach { configuration ->
+                            configuration.dependencies.forEach { dependency ->
+                                if (dependency is ProjectDependency) add(dependency.path)
+                            }
+                        }
+                }
+            subproject.path to dependencies
+        }
+
+    val verifyModuleBoundaries =
+        tasks.register<VerifyModuleBoundaries>("verifyModuleBoundaries") {
+            group = "verification"
+            description = "Rejects project dependencies that violate the hexagonal module boundaries."
+            declaredModuleDependencies.putAll(declaredDependencies)
+            allowedModuleDependencies.putAll(allowedDependenciesByModule)
+        }
+
+    tasks.named("qualityGate") {
+        dependsOn(verifyModuleBoundaries)
+    }
+    tasks.named("check") {
+        dependsOn(verifyModuleBoundaries)
+    }
 }
