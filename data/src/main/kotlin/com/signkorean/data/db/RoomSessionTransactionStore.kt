@@ -12,10 +12,33 @@ data class RatingCommand(
     val updatedProgress: CardProgressEntity,
 )
 
+data class SessionCreationCommand(
+    val session: SessionEntity,
+    val cards: List<SessionCardEntity>,
+)
+
 class RoomSessionTransactionStore(
     private val database: SignKoreanDatabase,
     private val clock: ClockPort,
 ) {
+    fun createSession(command: SessionCreationCommand) {
+        require(command.session.status == "ACTIVE") { "New session must be active" }
+        require(command.session.currentIndex == 0) { "New session must start at position zero" }
+        require(command.session.completedAt == null) { "New session cannot be completed" }
+        require(command.cards.size == command.session.requestedLength) { "Card count must match requested length" }
+        require(command.cards.map(SessionCardEntity::sessionId).all { it == command.session.sessionId }) {
+            "All cards must belong to the new session"
+        }
+        require(command.cards.map(SessionCardEntity::position) == command.cards.indices.toList()) {
+            "Card positions must be contiguous from zero"
+        }
+
+        database.runInTransaction {
+            database.sessionDao().insert(command.session)
+            database.sessionCardDao().insertAll(command.cards)
+        }
+    }
+
     fun rate(command: RatingCommand) {
         database.runInTransaction {
             val session = requireNotNull(database.sessionDao().get(command.sessionId)) { "Unknown session: ${command.sessionId}" }

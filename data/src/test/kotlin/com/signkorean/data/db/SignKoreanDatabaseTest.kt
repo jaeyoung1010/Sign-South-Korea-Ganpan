@@ -84,6 +84,47 @@ class SignKoreanDatabaseTest {
     }
 
     @Test
+    fun `session creation writes its cards in the same transaction`() {
+        transactionStore.createSession(
+            SessionCreationCommand(
+                session = SessionEntity.active(id = "created-session", requestedLength = 2),
+                cards =
+                    listOf(
+                        SessionCardEntity("created-session", 0, "01-hongdae-entrance", "NEW"),
+                        SessionCardEntity("created-session", 1, "02-cafe", "NEW"),
+                    ),
+            ),
+        )
+
+        assertEquals("ACTIVE", database.sessionDao().get("created-session")?.status)
+        assertEquals(2, database.sessionCardDao().countForSession("created-session"))
+    }
+
+    @Test
+    fun `session creation rolls back when card insertion fails`() {
+        database.openHelper.writableDatabase.execSQL(
+            """
+            CREATE TRIGGER fail_session_card_insert BEFORE INSERT ON session_cards
+            WHEN NEW.session_id = 'rollback-session' BEGIN SELECT RAISE(ABORT, 'stop'); END
+            """.trimIndent(),
+        )
+
+        val failure =
+            runCatching {
+                transactionStore.createSession(
+                    SessionCreationCommand(
+                        session = SessionEntity.active(id = "rollback-session", requestedLength = 1),
+                        cards = listOf(SessionCardEntity("rollback-session", 0, "01-hongdae-entrance", "NEW")),
+                    ),
+                )
+            }.exceptionOrNull()
+
+        assertTrue(failure != null)
+        assertNull(database.sessionDao().get("rollback-session"))
+        assertEquals(0, database.sessionCardDao().countForSession("rollback-session"))
+    }
+
+    @Test
     fun `rating updates progress card and session as one transaction`() {
         seedActiveSession()
 
