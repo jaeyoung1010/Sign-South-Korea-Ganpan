@@ -5,6 +5,9 @@ import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.LearningRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -69,11 +72,30 @@ abstract class UserSettingsRepositoryContract {
             assertContractEquals(
                 ContractScenario("UserSettingsRepository", cardId = null, state = "updated"),
                 expected,
-                repository.updateSettings(expected),
+                repository.updateSettings { expected },
             )
             assertContractEquals(
                 ContractScenario("UserSettingsRepository", cardId = null, state = "updated"),
                 expected,
+                repository.settings.first(),
+            )
+        }
+
+    @Test
+    fun concurrentFieldUpdatesRetainBothChanges() =
+        runTest {
+            val repository = createRepository()
+
+            coroutineScope {
+                awaitAll(
+                    async { repository.updateSettings { it.copy(showRomanization = true) } },
+                    async { repository.updateSettings { it.copy(autoPlayAudio = true) } },
+                )
+            }
+
+            assertContractEquals(
+                ContractScenario("UserSettingsRepository", cardId = null, state = "concurrent-updates"),
+                UserSettings(showRomanization = true, autoPlayAudio = true),
                 repository.settings.first(),
             )
         }

@@ -40,7 +40,7 @@ class ResolveLaunchDestinationUseCaseTest {
     ) : UserSettingsRepository {
         override val settings: Flow<UserSettings> = flowOf(UserSettings(onboardingCompleted = onboardingComplete))
 
-        override suspend fun updateSettings(settings: UserSettings): UserSettings = settings
+        override suspend fun updateSettings(transform: (UserSettings) -> UserSettings): UserSettings = transform(UserSettings())
     }
 
     private class FakeSessionRepository(

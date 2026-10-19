@@ -75,7 +75,7 @@ class ProtoUserSettingsRepositoryTest {
                         .first()
                 }
 
-            assertEquals(expected, fixture.repository.updateSettings(expected))
+            assertEquals(expected, fixture.repository.updateSettings { expected })
             assertEquals(expected, withTimeout(5_000) { emission.await() })
         }
 
@@ -85,7 +85,7 @@ class ProtoUserSettingsRepositoryTest {
             val file = File(temporaryFolder.root, "persisted-settings.pb")
             val expected = UserSettings(onboardingCompleted = true, sessionLength = 5)
             val first = createFixture(file = file)
-            first.repository.updateSettings(expected)
+            first.repository.updateSettings { expected }
             close(first.scope)
 
             val reopened = createFixture(file = file)
@@ -102,7 +102,7 @@ class ProtoUserSettingsRepositoryTest {
                 first.repository.settings
                     .first()
                     .copy(autoPlayAudio = true)
-            first.repository.updateSettings(updated)
+            first.repository.updateSettings { updated }
             close(first.scope)
 
             val reopened = createFixture(file = file, systemReduceMotion = false)

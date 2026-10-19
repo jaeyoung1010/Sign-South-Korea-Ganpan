@@ -22,8 +22,11 @@ class ProtoUserSettingsRepository(
     override val settings: Flow<UserSettings> =
         dataStore.data.map { settings -> settings.toDomain(systemReduceMotionSource.isReduceMotionEnabled()) }
 
-    override suspend fun updateSettings(settings: UserSettings): UserSettings =
-        dataStore.updateData { settings.toProto() }.toDomain(systemReduceMotionSource.isReduceMotionEnabled())
+    override suspend fun updateSettings(transform: (UserSettings) -> UserSettings): UserSettings =
+        dataStore
+            .updateData { persisted ->
+                transform(persisted.toDomain(systemReduceMotionSource.isReduceMotionEnabled())).toProto()
+            }.toDomain(systemReduceMotionSource.isReduceMotionEnabled())
 }
 
 private fun UserSettingsProto.toDomain(systemReduceMotion: Boolean): UserSettings =
