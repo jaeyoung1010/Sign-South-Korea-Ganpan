@@ -125,6 +125,25 @@ class SignKoreanDatabaseTest {
     }
 
     @Test
+    fun `session creation preserves an existing active session`() {
+        database.sessionDao().insert(SessionEntity.active(id = "existing-session", requestedLength = 1))
+
+        val failure =
+            runCatching {
+                transactionStore.createSession(
+                    SessionCreationCommand(
+                        session = SessionEntity.active(id = "new-session", requestedLength = 1),
+                        cards = listOf(SessionCardEntity("new-session", 0, "01-hongdae-entrance", "NEW")),
+                    ),
+                )
+            }.exceptionOrNull()
+
+        assertTrue(failure != null)
+        assertEquals("existing-session", database.sessionDao().active()?.sessionId)
+        assertNull(database.sessionDao().get("new-session"))
+    }
+
+    @Test
     fun `rating updates progress card and session as one transaction`() {
         seedActiveSession()
 

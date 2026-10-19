@@ -34,6 +34,7 @@ class RoomSessionTransactionStore(
         }
 
         database.runInTransaction {
+            require(database.sessionDao().active() == null) { "An active session already exists" }
             database.sessionDao().insert(command.session)
             database.sessionCardDao().insertAll(command.cards)
         }
