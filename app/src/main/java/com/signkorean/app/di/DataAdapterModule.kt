@@ -5,7 +5,9 @@ import com.signkorean.data.asset.AndroidAssetSource
 import com.signkorean.data.asset.BundleContentAdapter
 import com.signkorean.data.repository.BootstrapSessionRepository
 import com.signkorean.data.repository.BootstrapUserSettingsRepository
+import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.domain.port.output.CardCatalog
+import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import dagger.Module
@@ -31,4 +33,8 @@ object DataAdapterModule {
     @Provides
     @Singleton
     fun provideSessionRepository(): SessionRepository = BootstrapSessionRepository()
+
+    @Provides
+    @Singleton
+    fun provideClockPort(): ClockPort = SystemClockAdapter()
 }

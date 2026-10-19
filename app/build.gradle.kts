@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.room.runtime)
     implementation(libs.kotlinx.serialization.core)
     implementation(project(":data"))
     implementation(project(":designsystem"))

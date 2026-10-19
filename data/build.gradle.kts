@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -23,11 +24,22 @@ android {
         getByName("main").assets.directories.add(rootProject.file("assets").path)
         getByName("test").resources.directories.add(rootProject.file("assets").path)
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
     implementation(project(":domain"))
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
     implementation(libs.kotlinx.serialization.json)
+    ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit4)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.robolectric)
     testImplementation(project(":test-support"))
+    kspTest(libs.androidx.room.compiler)
 }
