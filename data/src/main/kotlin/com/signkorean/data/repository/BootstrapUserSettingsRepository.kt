@@ -1,9 +1,17 @@
 package com.signkorean.data.repository
 
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.UserSettingsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class BootstrapUserSettingsRepository(
-    private val onboardingComplete: Boolean = false,
+    initialSettings: UserSettings = UserSettings(),
 ) : UserSettingsRepository {
-    override fun isOnboardingComplete(): Boolean = onboardingComplete
+    private val mutableSettings = MutableStateFlow(initialSettings)
+
+    override val settings: Flow<UserSettings> = mutableSettings.asStateFlow()
+
+    override suspend fun updateSettings(settings: UserSettings): UserSettings = settings.also { mutableSettings.value = it }
 }

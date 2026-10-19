@@ -1,9 +1,12 @@
 package com.signkorean.testsupport.contract
 
 import com.signkorean.domain.model.CardReviewState
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.LearningRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -45,25 +48,35 @@ abstract class SessionRepositoryContract {
 }
 
 abstract class UserSettingsRepositoryContract {
-    protected abstract fun createRepository(onboardingComplete: Boolean): UserSettingsRepository
+    protected abstract fun createRepository(): UserSettingsRepository
 
     @Test
-    fun defaultOnboardingStateIsObservableFromEmptyAdapter() {
-        assertContractEquals(
-            ContractScenario("UserSettingsRepository", cardId = null, state = "defaults"),
-            false,
-            createRepository(onboardingComplete = false).isOnboardingComplete(),
-        )
-    }
+    fun defaultSettingsAreObservableFromEmptyAdapter() =
+        runTest {
+            assertContractEquals(
+                ContractScenario("UserSettingsRepository", cardId = null, state = "defaults"),
+                UserSettings(),
+                createRepository().settings.first(),
+            )
+        }
 
     @Test
-    fun completedOnboardingStateIsObservableFromEmptyAdapter() {
-        assertContractEquals(
-            ContractScenario("UserSettingsRepository", cardId = null, state = "completed"),
-            true,
-            createRepository(onboardingComplete = true).isOnboardingComplete(),
-        )
-    }
+    fun writesAreObservableFromAdapter() =
+        runTest {
+            val repository = createRepository()
+            val expected = UserSettings(onboardingCompleted = true, sessionLength = 10)
+
+            assertContractEquals(
+                ContractScenario("UserSettingsRepository", cardId = null, state = "updated"),
+                expected,
+                repository.updateSettings(expected),
+            )
+            assertContractEquals(
+                ContractScenario("UserSettingsRepository", cardId = null, state = "updated"),
+                expected,
+                repository.settings.first(),
+            )
+        }
 }
 
 data class ContractScenario(

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package signkorean.settings.v1;
+
+option java_package = "com.signkorean.data.settings.proto";
+option java_multiple_files = true;
+option java_outer_classname = "UserSettingsSchema";
+
+enum LevelProto {
+  LEVEL_PROTO_UNSPECIFIED = 0;
+  LEVEL_PROTO_BEGINNER = 1;
+  LEVEL_PROTO_ELEMENTARY = 2;
+  LEVEL_PROTO_NOT_SURE = 3;
+}
+
+enum InterestProto {
+  INTEREST_PROTO_UNSPECIFIED = 0;
+  INTEREST_PROTO_LANDMARK = 1;
+  INTEREST_PROTO_NEIGHBORHOOD = 2;
+  INTEREST_PROTO_MARKET = 3;
+  INTEREST_PROTO_TRANSPORT = 4;
+  INTEREST_PROTO_FOOD = 5;
+  INTEREST_PROTO_SHOPPING = 6;
+}
+
+enum AudioVoiceProto {
+  AUDIO_VOICE_PROTO_UNSPECIFIED = 0;
+  AUDIO_VOICE_PROTO_TYPECAST_EUNKYUNG = 1;
+  AUDIO_VOICE_PROTO_GEMINI_KORE = 2;
+}
+
+message UserSettingsProto {
+  int32 schema_version = 1;
+  bool onboarding_completed = 2;
+  LevelProto level = 3;
+  repeated InterestProto interests = 4;
+  int32 session_length = 5;
+  string app_language_tag = 6;
+  string learning_explanation_language_tag = 7;
+  bool show_romanization = 8;
+  bool auto_play_audio = 9;
+  AudioVoiceProto voice = 10;
+  bool reduce_motion = 11;
+  bool has_explicit_reduce_motion = 12;
+  bool reminder_enabled = 13;
+  int32 reminder_local_hour = 14;
+  int32 reminder_local_minute = 15;
+  bool has_explicit_reminder_local_time = 16;
+}

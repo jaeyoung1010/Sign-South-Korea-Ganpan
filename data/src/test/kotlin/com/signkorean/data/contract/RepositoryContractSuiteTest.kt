@@ -29,9 +29,9 @@ class FakeSessionRepositoryContractTest : SessionRepositoryContract() {
 }
 
 class BootstrapUserSettingsRepositoryContractTest : UserSettingsRepositoryContract() {
-    override fun createRepository(onboardingComplete: Boolean): UserSettingsRepository = BootstrapUserSettingsRepository(onboardingComplete)
+    override fun createRepository(): UserSettingsRepository = BootstrapUserSettingsRepository()
 }
 
 class FakeUserSettingsRepositoryContractTest : UserSettingsRepositoryContract() {
-    override fun createRepository(onboardingComplete: Boolean): UserSettingsRepository = FakeUserSettingsRepository(onboardingComplete)
+    override fun createRepository(): UserSettingsRepository = FakeUserSettingsRepository()
 }

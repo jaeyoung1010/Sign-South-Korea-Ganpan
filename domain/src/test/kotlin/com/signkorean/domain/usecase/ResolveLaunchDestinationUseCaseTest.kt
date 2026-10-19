@@ -1,38 +1,46 @@
 package com.signkorean.domain.usecase
 
 import com.signkorean.domain.model.LaunchDestination
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ResolveLaunchDestinationUseCaseTest {
     @Test
-    fun `active session resumes after onboarding is complete`() {
-        val useCase =
-            ResolveLaunchDestinationUseCase(
-                userSettingsRepository = FakeUserSettingsRepository(onboardingComplete = true),
-                sessionRepository = FakeSessionRepository(activeSession = true),
-            )
+    fun `active session resumes after onboarding is complete`() =
+        runTest {
+            val useCase =
+                ResolveLaunchDestinationUseCase(
+                    userSettingsRepository = FakeUserSettingsRepository(onboardingComplete = true),
+                    sessionRepository = FakeSessionRepository(activeSession = true),
+                )
 
-        assertEquals(LaunchDestination.LEARN, useCase())
-    }
+            assertEquals(LaunchDestination.LEARN, useCase())
+        }
 
     @Test
-    fun `incomplete onboarding takes precedence over an active session`() {
-        val useCase =
-            ResolveLaunchDestinationUseCase(
-                userSettingsRepository = FakeUserSettingsRepository(onboardingComplete = false),
-                sessionRepository = FakeSessionRepository(activeSession = true),
-            )
+    fun `incomplete onboarding takes precedence over an active session`() =
+        runTest {
+            val useCase =
+                ResolveLaunchDestinationUseCase(
+                    userSettingsRepository = FakeUserSettingsRepository(onboardingComplete = false),
+                    sessionRepository = FakeSessionRepository(activeSession = true),
+                )
 
-        assertEquals(LaunchDestination.ONBOARDING, useCase())
-    }
+            assertEquals(LaunchDestination.ONBOARDING, useCase())
+        }
 
     private class FakeUserSettingsRepository(
         private val onboardingComplete: Boolean,
     ) : UserSettingsRepository {
-        override fun isOnboardingComplete(): Boolean = onboardingComplete
+        override val settings: Flow<UserSettings> = flowOf(UserSettings(onboardingCompleted = onboardingComplete))
+
+        override suspend fun updateSettings(settings: UserSettings): UserSettings = settings
     }
 
     private class FakeSessionRepository(

@@ -1,8 +1,19 @@
+import org.gradle.api.artifacts.VersionCatalogsExtension
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.protobuf)
 }
+
+val protobufVersion =
+    extensions
+        .getByType<VersionCatalogsExtension>()
+        .named("libs")
+        .findVersion("protobuf")
+        .get()
+        .requiredVersion
 
 android {
     namespace = "com.signkorean.data"
@@ -34,6 +45,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.datastore)
+    implementation(libs.protobuf.kotlin.lite)
     implementation(libs.kotlinx.serialization.json)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit4)
@@ -42,4 +55,20 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(project(":test-support"))
     kspTest(libs.androidx.room.compiler)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+    generateProtoTasks {
+        all().configureEach {
+            builtins {
+                create("java") {
+                    option("lite")
+                }
+                create("kotlin")
+            }
+        }
+    }
 }

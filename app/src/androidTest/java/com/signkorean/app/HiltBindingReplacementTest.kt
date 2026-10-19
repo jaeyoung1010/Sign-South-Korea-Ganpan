@@ -3,6 +3,7 @@ package com.signkorean.app
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.app.di.DataAdapterModule
 import com.signkorean.domain.model.LaunchDestination
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
@@ -14,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -34,7 +36,7 @@ class HiltBindingReplacementTest {
     fun testBindingReplacesProductionAdapters() {
         hiltRule.inject()
 
-        assertEquals(LaunchDestination.LEARN, resolveLaunchDestination())
+        assertEquals(LaunchDestination.LEARN, runBlocking { resolveLaunchDestination() })
     }
 }
 
@@ -46,7 +48,7 @@ class HiltBindingReplacementTest {
 object FakeDataAdapterModule {
     @Provides
     @Singleton
-    fun provideUserSettingsRepository(): UserSettingsRepository = FakeUserSettingsRepository(onboardingComplete = true)
+    fun provideUserSettingsRepository(): UserSettingsRepository = FakeUserSettingsRepository(UserSettings(onboardingCompleted = true))
 
     @Provides
     @Singleton
