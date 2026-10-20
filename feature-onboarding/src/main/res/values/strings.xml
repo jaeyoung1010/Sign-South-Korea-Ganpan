@@ -1,0 +1,15 @@
+<resources>
+    <string name="onboarding_welcome_title">Read Korea in the real world</string>
+    <string name="onboarding_welcome_description">Learn the Korean you’ll actually see on streets, shops, and stations.</string>
+    <string name="onboarding_welcome_get_started">Get started</string>
+    <string name="onboarding_welcome_account_notice">You can use the app without an account.</string>
+    <string name="onboarding_welcome_collage_description">Three Korean street signs from a shop, station, and pharmacy.</string>
+    <string name="onboarding_tutorial_title">How it works</string>
+    <string name="onboarding_tutorial_description">Reveal a sign\'s meaning, then swipe to remember it.</string>
+    <string name="onboarding_level_title">Choose your level</string>
+    <string name="onboarding_level_description">Start with Korean signs you can almost read.</string>
+    <string name="onboarding_interests_title">Pick your places</string>
+    <string name="onboarding_interests_description">Choose the neighborhoods and places you want to explore.</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_start_learning">Start learning</string>
+</resources>

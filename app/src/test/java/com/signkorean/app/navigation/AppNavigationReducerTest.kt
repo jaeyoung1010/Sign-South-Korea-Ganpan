@@ -2,6 +2,8 @@ package com.signkorean.app.navigation
 
 import com.signkorean.domain.model.LaunchDestination
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AppNavigationReducerTest {
@@ -19,6 +21,15 @@ class AppNavigationReducerTest {
             ).fold(AppNavigationUiState(), reducer::reduce)
 
         assertEquals(listOf(AppRoute.Home), state.backStack)
+    }
+
+    @Test
+    fun welcome_starts_the_tutorial_once() {
+        val welcome = AppNavigationUiState(backStack = listOf(AppRoute.Welcome))
+        val tutorial = reducer.reduce(welcome, AppNavigationAction.StartOnboarding)
+
+        assertEquals(listOf(AppRoute.Welcome, AppRoute.Tutorial), tutorial.backStack)
+        assertEquals(tutorial, reducer.reduce(tutorial, AppNavigationAction.StartOnboarding))
     }
 
     @Test
@@ -136,5 +147,12 @@ class AppNavigationReducerTest {
         val state = AppNavigationUiState(backStack = listOf(AppRoute.Launch))
 
         assertEquals(state, reducer.reduce(state, AppNavigationAction.Back))
+    }
+
+    @Test
+    fun root_welcome_leaves_back_to_the_activity() {
+        assertFalse(AppNavigationUiState(backStack = listOf(AppRoute.Welcome)).handlesBack)
+        assertTrue(AppNavigationUiState(backStack = listOf(AppRoute.Welcome), sheet = AppSheet.Category).handlesBack)
+        assertTrue(AppNavigationUiState(backStack = listOf(AppRoute.Welcome, AppRoute.Tutorial)).handlesBack)
     }
 }

@@ -2,6 +2,7 @@ package com.signkorean.app.di
 
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.ResolveLaunchDestination
+import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ContentMigrationRepository
@@ -9,6 +10,7 @@ import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
+import com.signkorean.domain.usecase.StartOnboardingUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,4 +44,7 @@ object UseCaseModule {
             userSettingsRepository = userSettingsRepository,
             sessionRepository = sessionRepository,
         )
+
+    @Provides
+    fun provideStartOnboarding(analyticsSink: AnalyticsSink): StartOnboarding = StartOnboardingUseCase(analyticsSink)
 }

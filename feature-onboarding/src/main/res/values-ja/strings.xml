@@ -1,0 +1,15 @@
+<resources>
+    <string name="onboarding_welcome_title">現実の街で韓国語を読もう</string>
+    <string name="onboarding_welcome_description">街角、店、駅で実際に目にする韓国語を学びます。</string>
+    <string name="onboarding_welcome_get_started">はじめる</string>
+    <string name="onboarding_welcome_account_notice">アカウントなしで利用できます。</string>
+    <string name="onboarding_welcome_collage_description">店、駅、薬局にある韓国語の看板3枚。</string>
+    <string name="onboarding_tutorial_title">使い方</string>
+    <string name="onboarding_tutorial_description">看板の意味を表示してから、スワイプして覚えましょう。</string>
+    <string name="onboarding_level_title">レベルを選ぶ</string>
+    <string name="onboarding_level_description">もうすぐ読めそうな韓国語の看板から始めます。</string>
+    <string name="onboarding_interests_title">行きたい場所を選ぶ</string>
+    <string name="onboarding_interests_description">探索したい地域や場所を選びます。</string>
+    <string name="onboarding_continue">続ける</string>
+    <string name="onboarding_start_learning">学習を始める</string>
+</resources>

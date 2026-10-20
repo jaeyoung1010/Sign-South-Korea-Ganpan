@@ -137,7 +137,7 @@ internal fun SignKoreanAppContent(
         }
     }
 
-    BackHandler { onAction(AppNavigationAction.Back) }
+    BackHandler(enabled = state.handlesBack) { onAction(AppNavigationAction.Back) }
 
     SignKoreanTheme {
         SignKoreanScreen {
@@ -208,7 +208,7 @@ private fun OnboardingDestination(
             if (action == OnboardingUiAction.Continue) {
                 onAction(
                     when (step) {
-                        OnboardingStep.Welcome -> AppNavigationAction.Navigate(AppRoute.Tutorial)
+                        OnboardingStep.Welcome -> AppNavigationAction.StartOnboarding
                         OnboardingStep.Tutorial -> AppNavigationAction.Navigate(AppRoute.Level)
                         OnboardingStep.Level -> AppNavigationAction.Navigate(AppRoute.Interests)
                         OnboardingStep.Interests -> AppNavigationAction.CompleteOnboarding

@@ -84,6 +84,9 @@ data class AppNavigationUiState(
 ) {
     val currentRoute: AppRoute
         get() = backStack.last()
+
+    val handlesBack: Boolean
+        get() = isViewerVisible || sheet != null || toastMessage != null || backStack.size > 1
 }
 
 sealed interface AppNavigationAction {
@@ -113,6 +116,8 @@ sealed interface AppNavigationAction {
 
     data object CompleteOnboarding : AppNavigationAction
 
+    data object StartOnboarding : AppNavigationAction
+
     data object Back : AppNavigationAction
 }
 
@@ -140,6 +145,7 @@ class AppNavigationReducer {
             AppNavigationAction.ToggleAnswer -> state.copy(isAnswerVisible = !state.isAnswerVisible)
             is AppNavigationAction.ShowToast -> state.copy(toastMessage = action.message)
             AppNavigationAction.CompleteOnboarding -> state.copy(backStack = listOf(AppRoute.Home)).clearOverlays()
+            AppNavigationAction.StartOnboarding -> state.startOnboarding()
             AppNavigationAction.Back -> state.goBack()
         }
 
@@ -151,6 +157,12 @@ class AppNavigationReducer {
         if (currentRoute != AppRoute.Launch) return this
         return copy(backStack = listOf(destination.route)).clearOverlays()
     }
+
+    private fun State.startOnboarding(): State =
+        when (currentRoute) {
+            AppRoute.Welcome -> withRoute(AppRoute.Tutorial)
+            else -> this
+        }
 
     private fun AppNavigationUiState.selectTopLevelTab(tab: AppTopLevelTab): AppNavigationUiState =
         if (currentRoute == tab.route) {

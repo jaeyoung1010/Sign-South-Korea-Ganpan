@@ -51,6 +51,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    sourceSets {
+        getByName("main").assets.directories.add(rootProject.file("assets").path)
+    }
+
     testOptions {
         animationsDisabled = true
     }
