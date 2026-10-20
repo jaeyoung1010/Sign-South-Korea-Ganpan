@@ -1,0 +1,88 @@
+package com.signkorean.app.learn
+
+import com.signkorean.domain.model.FocusRect
+import com.signkorean.domain.model.LearnSessionError
+import com.signkorean.domain.model.LoadLearnSessionResult
+import com.signkorean.domain.model.SignCard
+import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnSessionUiState
+import com.signkorean.testsupport.MainDispatcherRule
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+class LearnViewModelTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @Test
+    fun `maps active session position and progress into immutable UI state`() =
+        runTest {
+            val viewModel = LearnViewModel(LoadLearnSession { active(position = 3, total = 10) })
+
+            viewModel.load()
+            advanceUntilIdle()
+
+            val state = assertActive(viewModel.uiState.value)
+            assertEquals("표지판 3", state.sign)
+            assertEquals(3, state.position)
+            assertEquals(10, state.totalCount)
+            assertEquals(.3f, state.progressFraction)
+            assertEquals(LearnCardStage.Question, state.stage)
+        }
+
+    @Test
+    fun `reveal changes only the local stage for the active card`() =
+        runTest {
+            val viewModel = LearnViewModel(LoadLearnSession { active(position = 1, total = 5) })
+            viewModel.load()
+            advanceUntilIdle()
+
+            viewModel.revealAnswer()
+
+            assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
+        }
+
+    @Test
+    fun `exposes a safe error state for invalid session content`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    LoadLearnSession { LoadLearnSessionResult.Invalid(LearnSessionError.UnknownCard) },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionUiState.Error(LearnSessionError.UnknownCard), viewModel.uiState.value)
+        }
+
+    private fun active(
+        position: Int,
+        total: Int,
+    ) = LoadLearnSessionResult.Active(
+        sessionId = "session-$total",
+        card =
+            SignCard(
+                id = "card-$position",
+                order = position - 1,
+                korean = "표지판 $position",
+                category = "MARKET",
+                imageAssetUri = "asset://card-$position",
+                focus = FocusRect(0f, 0f, 1f, 1f),
+                audioAssetUris = emptyMap(),
+                contentVersion = 1,
+            ),
+        position = position,
+        totalCount = total,
+    )
+
+    private fun assertActive(state: LearnSessionUiState): LearnSessionUiState.Active {
+        assertTrue(state is LearnSessionUiState.Active)
+        return state as LearnSessionUiState.Active
+    }
+}

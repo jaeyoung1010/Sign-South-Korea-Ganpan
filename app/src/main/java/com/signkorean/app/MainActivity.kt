@@ -34,6 +34,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.signkorean.app.home.LearnHomeViewModel
+import com.signkorean.app.learn.LearnViewModel
 import com.signkorean.app.navigation.AppNavigationAction
 import com.signkorean.app.navigation.AppNavigationIntent
 import com.signkorean.app.navigation.AppNavigationUiState
@@ -82,12 +83,21 @@ class MainActivity : ComponentActivity() {
     private val launchViewModel: LaunchViewModel by viewModels()
     private val onboardingViewModel: OnboardingViewModel by viewModels()
     private val learnHomeViewModel: LearnHomeViewModel by viewModels()
+    private val learnViewModel: LearnViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         navigationViewModel.openDebugDestination(intent.getStringExtra(AppNavigationIntent.EXTRA_DEBUG_SCREEN))
-        setContent { SignKoreanApp(navigationViewModel, launchViewModel, onboardingViewModel, learnHomeViewModel) }
+        setContent {
+            SignKoreanApp(
+                navigationViewModel,
+                launchViewModel,
+                onboardingViewModel,
+                learnHomeViewModel,
+                learnViewModel,
+            )
+        }
     }
 }
 
@@ -97,14 +107,19 @@ private fun SignKoreanApp(
     launchViewModel: LaunchViewModel,
     onboardingViewModel: OnboardingViewModel,
     learnHomeViewModel: LearnHomeViewModel,
+    learnViewModel: LearnViewModel,
 ) {
     val state by navigationViewModel.uiState.collectAsState()
     val launchState by launchViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
     val learnHomeState by learnHomeViewModel.uiState.collectAsState()
+    val learnSessionState by learnViewModel.uiState.collectAsState()
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
+        }
+        if (state.currentRoute == AppRoute.Learn) {
+            learnViewModel.load()
         }
     }
     LaunchedEffect(learnHomeViewModel) {
@@ -129,6 +144,8 @@ private fun SignKoreanApp(
         onStartCategorySession = learnHomeViewModel::startCategorySession,
         onConfirmCategoryReplacement = learnHomeViewModel::confirmCategoryReplacement,
         onCancelCategoryReplacement = learnHomeViewModel::cancelCategoryReplacement,
+        learnSessionState = learnSessionState,
+        onRevealAnswer = learnViewModel::revealAnswer,
     )
 }
 
@@ -149,6 +166,8 @@ internal fun SignKoreanAppContent(
     onStartCategorySession: (String) -> Unit = {},
     onConfirmCategoryReplacement: () -> Unit = {},
     onCancelCategoryReplacement: () -> Unit = {},
+    learnSessionState: LearnSessionUiState = LearnSessionUiState.Loading,
+    onRevealAnswer: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -167,6 +186,8 @@ internal fun SignKoreanAppContent(
             onStartCategorySession,
             onConfirmCategoryReplacement,
             onCancelCategoryReplacement,
+            learnSessionState,
+            onRevealAnswer,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -197,7 +218,13 @@ internal fun SignKoreanAppContent(
                         onCancelCategoryReplacement = onCancelCategoryReplacement,
                     )
                 }
-                entry<AppRoute.Learn> { LearnDestination(state, onAction) }
+                entry<AppRoute.Learn> {
+                    LearnDestination(
+                        state = learnSessionState,
+                        onAction = onAction,
+                        onRevealAnswer = onRevealAnswer,
+                    )
+                }
                 entry<AppRoute.Done> { DoneDestination(onAction) }
                 entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
                 entry<AppRoute.Settings> { SettingsDestination(onAction) }
@@ -354,17 +381,33 @@ private fun LearnHomeDestination(
 
 @Composable
 private fun LearnDestination(
-    state: AppNavigationUiState,
+    state: LearnSessionUiState,
     onAction: (AppNavigationAction) -> Unit,
+    onRevealAnswer: () -> Unit,
 ) {
     LearnSessionScreen(
-        state = LearnSessionUiState(isAnswerVisible = state.isAnswerVisible),
+        state = state,
         onAction = { action ->
             when (action) {
-                LearnUiAction.RevealAnswer -> onAction(AppNavigationAction.ToggleAnswer)
-                LearnUiAction.ShowImageViewer -> onAction(AppNavigationAction.ShowViewer)
-                LearnUiAction.FinishSession -> onAction(AppNavigationAction.Navigate(AppRoute.Done))
-                else -> Unit
+                LearnUiAction.RevealAnswer -> {
+                    onRevealAnswer()
+                }
+
+                LearnUiAction.ShowImageViewer -> {
+                    onAction(AppNavigationAction.ShowViewer)
+                }
+
+                LearnUiAction.CloseSession -> {
+                    onAction(AppNavigationAction.Back)
+                }
+
+                LearnUiAction.ShowSessionMenu -> {
+                    onAction(AppNavigationAction.ShowToast("More session options are coming soon."))
+                }
+
+                else -> {
+                    Unit
+                }
             }
         },
     )

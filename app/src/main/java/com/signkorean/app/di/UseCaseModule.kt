@@ -3,6 +3,7 @@ package com.signkorean.app.di
 import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
+import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.input.StartSession
@@ -19,6 +20,7 @@ import com.signkorean.domain.session.SessionBuilder
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
+import com.signkorean.domain.usecase.LoadLearnSessionUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
 import com.signkorean.domain.usecase.StartSessionUseCase
@@ -107,4 +109,10 @@ object UseCaseModule {
             sessionRepository = sessionRepository,
             clock = clock,
         )
+
+    @Provides
+    fun provideLoadLearnSession(
+        sessionRepository: SessionRepository,
+        cardCatalog: CardCatalog,
+    ): LoadLearnSession = LoadLearnSessionUseCase(sessionRepository, cardCatalog)
 }

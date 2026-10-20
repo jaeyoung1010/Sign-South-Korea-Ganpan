@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
+import com.signkorean.domain.model.LearnSessionError
 
 data class LearnHomeUiState(
     val streakDays: Int = 0,
@@ -70,11 +72,41 @@ object HomeTestTags {
     const val WEEK_CHART = "home-week-chart"
 }
 
-data class LearnSessionUiState(
-    val sign: String = "주차 금지",
-    val translation: String = "No parking",
-    val isAnswerVisible: Boolean = false,
-)
+sealed interface LearnSessionUiState {
+    data object Loading : LearnSessionUiState
+
+    data class Active(
+        val cardId: String,
+        val sign: String,
+        val position: Int,
+        val totalCount: Int,
+        val stage: LearnCardStage = LearnCardStage.Question,
+    ) : LearnSessionUiState {
+        init {
+            require(position in 1..totalCount) { "Position must be within the active session" }
+        }
+
+        val progressFraction: Float
+            get() = position.toFloat() / totalCount
+    }
+
+    data object Completed : LearnSessionUiState
+
+    data class Error(
+        val error: LearnSessionError,
+    ) : LearnSessionUiState
+}
+
+enum class LearnCardStage {
+    Question,
+    Answer,
+}
+
+object LearnSessionTestTags {
+    const val POSITION = "learn.session.position"
+    const val PROGRESS = "learn.session.progress"
+    const val MORE = "learn.session.more"
+}
 
 data class CompletionUiState(
     val title: String = "Great memory!",
@@ -97,6 +129,10 @@ sealed interface LearnUiAction {
     data object ShowImageViewer : LearnUiAction
 
     data object ShowDeckSheet : LearnUiAction
+
+    data object CloseSession : LearnUiAction
+
+    data object ShowSessionMenu : LearnUiAction
 
     data object FinishSession : LearnUiAction
 
@@ -272,33 +308,123 @@ fun LearnSessionScreen(
     onAction: (LearnUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GameCard(modifier = modifier.testTag("screen-learn")) {
-        Text(text = "Sign deck", style = MaterialTheme.typography.titleMedium)
-        GameCard(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_CARD_STACK)) {
-            Text(text = state.sign, style = MaterialTheme.typography.displayMedium)
-            if (state.isAnswerVisible) {
-                Text(text = state.translation, style = MaterialTheme.typography.titleLarge)
-            }
+    Column(
+        modifier = modifier.fillMaxSize().testTag("screen-learn"),
+        verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
+    ) {
+        LearnTopBar(onAction)
+        when (state) {
+            LearnSessionUiState.Loading -> LearnLoadingState()
+            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction)
+            LearnSessionUiState.Completed -> LearnCompletedState(onAction)
+            is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
         }
+    }
+}
+
+@Composable
+private fun LearnTopBar(onAction: (LearnUiAction) -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         GameButton(
-            text = if (state.isAnswerVisible) "Show photo" else "Show answer",
-            onClick = { onAction(LearnUiAction.RevealAnswer) },
-            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
-        )
-        GameButton(
-            text = "View sign photo",
-            onClick = { onAction(LearnUiAction.ShowImageViewer) },
-            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE),
+            text = "Close",
+            onClick = { onAction(LearnUiAction.CloseSession) },
+            modifier = Modifier.testTag(SignKoreanTestTags.LEARN_CLOSE_SESSION),
             style = GameButtonStyle.Secondary,
         )
         GameButton(
-            text = "Finish practice",
-            onClick = { onAction(LearnUiAction.FinishSession) },
-            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_CLOSE_SESSION),
-            style = GameButtonStyle.GotIt,
+            text = "More",
+            onClick = { onAction(LearnUiAction.ShowSessionMenu) },
+            modifier = Modifier.testTag(LearnSessionTestTags.MORE),
+            style = GameButtonStyle.Secondary,
         )
     }
 }
+
+@Composable
+private fun ActiveLearnSession(
+    state: LearnSessionUiState.Active,
+    onAction: (LearnUiAction) -> Unit,
+) {
+    Text(
+        text = "${state.position} of ${state.totalCount}",
+        modifier = Modifier.testTag(LearnSessionTestTags.POSITION),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Black,
+    )
+    LinearProgressIndicator(
+        progress = { state.progressFraction },
+        modifier = Modifier.fillMaxWidth().testTag(LearnSessionTestTags.PROGRESS),
+    )
+    GameCard(modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_CARD_STACK)) {
+        Text(
+            text = if (state.stage == LearnCardStage.Question) "What does this sign mean?" else "Answer",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Black,
+        )
+        Text(
+            text = state.sign,
+            modifier = Modifier.testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD),
+            style = MaterialTheme.typography.displayMedium,
+        )
+        if (state.stage == LearnCardStage.Answer) {
+            Text("Answer details will appear here.", style = MaterialTheme.typography.bodyLarge)
+        }
+    }
+    GameButton(
+        text = if (state.stage == LearnCardStage.Question) "Show answer" else "Answer shown",
+        onClick = { onAction(LearnUiAction.RevealAnswer) },
+        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
+        enabled = state.stage == LearnCardStage.Question,
+    )
+    GameButton(
+        text = "View sign photo",
+        onClick = { onAction(LearnUiAction.ShowImageViewer) },
+        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE),
+        style = GameButtonStyle.Secondary,
+    )
+}
+
+@Composable
+private fun LearnLoadingState() {
+    GameCard(modifier = Modifier.fillMaxWidth()) {
+        Text("Loading session…", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+    }
+}
+
+@Composable
+private fun LearnCompletedState(onAction: (LearnUiAction) -> Unit) {
+    GameCard(modifier = Modifier.fillMaxWidth()) {
+        Text("Session complete", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text("This session has no cards left to review.", style = MaterialTheme.typography.bodyLarge)
+        GameButton("Back to learn", { onAction(LearnUiAction.CloseSession) }, Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun LearnErrorState(
+    error: LearnSessionError,
+    onAction: (LearnUiAction) -> Unit,
+) {
+    GameCard(modifier = Modifier.fillMaxWidth()) {
+        Text("This session card is unavailable", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(error.toDisplayMessage(), style = MaterialTheme.typography.bodyLarge)
+        GameButton("Back to learn", { onAction(LearnUiAction.CloseSession) }, Modifier.fillMaxWidth())
+    }
+}
+
+private fun LearnSessionError.toDisplayMessage(): String =
+    when (this) {
+        LearnSessionError.NoActiveSession -> "There is no active learning session."
+
+        LearnSessionError.EmptySession -> "This saved session has no cards."
+
+        LearnSessionError.InvalidCardCount,
+        LearnSessionError.InvalidCardOrder,
+        LearnSessionError.InvalidCurrentIndex,
+        -> "This saved session needs to be started again."
+
+        LearnSessionError.UnknownCard -> "This sign is no longer available."
+    }
 
 @Composable
 fun CompletionScreen(
