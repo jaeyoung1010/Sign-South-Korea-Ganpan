@@ -1,11 +1,17 @@
 package com.signkorean.app.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.signkorean.domain.model.LaunchDestination
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface AppRoute : NavKey {
     val screenId: String
+
+    @Serializable
+    data object Launch : AppRoute {
+        override val screenId: String = "screen-launch"
+    }
 
     @Serializable
     data object Welcome : AppRoute {
@@ -70,7 +76,7 @@ enum class AppSheet {
 }
 
 data class AppNavigationUiState(
-    val backStack: List<AppRoute> = listOf(AppRoute.Welcome),
+    val backStack: List<AppRoute> = listOf(AppRoute.Launch),
     val sheet: AppSheet? = null,
     val isViewerVisible: Boolean = false,
     val isAnswerVisible: Boolean = false,
@@ -81,6 +87,10 @@ data class AppNavigationUiState(
 }
 
 sealed interface AppNavigationAction {
+    data class LaunchReady(
+        val destination: LaunchDestination,
+    ) : AppNavigationAction
+
     data class Navigate(
         val route: AppRoute,
     ) : AppNavigationAction
@@ -122,6 +132,7 @@ class AppNavigationReducer {
         action: AppNavigationAction,
     ): AppNavigationUiState =
         when (action) {
+            is AppNavigationAction.LaunchReady -> state.resolveLaunch(action.destination)
             is AppNavigationAction.Navigate -> state.withRoute(action.route)
             is AppNavigationAction.SelectTab -> state.selectTopLevelTab(action.tab)
             is AppNavigationAction.ShowSheet -> state.copy(sheet = action.sheet)
@@ -135,6 +146,11 @@ class AppNavigationReducer {
     fun reduceAll(actions: NavigationActions): State = actions.fold(AppNavigationUiState(), ::reduce)
 
     private fun State.withRoute(route: AppRoute): State = copy(backStack = backStack + route).clearOverlays()
+
+    private fun State.resolveLaunch(destination: LaunchDestination): State {
+        if (currentRoute != AppRoute.Launch) return this
+        return copy(backStack = listOf(destination.route)).clearOverlays()
+    }
 
     private fun AppNavigationUiState.selectTopLevelTab(tab: AppTopLevelTab): AppNavigationUiState =
         if (currentRoute == tab.route) {
@@ -162,6 +178,16 @@ class AppNavigationReducer {
                 AppTopLevelTab.Progress -> AppRoute.Progress
                 AppTopLevelTab.Settings -> AppRoute.Settings
             }
+
+    private val LaunchDestination.route: AppRoute
+        get() =
+            when (this) {
+                LaunchDestination.ONBOARDING -> AppRoute.Welcome
+
+                LaunchDestination.HOME,
+                LaunchDestination.LEARN,
+                -> AppRoute.Home
+            }
 }
 
 object AppNavigationIntent {
@@ -170,10 +196,11 @@ object AppNavigationIntent {
     fun routeForScreenId(screenId: String?): AppRoute? = allRoutes.firstOrNull { it.screenId == screenId }
 
     val prototypeScreenIds: List<String>
-        get() = allRoutes.filterNot { it == AppRoute.Legal }.map(AppRoute::screenId)
+        get() = allRoutes.filterNot { it == AppRoute.Legal || it == AppRoute.Launch }.map(AppRoute::screenId)
 
     private val allRoutes =
         listOf(
+            AppRoute.Launch,
             AppRoute.Welcome,
             AppRoute.Tutorial,
             AppRoute.Level,

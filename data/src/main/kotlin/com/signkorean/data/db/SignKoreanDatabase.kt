@@ -13,8 +13,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SessionCardEntity::class,
         RatingSnapshotEntity::class,
         CardReportEntity::class,
+        ContentStateEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(RoomTimeConverters::class)
@@ -28,6 +29,8 @@ abstract class SignKoreanDatabase : RoomDatabase() {
     abstract fun ratingSnapshotDao(): RatingSnapshotDao
 
     abstract fun cardReportDao(): CardReportDao
+
+    abstract fun contentStateDao(): ContentStateDao
 
     companion object {
         val MIGRATION_1_2 =
@@ -52,6 +55,21 @@ abstract class SignKoreanDatabase : RoomDatabase() {
                             `previous_completed_at` INTEGER,
                             PRIMARY KEY(`session_id`),
                             FOREIGN KEY(`session_id`) REFERENCES `sessions`(`session_id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                        )
+                        """.trimIndent(),
+                    )
+                }
+            }
+
+        val MIGRATION_2_3 =
+            object : Migration(2, 3) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL(
+                        """
+                        CREATE TABLE IF NOT EXISTS `content_state` (
+                            `id` INTEGER NOT NULL,
+                            `content_version` INTEGER NOT NULL,
+                            PRIMARY KEY(`id`)
                         )
                         """.trimIndent(),
                     )

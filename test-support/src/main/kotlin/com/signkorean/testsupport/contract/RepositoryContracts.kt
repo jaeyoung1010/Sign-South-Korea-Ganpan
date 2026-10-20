@@ -32,22 +32,24 @@ abstract class SessionRepositoryContract {
     protected abstract fun createRepository(activeSession: Boolean): SessionRepository
 
     @Test
-    fun activeSessionIsObservableFromEmptyAdapter() {
-        assertContractEquals(
-            ContractScenario("SessionRepository", cardId = null, state = "active"),
-            true,
-            createRepository(activeSession = true).hasActiveSession(),
-        )
-    }
+    fun activeSessionIsObservableFromEmptyAdapter() =
+        runTest {
+            assertContractEquals(
+                ContractScenario("SessionRepository", cardId = null, state = "active"),
+                true,
+                createRepository(activeSession = true).hasActiveSession(),
+            )
+        }
 
     @Test
-    fun missingSessionIsObservableFromEmptyAdapter() {
-        assertContractEquals(
-            ContractScenario("SessionRepository", cardId = null, state = "empty"),
-            false,
-            createRepository(activeSession = false).hasActiveSession(),
-        )
-    }
+    fun missingSessionIsObservableFromEmptyAdapter() =
+        runTest {
+            assertContractEquals(
+                ContractScenario("SessionRepository", cardId = null, state = "empty"),
+                false,
+                createRepository(activeSession = false).hasActiveSession(),
+            )
+        }
 }
 
 abstract class UserSettingsRepositoryContract {

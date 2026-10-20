@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -38,6 +39,9 @@ import com.signkorean.app.navigation.AppNavigationViewModel
 import com.signkorean.app.navigation.AppRoute
 import com.signkorean.app.navigation.AppSheet
 import com.signkorean.app.navigation.AppTopLevelTab
+import com.signkorean.app.navigation.LaunchFailure
+import com.signkorean.app.navigation.LaunchUiState
+import com.signkorean.app.navigation.LaunchViewModel
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
@@ -70,30 +74,43 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val navigationViewModel: AppNavigationViewModel by viewModels()
+    private val launchViewModel: LaunchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         navigationViewModel.openDebugDestination(intent.getStringExtra(AppNavigationIntent.EXTRA_DEBUG_SCREEN))
-        setContent { SignKoreanApp(navigationViewModel) }
+        setContent { SignKoreanApp(navigationViewModel, launchViewModel) }
     }
 }
 
 @Composable
-private fun SignKoreanApp(viewModel: AppNavigationViewModel) {
-    val state by viewModel.uiState.collectAsState()
-    SignKoreanAppContent(state = state, onAction = viewModel::dispatch)
+private fun SignKoreanApp(
+    navigationViewModel: AppNavigationViewModel,
+    launchViewModel: LaunchViewModel,
+) {
+    val state by navigationViewModel.uiState.collectAsState()
+    val launchState by launchViewModel.uiState.collectAsState()
+    SignKoreanAppContent(
+        state = state,
+        onAction = navigationViewModel::dispatch,
+        launchState = launchState,
+        onLaunchRetry = launchViewModel::retry,
+    )
 }
 
 @Composable
 internal fun SignKoreanAppContent(
     state: AppNavigationUiState,
     onAction: (AppNavigationAction) -> Unit,
+    launchState: LaunchUiState = LaunchUiState.Loading,
+    onLaunchRetry: () -> Unit = {},
 ) {
-    val backStack = rememberNavBackStack(AppRoute.Welcome)
+    val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
         remember(onAction, state) {
             entryProvider<NavKey> {
+                entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
                 entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
                 entry<AppRoute.Tutorial> { OnboardingDestination(OnboardingStep.Tutorial, onAction) }
                 entry<AppRoute.Level> { OnboardingDestination(OnboardingStep.Level, onAction) }
@@ -106,6 +123,12 @@ internal fun SignKoreanAppContent(
                 entry<AppRoute.Legal> { LegalScreen(LegalUiState()) }
             }
         }
+
+    LaunchedEffect(launchState) {
+        if (launchState is LaunchUiState.Ready) {
+            onAction(AppNavigationAction.LaunchReady(launchState.destination))
+        }
+    }
 
     LaunchedEffect(state.backStack) {
         if (backStack.toList() != state.backStack) {
@@ -131,6 +154,44 @@ internal fun SignKoreanAppContent(
                     )
                 }
                 AppOverlayHost(state = state, onAction = onAction)
+            }
+        }
+    }
+}
+
+@Composable
+private fun LaunchScreen(
+    state: LaunchUiState,
+    onRetry: () -> Unit,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        GameCard(modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
+            when (state) {
+                LaunchUiState.Loading -> {
+                    Text(stringResource(R.string.launch_loading), style = MaterialTheme.typography.bodyLarge)
+                }
+
+                is LaunchUiState.Error -> {
+                    val message =
+                        when (state.failure) {
+                            LaunchFailure.Database -> stringResource(R.string.launch_database_error)
+                            LaunchFailure.Content -> stringResource(R.string.launch_content_error)
+                        }
+                    Text(message, style = MaterialTheme.typography.bodyLarge)
+                    GameButton(
+                        text = stringResource(R.string.launch_retry),
+                        onClick = onRetry,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
+                is LaunchUiState.Ready -> {
+                    Unit
+                }
             }
         }
     }

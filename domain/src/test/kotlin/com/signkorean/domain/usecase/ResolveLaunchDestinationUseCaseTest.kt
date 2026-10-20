@@ -12,7 +12,7 @@ import org.junit.Test
 
 class ResolveLaunchDestinationUseCaseTest {
     @Test
-    fun `active session resumes after onboarding is complete`() =
+    fun `active session returns home after onboarding is complete`() =
         runTest {
             val useCase =
                 ResolveLaunchDestinationUseCase(
@@ -20,7 +20,7 @@ class ResolveLaunchDestinationUseCaseTest {
                     sessionRepository = FakeSessionRepository(activeSession = true),
                 )
 
-            assertEquals(LaunchDestination.LEARN, useCase())
+            assertEquals(LaunchDestination.HOME, useCase())
         }
 
     @Test
@@ -46,6 +46,6 @@ class ResolveLaunchDestinationUseCaseTest {
     private class FakeSessionRepository(
         private val activeSession: Boolean,
     ) : SessionRepository {
-        override fun hasActiveSession(): Boolean = activeSession
+        override suspend fun hasActiveSession(): Boolean = activeSession
     }
 }

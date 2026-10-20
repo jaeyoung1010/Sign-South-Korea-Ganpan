@@ -23,6 +23,7 @@ object DatabaseModule {
         Room
             .databaseBuilder(context, SignKoreanDatabase::class.java, "sign-korean.db")
             .addMigrations(SignKoreanDatabase.MIGRATION_1_2)
+            .addMigrations(SignKoreanDatabase.MIGRATION_2_3)
             .build()
 
     @Provides

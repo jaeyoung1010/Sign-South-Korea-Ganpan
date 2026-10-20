@@ -5,5 +5,5 @@ import com.signkorean.domain.port.output.SessionRepository
 class BootstrapSessionRepository(
     private val activeSession: Boolean = false,
 ) : SessionRepository {
-    override fun hasActiveSession(): Boolean = activeSession
+    override suspend fun hasActiveSession(): Boolean = activeSession
 }

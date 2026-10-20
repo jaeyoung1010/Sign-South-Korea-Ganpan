@@ -13,7 +13,7 @@ class ResolveLaunchDestinationUseCase(
     override suspend fun invoke(): LaunchDestination =
         when {
             !userSettingsRepository.settings.first().onboardingCompleted -> LaunchDestination.ONBOARDING
-            sessionRepository.hasActiveSession() -> LaunchDestination.LEARN
+            sessionRepository.hasActiveSession() -> LaunchDestination.HOME
             else -> LaunchDestination.HOME
         }
 }

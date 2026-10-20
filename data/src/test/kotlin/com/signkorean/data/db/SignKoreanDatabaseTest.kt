@@ -239,7 +239,7 @@ class SignKoreanDatabaseTest {
     }
 
     @Test
-    fun `migrates a v1 database to v2 without losing sessions`() {
+    fun `migrates a v1 database to v3 without losing sessions`() {
         val databaseName = "phase-7-v1-to-v2.db"
         context.deleteDatabase(databaseName)
         val v1 = Room.databaseBuilder(context, LegacyV1Database::class.java, databaseName).allowMainThreadQueries().build()
@@ -250,6 +250,7 @@ class SignKoreanDatabaseTest {
             Room
                 .databaseBuilder(context, SignKoreanDatabase::class.java, databaseName)
                 .addMigrations(SignKoreanDatabase.MIGRATION_1_2)
+                .addMigrations(SignKoreanDatabase.MIGRATION_2_3)
                 .allowMainThreadQueries()
                 .build()
         try {

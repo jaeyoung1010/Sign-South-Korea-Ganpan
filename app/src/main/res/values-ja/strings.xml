@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sign Korean</string>
+    <string name="launch_loading">標識を準備しています…</string>
+    <string name="launch_database_error">保存した学習データを開けませんでした。</string>
+    <string name="launch_content_error">収録済みの標識コンテンツを読み込めませんでした。</string>
+    <string name="launch_retry">再試行</string>
 </resources>

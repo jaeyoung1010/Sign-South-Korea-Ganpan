@@ -17,6 +17,9 @@ interface CardProgressDao {
     @Query("DELETE FROM card_progress WHERE card_id = :cardId")
     fun delete(cardId: String)
 
+    @Query("DELETE FROM card_progress WHERE card_id NOT IN (:cardIds)")
+    fun deleteNotIn(cardIds: List<String>)
+
     @Query("SELECT COUNT(*) FROM card_progress")
     fun count(): Int
 }
@@ -76,4 +79,13 @@ interface CardReportDao {
 
     @Query("SELECT COUNT(*) FROM card_reports")
     fun count(): Int
+}
+
+@Dao
+interface ContentStateDao {
+    @Query("SELECT * FROM content_state WHERE id = 1")
+    fun current(): ContentStateEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun upsert(state: ContentStateEntity)
 }

@@ -1,5 +1,6 @@
 package com.signkorean.app.navigation
 
+import com.signkorean.domain.model.LaunchDestination
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -9,14 +10,13 @@ class AppNavigationReducerTest {
     @Test
     fun onboarding_routes_reach_learn_home_in_order() {
         val state =
-            reducer.reduceAll(
-                listOf(
-                    AppNavigationAction.Navigate(AppRoute.Tutorial),
-                    AppNavigationAction.Navigate(AppRoute.Level),
-                    AppNavigationAction.Navigate(AppRoute.Interests),
-                    AppNavigationAction.CompleteOnboarding,
-                ),
-            )
+            listOf(
+                AppNavigationAction.LaunchReady(LaunchDestination.ONBOARDING),
+                AppNavigationAction.Navigate(AppRoute.Tutorial),
+                AppNavigationAction.Navigate(AppRoute.Level),
+                AppNavigationAction.Navigate(AppRoute.Interests),
+                AppNavigationAction.CompleteOnboarding,
+            ).fold(AppNavigationUiState(), reducer::reduce)
 
         assertEquals(listOf(AppRoute.Home), state.backStack)
     }
@@ -57,6 +57,28 @@ class AppNavigationReducerTest {
         assertEquals(
             AppRoute.Settings,
             reducer.reduce(state, AppNavigationAction.SelectTab(AppTopLevelTab.Settings)).currentRoute,
+        )
+    }
+
+    @Test
+    fun launch_resolves_once_to_home_or_onboarding_without_opening_a_session() {
+        val launch = AppNavigationUiState()
+
+        assertEquals(
+            AppRoute.Welcome,
+            reducer
+                .reduce(
+                    launch,
+                    AppNavigationAction.LaunchReady(LaunchDestination.ONBOARDING),
+                ).currentRoute,
+        )
+        assertEquals(
+            AppRoute.Home,
+            reducer
+                .reduce(
+                    launch,
+                    AppNavigationAction.LaunchReady(LaunchDestination.LEARN),
+                ).currentRoute,
         )
     }
 
@@ -111,7 +133,7 @@ class AppNavigationReducerTest {
 
     @Test
     fun back_on_root_route_keeps_the_user_in_the_app() {
-        val state = AppNavigationUiState(backStack = listOf(AppRoute.Welcome))
+        val state = AppNavigationUiState(backStack = listOf(AppRoute.Launch))
 
         assertEquals(state, reducer.reduce(state, AppNavigationAction.Back))
     }

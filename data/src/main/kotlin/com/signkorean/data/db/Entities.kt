@@ -183,3 +183,15 @@ data class CardReportEntity(
     @ColumnInfo(name = "sync_state")
     val syncState: String,
 )
+
+@Entity(tableName = "content_state")
+data class ContentStateEntity(
+    @PrimaryKey
+    val id: Int = SINGLETON_ID,
+    @ColumnInfo(name = "content_version")
+    val contentVersion: Int,
+) {
+    companion object {
+        const val SINGLETON_ID = 1
+    }
+}
