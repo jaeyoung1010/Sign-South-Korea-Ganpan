@@ -22,7 +22,10 @@ internal fun LevelDestination(
         onAction = { action ->
             when (action) {
                 is OnboardingChoiceAction.SelectLevel -> onSelectLevel(action.level)
-                OnboardingChoiceAction.SkipLevel -> onSkipLevel()
+                OnboardingChoiceAction.SkipLevel -> {
+                    onSkipLevel()
+                    onContinue()
+                }
                 OnboardingChoiceAction.ContinueFromLevel -> if (state.canContinueFromLevel) onContinue()
                 else -> Unit
             }
