@@ -7,4 +7,7 @@ fun interface AnalyticsSink {
 
     /** Records that the user chose to begin onboarding; it intentionally carries no user data. */
     fun recordOnboardingStarted() = Unit
+
+    /** Records the completion of onboarding without attaching preference values or user data. */
+    fun recordOnboardingCompleted() = Unit
 }

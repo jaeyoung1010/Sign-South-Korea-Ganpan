@@ -1,5 +1,6 @@
 package com.signkorean.app.di
 
+import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.input.StartOnboarding
@@ -8,6 +9,7 @@ import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
@@ -47,4 +49,10 @@ object UseCaseModule {
 
     @Provides
     fun provideStartOnboarding(analyticsSink: AnalyticsSink): StartOnboarding = StartOnboardingUseCase(analyticsSink)
+
+    @Provides
+    fun provideCompleteOnboarding(
+        userSettingsRepository: UserSettingsRepository,
+        analyticsSink: AnalyticsSink,
+    ): CompleteOnboarding = CompleteOnboardingUseCase(userSettingsRepository, analyticsSink)
 }

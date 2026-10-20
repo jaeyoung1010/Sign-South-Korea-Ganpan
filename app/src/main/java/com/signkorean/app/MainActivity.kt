@@ -42,6 +42,7 @@ import com.signkorean.app.navigation.AppTopLevelTab
 import com.signkorean.app.navigation.LaunchFailure
 import com.signkorean.app.navigation.LaunchUiState
 import com.signkorean.app.navigation.LaunchViewModel
+import com.signkorean.app.onboarding.OnboardingViewModel
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
@@ -58,6 +59,7 @@ import com.signkorean.feature.learn.LearnHomeUiState
 import com.signkorean.feature.learn.LearnSessionScreen
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.feature.learn.LearnUiAction
+import com.signkorean.feature.onboarding.OnboardingChoiceUiState
 import com.signkorean.feature.onboarding.OnboardingScreen
 import com.signkorean.feature.onboarding.OnboardingStep
 import com.signkorean.feature.onboarding.OnboardingUiAction
@@ -75,12 +77,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val navigationViewModel: AppNavigationViewModel by viewModels()
     private val launchViewModel: LaunchViewModel by viewModels()
+    private val onboardingViewModel: OnboardingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         navigationViewModel.openDebugDestination(intent.getStringExtra(AppNavigationIntent.EXTRA_DEBUG_SCREEN))
-        setContent { SignKoreanApp(navigationViewModel, launchViewModel) }
+        setContent { SignKoreanApp(navigationViewModel, launchViewModel, onboardingViewModel) }
     }
 }
 
@@ -88,33 +91,69 @@ class MainActivity : ComponentActivity() {
 private fun SignKoreanApp(
     navigationViewModel: AppNavigationViewModel,
     launchViewModel: LaunchViewModel,
+    onboardingViewModel: OnboardingViewModel,
 ) {
     val state by navigationViewModel.uiState.collectAsState()
     val launchState by launchViewModel.uiState.collectAsState()
+    val onboardingState by onboardingViewModel.uiState.collectAsState()
     SignKoreanAppContent(
         state = state,
         onAction = navigationViewModel::dispatch,
         launchState = launchState,
         onLaunchRetry = launchViewModel::retry,
+        onboardingState = onboardingState,
+        onSelectLevel = onboardingViewModel::selectLevel,
+        onSkipLevel = onboardingViewModel::skipLevel,
+        onToggleInterest = onboardingViewModel::toggleInterest,
+        onCompleteOnboarding = onboardingViewModel::completeOnboarding,
     )
 }
 
 @Composable
+@Suppress("LongMethod")
 internal fun SignKoreanAppContent(
     state: AppNavigationUiState,
     onAction: (AppNavigationAction) -> Unit,
     launchState: LaunchUiState = LaunchUiState.Loading,
     onLaunchRetry: () -> Unit = {},
+    onboardingState: OnboardingChoiceUiState = OnboardingChoiceUiState(),
+    onSelectLevel: (com.signkorean.domain.model.LearningLevel) -> Unit = {},
+    onSkipLevel: () -> Unit = {},
+    onToggleInterest: (com.signkorean.domain.model.Interest) -> Unit = {},
+    onCompleteOnboarding: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
-        remember(onAction, state, launchState, onLaunchRetry) {
+        remember(
+            onAction,
+            state,
+            launchState,
+            onLaunchRetry,
+            onboardingState,
+            onSelectLevel,
+            onSkipLevel,
+            onToggleInterest,
+            onCompleteOnboarding,
+        ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
                 entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
                 entry<AppRoute.Tutorial> { OnboardingDestination(OnboardingStep.Tutorial, onAction) }
-                entry<AppRoute.Level> { OnboardingDestination(OnboardingStep.Level, onAction) }
-                entry<AppRoute.Interests> { OnboardingDestination(OnboardingStep.Interests, onAction) }
+                entry<AppRoute.Level> {
+                    LevelDestination(
+                        state = onboardingState,
+                        onSelectLevel = onSelectLevel,
+                        onSkipLevel = onSkipLevel,
+                        onContinue = { onAction(AppNavigationAction.Navigate(AppRoute.Interests)) },
+                    )
+                }
+                entry<AppRoute.Interests> {
+                    InterestsDestination(
+                        state = onboardingState,
+                        onToggleInterest = onToggleInterest,
+                        onStartLearning = onCompleteOnboarding,
+                    )
+                }
                 entry<AppRoute.Home> { LearnHomeDestination(onAction) }
                 entry<AppRoute.Learn> { LearnDestination(state, onAction) }
                 entry<AppRoute.Done> { DoneDestination(onAction) }
@@ -124,20 +163,18 @@ internal fun SignKoreanAppContent(
             }
         }
 
-    LaunchedEffect(launchState) {
-        if (launchState is LaunchUiState.Ready) {
-            onAction(AppNavigationAction.LaunchReady(launchState.destination))
-        }
-    }
-
-    LaunchedEffect(state.backStack) {
-        if (backStack.toList() != state.backStack) {
-            backStack.clear()
-            backStack.addAll(state.backStack)
-        }
-    }
-
-    BackHandler(enabled = state.handlesBack) { onAction(AppNavigationAction.Back) }
+    NavigationEffects(
+        state = state,
+        launchState = launchState,
+        onboardingState = onboardingState,
+        onAction = onAction,
+        synchronizeBackStack = {
+            if (backStack.toList() != state.backStack) {
+                backStack.clear()
+                backStack.addAll(state.backStack)
+            }
+        },
+    )
 
     SignKoreanTheme {
         SignKoreanScreen {
@@ -157,6 +194,28 @@ internal fun SignKoreanAppContent(
             }
         }
     }
+}
+
+@Composable
+private fun NavigationEffects(
+    state: AppNavigationUiState,
+    launchState: LaunchUiState,
+    onboardingState: OnboardingChoiceUiState,
+    onAction: (AppNavigationAction) -> Unit,
+    synchronizeBackStack: () -> Unit,
+) {
+    LaunchedEffect(launchState) {
+        if (launchState is LaunchUiState.Ready) {
+            onAction(AppNavigationAction.LaunchReady(launchState.destination))
+        }
+    }
+    LaunchedEffect(onboardingState.isCompleted) {
+        if (onboardingState.isCompleted) {
+            onAction(AppNavigationAction.CompleteOnboarding)
+        }
+    }
+    LaunchedEffect(state.backStack) { synchronizeBackStack() }
+    BackHandler(enabled = state.handlesBack) { onAction(AppNavigationAction.Back) }
 }
 
 @Composable

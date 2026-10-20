@@ -6,6 +6,7 @@ import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.UserSettings
+import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -77,6 +78,26 @@ class ProtoUserSettingsRepositoryTest {
 
             assertEquals(expected, fixture.repository.updateSettings { expected })
             assertEquals(expected, withTimeout(5_000) { emission.await() })
+        }
+
+    @Test
+    fun `onboarding choices persist through the actual DataStore adapter`() =
+        runTest {
+            val fixture = createFixture()
+
+            CompleteOnboardingUseCase(fixture.repository, NoopAnalyticsSink)(
+                level = LearningLevel.NOT_SURE,
+                interests = setOf(Interest.FOOD, Interest.SHOPPING),
+            )
+
+            assertEquals(
+                UserSettings(
+                    onboardingCompleted = true,
+                    level = LearningLevel.NOT_SURE,
+                    interests = setOf(Interest.FOOD, Interest.SHOPPING),
+                ),
+                fixture.repository.settings.first(),
+            )
         }
 
     @Test
@@ -235,5 +256,9 @@ class ProtoUserSettingsRepositoryTest {
         override fun onCorruptionRecovered() {
             recoveryCount += 1
         }
+    }
+
+    private object NoopAnalyticsSink : com.signkorean.domain.port.output.AnalyticsSink {
+        override fun recordAppStarted(event: com.signkorean.domain.model.AppStartupEvent) = Unit
     }
 }
