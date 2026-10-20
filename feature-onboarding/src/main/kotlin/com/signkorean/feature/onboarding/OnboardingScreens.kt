@@ -90,6 +90,14 @@ fun OnboardingScreen(
         return
     }
 
+    if (state.step == OnboardingStep.Tutorial) {
+        RememberedTutorialScreen(
+            onContinue = { onAction(OnboardingUiAction.Continue) },
+            modifier = modifier,
+        )
+        return
+    }
+
     GameCard(modifier = modifier.testTag(state.step.screenId)) {
         Text(text = stringResource(state.step.titleRes), style = MaterialTheme.typography.headlineMedium)
         Text(text = stringResource(state.step.descriptionRes), style = MaterialTheme.typography.bodyLarge)
@@ -156,7 +164,10 @@ fun WelcomeScreen(
 }
 
 @Composable
-private fun OnboardingProgressIndicator(modifier: Modifier = Modifier) {
+internal fun OnboardingProgressIndicator(
+    modifier: Modifier = Modifier,
+    activeSteps: Int = 1,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xSmall),
@@ -170,7 +181,7 @@ private fun OnboardingProgressIndicator(modifier: Modifier = Modifier) {
                         .height(6.dp)
                         .clip(RoundedCornerShape(999.dp))
                         .background(
-                            if (index == 0) Color(SignKoreanPalette.PRIMARY) else Color(SignKoreanPalette.BORDER),
+                            if (index < activeSteps) Color(SignKoreanPalette.PRIMARY) else Color(SignKoreanPalette.BORDER),
                         ),
             )
         }
@@ -233,7 +244,7 @@ private fun CollagePhoto(
 }
 
 @Composable
-private fun rememberAssetBitmap(assetPath: String): Bitmap? {
+internal fun rememberAssetBitmap(assetPath: String): Bitmap? {
     val context = LocalContext.current
     val bitmap by
         produceState<Bitmap?>(initialValue = null, context, assetPath) {

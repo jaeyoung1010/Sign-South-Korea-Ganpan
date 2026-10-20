@@ -33,6 +33,13 @@ class AppNavigationReducerTest {
     }
 
     @Test
+    fun tutorial_back_returns_to_welcome() {
+        val tutorial = AppNavigationUiState(backStack = listOf(AppRoute.Welcome, AppRoute.Tutorial))
+
+        assertEquals(AppRoute.Welcome, reducer.reduce(tutorial, AppNavigationAction.Back).currentRoute)
+    }
+
+    @Test
     fun learn_done_progress_settings_and_legal_routes_are_reachable() {
         val state =
             reducer.reduceAll(

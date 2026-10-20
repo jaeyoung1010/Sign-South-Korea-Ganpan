@@ -34,6 +34,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":designsystem"))
 
+    testImplementation(libs.junit4)
+
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)

@@ -2,7 +2,7 @@ package com.signkorean.app
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -20,11 +20,9 @@ class AppLaunchSmokeTest {
     val composeRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun appLaunchesAndShowsItsName() {
+    fun appLaunchesAtTheResolvedHomeDestination() {
         hiltRule.inject()
 
-        val localizedAppName = composeRule.activity.getString(R.string.app_name)
-
-        composeRule.onNodeWithText(localizedAppName).assertIsDisplayed()
+        composeRule.onNodeWithTag("screen-home").assertIsDisplayed()
     }
 }
