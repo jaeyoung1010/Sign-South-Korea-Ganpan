@@ -25,7 +25,9 @@ class AppNavigationViewModel
         val effects = mutableEffects.asSharedFlow()
 
         fun dispatch(action: AppNavigationAction) {
-            if (action == AppNavigationAction.StartOnboarding) {
+            val acceptsOnboardingStart =
+                action == AppNavigationAction.StartOnboarding && mutableUiState.value.currentRoute == AppRoute.Welcome
+            if (acceptsOnboardingStart) {
                 viewModelScope.launch { startOnboarding() }
             }
             mutableUiState.value = reducer.reduce(mutableUiState.value, action)
