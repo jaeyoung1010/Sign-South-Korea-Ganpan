@@ -1,6 +1,8 @@
 package com.signkorean.domain.usecase
 
 import com.signkorean.domain.model.LearnSessionError
+import com.signkorean.domain.model.LearnSessionPhoto
+import com.signkorean.domain.model.LearnSessionPreview
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.output.CardCatalog
@@ -36,6 +38,20 @@ class LoadLearnSessionUseCase(
             card = card,
             position = session.currentIndex + 1,
             totalCount = session.cards.size,
+            photo = LearnSessionPhoto.from(card),
+            upcomingCards =
+                session.cards
+                    .drop(session.currentIndex + 1)
+                    .take(MAX_PREVIEW_COUNT)
+                    .mapNotNull { preview ->
+                        cardCatalog.getCard(preview.cardId)?.let { card ->
+                            LearnSessionPreview(cardId = card.id, imageAssetUri = card.imageAssetUri)
+                        }
+                    },
         )
+    }
+
+    private companion object {
+        const val MAX_PREVIEW_COUNT = 2
     }
 }

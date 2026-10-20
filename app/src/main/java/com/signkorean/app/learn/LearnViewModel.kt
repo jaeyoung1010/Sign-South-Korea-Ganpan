@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnPhotoPrefetcher
+import com.signkorean.feature.learn.LearnPhotoUiModel
 import com.signkorean.feature.learn.LearnSessionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -20,6 +23,7 @@ class LearnViewModel
     @Inject
     constructor(
         private val loadLearnSession: LoadLearnSession,
+        private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
@@ -32,7 +36,13 @@ class LearnViewModel
             loadJob =
                 viewModelScope.launch {
                     try {
-                        mutableUiState.value = loadLearnSession().toUiState()
+                        val result = loadLearnSession()
+                        mutableUiState.value = result.toUiState()
+                        if (result is LoadLearnSessionResult.Active) {
+                            photoPrefetcher.prefetch(
+                                result.upcomingCards.take(MAX_PREFETCH_COUNT).map { it.imageAssetUri },
+                            )
+                        }
                     } catch (cancellation: CancellationException) {
                         throw cancellation
                     } catch (_: Exception) {
@@ -55,6 +65,14 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
                 sign = card.korean,
                 position = position,
                 totalCount = totalCount,
+                photo =
+                    LearnPhotoUiModel(
+                        imageAssetUri = photo.imageAssetUri,
+                        focus = photo.focus,
+                        questionContentDescription = photo.questionContentDescription,
+                        answerContentDescription = photo.answerContentDescription,
+                    ),
+                upcomingCards = upcomingCards.map { LearnCardPreviewUiModel(it.cardId, it.imageAssetUri) },
             )
         }
 
@@ -66,3 +84,5 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
             LearnSessionUiState.Error(error)
         }
     }
+
+private const val MAX_PREFETCH_COUNT = 2

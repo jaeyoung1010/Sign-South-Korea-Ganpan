@@ -3,6 +3,8 @@ package com.signkorean.designsystem.testing
 object SignKoreanTestTags {
     const val LEARN_CARD_STACK = "learn.card.stack"
     const val LEARN_ACTIVE_CARD = "learn.card.active"
+    const val LEARN_PHOTO = "learn.card.photo"
+    const val LEARN_FOCUS_FRAME = "learn.card.focus-frame"
     const val LEARN_REVEAL_ANSWER = "learn.answer.reveal"
     const val LEARN_PLAY_AUDIO = "learn.audio.play"
     const val LEARN_ZOOM_IMAGE = "learn.image.zoom"

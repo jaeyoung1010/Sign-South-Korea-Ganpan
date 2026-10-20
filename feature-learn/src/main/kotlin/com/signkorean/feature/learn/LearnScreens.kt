@@ -25,6 +25,7 @@ import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
+import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
 
 data class LearnHomeUiState(
@@ -80,6 +81,8 @@ sealed interface LearnSessionUiState {
         val sign: String,
         val position: Int,
         val totalCount: Int,
+        val photo: LearnPhotoUiModel = LearnPhotoUiModel.placeholder(),
+        val upcomingCards: List<LearnCardPreviewUiModel> = emptyList(),
         val stage: LearnCardStage = LearnCardStage.Question,
     ) : LearnSessionUiState {
         init {
@@ -96,6 +99,28 @@ sealed interface LearnSessionUiState {
         val error: LearnSessionError,
     ) : LearnSessionUiState
 }
+
+data class LearnPhotoUiModel(
+    val imageAssetUri: String,
+    val focus: FocusRect,
+    val questionContentDescription: String,
+    val answerContentDescription: String,
+) {
+    companion object {
+        fun placeholder(): LearnPhotoUiModel =
+            LearnPhotoUiModel(
+                imageAssetUri = "",
+                focus = FocusRect(0f, 0f, 100f, 100f),
+                questionContentDescription = "Street sign photo.",
+                answerContentDescription = "Street sign photo.",
+            )
+    }
+}
+
+data class LearnCardPreviewUiModel(
+    val cardId: String,
+    val imageAssetUri: String,
+)
 
 enum class LearnCardStage {
     Question,
@@ -341,7 +366,7 @@ private fun LearnTopBar(onAction: (LearnUiAction) -> Unit) {
 }
 
 @Composable
-private fun ActiveLearnSession(
+private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
 ) {
@@ -355,21 +380,10 @@ private fun ActiveLearnSession(
         progress = { state.progressFraction },
         modifier = Modifier.fillMaxWidth().testTag(LearnSessionTestTags.PROGRESS),
     )
-    GameCard(modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_CARD_STACK)) {
-        Text(
-            text = if (state.stage == LearnCardStage.Question) "What does this sign mean?" else "Answer",
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Black,
-        )
-        Text(
-            text = state.sign,
-            modifier = Modifier.testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD),
-            style = MaterialTheme.typography.displayMedium,
-        )
-        if (state.stage == LearnCardStage.Answer) {
-            Text("Answer details will appear here.", style = MaterialTheme.typography.bodyLarge)
-        }
-    }
+    LearnCardStack(
+        state = state,
+        modifier = Modifier.fillMaxWidth().weight(1f),
+    )
     GameButton(
         text = if (state.stage == LearnCardStage.Question) "Show answer" else "Answer shown",
         onClick = { onAction(LearnUiAction.RevealAnswer) },

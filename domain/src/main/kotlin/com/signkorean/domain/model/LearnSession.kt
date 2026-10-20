@@ -19,6 +19,8 @@ sealed interface LoadLearnSessionResult {
         val card: SignCard,
         val position: Int,
         val totalCount: Int,
+        val photo: LearnSessionPhoto = LearnSessionPhoto.from(card),
+        val upcomingCards: List<LearnSessionPreview> = emptyList(),
     ) : LoadLearnSessionResult {
         val progressFraction: Float
             get() = position.toFloat() / totalCount
@@ -30,6 +32,28 @@ sealed interface LoadLearnSessionResult {
         val error: LearnSessionError,
     ) : LoadLearnSessionResult
 }
+
+data class LearnSessionPhoto(
+    val imageAssetUri: String,
+    val focus: FocusRect,
+    val questionContentDescription: String,
+    val answerContentDescription: String,
+) {
+    companion object {
+        fun from(card: SignCard): LearnSessionPhoto =
+            LearnSessionPhoto(
+                imageAssetUri = card.imageAssetUri,
+                focus = card.focus,
+                questionContentDescription = "Street sign photo.",
+                answerContentDescription = "Street sign photo for ${card.korean}.",
+            )
+    }
+}
+
+data class LearnSessionPreview(
+    val cardId: String,
+    val imageAssetUri: String,
+)
 
 enum class LearnSessionError {
     NoActiveSession,

@@ -12,6 +12,7 @@ import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.SessionRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -76,6 +77,17 @@ class LoadLearnSessionUseCaseTest {
             assertEquals("card-0", active.card.id)
             assertEquals(1, active.position)
             assertEquals(.2f, active.progressFraction)
+        }
+
+    @Test
+    fun `returns photo metadata and only the next two card previews`() =
+        runTest {
+            val active = assertActive(load(session(total = 5, currentIndex = 0))())
+
+            assertEquals("asset://card-0", active.photo.imageAssetUri)
+            assertFalse(active.photo.questionContentDescription.contains(active.card.korean))
+            assertTrue(active.photo.answerContentDescription.contains(active.card.korean))
+            assertEquals(listOf("card-1", "card-2"), active.upcomingCards.map { it.cardId })
         }
 
     private fun load(snapshot: ActiveLearnSession): LoadLearnSessionUseCase =

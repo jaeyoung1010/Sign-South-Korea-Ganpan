@@ -2,10 +2,12 @@ package com.signkorean.app.learn
 
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
+import com.signkorean.domain.model.LearnSessionPreview
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.testsupport.MainDispatcherRule
 import kotlinx.coroutines.CompletableDeferred
@@ -96,6 +98,32 @@ class LearnViewModelTest {
             advanceUntilIdle()
 
             assertEquals(LearnSessionUiState.Error(LearnSessionError.Unavailable), viewModel.uiState.value)
+        }
+
+    @Test
+    fun `prefetches only the next two image previews after loading the active card`() =
+        runTest {
+            val prefetched = mutableListOf<List<String>>()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession =
+                        LoadLearnSession {
+                            active(position = 1, total = 20).copy(
+                                upcomingCards =
+                                    listOf(
+                                        LearnSessionPreview("card-2", "asset://card-2"),
+                                        LearnSessionPreview("card-3", "asset://card-3"),
+                                        LearnSessionPreview("card-4", "asset://card-4"),
+                                    ),
+                            )
+                        },
+                    photoPrefetcher = LearnPhotoPrefetcher { prefetched += it },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+
+            assertEquals(listOf(listOf("asset://card-2", "asset://card-3")), prefetched)
         }
 
     private fun active(

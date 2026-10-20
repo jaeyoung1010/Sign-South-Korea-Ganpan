@@ -31,6 +31,9 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.coil.compose)
     implementation(project(":domain"))
     implementation(project(":designsystem"))
+
+    testImplementation(libs.junit4)
 }
