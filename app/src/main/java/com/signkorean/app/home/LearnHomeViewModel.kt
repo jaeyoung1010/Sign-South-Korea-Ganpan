@@ -9,6 +9,7 @@ import com.signkorean.feature.learn.HomeSessionUiModel
 import com.signkorean.feature.learn.LearnHomeUiState
 import com.signkorean.feature.learn.WeekActivityUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ class LearnHomeViewModel
         private val loadLearnHome: LoadLearnHome,
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow(LearnHomeUiState())
+        private var refreshJob: Job? = null
 
         val uiState = mutableUiState.asStateFlow()
 
@@ -31,9 +33,11 @@ class LearnHomeViewModel
         }
 
         fun refresh() {
-            viewModelScope.launch {
-                mutableUiState.value = loadLearnHome().toUiState()
-            }
+            refreshJob?.cancel()
+            refreshJob =
+                viewModelScope.launch {
+                    mutableUiState.value = loadLearnHome().toUiState()
+                }
         }
     }
 
