@@ -83,14 +83,18 @@ class StartSessionUseCase(
                 cards = cards,
             )
         sessionCreationRepository.save(session, replaceActiveSession = request.replaceActiveSession)
-        analyticsSink.recordSessionStarted(
-            SessionStartedEvent(
-                source = request.type,
-                dueCount = cards.count { it.source == SessionCardSource.REVIEW },
-                newCount = cards.count { it.source == SessionCardSource.NEW },
-                category = request.category,
-            ),
-        )
+        // The persisted session is the source of truth; observability must not make a successful
+        // transaction appear to fail to the learner.
+        runCatching {
+            analyticsSink.recordSessionStarted(
+                SessionStartedEvent(
+                    source = request.type,
+                    dueCount = cards.count { it.source == SessionCardSource.REVIEW },
+                    newCount = cards.count { it.source == SessionCardSource.NEW },
+                    category = request.category,
+                ),
+            )
+        }
         return StartSessionResult.Started(session.id)
     }
 

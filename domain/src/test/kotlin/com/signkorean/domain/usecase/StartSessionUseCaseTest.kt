@@ -136,9 +136,30 @@ class StartSessionUseCaseTest {
             assertEquals(1, store.saved.size)
         }
 
+    @Test
+    fun `analytics failure does not turn a saved session into a start failure`() =
+        runTest {
+            val store = RecordingSessionStore()
+            val start =
+                start(
+                    store = store,
+                    analytics =
+                        object : AnalyticsSink {
+                            override fun recordAppStarted(event: com.signkorean.domain.model.AppStartupEvent) = Unit
+
+                            override fun recordSessionStarted(event: SessionStartedEvent) = error("analytics unavailable")
+                        },
+                )
+
+            val result = start(StartSessionRequest.daily())
+
+            assertEquals(StartSessionResult.Started("session-1"), result)
+            assertEquals(1, store.saved.size)
+        }
+
     private fun start(
         store: RecordingSessionStore,
-        analytics: RecordingAnalytics = RecordingAnalytics(),
+        analytics: AnalyticsSink = RecordingAnalytics(),
         activeSession: com.signkorean.domain.model.ActiveSession? = null,
     ): StartSession =
         StartSessionUseCase(
