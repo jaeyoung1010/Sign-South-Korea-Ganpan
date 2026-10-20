@@ -2,11 +2,13 @@ package com.signkorean.app.learn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnSessionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,9 +28,16 @@ class LearnViewModel
 
         fun load() {
             loadJob?.cancel()
+            mutableUiState.value = LearnSessionUiState.Loading
             loadJob =
                 viewModelScope.launch {
-                    mutableUiState.value = loadLearnSession().toUiState()
+                    try {
+                        mutableUiState.value = loadLearnSession().toUiState()
+                    } catch (cancellation: CancellationException) {
+                        throw cancellation
+                    } catch (_: Exception) {
+                        mutableUiState.value = LearnSessionUiState.Error(LearnSessionError.Unavailable)
+                    }
                 }
         }
 

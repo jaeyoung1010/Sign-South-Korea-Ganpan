@@ -424,6 +424,8 @@ private fun LearnSessionError.toDisplayMessage(): String =
         -> "This saved session needs to be started again."
 
         LearnSessionError.UnknownCard -> "This sign is no longer available."
+
+        LearnSessionError.Unavailable -> "Your saved session could not be loaded."
     }
 
 @Composable

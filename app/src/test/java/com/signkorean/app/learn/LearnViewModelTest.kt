@@ -8,7 +8,9 @@ import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.testsupport.MainDispatcherRule
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -59,6 +61,41 @@ class LearnViewModelTest {
             advanceUntilIdle()
 
             assertEquals(LearnSessionUiState.Error(LearnSessionError.UnknownCard), viewModel.uiState.value)
+        }
+
+    @Test
+    fun `clears a previous card while a new session load is in flight`() =
+        runTest {
+            val replacement = CompletableDeferred<LoadLearnSessionResult>()
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    LoadLearnSession {
+                        calls += 1
+                        if (calls == 1) active(position = 1, total = 5) else replacement.await()
+                    },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+
+            viewModel.load()
+            runCurrent()
+
+            assertEquals(LearnSessionUiState.Loading, viewModel.uiState.value)
+            replacement.complete(active(position = 2, total = 5))
+            advanceUntilIdle()
+            assertEquals(2, assertActive(viewModel.uiState.value).position)
+        }
+
+    @Test
+    fun `turns an unexpected load failure into a safe placeholder`() =
+        runTest {
+            val viewModel = LearnViewModel(LoadLearnSession { error("database unavailable") })
+
+            viewModel.load()
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionUiState.Error(LearnSessionError.Unavailable), viewModel.uiState.value)
         }
 
     private fun active(

@@ -38,4 +38,5 @@ enum class LearnSessionError {
     InvalidCardOrder,
     InvalidCurrentIndex,
     UnknownCard,
+    Unavailable,
 }
