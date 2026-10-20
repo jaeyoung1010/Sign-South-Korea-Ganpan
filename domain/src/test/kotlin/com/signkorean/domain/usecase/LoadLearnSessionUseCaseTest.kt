@@ -8,8 +8,11 @@ import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.LocalizedCardCopy
 import com.signkorean.domain.model.SignCard
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.SessionRepository
+import com.signkorean.domain.port.output.UserSettingsRepository
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -90,7 +93,29 @@ class LoadLearnSessionUseCaseTest {
             assertEquals(listOf("card-1", "card-2"), active.upcomingCards.map { it.cardId })
         }
 
-    private fun load(snapshot: ActiveLearnSession): LoadLearnSessionUseCase =
+    @Test
+    fun `uses the explanation language copy and exposes romanization only when enabled`() =
+        runTest {
+            val active =
+                assertActive(
+                    load(
+                        snapshot = session(total = 5, currentIndex = 0),
+                        settings = UserSettings(learningExplanationLanguageTag = "ja", showRomanization = true),
+                    )(),
+                )
+
+            assertEquals("ja meaning 0", active.answer.displayMeaning)
+            assertEquals("ja pronunciation 0", active.answer.pronunciationGuide)
+            assertTrue(active.answer.showRomanization)
+            assertEquals("ja note 0", active.answer.streetNote)
+            assertTrue(active.photo.questionContentDescription.startsWith("ja question"))
+            assertTrue(active.photo.answerContentDescription.contains(active.card.korean))
+        }
+
+    private fun load(
+        snapshot: ActiveLearnSession,
+        settings: UserSettings = UserSettings(),
+    ): LoadLearnSessionUseCase =
         LoadLearnSessionUseCase(
             sessionRepository =
                 object : SessionRepository {
@@ -99,6 +124,12 @@ class LoadLearnSessionUseCaseTest {
                     override suspend fun getActiveLearnSession(): ActiveLearnSession = snapshot
                 },
             cardCatalog = FixtureCatalog,
+            userSettingsRepository =
+                object : UserSettingsRepository {
+                    override val settings = flowOf(settings)
+
+                    override suspend fun updateSettings(transform: (UserSettings) -> UserSettings): UserSettings = transform(settings)
+                },
         )
 
     private fun session(
@@ -129,7 +160,25 @@ class LoadLearnSessionUseCaseTest {
 
         override fun getCard(cardId: String): SignCard? = getCards().firstOrNull { it.id == cardId }
 
-        override fun getLocalizedCopy(languageTag: String): List<LocalizedCardCopy> = emptyList()
+        override fun getLocalizedCopy(languageTag: String): List<LocalizedCardCopy> =
+            (0 until 20).map { index ->
+                LocalizedCardCopy(
+                    cardId = "card-$index",
+                    languageTag = languageTag,
+                    displayMeaning = "$languageTag meaning $index",
+                    pronunciationGuide = "$languageTag pronunciation $index",
+                    wordParts =
+                        listOf(
+                            com.signkorean.domain.model
+                                .LocalizedWordPart("부분", "$languageTag part"),
+                        ),
+                    streetNote = "$languageTag note $index",
+                    imageAltTextQuestion = "$languageTag question sign",
+                    imageAltTextAnswer = "$languageTag answer for 표지판 $index",
+                    searchTerms = emptyList(),
+                    contentVersion = 1,
+                )
+            }
 
         override fun validateBundle(): BundleValidationReport = BundleValidationReport(20, 20, 0, 0, emptySet())
 

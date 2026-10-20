@@ -82,6 +82,7 @@ sealed interface LearnSessionUiState {
         val position: Int,
         val totalCount: Int,
         val photo: LearnPhotoUiModel = LearnPhotoUiModel.placeholder(),
+        val answer: LearnAnswerUiModel = LearnAnswerUiModel.placeholder(),
         val upcomingCards: List<LearnCardPreviewUiModel> = emptyList(),
         val stage: LearnCardStage = LearnCardStage.Question,
     ) : LearnSessionUiState {
@@ -121,6 +122,30 @@ data class LearnCardPreviewUiModel(
     val cardId: String,
     val imageAssetUri: String,
 )
+
+data class LearnWordPartUiModel(
+    val korean: String,
+    val meaning: String,
+)
+
+data class LearnAnswerUiModel(
+    val displayMeaning: String,
+    val pronunciationGuide: String,
+    val wordParts: List<LearnWordPartUiModel>,
+    val streetNote: String,
+    val showRomanization: Boolean,
+) {
+    companion object {
+        fun placeholder(): LearnAnswerUiModel =
+            LearnAnswerUiModel(
+                displayMeaning = "",
+                pronunciationGuide = "",
+                wordParts = emptyList(),
+                streetNote = "",
+                showRomanization = false,
+            )
+    }
+}
 
 enum class LearnCardStage {
     Question,
@@ -384,12 +409,13 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
         state = state,
         modifier = Modifier.fillMaxWidth().weight(1f),
     )
-    GameButton(
-        text = if (state.stage == LearnCardStage.Question) "Show answer" else "Answer shown",
-        onClick = { onAction(LearnUiAction.RevealAnswer) },
-        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
-        enabled = state.stage == LearnCardStage.Question,
-    )
+    if (state.stage == LearnCardStage.Question) {
+        GameButton(
+            text = "Show answer",
+            onClick = { onAction(LearnUiAction.RevealAnswer) },
+            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
+        )
+    }
     GameButton(
         text = "View sign photo",
         onClick = { onAction(LearnUiAction.ShowImageViewer) },

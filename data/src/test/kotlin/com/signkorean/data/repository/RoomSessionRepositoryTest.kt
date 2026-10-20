@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
@@ -54,6 +55,21 @@ class RoomSessionRepositoryTest {
             assertEquals("active", snapshot?.sessionId)
             assertEquals(1, snapshot?.currentIndex)
             assertEquals(listOf("card-1", "card-2", "card-3"), snapshot?.cards?.map { it.cardId })
+        }
+
+    @Test
+    fun `records an answer reveal once for the current active card`() =
+        runTest {
+            database.sessionDao().insert(SessionEntity.active(id = "active", requestedLength = 1))
+            database.sessionCardDao().insertAll(listOf(sessionCard(0, "card-1")))
+            val revealedAt = Instant.parse("2026-10-20T00:00:00Z")
+
+            val first = repository.markAnswerRevealed("active", 0, "card-1", revealedAt)
+            val duplicate = repository.markAnswerRevealed("active", 0, "card-1", revealedAt.plusSeconds(1))
+
+            assertEquals(true, first)
+            assertEquals(false, duplicate)
+            assertEquals(revealedAt, database.sessionCardDao().get("active", 0)?.answerRevealedAt)
         }
 
     private fun sessionCard(

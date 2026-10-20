@@ -65,6 +65,23 @@ interface SessionCardDao {
     @Query("SELECT rated_at FROM session_cards WHERE rated_at IS NOT NULL")
     fun ratedAt(): List<java.time.Instant>
 
+    @Query(
+        """
+        UPDATE session_cards
+        SET answer_revealed_at = :revealedAt
+        WHERE session_id = :sessionId
+          AND position = :position
+          AND card_id = :cardId
+          AND answer_revealed_at IS NULL
+        """,
+    )
+    fun markAnswerRevealed(
+        sessionId: String,
+        position: Int,
+        cardId: String,
+        revealedAt: java.time.Instant,
+    ): Int
+
     @Update
     fun update(card: SessionCardEntity)
 }

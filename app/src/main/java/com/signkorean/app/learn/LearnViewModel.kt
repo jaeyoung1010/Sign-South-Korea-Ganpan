@@ -5,11 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.RevealAnswer
+import com.signkorean.domain.port.input.RevealAnswerResult
+import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnPhotoUiModel
 import com.signkorean.feature.learn.LearnSessionUiState
+import com.signkorean.feature.learn.LearnWordPartUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -23,15 +27,20 @@ class LearnViewModel
     @Inject
     constructor(
         private val loadLearnSession: LoadLearnSession,
+        private val revealAnswerUseCase: RevealAnswer = RevealAnswer { RevealAnswerResult.Revealed },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
+        private var revealJob: Job? = null
+        private var isRevealing = false
 
         val uiState = mutableUiState.asStateFlow()
 
         fun load() {
             loadJob?.cancel()
+            revealJob?.cancel()
+            isRevealing = false
             mutableUiState.value = LearnSessionUiState.Loading
             loadJob =
                 viewModelScope.launch {
@@ -53,7 +62,29 @@ class LearnViewModel
 
         fun revealAnswer() {
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
-            mutableUiState.value = active.copy(stage = LearnCardStage.Answer)
+            if (active.stage != LearnCardStage.Question || isRevealing) return
+            isRevealing = true
+            revealJob =
+                viewModelScope.launch {
+                    try {
+                        when (revealAnswerUseCase()) {
+                            RevealAnswerResult.Revealed,
+                            RevealAnswerResult.AlreadyRevealed,
+                            -> {
+                                val current = mutableUiState.value as? LearnSessionUiState.Active ?: return@launch
+                                if (current.cardId == active.cardId && current.stage == LearnCardStage.Question) {
+                                    mutableUiState.value = current.copy(stage = LearnCardStage.Answer)
+                                }
+                            }
+
+                            RevealAnswerResult.Unavailable -> {
+                                Unit
+                            }
+                        }
+                    } finally {
+                        isRevealing = false
+                    }
+                }
         }
     }
 
@@ -72,7 +103,16 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
                         questionContentDescription = photo.questionContentDescription,
                         answerContentDescription = photo.answerContentDescription,
                     ),
+                answer =
+                    LearnAnswerUiModel(
+                        displayMeaning = answer.displayMeaning,
+                        pronunciationGuide = answer.pronunciationGuide,
+                        wordParts = answer.wordParts.map { LearnWordPartUiModel(it.korean, it.meaning) },
+                        streetNote = answer.streetNote,
+                        showRomanization = answer.showRomanization,
+                    ),
                 upcomingCards = upcomingCards.map { LearnCardPreviewUiModel(it.cardId, it.imageAssetUri) },
+                stage = if (answerRevealed) LearnCardStage.Answer else LearnCardStage.Question,
             )
         }
 

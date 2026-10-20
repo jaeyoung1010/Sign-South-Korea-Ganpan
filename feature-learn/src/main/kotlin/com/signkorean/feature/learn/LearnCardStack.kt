@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -100,24 +103,73 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(sta
                 .weight(PHOTO_PORTION)
                 .padding(bottom = SignKoreanSpacing.small),
     )
+    val informationScroll = rememberScrollState()
+    LaunchedEffect(state.cardId, state.stage) {
+        informationScroll.scrollTo(0)
+    }
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .weight(INFO_PORTION),
+                .weight(INFO_PORTION)
+                .verticalScroll(informationScroll)
+                .testTag(SignKoreanTestTags.LEARN_INFO_PANEL),
     ) {
+        when (state.stage) {
+            LearnCardStage.Question -> CardQuestion()
+            LearnCardStage.Answer -> CardAnswer(sign = state.sign, answer = state.answer)
+        }
+    }
+}
+
+@Composable
+internal fun CardQuestion() {
+    Column(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_QUESTION)) {
         Text(
-            text = if (state.stage == LearnCardStage.Question) "What does this sign mean?" else "Answer",
-            style = MaterialTheme.typography.labelLarge,
+            text = "What does this sign mean?",
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
         Text(
-            text = state.sign,
-            style = MaterialTheme.typography.displayMedium,
+            text = "Take a moment to read the sign before you reveal it.",
+            style = MaterialTheme.typography.bodyLarge,
         )
-        if (state.stage == LearnCardStage.Answer) {
-            Text("Answer details will appear here.", style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+internal fun CardAnswer(
+    sign: String,
+    answer: LearnAnswerUiModel,
+) {
+    Column(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_ANSWER)) {
+        Text(
+            text = "Answer",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Black,
+        )
+        Text(text = sign, style = MaterialTheme.typography.displayMedium)
+        Text(text = answer.displayMeaning, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        if (answer.showRomanization && answer.pronunciationGuide.isNotBlank()) {
+            Text(
+                text = answer.pronunciationGuide,
+                style = MaterialTheme.typography.bodyLarge,
+            )
         }
+        Text(text = "Words", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+        answer.wordParts.forEach { wordPart ->
+            Text(
+                text = "${wordPart.korean} · ${wordPart.meaning}",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+        Text(text = "Street note", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+        Text(text = answer.streetNote, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = "← Got it · Review →",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Black,
+        )
     }
 }
 

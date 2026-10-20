@@ -1,11 +1,15 @@
 package com.signkorean.app.learn
 
 import com.signkorean.domain.model.FocusRect
+import com.signkorean.domain.model.LearnSessionAnswer
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LearnSessionPreview
 import com.signkorean.domain.model.LoadLearnSessionResult
+import com.signkorean.domain.model.LocalizedWordPart
 import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.RevealAnswer
+import com.signkorean.domain.port.input.RevealAnswerResult
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnSessionUiState
@@ -40,15 +44,57 @@ class LearnViewModelTest {
         }
 
     @Test
-    fun `reveal changes only the local stage for the active card`() =
+    fun `reveal persists before transitioning the active card and does so once`() =
         runTest {
-            val viewModel = LearnViewModel(LoadLearnSession { active(position = 1, total = 5) })
+            var revealCount = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 5) },
+                    revealAnswerUseCase =
+                        RevealAnswer {
+                            revealCount += 1
+                            RevealAnswerResult.Revealed
+                        },
+                )
             viewModel.load()
             advanceUntilIdle()
 
             viewModel.revealAnswer()
+            viewModel.revealAnswer()
+            advanceUntilIdle()
 
             assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
+            assertEquals(1, revealCount)
+        }
+
+    @Test
+    fun `maps localized answer details and an already revealed card into answer state`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    LoadLearnSession {
+                        active(position = 1, total = 5).copy(
+                            answer =
+                                LearnSessionAnswer(
+                                    displayMeaning = "Hongdae Entrance",
+                                    pronunciationGuide = "hongdae ipgu",
+                                    wordParts = listOf(LocalizedWordPart("홍대", "Hongdae")),
+                                    streetNote = "A long street note.",
+                                    showRomanization = true,
+                                ),
+                            answerRevealed = true,
+                        )
+                    },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+
+            val state = assertActive(viewModel.uiState.value)
+            assertEquals(LearnCardStage.Answer, state.stage)
+            assertEquals("Hongdae Entrance", state.answer.displayMeaning)
+            assertEquals("hongdae ipgu", state.answer.pronunciationGuide)
+            assertTrue(state.answer.showRomanization)
         }
 
     @Test

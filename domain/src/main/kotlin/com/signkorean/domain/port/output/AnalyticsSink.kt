@@ -1,5 +1,6 @@
 package com.signkorean.domain.port.output
 
+import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.SessionStartedEvent
 
@@ -14,4 +15,7 @@ fun interface AnalyticsSink {
 
     /** Records only aggregate session-selection attributes, never individual card identifiers. */
     fun recordSessionStarted(event: SessionStartedEvent) = Unit
+
+    /** Records an answer transition only after it has been persisted. */
+    fun recordAnswerRevealed(event: AnswerRevealedEvent) = Unit
 }

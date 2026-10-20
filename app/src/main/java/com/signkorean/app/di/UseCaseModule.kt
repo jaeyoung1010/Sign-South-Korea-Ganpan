@@ -5,6 +5,7 @@ import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.ResolveLaunchDestination
+import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.input.StartSession
 import com.signkorean.domain.port.output.AnalyticsSink
@@ -22,6 +23,7 @@ import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.LoadLearnSessionUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
+import com.signkorean.domain.usecase.RevealAnswerUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
 import com.signkorean.domain.usecase.StartSessionUseCase
 import dagger.Module
@@ -114,5 +116,13 @@ object UseCaseModule {
     fun provideLoadLearnSession(
         sessionRepository: SessionRepository,
         cardCatalog: CardCatalog,
-    ): LoadLearnSession = LoadLearnSessionUseCase(sessionRepository, cardCatalog)
+        userSettingsRepository: UserSettingsRepository,
+    ): LoadLearnSession = LoadLearnSessionUseCase(sessionRepository, cardCatalog, userSettingsRepository)
+
+    @Provides
+    fun provideRevealAnswer(
+        sessionRepository: SessionRepository,
+        analyticsSink: AnalyticsSink,
+        clock: ClockPort,
+    ): RevealAnswer = RevealAnswerUseCase(sessionRepository, analyticsSink, clock)
 }

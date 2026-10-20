@@ -18,12 +18,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.model.FocusRect
+import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
+import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnPhotoUiModel
 import com.signkorean.feature.learn.LearnSessionScreen
 import com.signkorean.feature.learn.LearnSessionTestTags
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.feature.learn.LearnUiAction
+import com.signkorean.feature.learn.LearnWordPartUiModel
 import com.signkorean.testsupport.ScreenshotArtifact
 import com.signkorean.testsupport.ScreenshotCase
 import com.signkorean.testsupport.ScreenshotTestHarness
@@ -52,7 +55,7 @@ class LearnSessionScreenTest {
 
     @Test
     fun card_index_updates_when_the_session_state_changes() {
-        var sessionState by mutableStateOf(active(position = 1, total = 5))
+        var sessionState by mutableStateOf(active(position = 1, total = 5).copy(stage = LearnCardStage.Answer))
         composeRule.setContent {
             SignKoreanTheme {
                 LearnSessionScreen(state = sessionState, onAction = {})
@@ -60,10 +63,59 @@ class LearnSessionScreenTest {
         }
 
         composeRule.onNodeWithText("1 of 5").assertIsDisplayed()
-        sessionState = active(position = 2, total = 5)
+        sessionState = active(position = 2, total = 5).copy(stage = LearnCardStage.Answer)
 
         composeRule.onNodeWithText("2 of 5").assertIsDisplayed()
         composeRule.onNodeWithText("표지판 2").assertIsDisplayed()
+    }
+
+    @Test
+    fun question_hides_answer_content_until_show_answer_is_pressed() {
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(state = answerState().copy(stage = LearnCardStage.Question), onAction = {})
+            }
+        }
+
+        composeRule.onNodeWithText("What does this sign mean?").assertIsDisplayed()
+        composeRule.onNodeWithText("홍대입구").assertDoesNotExist()
+        composeRule.onNodeWithText("Hongdae Entrance").assertDoesNotExist()
+        composeRule.onNodeWithText("Words").assertDoesNotExist()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertIsDisplayed()
+    }
+
+    @Test
+    fun answer_shows_required_content_below_the_unchanged_photo() {
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(state = answerState(), onAction = {})
+            }
+        }
+
+        composeRule.onNodeWithText("Answer").assertIsDisplayed()
+        composeRule.onNodeWithText("홍대입구").assertIsDisplayed()
+        composeRule.onNodeWithText("Hongdae Entrance").assertIsDisplayed()
+        composeRule.onNodeWithText("hongdae ipgu").assertIsDisplayed()
+        composeRule.onNodeWithText("Words").assertIsDisplayed()
+        composeRule.onNodeWithText("Street note").assertIsDisplayed()
+        composeRule.onNodeWithText("← Got it · Review →").assertIsDisplayed()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertDoesNotExist()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
+    }
+
+    @Test
+    fun answer_hides_the_pronunciation_guide_when_romanization_is_off() {
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(
+                    state = answerState().copy(answer = answerState().answer.copy(showRomanization = false)),
+                    onAction = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("hongdae ipgu").assertDoesNotExist()
+        composeRule.onNodeWithText("Hongdae Entrance").assertIsDisplayed()
     }
 
     @Test
@@ -121,6 +173,44 @@ class LearnSessionScreenTest {
         }
     }
 
+    @Test
+    fun long_english_and_japanese_answer_content_keeps_the_photo_above_the_scrollable_information_panel() {
+        listOf(
+            "en" to
+                "The gateway to Hongdae, a popular area for live music, cafés, shopping, and nightlife. " +
+                "It can be busy at every hour of the day and night.",
+            "ja" to
+                "ライブハウスやカフェ、買い物でにぎわう弘大エリアの玄関口です。" +
+                "週末は特に混雑するため、周囲の歩行者に注意しましょう。",
+        ).forEach { (language, streetNote) ->
+            composeRule.setContent {
+                SignKoreanTheme {
+                    Box(
+                        modifier =
+                            androidx.compose.ui.Modifier
+                                .width(390.dp)
+                                .height(720.dp),
+                    ) {
+                        LearnSessionScreen(
+                            state = answerState().copy(answer = answerState().answer.copy(streetNote = streetNote)),
+                            onAction = {},
+                        )
+                    }
+                }
+            }
+
+            composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
+            composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
+            val image = composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_CARD_STACK).captureToImage()
+            val artifact =
+                ScreenshotTestHarness.capture(
+                    ScreenshotCase("learn-answer-long-$language", widthDp = 390, localeTag = language),
+                ) { case -> ScreenshotArtifact(case.id, byteArrayOf(image.width.toByte(), image.height.toByte())) }
+
+            assertTrue(artifact.bytes.isNotEmpty())
+        }
+    }
+
     private fun active(
         position: Int,
         total: Int,
@@ -144,6 +234,24 @@ class LearnSessionScreenTest {
                 listOf(
                     LearnCardPreviewUiModel("card-2", "file:///android_asset/signs/generated/02-gyeongbokgung.jpg"),
                     LearnCardPreviewUiModel("card-3", "file:///android_asset/signs/generated/03-bukchon-hanok-village.jpg"),
+                ),
+        )
+
+    private fun answerState() =
+        photoState().copy(
+            sign = "홍대입구",
+            stage = LearnCardStage.Answer,
+            answer =
+                LearnAnswerUiModel(
+                    displayMeaning = "Hongdae Entrance",
+                    pronunciationGuide = "hongdae ipgu",
+                    wordParts =
+                        listOf(
+                            LearnWordPartUiModel("홍대", "Hongdae"),
+                            LearnWordPartUiModel("입구", "entrance"),
+                        ),
+                    streetNote = "The gateway to Hongdae, a popular area for live music, cafés, shopping, and nightlife.",
+                    showRomanization = true,
                 ),
         )
 }
