@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.domain.model.AnswerRevealWriteResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -67,8 +68,8 @@ class RoomSessionRepositoryTest {
             val first = repository.markAnswerRevealed("active", 0, "card-1", revealedAt)
             val duplicate = repository.markAnswerRevealed("active", 0, "card-1", revealedAt.plusSeconds(1))
 
-            assertEquals(true, first)
-            assertEquals(false, duplicate)
+            assertEquals(AnswerRevealWriteResult.Recorded, first)
+            assertEquals(AnswerRevealWriteResult.AlreadyRecorded, duplicate)
             assertEquals(revealedAt, database.sessionCardDao().get("active", 0)?.answerRevealedAt)
         }
 

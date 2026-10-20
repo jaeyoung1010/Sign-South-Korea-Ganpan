@@ -1,6 +1,7 @@
 package com.signkorean.domain.usecase
 
 import com.signkorean.domain.model.ActiveLearnSession
+import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.LearnSessionCard
@@ -18,7 +19,7 @@ class RevealAnswerUseCaseTest {
     @Test
     fun `persists and records an answer reveal exactly once`() =
         runTest {
-            val sessions = RecordingSessionRepository(markResult = true)
+            val sessions = RecordingSessionRepository(markResult = AnswerRevealWriteResult.Recorded)
             val analytics = RecordingAnalyticsSink()
             val useCase = RevealAnswerUseCase(sessions, analytics, fixedClock)
 
@@ -32,7 +33,7 @@ class RevealAnswerUseCaseTest {
     @Test
     fun `does not duplicate analytics when the answer was already revealed`() =
         runTest {
-            val sessions = RecordingSessionRepository(markResult = false)
+            val sessions = RecordingSessionRepository(markResult = AnswerRevealWriteResult.AlreadyRecorded)
             val analytics = RecordingAnalyticsSink()
 
             val result = RevealAnswerUseCase(sessions, analytics, fixedClock)()
@@ -41,8 +42,24 @@ class RevealAnswerUseCaseTest {
             assertEquals(emptyList<AnswerRevealedEvent>(), analytics.events)
         }
 
+    @Test
+    fun `does not transition an unavailable stale reveal into an answer`() =
+        runTest {
+            val analytics = RecordingAnalyticsSink()
+
+            val result =
+                RevealAnswerUseCase(
+                    RecordingSessionRepository(markResult = AnswerRevealWriteResult.Unavailable),
+                    analytics,
+                    fixedClock,
+                )()
+
+            assertEquals(RevealAnswerResult.Unavailable, result)
+            assertEquals(emptyList<AnswerRevealedEvent>(), analytics.events)
+        }
+
     private class RecordingSessionRepository(
-        private val markResult: Boolean,
+        private val markResult: AnswerRevealWriteResult,
     ) : SessionRepository {
         val recorded = mutableListOf<Triple<String, Int, String>>()
 
@@ -61,7 +78,7 @@ class RevealAnswerUseCaseTest {
             position: Int,
             cardId: String,
             revealedAt: Instant,
-        ): Boolean {
+        ): AnswerRevealWriteResult {
             recorded += Triple(sessionId, position, cardId)
             return markResult
         }

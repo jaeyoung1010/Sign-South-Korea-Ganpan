@@ -3,6 +3,7 @@ package com.signkorean.data.repository
 import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
+import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.LearnSessionCard
 import com.signkorean.domain.port.output.SessionRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -49,17 +50,24 @@ class RoomSessionRepository(
         position: Int,
         cardId: String,
         revealedAt: Instant,
-    ): Boolean =
+    ): AnswerRevealWriteResult =
         withContext(dispatcher) {
-            database.runInTransaction<Boolean> {
-                val session = database.sessionDao().get(sessionId) ?: return@runInTransaction false
-                if (session.status != "ACTIVE" || session.currentIndex != position) return@runInTransaction false
+            database.runInTransaction<AnswerRevealWriteResult> {
+                val session = database.sessionDao().get(sessionId) ?: return@runInTransaction AnswerRevealWriteResult.Unavailable
+                if (session.status != "ACTIVE" || session.currentIndex != position) {
+                    return@runInTransaction AnswerRevealWriteResult.Unavailable
+                }
+                val card =
+                    database.sessionCardDao().get(sessionId, position)
+                        ?: return@runInTransaction AnswerRevealWriteResult.Unavailable
+                if (card.cardId != cardId) return@runInTransaction AnswerRevealWriteResult.Unavailable
+                if (card.answerRevealedAt != null) return@runInTransaction AnswerRevealWriteResult.AlreadyRecorded
                 val updated = database.sessionCardDao().markAnswerRevealed(sessionId, position, cardId, revealedAt)
                 if (updated == 1) {
                     database.sessionDao().update(session.copy(updatedAt = revealedAt))
-                    true
+                    AnswerRevealWriteResult.Recorded
                 } else {
-                    false
+                    AnswerRevealWriteResult.Unavailable
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.signkorean.domain.port.output
 
 import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
+import com.signkorean.domain.model.AnswerRevealWriteResult
 import java.time.Instant
 
 interface SessionRepository {
@@ -11,11 +12,11 @@ interface SessionRepository {
 
     suspend fun getActiveLearnSession(): ActiveLearnSession? = null
 
-    /** Returns true only when this is the card's first persisted answer reveal. */
+    /** Reports whether the reveal was persisted, had already been persisted, or is stale. */
     suspend fun markAnswerRevealed(
         sessionId: String,
         position: Int,
         cardId: String,
         revealedAt: Instant,
-    ): Boolean = false
+    ): AnswerRevealWriteResult = AnswerRevealWriteResult.Unavailable
 }

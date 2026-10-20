@@ -98,6 +98,23 @@ class LearnViewModelTest {
         }
 
     @Test
+    fun `keeps the question visible when answer persistence rejects a stale card`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 5) },
+                    revealAnswerUseCase = RevealAnswer { RevealAnswerResult.Unavailable },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+
+            viewModel.revealAnswer()
+            advanceUntilIdle()
+
+            assertEquals(LearnCardStage.Question, assertActive(viewModel.uiState.value).stage)
+        }
+
+    @Test
     fun `exposes a safe error state for invalid session content`() =
         runTest {
             val viewModel =
