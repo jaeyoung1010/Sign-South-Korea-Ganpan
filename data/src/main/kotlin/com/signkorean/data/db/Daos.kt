@@ -40,6 +40,9 @@ interface SessionDao {
 
     @Query("SELECT * FROM sessions WHERE status = 'ACTIVE' LIMIT 1")
     fun active(): SessionEntity?
+
+    @Query("UPDATE sessions SET status = 'ABANDONED', updated_at = :updatedAt WHERE status = 'ACTIVE'")
+    fun abandonActive(updatedAt: java.time.Instant)
 }
 
 @Dao

@@ -74,6 +74,7 @@ import com.signkorean.feature.settings.SettingsScreen
 import com.signkorean.feature.settings.SettingsUiAction
 import com.signkorean.feature.settings.SettingsUiState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -106,6 +107,13 @@ private fun SignKoreanApp(
             learnHomeViewModel.refresh()
         }
     }
+    LaunchedEffect(learnHomeViewModel) {
+        learnHomeViewModel.effects.collect { effect ->
+            if (effect is com.signkorean.app.home.HomeSessionEffect.NavigateToLearn) {
+                navigationViewModel.dispatch(AppNavigationAction.Navigate(AppRoute.Learn))
+            }
+        }
+    }
     SignKoreanAppContent(
         state = state,
         onAction = navigationViewModel::dispatch,
@@ -117,6 +125,10 @@ private fun SignKoreanApp(
         onToggleInterest = onboardingViewModel::toggleInterest,
         onCompleteOnboarding = onboardingViewModel::completeOnboarding,
         learnHomeState = learnHomeState,
+        onStartSession = learnHomeViewModel::startDailySession,
+        onStartCategorySession = learnHomeViewModel::startCategorySession,
+        onConfirmCategoryReplacement = learnHomeViewModel::confirmCategoryReplacement,
+        onCancelCategoryReplacement = learnHomeViewModel::cancelCategoryReplacement,
     )
 }
 
@@ -133,6 +145,10 @@ internal fun SignKoreanAppContent(
     onToggleInterest: (com.signkorean.domain.model.Interest) -> Unit = {},
     onCompleteOnboarding: () -> Unit = {},
     learnHomeState: LearnHomeUiState = LearnHomeUiState(),
+    onStartSession: () -> Unit = {},
+    onStartCategorySession: (String) -> Unit = {},
+    onConfirmCategoryReplacement: () -> Unit = {},
+    onCancelCategoryReplacement: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -147,6 +163,10 @@ internal fun SignKoreanAppContent(
             onToggleInterest,
             onCompleteOnboarding,
             learnHomeState,
+            onStartSession,
+            onStartCategorySession,
+            onConfirmCategoryReplacement,
+            onCancelCategoryReplacement,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -167,7 +187,16 @@ internal fun SignKoreanAppContent(
                         onStartLearning = onCompleteOnboarding,
                     )
                 }
-                entry<AppRoute.Home> { LearnHomeDestination(learnHomeState, onAction) }
+                entry<AppRoute.Home> {
+                    LearnHomeDestination(
+                        state = learnHomeState,
+                        onAction = onAction,
+                        onStartSession = onStartSession,
+                        onStartCategorySession = onStartCategorySession,
+                        onConfirmCategoryReplacement = onConfirmCategoryReplacement,
+                        onCancelCategoryReplacement = onCancelCategoryReplacement,
+                    )
+                }
                 entry<AppRoute.Learn> { LearnDestination(state, onAction) }
                 entry<AppRoute.Done> { DoneDestination(onAction) }
                 entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
@@ -204,7 +233,12 @@ internal fun SignKoreanAppContent(
                         modifier = Modifier.align(Alignment.BottomCenter).padding(SignKoreanSpacing.medium),
                     )
                 }
-                AppOverlayHost(state = state, categories = learnHomeState.categories, onAction = onAction)
+                AppOverlayHost(
+                    state = state,
+                    categories = learnHomeState.categories,
+                    onAction = onAction,
+                    onStartCategorySession = onStartCategorySession,
+                )
             }
         }
     }
@@ -296,12 +330,19 @@ private fun OnboardingDestination(
 private fun LearnHomeDestination(
     state: LearnHomeUiState,
     onAction: (AppNavigationAction) -> Unit,
+    onStartSession: () -> Unit,
+    onStartCategorySession: (String) -> Unit,
+    onConfirmCategoryReplacement: () -> Unit,
+    onCancelCategoryReplacement: () -> Unit,
 ) {
     LearnHomeScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                LearnUiAction.StartSession -> onAction(AppNavigationAction.Navigate(AppRoute.Learn))
+                LearnUiAction.StartSession -> onStartSession()
+                is LearnUiAction.StartCategorySession -> onStartCategorySession(action.category)
+                LearnUiAction.ConfirmCategoryReplacement -> onConfirmCategoryReplacement()
+                LearnUiAction.CancelCategoryReplacement -> onCancelCategoryReplacement()
                 LearnUiAction.ShowDeckSheet -> onAction(AppNavigationAction.ShowSheet(AppSheet.Category))
                 LearnUiAction.OpenProgress -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
                 LearnUiAction.OpenSettings -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings))
@@ -399,16 +440,21 @@ private fun BoxScope.AppOverlayHost(
     state: AppNavigationUiState,
     categories: List<com.signkorean.feature.learn.HomeCategoryUiModel>,
     onAction: (AppNavigationAction) -> Unit,
+    onStartCategorySession: (String) -> Unit,
 ) {
     state.sheet?.let { sheet ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             GameSheet(title = if (sheet == AppSheet.Category) "All categories" else "Choose a voice") {
                 if (sheet == AppSheet.Category) {
                     categories.forEach { category ->
-                        Text(
+                        GameButton(
                             text = "${category.label} · ${category.cardCount} signs",
-                            modifier = Modifier.testTag("home-sheet-category-${category.key}"),
-                            style = MaterialTheme.typography.bodyLarge,
+                            onClick = {
+                                onAction(AppNavigationAction.Back)
+                                onStartCategorySession(category.key)
+                            },
+                            modifier = Modifier.fillMaxWidth().testTag("home-sheet-category-${category.key}"),
+                            style = GameButtonStyle.Secondary,
                         )
                     }
                 } else {

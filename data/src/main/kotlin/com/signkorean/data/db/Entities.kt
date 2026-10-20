@@ -65,14 +65,16 @@ data class SessionEntity(
         fun active(
             id: String,
             requestedLength: Int,
+            source: String = "DAILY",
+            category: String? = null,
             now: Instant = Instant.EPOCH,
         ) = SessionEntity(
             sessionId = id,
             status = "ACTIVE",
             currentIndex = 0,
             requestedLength = requestedLength,
-            source = "DAILY",
-            category = null,
+            source = source,
+            category = category,
             createdAt = now,
             updatedAt = now,
             completedAt = null,

@@ -5,18 +5,23 @@ import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.input.StartOnboarding
+import com.signkorean.domain.port.input.StartSession
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.HomeActivityRepository
+import com.signkorean.domain.port.output.SessionCreationRepository
+import com.signkorean.domain.port.output.SessionIdGenerator
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import com.signkorean.domain.session.SessionBuilder
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
+import com.signkorean.domain.usecase.StartSessionUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,6 +64,33 @@ object UseCaseModule {
         userSettingsRepository: UserSettingsRepository,
         analyticsSink: AnalyticsSink,
     ): CompleteOnboarding = CompleteOnboardingUseCase(userSettingsRepository, analyticsSink)
+
+    @Provides
+    fun provideSessionBuilder(): SessionBuilder = SessionBuilder()
+
+    @Provides
+    fun provideStartSession(
+        userSettingsRepository: UserSettingsRepository,
+        cardCatalog: CardCatalog,
+        homeActivityRepository: HomeActivityRepository,
+        sessionRepository: SessionRepository,
+        sessionCreationRepository: SessionCreationRepository,
+        sessionIdGenerator: SessionIdGenerator,
+        sessionBuilder: SessionBuilder,
+        analyticsSink: AnalyticsSink,
+        clock: ClockPort,
+    ): StartSession =
+        StartSessionUseCase(
+            userSettingsRepository = userSettingsRepository,
+            cardCatalog = cardCatalog,
+            homeActivityRepository = homeActivityRepository,
+            sessionRepository = sessionRepository,
+            sessionCreationRepository = sessionCreationRepository,
+            sessionIdGenerator = sessionIdGenerator,
+            sessionBuilder = sessionBuilder,
+            analyticsSink = analyticsSink,
+            clock = clock,
+        )
 
     @Provides
     fun provideLoadLearnHome(

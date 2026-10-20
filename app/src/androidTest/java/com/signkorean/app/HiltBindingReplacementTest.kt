@@ -2,11 +2,13 @@ package com.signkorean.app
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.app.di.DataAdapterModule
+import com.signkorean.app.di.SessionAdapterModule
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.BundleValidationReport
 import com.signkorean.domain.model.ContentMigrationResult
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LaunchDestination
+import com.signkorean.domain.model.SessionToCreate
 import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.ResolveLaunchDestination
@@ -15,6 +17,8 @@ import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.HomeActivityRepository
+import com.signkorean.domain.port.output.SessionCreationRepository
+import com.signkorean.domain.port.output.SessionIdGenerator
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.testsupport.FakeClock
@@ -54,7 +58,7 @@ class HiltBindingReplacementTest {
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [DataAdapterModule::class],
+    replaces = [DataAdapterModule::class, SessionAdapterModule::class],
 )
 object FakeDataAdapterModule {
     @Provides
@@ -64,6 +68,20 @@ object FakeDataAdapterModule {
     @Provides
     @Singleton
     fun provideSessionRepository(): SessionRepository = FakeSessionRepository(activeSession = true)
+
+    @Provides
+    @Singleton
+    fun provideSessionCreationRepository(): SessionCreationRepository =
+        object : SessionCreationRepository {
+            override suspend fun save(
+                session: SessionToCreate,
+                replaceActiveSession: Boolean,
+            ) = Unit
+        }
+
+    @Provides
+    @Singleton
+    fun provideSessionIdGenerator(): SessionIdGenerator = SessionIdGenerator { "test-session" }
 
     @Provides
     @Singleton

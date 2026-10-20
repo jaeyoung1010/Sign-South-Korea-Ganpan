@@ -22,6 +22,17 @@ class RoomSessionTransactionStore(
     private val clock: ClockPort,
 ) {
     fun createSession(command: SessionCreationCommand) {
+        saveSession(command, replaceActiveSession = false)
+    }
+
+    fun replaceActiveSession(command: SessionCreationCommand) {
+        saveSession(command, replaceActiveSession = true)
+    }
+
+    private fun saveSession(
+        command: SessionCreationCommand,
+        replaceActiveSession: Boolean,
+    ) {
         require(command.session.status == "ACTIVE") { "New session must be active" }
         require(command.session.currentIndex == 0) { "New session must start at position zero" }
         require(command.session.completedAt == null) { "New session cannot be completed" }
@@ -34,7 +45,11 @@ class RoomSessionTransactionStore(
         }
 
         database.runInTransaction {
-            require(database.sessionDao().active() == null) { "An active session already exists" }
+            if (replaceActiveSession) {
+                database.sessionDao().abandonActive(command.session.createdAt)
+            } else {
+                require(database.sessionDao().active() == null) { "An active session already exists" }
+            }
             database.sessionDao().insert(command.session)
             database.sessionCardDao().insertAll(command.cards)
         }

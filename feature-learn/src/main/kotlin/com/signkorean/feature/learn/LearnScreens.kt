@@ -30,6 +30,9 @@ data class LearnHomeUiState(
     val session: HomeSessionUiModel = HomeSessionUiModel(),
     val categories: List<HomeCategoryUiModel> = emptyList(),
     val week: List<WeekActivityUiModel> = emptyList(),
+    val isStarting: Boolean = false,
+    val hasStartError: Boolean = false,
+    val pendingCategoryReplacement: String? = null,
 )
 
 data class HomeSessionUiModel(
@@ -81,6 +84,14 @@ data class CompletionUiState(
 sealed interface LearnUiAction {
     data object StartSession : LearnUiAction
 
+    data class StartCategorySession(
+        val category: String,
+    ) : LearnUiAction
+
+    data object ConfirmCategoryReplacement : LearnUiAction
+
+    data object CancelCategoryReplacement : LearnUiAction
+
     data object RevealAnswer : LearnUiAction
 
     data object ShowImageViewer : LearnUiAction
@@ -122,8 +133,9 @@ fun LearnHomeScreen(
         HomeBrandBar(state.streakDays)
         Text(text = "Ready to read Korea?", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(text = "A short street-reading session is waiting.", style = MaterialTheme.typography.bodyLarge)
-        HomeSessionCard(state.session, onAction)
-        CategorySection(state.categories, onAction)
+        HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
+        state.pendingCategoryReplacement?.let { category -> CategoryReplacementCard(category, state.isStarting, onAction) }
+        CategorySection(state.categories, state.isStarting, onAction)
         WeekSection(state.week)
     }
 }
@@ -139,6 +151,8 @@ private fun HomeBrandBar(streakDays: Int) {
 @Composable
 private fun HomeSessionCard(
     session: HomeSessionUiModel,
+    isStarting: Boolean,
+    hasStartError: Boolean,
     onAction: (LearnUiAction) -> Unit,
 ) {
     GameCard(modifier = Modifier.fillMaxWidth()) {
@@ -161,9 +175,43 @@ private fun HomeSessionCard(
             }
         }
         GameButton(
-            text = if (session.isActive) "Resume session" else "Start session",
+            text =
+                if (isStarting) {
+                    "Starting session…"
+                } else if (session.isActive) {
+                    "Resume session"
+                } else {
+                    "Start session"
+                },
             onClick = { onAction(LearnUiAction.StartSession) },
             modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.SESSION_ACTION),
+            enabled = !isStarting,
+        )
+        if (hasStartError) Text("Could not start the session. Please try again.", style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+private fun CategoryReplacementCard(
+    category: String,
+    isStarting: Boolean,
+    onAction: (LearnUiAction) -> Unit,
+) {
+    GameCard(modifier = Modifier.fillMaxWidth()) {
+        Text("Replace your current session?", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text("Starting $category will replace the session you have in progress.", style = MaterialTheme.typography.bodyLarge)
+        GameButton(
+            text = if (isStarting) "Starting session…" else "Replace session",
+            onClick = { onAction(LearnUiAction.ConfirmCategoryReplacement) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isStarting,
+        )
+        GameButton(
+            text = "Keep current session",
+            onClick = { onAction(LearnUiAction.CancelCategoryReplacement) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isStarting,
+            style = GameButtonStyle.Secondary,
         )
     }
 }
@@ -171,6 +219,7 @@ private fun HomeSessionCard(
 @Composable
 private fun CategorySection(
     categories: List<HomeCategoryUiModel>,
+    isStarting: Boolean,
     onAction: (LearnUiAction) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
@@ -190,8 +239,9 @@ private fun CategorySection(
             categories.forEach { category ->
                 GameButton(
                     text = "${category.label} · ${category.cardCount} signs",
-                    onClick = { onAction(LearnUiAction.ShowDeckSheet) },
+                    onClick = { onAction(LearnUiAction.StartCategorySession(category.key)) },
                     modifier = Modifier.width(176.dp),
+                    enabled = !isStarting,
                     style = GameButtonStyle.Secondary,
                 )
             }
