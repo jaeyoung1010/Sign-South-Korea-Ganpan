@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
@@ -215,12 +217,14 @@ private fun TutorialCard(
 @Composable
 private fun TutorialSignImage() {
     val bitmap = rememberAssetBitmap("signs/bunsik.jpg")
+    val imageDescription = stringResource(R.string.onboarding_tutorial_image_description)
     Box(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .height(180.dp)
-                .clip(SignKoreanShapes.large),
+                .clip(SignKoreanShapes.large)
+                .semantics { contentDescription = imageDescription },
         contentAlignment = Alignment.Center,
     ) {
         if (bitmap == null) {
@@ -228,7 +232,7 @@ private fun TutorialSignImage() {
         } else {
             Image(
                 bitmap = bitmap.asImageBitmap(),
-                contentDescription = stringResource(R.string.onboarding_tutorial_image_description),
+                contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
             )

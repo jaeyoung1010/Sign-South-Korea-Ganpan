@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -29,6 +30,7 @@ class TutorialScreenTest {
         composeRule.setContent { TutorialUnderTest() }
 
         composeRule.onNodeWithText("What does this sign say?").assertIsDisplayed()
+        composeRule.onNodeWithContentDescription("A Korean snack bar storefront for practice.").assertIsDisplayed()
         composeRule.onNodeWithTag(TutorialTestTags.CONTINUE).assertIsNotEnabled()
 
         composeRule.onNodeWithTag(TutorialTestTags.SHOW_ANSWER).performClick()
