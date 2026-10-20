@@ -7,6 +7,7 @@ import com.signkorean.data.asset.BundleContentAdapter
 import com.signkorean.data.db.RoomContentMigrationRepository
 import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.data.repository.NoopAnalyticsSink
+import com.signkorean.data.repository.RoomHomeActivityRepository
 import com.signkorean.data.repository.RoomSessionRepository
 import com.signkorean.data.settings.AndroidSettingsDiagnostics
 import com.signkorean.data.settings.AndroidSystemReduceMotionSource
@@ -20,6 +21,7 @@ import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
+import com.signkorean.domain.port.output.HomeActivityRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import dagger.Module
@@ -72,6 +74,13 @@ object DataAdapterModule {
         database: SignKoreanDatabase,
         @IoDispatcher dispatcher: CoroutineDispatcher,
     ): SessionRepository = RoomSessionRepository(database, dispatcher)
+
+    @Provides
+    @Singleton
+    fun provideHomeActivityRepository(
+        database: SignKoreanDatabase,
+        @IoDispatcher dispatcher: CoroutineDispatcher,
+    ): HomeActivityRepository = RoomHomeActivityRepository(database, dispatcher)
 
     @Provides
     @Singleton

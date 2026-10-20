@@ -14,6 +14,7 @@ import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
+import com.signkorean.domain.port.output.HomeActivityRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.testsupport.FakeClock
@@ -63,6 +64,14 @@ object FakeDataAdapterModule {
     @Provides
     @Singleton
     fun provideSessionRepository(): SessionRepository = FakeSessionRepository(activeSession = true)
+
+    @Provides
+    @Singleton
+    fun provideHomeActivityRepository(): HomeActivityRepository =
+        HomeActivityRepository {
+            com.signkorean.domain.model
+                .HomeActivitySnapshot()
+        }
 
     @Provides
     @Singleton

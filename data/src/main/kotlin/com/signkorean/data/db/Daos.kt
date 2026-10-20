@@ -22,6 +22,9 @@ interface CardProgressDao {
 
     @Query("SELECT COUNT(*) FROM card_progress")
     fun count(): Int
+
+    @Query("SELECT * FROM card_progress")
+    fun all(): List<CardProgressEntity>
 }
 
 @Dao
@@ -55,6 +58,9 @@ interface SessionCardDao {
 
     @Query("SELECT COUNT(*) FROM session_cards WHERE session_id = :sessionId")
     fun countForSession(sessionId: String): Int
+
+    @Query("SELECT rated_at FROM session_cards WHERE rated_at IS NOT NULL")
+    fun ratedAt(): List<java.time.Instant>
 
     @Update
     fun update(card: SessionCardEntity)

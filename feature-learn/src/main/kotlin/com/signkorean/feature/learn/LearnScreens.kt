@@ -2,21 +2,70 @@
 
 package com.signkorean.feature.learn
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
+import com.signkorean.designsystem.theme.SignKoreanSpacing
 
 data class LearnHomeUiState(
-    val title: String = "Today's Seoul signs",
-    val subtitle: String = "Choose a deck and learn from real streets.",
+    val streakDays: Int = 0,
+    val session: HomeSessionUiModel = HomeSessionUiModel(),
+    val categories: List<HomeCategoryUiModel> = emptyList(),
+    val week: List<WeekActivityUiModel> = emptyList(),
 )
+
+data class HomeSessionUiModel(
+    val length: Int = 20,
+    val estimatedMinutes: Int = 8,
+    val reviewCount: Int = 0,
+    val newCount: Int = 0,
+    val completedCount: Int? = null,
+) {
+    val isActive: Boolean
+        get() = completedCount != null
+
+    companion object {
+        fun active(
+            completedCount: Int,
+            totalCount: Int,
+        ): HomeSessionUiModel = HomeSessionUiModel(length = totalCount, completedCount = completedCount)
+    }
+}
+
+data class HomeCategoryUiModel(
+    val key: String,
+    val label: String,
+    val cardCount: Int,
+)
+
+data class WeekActivityUiModel(
+    val label: String,
+    val count: Int,
+)
+
+object HomeTestTags {
+    const val SESSION_ACTION = "home-session-action"
+    const val SEE_ALL = "home-see-all"
+    const val WEEK_CHART = "home-week-chart"
+}
 
 data class LearnSessionUiState(
     val sign: String = "주차 금지",
@@ -61,13 +110,109 @@ fun LearnHomeScreen(
     onAction: (LearnUiAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GameCard(modifier = modifier.testTag("screen-home")) {
-        Text(text = state.title, style = MaterialTheme.typography.headlineMedium)
-        Text(text = state.subtitle, style = MaterialTheme.typography.bodyLarge)
-        GameButton("Start a sign deck", { onAction(LearnUiAction.StartSession) }, Modifier.fillMaxWidth())
-        GameButton("Choose a deck", { onAction(LearnUiAction.ShowDeckSheet) }, Modifier.fillMaxWidth(), style = GameButtonStyle.Secondary)
-        GameButton("Progress", { onAction(LearnUiAction.OpenProgress) }, Modifier.fillMaxWidth(), style = GameButtonStyle.Secondary)
-        GameButton("Settings", { onAction(LearnUiAction.OpenSettings) }, Modifier.fillMaxWidth(), style = GameButtonStyle.Secondary)
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 88.dp)
+                .testTag("screen-home"),
+        verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
+    ) {
+        HomeBrandBar(state.streakDays)
+        Text(text = "Ready to read Korea?", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(text = "A short street-reading session is waiting.", style = MaterialTheme.typography.bodyLarge)
+        HomeSessionCard(state.session, onAction)
+        CategorySection(state.categories, onAction)
+        WeekSection(state.week)
+    }
+}
+
+@Composable
+private fun HomeBrandBar(streakDays: Int) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(text = "Sign Korean", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(text = "$streakDays days", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+    }
+}
+
+@Composable
+private fun HomeSessionCard(
+    session: HomeSessionUiModel,
+    onAction: (LearnUiAction) -> Unit,
+) {
+    GameCard(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "TODAY'S SESSION", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+        Text(
+            text = if (session.isActive) "Pick up where you left off" else "${session.length} street signs",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Black,
+        )
+        Text(
+            text =
+                session.completedCount?.let { "$it of ${session.length} signs complete" }
+                    ?: "About ${session.estimatedMinutes} minutes",
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        if (!session.isActive) {
+            Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
+                Text(text = "${session.reviewCount} review", style = MaterialTheme.typography.labelLarge)
+                Text(text = "${session.newCount} new", style = MaterialTheme.typography.labelLarge)
+            }
+        }
+        GameButton(
+            text = if (session.isActive) "Resume session" else "Start session",
+            onClick = { onAction(LearnUiAction.StartSession) },
+            modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.SESSION_ACTION),
+        )
+    }
+}
+
+@Composable
+private fun CategorySection(
+    categories: List<HomeCategoryUiModel>,
+    onAction: (LearnUiAction) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(text = "Explore by category", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            GameButton(
+                text = "See all",
+                onClick = { onAction(LearnUiAction.ShowDeckSheet) },
+                modifier = Modifier.testTag(HomeTestTags.SEE_ALL),
+                style = GameButtonStyle.Secondary,
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+        ) {
+            categories.forEach { category ->
+                GameButton(
+                    text = "${category.label} · ${category.cardCount} signs",
+                    onClick = { onAction(LearnUiAction.ShowDeckSheet) },
+                    modifier = Modifier.width(176.dp),
+                    style = GameButtonStyle.Secondary,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeekSection(week: List<WeekActivityUiModel>) {
+    Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
+        Text(text = "Your week", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                week.forEach { day ->
+                    Column {
+                        Text(text = day.count.toString(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        Text(text = day.label, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            }
+        }
     }
 }
 

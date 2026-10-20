@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.signkorean.app.home.LearnHomeViewModel
 import com.signkorean.app.navigation.AppNavigationAction
 import com.signkorean.app.navigation.AppNavigationIntent
 import com.signkorean.app.navigation.AppNavigationUiState
@@ -78,12 +80,13 @@ class MainActivity : ComponentActivity() {
     private val navigationViewModel: AppNavigationViewModel by viewModels()
     private val launchViewModel: LaunchViewModel by viewModels()
     private val onboardingViewModel: OnboardingViewModel by viewModels()
+    private val learnHomeViewModel: LearnHomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         navigationViewModel.openDebugDestination(intent.getStringExtra(AppNavigationIntent.EXTRA_DEBUG_SCREEN))
-        setContent { SignKoreanApp(navigationViewModel, launchViewModel, onboardingViewModel) }
+        setContent { SignKoreanApp(navigationViewModel, launchViewModel, onboardingViewModel, learnHomeViewModel) }
     }
 }
 
@@ -92,10 +95,17 @@ private fun SignKoreanApp(
     navigationViewModel: AppNavigationViewModel,
     launchViewModel: LaunchViewModel,
     onboardingViewModel: OnboardingViewModel,
+    learnHomeViewModel: LearnHomeViewModel,
 ) {
     val state by navigationViewModel.uiState.collectAsState()
     val launchState by launchViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
+    val learnHomeState by learnHomeViewModel.uiState.collectAsState()
+    LaunchedEffect(state.currentRoute) {
+        if (state.currentRoute == AppRoute.Home) {
+            learnHomeViewModel.refresh()
+        }
+    }
     SignKoreanAppContent(
         state = state,
         onAction = navigationViewModel::dispatch,
@@ -106,6 +116,7 @@ private fun SignKoreanApp(
         onSkipLevel = onboardingViewModel::skipLevel,
         onToggleInterest = onboardingViewModel::toggleInterest,
         onCompleteOnboarding = onboardingViewModel::completeOnboarding,
+        learnHomeState = learnHomeState,
     )
 }
 
@@ -121,6 +132,7 @@ internal fun SignKoreanAppContent(
     onSkipLevel: () -> Unit = {},
     onToggleInterest: (com.signkorean.domain.model.Interest) -> Unit = {},
     onCompleteOnboarding: () -> Unit = {},
+    learnHomeState: LearnHomeUiState = LearnHomeUiState(),
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -134,6 +146,7 @@ internal fun SignKoreanAppContent(
             onSkipLevel,
             onToggleInterest,
             onCompleteOnboarding,
+            learnHomeState,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -154,7 +167,7 @@ internal fun SignKoreanAppContent(
                         onStartLearning = onCompleteOnboarding,
                     )
                 }
-                entry<AppRoute.Home> { LearnHomeDestination(onAction) }
+                entry<AppRoute.Home> { LearnHomeDestination(learnHomeState, onAction) }
                 entry<AppRoute.Learn> { LearnDestination(state, onAction) }
                 entry<AppRoute.Done> { DoneDestination(onAction) }
                 entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
@@ -186,11 +199,12 @@ internal fun SignKoreanAppContent(
                 )
                 if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Settings)) {
                     TopLevelTabs(
+                        selectedTab = state.currentRoute.topLevelTab,
                         onAction = onAction,
                         modifier = Modifier.align(Alignment.BottomCenter).padding(SignKoreanSpacing.medium),
                     )
                 }
-                AppOverlayHost(state = state, onAction = onAction)
+                AppOverlayHost(state = state, categories = learnHomeState.categories, onAction = onAction)
             }
         }
     }
@@ -279,9 +293,12 @@ private fun OnboardingDestination(
 }
 
 @Composable
-private fun LearnHomeDestination(onAction: (AppNavigationAction) -> Unit) {
+private fun LearnHomeDestination(
+    state: LearnHomeUiState,
+    onAction: (AppNavigationAction) -> Unit,
+) {
     LearnHomeScreen(
-        state = LearnHomeUiState(),
+        state = state,
         onAction = { action ->
             when (action) {
                 LearnUiAction.StartSession -> onAction(AppNavigationAction.Navigate(AppRoute.Learn))
@@ -339,27 +356,39 @@ private fun SettingsDestination(onAction: (AppNavigationAction) -> Unit) {
 
 @Composable
 private fun TopLevelTabs(
+    selectedTab: AppTopLevelTab,
     onAction: (AppNavigationAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     GameCard(modifier = modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
             GameButton(
                 text = "Learn",
                 onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.weight(1f),
+                style = if (selectedTab == AppTopLevelTab.Learn) GameButtonStyle.Primary else GameButtonStyle.Secondary,
             )
             GameButton(
                 text = "Progress",
                 onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress)) },
-                modifier = Modifier.fillMaxWidth(),
-                style = GameButtonStyle.Secondary,
+                modifier = Modifier.weight(1f),
+                style =
+                    if (selectedTab == AppTopLevelTab.Progress) {
+                        GameButtonStyle.Primary
+                    } else {
+                        GameButtonStyle.Secondary
+                    },
             )
             GameButton(
                 text = "Settings",
                 onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings)) },
-                modifier = Modifier.fillMaxWidth(),
-                style = GameButtonStyle.Secondary,
+                modifier = Modifier.weight(1f),
+                style =
+                    if (selectedTab == AppTopLevelTab.Settings) {
+                        GameButtonStyle.Primary
+                    } else {
+                        GameButtonStyle.Secondary
+                    },
             )
         }
     }
@@ -368,20 +397,23 @@ private fun TopLevelTabs(
 @Composable
 private fun BoxScope.AppOverlayHost(
     state: AppNavigationUiState,
+    categories: List<com.signkorean.feature.learn.HomeCategoryUiModel>,
     onAction: (AppNavigationAction) -> Unit,
 ) {
     state.sheet?.let { sheet ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            GameSheet(title = if (sheet == AppSheet.Category) "Choose a deck" else "Choose a voice") {
-                Text(
-                    text =
-                        if (sheet == AppSheet.Category) {
-                            "Hongdae signs are ready for practice."
-                        } else {
-                            "Eunkyung is selected."
-                        },
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+            GameSheet(title = if (sheet == AppSheet.Category) "All categories" else "Choose a voice") {
+                if (sheet == AppSheet.Category) {
+                    categories.forEach { category ->
+                        Text(
+                            text = "${category.label} · ${category.cardCount} signs",
+                            modifier = Modifier.testTag("home-sheet-category-${category.key}"),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                } else {
+                    Text("Eunkyung is selected.", style = MaterialTheme.typography.bodyLarge)
+                }
                 GameButton(
                     text = "Close",
                     onClick = { onAction(AppNavigationAction.Back) },
@@ -414,3 +446,12 @@ private fun BoxScope.AppOverlayHost(
         )
     }
 }
+
+private val AppRoute.topLevelTab: AppTopLevelTab
+    get() =
+        when (this) {
+            AppRoute.Home -> AppTopLevelTab.Learn
+            AppRoute.Progress -> AppTopLevelTab.Progress
+            AppRoute.Settings -> AppTopLevelTab.Settings
+            else -> AppTopLevelTab.Learn
+        }
