@@ -5,7 +5,7 @@ class SessionBuilder(
     private val candidateScorer: CandidateScorer = CandidateScorer(),
 ) {
     fun build(request: SessionBuildRequest): SessionPlan {
-        val candidates = request.candidates.distinctBy(SessionCandidate::cardId)
+        val candidates = coalesceByCardId(request.candidates)
         val selected =
             when (request.type) {
                 SessionType.DAILY -> buildDaily(request, candidates)
@@ -54,6 +54,18 @@ class SessionBuilder(
             level = request.level,
             seed = request.seed,
         )
+
+    private fun coalesceByCardId(candidates: List<SessionCandidate>): List<SessionCandidate> =
+        candidates
+            .groupBy(SessionCandidate::cardId)
+            .map { (_, matchingCandidates) ->
+                matchingCandidates.reduce { retained, duplicate ->
+                    retained.copy(
+                        isDue = retained.isDue || duplicate.isDue,
+                        isNew = retained.isNew && duplicate.isNew,
+                    )
+                }
+            }
 
     private fun maxDueCount(length: Int): Int = length * MAX_DUE_PERCENT / 100
 

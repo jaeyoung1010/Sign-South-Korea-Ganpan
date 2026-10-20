@@ -77,6 +77,21 @@ class SessionBuilderTest {
     }
 
     @Test
+    fun `duplicate candidates retain a due state from any matching record`() {
+        val candidates =
+            listOf(
+                candidate(id = "a", order = 5),
+                candidate(id = "b", order = 1),
+                candidate(id = "a", order = 5, isDue = true),
+            )
+
+        val plan = builder.build(dailyRequest(length = 5, candidates = candidates))
+
+        assertEquals("a", plan.cardIds.first())
+        assertEquals(2, plan.cardIds.toSet().size)
+    }
+
+    @Test
     fun `same seed creates the same ordered session`() {
         val request = dailyRequest(length = 10, candidates = candidates(20, dueCount = 7), seed = 99L)
 
