@@ -25,17 +25,20 @@ internal fun LearnCardStack(
     state: LearnSessionUiState.Active,
     modifier: Modifier = Modifier,
 ) {
+    val layers = cardStackLayers(state.cardId, state.upcomingCards.map(LearnCardPreviewUiModel::cardId))
+    val previewsById = state.upcomingCards.associateBy(LearnCardPreviewUiModel::cardId)
+    val previewCount = layers.count { it.role != LearnCardLayerRole.Active }
     Box(modifier = modifier.testTag(SignKoreanTestTags.LEARN_CARD_STACK)) {
-        state.upcomingCards
-            .take(MAX_PREVIEW_COUNT)
-            .asReversed()
-            .forEachIndexed { reversedIndex, preview ->
+        layers
+            .filter { it.role != LearnCardLayerRole.Active }
+            .forEach { layer ->
+                val preview = checkNotNull(previewsById[layer.cardId])
                 PreviewCard(
                     preview = preview,
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(top = PREVIEW_OFFSET * (reversedIndex + 1).toFloat(), bottom = PREVIEW_OFFSET),
+                            .padding(top = layer.previewOffset(), bottom = PREVIEW_OFFSET),
                 )
             }
         ActiveCard(
@@ -46,10 +49,7 @@ internal fun LearnCardStack(
                     .padding(
                         bottom =
                             PREVIEW_OFFSET *
-                                state.upcomingCards
-                                    .take(MAX_PREVIEW_COUNT)
-                                    .size
-                                    .toFloat(),
+                                previewCount.toFloat(),
                     ),
         )
     }
@@ -121,7 +121,13 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(sta
     }
 }
 
-private const val MAX_PREVIEW_COUNT = 2
+private fun LearnCardLayer.previewOffset() =
+    when (role) {
+        LearnCardLayerRole.NextNext -> PREVIEW_OFFSET * 2f
+        LearnCardLayerRole.Next -> PREVIEW_OFFSET
+        LearnCardLayerRole.Active -> 0.dp
+    }
+
 private val PREVIEW_OFFSET = 14.dp
 private const val PHOTO_PORTION = .62f
 private const val INFO_PORTION = .38f
