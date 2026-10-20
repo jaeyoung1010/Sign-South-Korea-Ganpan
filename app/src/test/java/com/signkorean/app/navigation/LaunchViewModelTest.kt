@@ -70,4 +70,39 @@ class LaunchViewModelTest {
                 viewModel.uiState.value,
             )
         }
+
+    @Test
+    fun `retry cancels a stale initialization result`() =
+        runTest {
+            val firstAttemptStarted = CompletableDeferred<Unit>()
+            val firstAttemptResult = CompletableDeferred<AppInitializationResult>()
+            var attempts = 0
+            val viewModel =
+                LaunchViewModel(
+                    InitializeApp {
+                        attempts += 1
+                        if (attempts == 1) {
+                            firstAttemptStarted.complete(Unit)
+                            firstAttemptResult.await()
+                        } else {
+                            AppInitializationResult.Ready(
+                                destination = LaunchDestination.HOME,
+                                hasResumableSession = false,
+                                usedDefaultSettings = false,
+                            )
+                        }
+                    },
+                )
+            firstAttemptStarted.await()
+
+            viewModel.retry()
+            advanceUntilIdle()
+            firstAttemptResult.complete(AppInitializationResult.RecoverableFailure.Database)
+            advanceUntilIdle()
+
+            assertEquals(
+                LaunchUiState.Ready(LaunchDestination.HOME, hasResumableSession = false),
+                viewModel.uiState.value,
+            )
+        }
 }

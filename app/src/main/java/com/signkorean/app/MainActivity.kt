@@ -108,7 +108,7 @@ internal fun SignKoreanAppContent(
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
-        remember(onAction, state) {
+        remember(onAction, state, launchState, onLaunchRetry) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
                 entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }

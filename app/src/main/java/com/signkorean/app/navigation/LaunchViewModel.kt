@@ -6,6 +6,7 @@ import com.signkorean.domain.model.AppInitializationResult
 import com.signkorean.domain.model.LaunchDestination
 import com.signkorean.domain.port.input.InitializeApp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ class LaunchViewModel
         private val initializeApp: InitializeApp,
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LaunchUiState>(LaunchUiState.Loading)
+        private var initializationJob: Job? = null
 
         val uiState = mutableUiState.asStateFlow()
 
@@ -26,10 +28,12 @@ class LaunchViewModel
         }
 
         fun retry() {
-            viewModelScope.launch {
-                mutableUiState.value = LaunchUiState.Loading
-                mutableUiState.value = initializeApp().toUiState()
-            }
+            initializationJob?.cancel()
+            initializationJob =
+                viewModelScope.launch {
+                    mutableUiState.value = LaunchUiState.Loading
+                    mutableUiState.value = initializeApp().toUiState()
+                }
         }
     }
 

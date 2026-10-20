@@ -73,6 +73,18 @@ class RoomContentMigrationRepositoryTest {
             assertEquals("ACTIVE", database.sessionDao().get("active-session")?.status)
         }
 
+    @Test
+    fun `missing content marker from an upgraded database still removes unknown progress`() =
+        runTest {
+            database.cardProgressDao().upsert(CardProgressEntity.initial("removed-card"))
+
+            val result = repository.migrate(AppContent(version = 2, cardIds = setOf("known-card")))
+
+            assertTrue(result.migrated)
+            assertNull(database.cardProgressDao().get("removed-card"))
+            assertEquals(2, database.contentStateDao().current()?.contentVersion)
+        }
+
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()
 }

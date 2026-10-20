@@ -23,19 +23,13 @@ class RoomContentMigrationRepository(
                     )
                 }
 
-                if (contentState == null) {
-                    database.contentStateDao().upsert(ContentStateEntity(contentVersion = content.version))
-                    return@runInTransaction ContentMigrationResult(
-                        migrated = false,
-                        activeSessionInvalidated = false,
-                    )
-                }
-
+                val hadStoredState =
+                    contentState != null || database.cardProgressDao().count() > 0 || database.sessionDao().active() != null
                 database.cardProgressDao().deleteNotIn(content.cardIds.toList())
                 val invalidatedActiveSession = database.invalidateActiveSessionIfNeeded(content.cardIds)
                 database.contentStateDao().upsert(ContentStateEntity(contentVersion = content.version))
                 ContentMigrationResult(
-                    migrated = true,
+                    migrated = hadStoredState,
                     activeSessionInvalidated = invalidatedActiveSession,
                 )
             }

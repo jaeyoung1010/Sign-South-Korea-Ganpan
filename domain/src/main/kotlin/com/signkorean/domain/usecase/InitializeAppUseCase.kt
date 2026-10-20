@@ -12,6 +12,7 @@ import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -27,14 +28,14 @@ class InitializeAppUseCase(
         coroutineScope {
             val settings =
                 async {
-                    runCatching { userSettingsRepository.settings.first() }
+                    recoverResult { userSettingsRepository.settings.first() }
                 }
             val database =
                 async {
                     val content =
-                        runCatching { cardCatalog.getCards().toAppContent() }
+                        recoverResult { cardCatalog.getCards().toAppContent() }
                             .getOrElse { return@async StartupRead.ContentFailure }
-                    runCatching {
+                    recoverResult {
                         val migration = contentMigrationRepository.migrate(content)
                         val hasActiveSession = sessionRepository.hasActiveSession()
                         StartupRead.DatabaseSuccess(migration, hasActiveSession)
@@ -81,6 +82,15 @@ class InitializeAppUseCase(
             version = map(com.signkorean.domain.model.SignCard::contentVersion).distinct().single(),
             cardIds = map(com.signkorean.domain.model.SignCard::id).toSet(),
         )
+
+    private suspend fun <T> recoverResult(block: suspend () -> T): Result<T> =
+        try {
+            Result.success(block())
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (failure: Throwable) {
+            Result.failure(failure)
+        }
 
     private sealed interface StartupRead {
         data class DatabaseSuccess(
