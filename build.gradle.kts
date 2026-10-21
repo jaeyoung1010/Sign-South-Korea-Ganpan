@@ -123,6 +123,7 @@ val qualityToolTests =
             "scripts/quality/quality-rules.test.mjs",
             "scripts/quality/phase43-traceability.test.mjs",
             "scripts/quality/phase44-qa.test.mjs",
+            "scripts/quality/phase45-release.test.mjs",
         )
     }
 
@@ -139,6 +140,34 @@ val validatePhase44Qa =
         description = "Verifies the Phase 44 device QA matrix and release blocker record."
         commandLine("node", "scripts/quality/phase44-qa.mjs")
     }
+
+val phase45ReleaseGate =
+    tasks.register<Exec>("phase45ReleaseGate") {
+        group = "verification"
+        description = "Builds and validates the Phase 45 release candidate artifact."
+        dependsOn(":app:bundleRelease")
+        val command =
+            mutableListOf(
+                "node",
+                "scripts/quality/phase45-release.mjs",
+                "--aab",
+                "app/build/outputs/bundle/release/app-release.aab",
+                "--manifest",
+                "app/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml",
+                "--mapping",
+                "app/build/outputs/mapping/release/mapping.txt",
+                "--report",
+                "build/reports/phase45/release-report.json",
+            )
+        if (providers.gradleProperty("phase45RequireSigning").orNull?.toBoolean() == true) command += "--require-signed"
+        commandLine(command)
+    }
+
+tasks.register("releaseGate") {
+    group = "verification"
+    description = "Runs the Phase 45 release candidate acceptance checks."
+    dependsOn(phase45ReleaseGate, "verifyReleaseQaExclusion")
+}
 
 val validateDependencyVersions =
     tasks.register<Exec>("validateDependencyVersions") {

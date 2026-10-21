@@ -12,6 +12,18 @@ val minimumSdk =
         .get()
         .toInt()
 
+val releaseSigningStoreFile = System.getenv("SIGNING_STORE_FILE") ?: providers.gradleProperty("releaseStoreFile").orNull
+val releaseSigningStorePassword = System.getenv("SIGNING_STORE_PASSWORD") ?: providers.gradleProperty("releaseStorePassword").orNull
+val releaseSigningKeyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: providers.gradleProperty("releaseKeyAlias").orNull
+val releaseSigningKeyPassword = System.getenv("SIGNING_KEY_PASSWORD") ?: providers.gradleProperty("releaseKeyPassword").orNull
+val hasReleaseSigning =
+    listOf(
+        releaseSigningStoreFile,
+        releaseSigningStorePassword,
+        releaseSigningKeyAlias,
+        releaseSigningKeyPassword,
+    ).all { !it.isNullOrBlank() }
+
 android {
     namespace = "com.signkorean.app"
     compileSdk = 37
@@ -28,6 +40,17 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(checkNotNull(releaseSigningStoreFile))
+                storePassword = checkNotNull(releaseSigningStorePassword)
+                keyAlias = checkNotNull(releaseSigningKeyAlias)
+                keyPassword = checkNotNull(releaseSigningKeyPassword)
+            }
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
@@ -38,6 +61,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (hasReleaseSigning) signingConfig = signingConfigs.getByName("release")
         }
     }
 
