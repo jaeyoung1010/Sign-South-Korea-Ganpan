@@ -41,4 +41,8 @@ class AppNavigationViewModel
                 mutableUiState.value = AppNavigationUiState(backStack = listOf(route))
             }
         }
+
+        fun openReminderDestination() {
+            mutableUiState.value = AppNavigationUiState(backStack = listOf(AppRoute.Home))
+        }
     }

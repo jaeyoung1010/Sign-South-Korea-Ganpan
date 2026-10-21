@@ -1,6 +1,7 @@
 package com.signkorean.app.di
 
 import com.signkorean.domain.port.input.CompleteOnboarding
+import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.LoadLearnSession
@@ -32,6 +33,7 @@ import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.domain.session.SessionBuilder
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
+import com.signkorean.domain.usecase.ConfigureReminderUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.LoadLearnSessionUseCase
@@ -92,6 +94,13 @@ object UseCaseModule {
         userSettingsRepository: UserSettingsRepository,
         analyticsSink: AnalyticsSink,
     ): CompleteOnboarding = CompleteOnboardingUseCase(userSettingsRepository, analyticsSink)
+
+    @Provides
+    fun provideConfigureReminder(
+        userSettingsRepository: UserSettingsRepository,
+        reminderScheduler: com.signkorean.domain.port.output.ReminderSchedulerPort,
+        clock: ClockPort,
+    ): ConfigureReminder = ConfigureReminderUseCase(userSettingsRepository, reminderScheduler, clock)
 
     @Provides
     fun provideSessionBuilder(): SessionBuilder = SessionBuilder()

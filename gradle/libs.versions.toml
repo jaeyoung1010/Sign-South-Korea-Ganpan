@@ -22,6 +22,8 @@ protobuf = "4.36.2"
 protobuf-plugin = "0.10.0"
 coil = "3.6.3"
 media3 = "1.11.1"
+work = "2.10.1"
+androidx-hilt = "1.2.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -55,6 +57,10 @@ androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "d
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "work" }
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
+androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

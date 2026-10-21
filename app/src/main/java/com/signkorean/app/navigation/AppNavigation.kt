@@ -210,6 +210,8 @@ class AppNavigationReducer {
 
 object AppNavigationIntent {
     const val EXTRA_DEBUG_SCREEN = "com.signkorean.app.extra.DEBUG_SCREEN"
+    const val EXTRA_OPEN_REVIEWS = "com.signkorean.app.extra.OPEN_REVIEWS"
+    const val ACTION_OPEN_REVIEWS = "com.signkorean.app.action.OPEN_REVIEWS"
 
     fun routeForScreenId(screenId: String?): AppRoute? = allRoutes.firstOrNull { it.screenId == screenId }
 

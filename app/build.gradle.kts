@@ -82,6 +82,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
@@ -99,6 +101,7 @@ dependencies {
     implementation(project(":platform"))
 
     ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -106,6 +109,7 @@ dependencies {
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(project(":test-support"))
+    testImplementation(libs.androidx.work.testing)
 
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

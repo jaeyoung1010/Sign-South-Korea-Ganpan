@@ -3,6 +3,9 @@
 package com.signkorean.app
 
 import android.os.Bundle
+import android.Manifest
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -25,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -110,6 +114,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         navigationViewModel.openDebugDestination(intent.getStringExtra(AppNavigationIntent.EXTRA_DEBUG_SCREEN))
+        if (intent.getBooleanExtra(AppNavigationIntent.EXTRA_OPEN_REVIEWS, false)) {
+            navigationViewModel.openReminderDestination()
+        }
         setContent {
             SignKoreanApp(
                 navigationViewModel,
@@ -126,6 +133,15 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         learnViewModel.stopAudio()
         super.onStop()
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(AppNavigationIntent.EXTRA_OPEN_REVIEWS, false)) {
+            navigationViewModel.openReminderDestination()
+            learnHomeViewModel.refresh()
+        }
     }
 }
 
@@ -150,6 +166,11 @@ private fun SignKoreanApp(
     val reportState by learnViewModel.reportState.collectAsState()
     val audioState by learnViewModel.audioState.collectAsState()
     val settingsState by settingsViewModel.uiState.collectAsState()
+    val reminderPermissionDeniedMessage = stringResource(R.string.reminder_permission_denied)
+    val reminderPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            settingsViewModel.onReminderPermissionResult(granted)
+        }
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
@@ -235,6 +256,24 @@ private fun SignKoreanApp(
                 SettingsEffect.SettingsChangeFailed -> {
                     navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save that setting. Try again."))
                 }
+
+                SettingsEffect.ReminderPermissionRequested -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        reminderPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        settingsViewModel.onReminderPermissionResult(true)
+                    }
+                }
+
+                SettingsEffect.ReminderPermissionDenied -> {
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(reminderPermissionDeniedMessage))
+                }
+
+                is SettingsEffect.ReminderChanged -> {
+                    if (!effect.enabled) {
+                        navigationViewModel.dispatch(AppNavigationAction.ShowToast("Review reminders are off."))
+                    }
+                }
             }
         }
     }
@@ -272,6 +311,7 @@ private fun SignKoreanApp(
         onToggleRomanization = settingsViewModel::toggleRomanization,
         onToggleAutoPlay = settingsViewModel::toggleAutoPlay,
         onToggleReduceMotion = settingsViewModel::toggleReduceMotion,
+        onToggleReminder = settingsViewModel::toggleReminder,
         reportState = reportState,
         onShowReport = learnViewModel::openReport,
         onSelectReportReason = learnViewModel::selectReportReason,
@@ -317,6 +357,7 @@ internal fun SignKoreanAppContent(
     onToggleRomanization: () -> Unit = {},
     onToggleAutoPlay: () -> Unit = {},
     onToggleReduceMotion: () -> Unit = {},
+    onToggleReminder: () -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
     onShowReport: () -> Unit = {},
     onSelectReportReason: (CardReportReason) -> Unit = {},
@@ -360,6 +401,7 @@ internal fun SignKoreanAppContent(
             onToggleRomanization,
             onToggleAutoPlay,
             onToggleReduceMotion,
+            onToggleReminder,
             onShowReport,
         ) {
             entryProvider<NavKey> {
@@ -434,6 +476,7 @@ internal fun SignKoreanAppContent(
                         onToggleRomanization = onToggleRomanization,
                         onToggleAutoPlay = onToggleAutoPlay,
                         onToggleReduceMotion = onToggleReduceMotion,
+                        onToggleReminder = onToggleReminder,
                     )
                 }
                 entry<AppRoute.Legal> { LegalScreen(LegalUiState()) }
@@ -737,6 +780,7 @@ private fun SettingsDestination(
     onToggleRomanization: () -> Unit,
     onToggleAutoPlay: () -> Unit,
     onToggleReduceMotion: () -> Unit,
+    onToggleReminder: () -> Unit,
 ) {
     SettingsScreen(
         state = state,
@@ -747,6 +791,7 @@ private fun SettingsDestination(
                 SettingsUiAction.ToggleRomanization -> onToggleRomanization()
                 SettingsUiAction.ToggleAutoPlay -> onToggleAutoPlay()
                 SettingsUiAction.ToggleReduceMotion -> onToggleReduceMotion()
+                SettingsUiAction.ToggleReminder -> onToggleReminder()
                 SettingsUiAction.OpenLegal -> onAction(AppNavigationAction.Navigate(AppRoute.Legal))
             }
         },

@@ -28,6 +28,7 @@ data class SettingsUiState(
     val autoPlayAudio: Boolean = false,
     val reduceMotion: Boolean = false,
     val followSystemReduceMotion: Boolean = true,
+    val reminderEnabled: Boolean = false,
 )
 
 data class LegalUiState(
@@ -45,6 +46,8 @@ sealed interface SettingsUiAction {
     data object ToggleAutoPlay : SettingsUiAction
 
     data object ToggleReduceMotion : SettingsUiAction
+
+    data object ToggleReminder : SettingsUiAction
 
     data object OpenLegal : SettingsUiAction
 }
@@ -95,6 +98,12 @@ fun SettingsScreen(
             checked = state.reduceMotion,
             onCheckedChange = { onAction(SettingsUiAction.ToggleReduceMotion) },
             modifier = Modifier.testTag(SignKoreanTestTags.SETTINGS_REDUCE_MOTION),
+        )
+        SettingsSwitchRow(
+            label = "Review reminder",
+            description = "Daily at 7:00 PM when cards are due",
+            checked = state.reminderEnabled,
+            onCheckedChange = { onAction(SettingsUiAction.ToggleReminder) },
         )
         GameButton(
             text = "Legal",
