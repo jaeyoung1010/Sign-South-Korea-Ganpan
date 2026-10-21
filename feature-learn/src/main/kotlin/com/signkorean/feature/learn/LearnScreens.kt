@@ -153,6 +153,11 @@ data class LearnAnswerUiModel(
     }
 }
 
+data class LearnFeedbackUiState(
+    val message: String,
+    val canUndo: Boolean,
+)
+
 enum class LearnCardStage {
     Question,
     Answer,
@@ -188,6 +193,8 @@ sealed interface LearnUiAction {
         val decision: RatingDecision,
         val source: RatingInputSource = RatingInputSource.Gesture,
     ) : LearnUiAction
+
+    data object UndoRating : LearnUiAction
 
     data object RatingAnimationFinished : LearnUiAction
 
@@ -371,6 +378,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
 fun LearnSessionScreen(
     state: LearnSessionUiState,
     onAction: (LearnUiAction) -> Unit,
+    feedback: LearnFeedbackUiState? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -380,9 +388,12 @@ fun LearnSessionScreen(
         LearnTopBar(onAction)
         when (state) {
             LearnSessionUiState.Loading -> LearnLoadingState()
-            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction)
+            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction, feedback)
             LearnSessionUiState.Completed -> LearnCompletedState(onAction)
             is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
+        }
+        if (state !is LearnSessionUiState.Active) {
+            feedback?.let { LearnFeedbackHost(it, onAction) }
         }
     }
 }
@@ -409,6 +420,7 @@ private fun LearnTopBar(onAction: (LearnUiAction) -> Unit) {
 private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
+    feedback: LearnFeedbackUiState?,
 ) {
     Text(
         text = "${state.position} of ${state.totalCount}",
@@ -425,6 +437,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
         onAction = onAction,
         modifier = Modifier.fillMaxWidth().weight(1f),
     )
+    feedback?.let { LearnFeedbackHost(it, onAction) }
     if (state.stage == LearnCardStage.Question) {
         GameButton(
             text = "Show answer",
@@ -438,6 +451,35 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
         modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE),
         style = GameButtonStyle.Secondary,
     )
+}
+
+@Composable
+private fun LearnFeedbackHost(
+    feedback: LearnFeedbackUiState,
+    onAction: (LearnUiAction) -> Unit,
+) {
+    GameCard(modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_RATING_TOAST)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            Text(
+                text = feedback.message,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Black,
+            )
+            if (feedback.canUndo) {
+                GameButton(
+                    text = "Undo",
+                    onClick = { onAction(LearnUiAction.UndoRating) },
+                    modifier = Modifier.testTag(SignKoreanTestTags.LEARN_UNDO_RATING),
+                    style = GameButtonStyle.Secondary,
+                )
+            }
+        }
+    }
 }
 
 @Composable

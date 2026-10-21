@@ -23,6 +23,18 @@ sealed interface RatingTransactionResult {
     data object Unavailable : RatingTransactionResult
 }
 
+sealed interface UndoTransactionResult {
+    data class Restored(
+        val cardId: String,
+        val position: Int,
+        val rating: String,
+    ) : UndoTransactionResult
+
+    data object NothingToUndo : UndoTransactionResult
+
+    data object Unavailable : UndoTransactionResult
+}
+
 data class SessionCreationCommand(
     val session: SessionEntity,
     val cards: List<SessionCardEntity>,
@@ -101,13 +113,20 @@ class RoomSessionTransactionStore(
         }
 
     fun undoLastRating(sessionId: String) {
-        database.runInTransaction {
-            val snapshot = database.ratingSnapshotDao().forSession(sessionId) ?: return@runInTransaction
-            val session = requireNotNull(database.sessionDao().get(sessionId)) { "Unknown session: $sessionId" }
+        tryUndoLastRating(sessionId)
+    }
+
+    fun tryUndoLastRating(sessionId: String): UndoTransactionResult =
+        database.runInTransaction<UndoTransactionResult> {
+            val snapshot = database.ratingSnapshotDao().forSession(sessionId) ?: return@runInTransaction UndoTransactionResult.NothingToUndo
+            val session = database.sessionDao().get(sessionId) ?: return@runInTransaction UndoTransactionResult.Unavailable
             val card =
-                requireNotNull(
-                    database.sessionCardDao().get(sessionId, snapshot.position),
-                ) { "Unknown snapshot position: ${snapshot.position}" }
+                database.sessionCardDao().get(sessionId, snapshot.position)
+                    ?: return@runInTransaction UndoTransactionResult.Unavailable
+            val rating = card.rating ?: return@runInTransaction UndoTransactionResult.Unavailable
+            if (card.cardId != snapshot.cardId || session.currentIndex != snapshot.position + 1) {
+                return@runInTransaction UndoTransactionResult.Unavailable
+            }
             if (snapshot.hadProgress) {
                 database.cardProgressDao().upsert(snapshot.toProgress())
             } else {
@@ -123,8 +142,8 @@ class RoomSessionTransactionStore(
                 ),
             )
             database.ratingSnapshotDao().delete(sessionId)
+            UndoTransactionResult.Restored(card.cardId, card.position, rating)
         }
-    }
 
     private fun snapshot(
         session: SessionEntity,

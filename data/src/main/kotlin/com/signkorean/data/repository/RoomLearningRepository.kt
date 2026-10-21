@@ -5,11 +5,14 @@ import com.signkorean.data.db.RatingCommand
 import com.signkorean.data.db.RatingTransactionResult
 import com.signkorean.data.db.RoomSessionTransactionStore
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.data.db.UndoTransactionResult
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.CardProgress
 import com.signkorean.domain.model.CardReviewState
 import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
+import com.signkorean.domain.port.input.UndoRatingRequest
+import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.LearningRepository
 import com.signkorean.domain.review.ReviewPolicy
 import kotlinx.coroutines.CoroutineDispatcher
@@ -45,6 +48,29 @@ class RoomLearningRepository(
                 is RatingTransactionResult.Applied -> RateCardResult.Rated(result.nextPosition, result.completed)
                 RatingTransactionResult.AlreadyRated -> RateCardResult.AlreadyRated
                 RatingTransactionResult.Unavailable -> RateCardResult.Unavailable
+            }
+        }
+
+    override suspend fun undoLastRating(request: UndoRatingRequest): UndoRatingResult =
+        withContext(dispatcher) {
+            when (val result = transactionStore.tryUndoLastRating(request.sessionId)) {
+                is UndoTransactionResult.Restored -> {
+                    result.rating.toDecision()?.let { rating ->
+                        UndoRatingResult.Undone(
+                            cardId = result.cardId,
+                            position = result.position,
+                            rating = rating,
+                        )
+                    } ?: UndoRatingResult.Unavailable
+                }
+
+                UndoTransactionResult.NothingToUndo -> {
+                    UndoRatingResult.NothingToUndo
+                }
+
+                UndoTransactionResult.Unavailable -> {
+                    UndoRatingResult.Unavailable
+                }
             }
         }
 

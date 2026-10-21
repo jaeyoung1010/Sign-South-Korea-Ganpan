@@ -59,6 +59,7 @@ import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.feature.learn.CompletionScreen
 import com.signkorean.feature.learn.CompletionUiState
+import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnHomeScreen
 import com.signkorean.feature.learn.LearnHomeUiState
 import com.signkorean.feature.learn.LearnSessionScreen
@@ -116,6 +117,7 @@ private fun SignKoreanApp(
     val onboardingState by onboardingViewModel.uiState.collectAsState()
     val learnHomeState by learnHomeViewModel.uiState.collectAsState()
     val learnSessionState by learnViewModel.uiState.collectAsState()
+    val learnFeedbackState by learnViewModel.feedbackState.collectAsState()
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
@@ -147,9 +149,11 @@ private fun SignKoreanApp(
         onConfirmCategoryReplacement = learnHomeViewModel::confirmCategoryReplacement,
         onCancelCategoryReplacement = learnHomeViewModel::cancelCategoryReplacement,
         learnSessionState = learnSessionState,
+        learnFeedbackState = learnFeedbackState,
         onRevealAnswer = learnViewModel::revealAnswer,
         onRateCard = learnViewModel::rateCard,
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
+        onUndoRating = learnViewModel::undoRating,
     )
 }
 
@@ -171,9 +175,11 @@ internal fun SignKoreanAppContent(
     onConfirmCategoryReplacement: () -> Unit = {},
     onCancelCategoryReplacement: () -> Unit = {},
     learnSessionState: LearnSessionUiState = LearnSessionUiState.Loading,
+    learnFeedbackState: LearnFeedbackUiState? = null,
     onRevealAnswer: () -> Unit = {},
     onRateCard: (RatingDecision, RatingInputSource) -> Unit = { _, _ -> },
     onRatingAnimationFinished: () -> Unit = {},
+    onUndoRating: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -193,9 +199,11 @@ internal fun SignKoreanAppContent(
             onConfirmCategoryReplacement,
             onCancelCategoryReplacement,
             learnSessionState,
+            learnFeedbackState,
             onRevealAnswer,
             onRateCard,
             onRatingAnimationFinished,
+            onUndoRating,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -229,10 +237,12 @@ internal fun SignKoreanAppContent(
                 entry<AppRoute.Learn> {
                     LearnDestination(
                         state = learnSessionState,
+                        feedback = learnFeedbackState,
                         onAction = onAction,
                         onRevealAnswer = onRevealAnswer,
                         onRateCard = onRateCard,
                         onRatingAnimationFinished = onRatingAnimationFinished,
+                        onUndoRating = onUndoRating,
                     )
                 }
                 entry<AppRoute.Done> { DoneDestination(onAction) }
@@ -392,13 +402,16 @@ private fun LearnHomeDestination(
 @Composable
 private fun LearnDestination(
     state: LearnSessionUiState,
+    feedback: LearnFeedbackUiState?,
     onAction: (AppNavigationAction) -> Unit,
     onRevealAnswer: () -> Unit,
     onRateCard: (RatingDecision, RatingInputSource) -> Unit,
     onRatingAnimationFinished: () -> Unit,
+    onUndoRating: () -> Unit,
 ) {
     LearnSessionScreen(
         state = state,
+        feedback = feedback,
         onAction = { action ->
             when (action) {
                 LearnUiAction.RevealAnswer -> {
@@ -419,6 +432,10 @@ private fun LearnDestination(
 
                 LearnUiAction.RatingAnimationFinished -> {
                     onRatingAnimationFinished()
+                }
+
+                LearnUiAction.UndoRating -> {
+                    onUndoRating()
                 }
 
                 LearnUiAction.CheckAnswerFirst -> {

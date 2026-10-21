@@ -12,9 +12,13 @@ import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.RevealAnswerResult
+import com.signkorean.domain.port.input.UndoRating
+import com.signkorean.domain.port.input.UndoRatingRequest
+import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnPhotoUiModel
 import com.signkorean.feature.learn.LearnSessionUiState
@@ -22,6 +26,7 @@ import com.signkorean.feature.learn.LearnWordPartUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -34,21 +39,34 @@ class LearnViewModel
         private val loadLearnSession: LoadLearnSession,
         private val revealAnswerUseCase: RevealAnswer = RevealAnswer { RevealAnswerResult.Revealed },
         private val rateCardUseCase: RateCard = RateCard { RateCardResult.Unavailable },
+        private val undoRatingUseCase: UndoRating = UndoRating { UndoRatingResult.Unavailable },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
         private var revealJob: Job? = null
         private var ratingJob: Job? = null
+        private var undoJob: Job? = null
+        private var feedbackJob: Job? = null
         private var isRevealing = false
         private var isRating = false
+        private var isUndoing = false
+        private var lastRatedSessionId: String? = null
+        private val mutableFeedbackState = MutableStateFlow<LearnFeedbackUiState?>(null)
 
         val uiState = mutableUiState.asStateFlow()
+        val feedbackState = mutableFeedbackState.asStateFlow()
 
-        fun load() {
+        fun load(preserveFeedback: Boolean = false) {
             loadJob?.cancel()
             revealJob?.cancel()
             ratingJob?.cancel()
+            if (!preserveFeedback) {
+                undoJob?.cancel()
+                isUndoing = false
+                lastRatedSessionId = null
+                clearFeedback()
+            }
             isRevealing = false
             isRating = false
             mutableUiState.value = LearnSessionUiState.Loading
@@ -117,6 +135,8 @@ class LearnViewModel
             source: RatingInputSource,
         ) {
             isRating = true
+            lastRatedSessionId = active.sessionId
+            clearFeedback()
             ratingJob?.cancel()
             ratingJob =
                 viewModelScope.launch {
@@ -146,6 +166,15 @@ class LearnViewModel
                                         ratingDecision = decision,
                                         ratingError = false,
                                     )
+                                showFeedback(
+                                    message =
+                                        if (decision == RatingDecision.GotIt) {
+                                            "Marked as Got it"
+                                        } else {
+                                            "Marked as Review"
+                                        },
+                                    canUndo = true,
+                                )
                             }
                         }
 
@@ -167,7 +196,63 @@ class LearnViewModel
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
             if (!active.isRating) return
             isRating = false
-            load()
+            load(preserveFeedback = true)
+        }
+
+        fun undoRating() {
+            val sessionId = lastRatedSessionId ?: return
+            if (isUndoing || feedbackState.value?.canUndo != true) return
+            isUndoing = true
+            undoJob =
+                viewModelScope.launch {
+                    val result =
+                        try {
+                            undoRatingUseCase(UndoRatingRequest(sessionId))
+                        } catch (cancellation: CancellationException) {
+                            throw cancellation
+                        } catch (_: Exception) {
+                            UndoRatingResult.Failed
+                        }
+                    when (result) {
+                        is UndoRatingResult.Undone -> {
+                            isUndoing = false
+                            lastRatedSessionId = null
+                            showFeedback("Last choice undone", canUndo = false)
+                            load(preserveFeedback = true)
+                        }
+
+                        UndoRatingResult.NothingToUndo -> {
+                            isUndoing = false
+                            showFeedback("Nothing to undo", canUndo = false)
+                        }
+
+                        UndoRatingResult.Unavailable,
+                        UndoRatingResult.Failed,
+                        -> {
+                            isUndoing = false
+                            showFeedback("Couldn’t undo rating. Try again.", canUndo = true)
+                        }
+                    }
+                }
+        }
+
+        private fun showFeedback(
+            message: String,
+            canUndo: Boolean,
+        ) {
+            feedbackJob?.cancel()
+            mutableFeedbackState.value = LearnFeedbackUiState(message = message, canUndo = canUndo)
+            feedbackJob =
+                viewModelScope.launch {
+                    delay(FEEDBACK_DURATION_MILLIS)
+                    mutableFeedbackState.value = null
+                }
+        }
+
+        private fun clearFeedback() {
+            feedbackJob?.cancel()
+            feedbackJob = null
+            mutableFeedbackState.value = null
         }
     }
 
@@ -210,3 +295,4 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
     }
 
 private const val MAX_PREFETCH_COUNT = 2
+private const val FEEDBACK_DURATION_MILLIS = 4_000L

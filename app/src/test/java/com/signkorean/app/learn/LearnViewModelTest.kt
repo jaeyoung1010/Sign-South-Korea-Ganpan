@@ -14,15 +14,20 @@ import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.RevealAnswerResult
+import com.signkorean.domain.port.input.UndoRating
+import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.testsupport.MainDispatcherRule
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -251,6 +256,68 @@ class LearnViewModelTest {
             advanceUntilIdle()
             assertTrue(assertActive(viewModel.uiState.value).isRating)
             assertEquals(2, calls)
+        }
+
+    @Test
+    fun `rating feedback expires after four seconds and a new rating replaces the undo target`() =
+        runTest {
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase =
+                        RateCard {
+                            calls += 1
+                            RateCardResult.Rated(nextPosition = 1, completed = false)
+                        },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.GotIt, RatingInputSource.Gesture)
+            runCurrent()
+
+            assertEquals(LearnFeedbackUiState("Marked as Got it", canUndo = true), viewModel.feedbackState.value)
+            viewModel.finishRatingAnimation()
+            runCurrent()
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
+            runCurrent()
+
+            assertEquals(LearnFeedbackUiState("Marked as Review", canUndo = true), viewModel.feedbackState.value)
+            assertEquals(2, calls)
+            advanceTimeBy(4_000)
+            runCurrent()
+            assertNull(viewModel.feedbackState.value)
+        }
+
+    @Test
+    fun `undo restores the previous answer card and replaces feedback`() =
+        runTest {
+            var undoCalls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase = RateCard { RateCardResult.Rated(nextPosition = 1, completed = false) },
+                    undoRatingUseCase =
+                        UndoRating {
+                            undoCalls += 1
+                            UndoRatingResult.Undone("card-1", 0, RatingDecision.Review)
+                        },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Gesture)
+            runCurrent()
+            viewModel.finishRatingAnimation()
+            runCurrent()
+
+            viewModel.undoRating()
+            runCurrent()
+
+            assertEquals(1, undoCalls)
+            assertEquals(LearnFeedbackUiState("Last choice undone", canUndo = false), viewModel.feedbackState.value)
+            assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
         }
 
     private fun active(

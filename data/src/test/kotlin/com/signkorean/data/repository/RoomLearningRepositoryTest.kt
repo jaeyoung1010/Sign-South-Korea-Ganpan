@@ -12,6 +12,8 @@ import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
+import com.signkorean.domain.port.input.UndoRatingRequest
+import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.testsupport.FakeClock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -91,6 +93,72 @@ class RoomLearningRepositoryTest {
             assertNull(database.sessionCardDao().get("session-1", 0)?.rating)
             assertNull(database.ratingSnapshotDao().forSession("session-1"))
             assertEquals(0, database.sessionDao().get("session-1")?.currentIndex)
+        }
+
+    @Test
+    fun `undo restores progress session index snapshot and answer state atomically`() =
+        runTest {
+            val revealedAt = ratedAt.minusSeconds(10)
+            val previousProgress =
+                CardProgressEntity(
+                    cardId = "card-1",
+                    stage = 2,
+                    mastered = false,
+                    lastRating = "GOT_IT",
+                    lastReviewedAt = ratedAt.minusSeconds(100),
+                    nextReviewAt = ratedAt.plusSeconds(100),
+                    reviewCount = 3,
+                    gotItCount = 2,
+                    version = 3,
+                )
+            database.cardProgressDao().upsert(previousProgress)
+            database.sessionCardDao().update(
+                SessionCardEntity(
+                    sessionId = "session-1",
+                    position = 0,
+                    cardId = "card-1",
+                    source = "NEW",
+                    answerRevealedAt = revealedAt,
+                ),
+            )
+            repository.rateCard(request(0, "card-1", RatingDecision.Review), ratedAt)
+
+            val result = repository.undoLastRating(UndoRatingRequest("session-1"))
+
+            assertEquals(UndoRatingResult.Undone("card-1", 0, RatingDecision.Review), result)
+            assertEquals(previousProgress, database.cardProgressDao().get("card-1"))
+            assertEquals(0, database.sessionDao().get("session-1")?.currentIndex)
+            assertEquals("ACTIVE", database.sessionDao().get("session-1")?.status)
+            assertNull(database.sessionCardDao().get("session-1", 0)?.rating)
+            assertEquals(revealedAt, database.sessionCardDao().get("session-1", 0)?.answerRevealedAt)
+            assertNull(database.ratingSnapshotDao().forSession("session-1"))
+        }
+
+    @Test
+    fun `undo with no snapshot is a safe no-op`() =
+        runTest {
+            assertEquals(UndoRatingResult.NothingToUndo, repository.undoLastRating(UndoRatingRequest("session-1")))
+            assertEquals(0, database.sessionDao().get("session-1")?.currentIndex)
+        }
+
+    @Test
+    fun `undo failure rolls back the original rating and snapshot`() =
+        runTest {
+            repository.rateCard(request(0, "card-1", RatingDecision.GotIt), ratedAt)
+            database.openHelper.writableDatabase.execSQL(
+                """
+                CREATE TRIGGER fail_undo BEFORE UPDATE ON sessions
+                WHEN NEW.current_index = 0 BEGIN SELECT RAISE(ABORT, 'stop'); END
+                """.trimIndent(),
+            )
+
+            val failure = runCatching { repository.undoLastRating(UndoRatingRequest("session-1")) }
+
+            assertTrue(failure.isFailure)
+            assertEquals(1, database.sessionDao().get("session-1")?.currentIndex)
+            assertEquals("GOT_IT", database.sessionCardDao().get("session-1", 0)?.rating)
+            assertEquals(1, database.cardProgressDao().get("card-1")?.stage)
+            assertEquals("card-1", database.ratingSnapshotDao().forSession("session-1")?.cardId)
         }
 
     private fun request(

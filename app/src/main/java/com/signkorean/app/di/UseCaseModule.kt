@@ -9,6 +9,7 @@ import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.input.StartSession
+import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.ClockPort
@@ -29,6 +30,7 @@ import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
 import com.signkorean.domain.usecase.RevealAnswerUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
 import com.signkorean.domain.usecase.StartSessionUseCase
+import com.signkorean.domain.usecase.UndoRatingUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -135,4 +137,10 @@ object UseCaseModule {
         analyticsSink: AnalyticsSink,
         clock: ClockPort,
     ): RateCard = RateCardUseCase(learningRepository, analyticsSink, clock)
+
+    @Provides
+    fun provideUndoRating(
+        learningRepository: LearningRepository,
+        analyticsSink: AnalyticsSink,
+    ): UndoRating = UndoRatingUseCase(learningRepository, analyticsSink)
 }

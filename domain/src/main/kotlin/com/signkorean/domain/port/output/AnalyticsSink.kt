@@ -3,6 +3,7 @@ package com.signkorean.domain.port.output
 import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.CardRatedEvent
+import com.signkorean.domain.model.CardRatingUndoneEvent
 import com.signkorean.domain.model.SessionStartedEvent
 
 fun interface AnalyticsSink {
@@ -22,4 +23,7 @@ fun interface AnalyticsSink {
 
     /** Records a persisted rating and the input path that produced it. */
     fun recordCardRated(event: CardRatedEvent) = Unit
+
+    /** Records that the latest persisted rating was rolled back. */
+    fun recordRatingUndone(event: CardRatingUndoneEvent) = Unit
 }

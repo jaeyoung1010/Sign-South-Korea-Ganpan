@@ -15,6 +15,7 @@ object SignKoreanTestTags {
     const val LEARN_ZOOM_IMAGE = "learn.image.zoom"
     const val LEARN_CLOSE_SESSION = "learn.session.close"
     const val GLOBAL_FEEDBACK = "global.feedback"
+    const val LEARN_RATING_TOAST = "learn.rating.toast"
     const val LEARN_UNDO_RATING = "learn.rating.undo"
     const val SETTINGS_VOICE = "settings.voice"
 
