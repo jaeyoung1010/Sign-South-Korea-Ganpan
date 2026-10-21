@@ -1,0 +1,16 @@
+<resources>
+    <string name="progress_loading">進捗を読み込み中…</string>
+    <string name="progress_retry">もう一度試す</string>
+    <string name="progress_empty_title">まだ進捗がありません</string>
+    <string name="progress_empty_body">看板を練習して学習の記録を始めましょう。</string>
+    <string name="progress_stat_learned">学習済み</string>
+    <string name="progress_stat_mastered">マスター済み</string>
+    <string name="progress_stat_due">復習するカード</string>
+    <string name="progress_week_title">今週</string>
+    <string name="progress_category_title">カテゴリー別</string>
+    <string name="progress_recent_title">要復習</string>
+    <string name="progress_see_all">すべて見る</string>
+    <string name="progress_close">閉じる</string>
+    <string name="progress_empty_reviews">復習する看板はまだありません。</string>
+    <string name="progress_practice">この看板を練習</string>
+</resources>

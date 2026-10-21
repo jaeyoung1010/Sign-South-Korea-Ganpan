@@ -4,10 +4,12 @@ import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.LoadReviewCardDetail
 import com.signkorean.domain.port.input.LoadSessionCompletion
 import com.signkorean.domain.port.input.ObserveProgress
 import com.signkorean.domain.port.input.ObserveReviewCards
 import com.signkorean.domain.port.input.PauseSession
+import com.signkorean.domain.port.input.PracticeCard
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.input.ResumeSession
@@ -33,10 +35,12 @@ import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.LoadLearnSessionUseCase
+import com.signkorean.domain.usecase.LoadReviewCardDetailUseCase
 import com.signkorean.domain.usecase.LoadSessionCompletionUseCase
 import com.signkorean.domain.usecase.ObserveProgressUseCase
 import com.signkorean.domain.usecase.ObserveReviewCardsUseCase
 import com.signkorean.domain.usecase.PauseSessionUseCase
+import com.signkorean.domain.usecase.PracticeCardUseCase
 import com.signkorean.domain.usecase.RateCardUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
 import com.signkorean.domain.usecase.ResumeSessionUseCase
@@ -142,6 +146,13 @@ object UseCaseModule {
     @Provides
     fun provideObserveReviewCards(learningRepository: LearningRepository): ObserveReviewCards =
         ObserveReviewCardsUseCase(learningRepository)
+
+    @Provides
+    fun provideLoadReviewCardDetail(cardCatalog: CardCatalog): LoadReviewCardDetail =
+        LoadReviewCardDetailUseCase(cardCatalog)
+
+    @Provides
+    fun providePracticeCard(startSession: StartSession): PracticeCard = PracticeCardUseCase(startSession)
 
     @Provides
     fun provideLoadLearnSession(

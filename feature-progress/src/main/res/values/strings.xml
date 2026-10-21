@@ -1,0 +1,16 @@
+<resources>
+    <string name="progress_loading">Loading your progress…</string>
+    <string name="progress_retry">Try again</string>
+    <string name="progress_empty_title">No progress yet</string>
+    <string name="progress_empty_body">Practice a sign to start building your journey.</string>
+    <string name="progress_stat_learned">Learned</string>
+    <string name="progress_stat_mastered">Mastered</string>
+    <string name="progress_stat_due">Due now</string>
+    <string name="progress_week_title">Your week</string>
+    <string name="progress_category_title">By category</string>
+    <string name="progress_recent_title">Needs review</string>
+    <string name="progress_see_all">See all</string>
+    <string name="progress_close">Close</string>
+    <string name="progress_empty_reviews">No signs need review yet.</string>
+    <string name="progress_practice">Practice this sign</string>
+</resources>

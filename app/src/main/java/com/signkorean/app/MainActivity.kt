@@ -47,6 +47,7 @@ import com.signkorean.app.navigation.LaunchFailure
 import com.signkorean.app.navigation.LaunchUiState
 import com.signkorean.app.navigation.LaunchViewModel
 import com.signkorean.app.onboarding.OnboardingViewModel
+import com.signkorean.app.progress.ProgressViewModel
 import com.signkorean.app.settings.SettingsEffect
 import com.signkorean.app.settings.SettingsViewModel
 import com.signkorean.designsystem.components.GameButton
@@ -82,6 +83,7 @@ import com.signkorean.feature.onboarding.OnboardingStep
 import com.signkorean.feature.onboarding.OnboardingUiAction
 import com.signkorean.feature.onboarding.OnboardingUiState
 import com.signkorean.feature.progress.ProgressScreen
+import com.signkorean.feature.progress.ProgressUiAction
 import com.signkorean.feature.progress.ProgressUiState
 import com.signkorean.feature.settings.LegalScreen
 import com.signkorean.feature.settings.LegalUiState
@@ -101,6 +103,7 @@ class MainActivity : ComponentActivity() {
     private val onboardingViewModel: OnboardingViewModel by viewModels()
     private val learnHomeViewModel: LearnHomeViewModel by viewModels()
     private val learnViewModel: LearnViewModel by viewModels()
+    private val progressViewModel: ProgressViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +117,7 @@ class MainActivity : ComponentActivity() {
                 onboardingViewModel,
                 learnHomeViewModel,
                 learnViewModel,
+                progressViewModel,
                 settingsViewModel,
             )
         }
@@ -132,6 +136,7 @@ private fun SignKoreanApp(
     onboardingViewModel: OnboardingViewModel,
     learnHomeViewModel: LearnHomeViewModel,
     learnViewModel: LearnViewModel,
+    progressViewModel: ProgressViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
     val state by navigationViewModel.uiState.collectAsState()
@@ -141,6 +146,7 @@ private fun SignKoreanApp(
     val learnSessionState by learnViewModel.uiState.collectAsState()
     val learnFeedbackState by learnViewModel.feedbackState.collectAsState()
     val completionState by learnViewModel.completionState.collectAsState()
+    val progressState by progressViewModel.uiState.collectAsState()
     val reportState by learnViewModel.reportState.collectAsState()
     val audioState by learnViewModel.audioState.collectAsState()
     val settingsState by settingsViewModel.uiState.collectAsState()
@@ -197,6 +203,15 @@ private fun SignKoreanApp(
             }
         }
     }
+    LaunchedEffect(progressViewModel) {
+        progressViewModel.effects.collect { effect ->
+            when (effect) {
+                com.signkorean.feature.progress.ProgressUiEffect.NavigateToLearn -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Navigate(AppRoute.Learn))
+                }
+            }
+        }
+    }
     LaunchedEffect(settingsViewModel) {
         settingsViewModel.effects.collect { effect ->
             when (effect) {
@@ -242,6 +257,9 @@ private fun SignKoreanApp(
         audioState = audioState,
         learnFeedbackState = learnFeedbackState,
         completionState = completionState,
+        progressState = progressState,
+        onProgressAction = progressViewModel::onAction,
+        onOpenProgressReviews = progressViewModel::openReviewList,
         onRevealAnswer = learnViewModel::revealAnswer,
         onRateCard = learnViewModel::rateCard,
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
@@ -284,6 +302,9 @@ internal fun SignKoreanAppContent(
     audioState: AudioPlaybackState = AudioPlaybackState.Idle,
     learnFeedbackState: LearnFeedbackUiState? = null,
     completionState: SessionCompletion? = null,
+    progressState: ProgressUiState = ProgressUiState(),
+    onProgressAction: (ProgressUiAction) -> Unit = {},
+    onOpenProgressReviews: () -> Unit = {},
     onRevealAnswer: () -> Unit = {},
     onRateCard: (RatingDecision, RatingInputSource) -> Unit = { _, _ -> },
     onRatingAnimationFinished: () -> Unit = {},
@@ -324,6 +345,9 @@ internal fun SignKoreanAppContent(
             audioState,
             learnFeedbackState,
             completionState,
+            progressState,
+            onProgressAction,
+            onOpenProgressReviews,
             onRevealAnswer,
             onRateCard,
             onRatingAnimationFinished,
@@ -382,8 +406,27 @@ internal fun SignKoreanAppContent(
                         onShowReport = onShowReport,
                     )
                 }
-                entry<AppRoute.Done> { DoneDestination(completionState, onAction) }
-                entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
+                entry<AppRoute.Done> {
+                    DoneDestination(
+                        completion = completionState,
+                        onAction = onAction,
+                        onOpenReviewCards = {
+                            onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
+                            onOpenProgressReviews()
+                        },
+                    )
+                }
+                entry<AppRoute.Progress> {
+                    ProgressScreen(
+                        state = progressState,
+                        onAction = { action ->
+                            when (action) {
+                                ProgressUiAction.ReturnToLearn -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn))
+                                else -> onProgressAction(action)
+                            }
+                        },
+                    )
+                }
                 entry<AppRoute.Settings> {
                     SettingsDestination(
                         state = settingsState,
@@ -649,6 +692,7 @@ private fun LearnDestination(
 private fun DoneDestination(
     completion: SessionCompletion?,
     onAction: (AppNavigationAction) -> Unit,
+    onOpenReviewCards: () -> Unit,
 ) {
     CompletionScreen(
         state = completion?.toCompletionUiState() ?: CompletionUiState(),
@@ -656,9 +700,9 @@ private fun DoneDestination(
             when (action) {
                 LearnUiAction.BackHome -> onAction(AppNavigationAction.BackHome)
 
-                LearnUiAction.OpenReviewCards,
-                LearnUiAction.OpenProgress,
-                -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
+                LearnUiAction.OpenReviewCards -> onOpenReviewCards()
+
+                LearnUiAction.OpenProgress -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
 
                 else -> Unit
             }
