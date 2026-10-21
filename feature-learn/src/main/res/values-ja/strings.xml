@@ -50,6 +50,8 @@
     <string name="learn_upcoming_card">次のカード</string>
     <string name="learn_got_it">わかった</string>
     <string name="learn_review">復習</string>
+    <string name="learn_mark_as_got_it">わかったとして記録</string>
+    <string name="learn_mark_for_review">復習として記録</string>
     <string name="learn_question">この看板はどういう意味ですか？</string>
     <string name="learn_question_hint">答えを見る前に、看板を少し読んでみましょう。</string>
     <string name="learn_answer">答え</string>

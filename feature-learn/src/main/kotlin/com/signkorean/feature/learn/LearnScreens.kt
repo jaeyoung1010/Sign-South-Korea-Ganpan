@@ -18,8 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
@@ -448,13 +453,18 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
 ) {
     Text(
         text = stringResource(R.string.learn_position, state.position, state.totalCount),
-        modifier = Modifier.testTag(LearnSessionTestTags.POSITION),
+        modifier = Modifier.testTag(LearnSessionTestTags.POSITION).semantics { heading() },
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Black,
     )
+    val progressDescription = stringResource(R.string.learn_position, state.position, state.totalCount)
     LinearProgressIndicator(
         progress = { state.progressFraction },
-        modifier = Modifier.fillMaxWidth().testTag(LearnSessionTestTags.PROGRESS),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .testTag(LearnSessionTestTags.PROGRESS)
+                .semantics { stateDescription = progressDescription },
     )
     LearnCardStack(
         state = state,
@@ -484,7 +494,13 @@ private fun LearnFeedbackHost(
     feedback: LearnFeedbackUiState,
     onAction: (LearnUiAction) -> Unit,
 ) {
-    GameCard(modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_RATING_TOAST)) {
+    GameCard(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .testTag(SignKoreanTestTags.LEARN_RATING_TOAST)
+                .semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),

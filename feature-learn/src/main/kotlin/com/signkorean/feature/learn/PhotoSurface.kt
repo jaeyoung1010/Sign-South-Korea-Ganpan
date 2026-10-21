@@ -62,7 +62,7 @@ internal fun PhotoSurface(
                 model = imageAssetUri,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = backgroundModifier.fillMaxSize(),
+                modifier = backgroundModifier.fillMaxSize().clearAndSetSemantics {},
             )
             AsyncImage(
                 model = imageAssetUri,

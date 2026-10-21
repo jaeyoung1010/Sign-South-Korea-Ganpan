@@ -38,7 +38,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameCard
@@ -231,14 +236,24 @@ private fun ActiveCard(
     val density = LocalDensity.current.density
     val focusRequester = remember { FocusRequester() }
     var widthPx by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(state.cardId) {
+    LaunchedEffect(state.cardId, state.stage) {
         focusRequester.requestFocus()
     }
+    val hapticFeedback = LocalHapticFeedback.current
+    val markAsGotItLabel = stringResource(R.string.learn_mark_as_got_it)
+    val markForReviewLabel = stringResource(R.string.learn_mark_for_review)
+    val stageDescription =
+        if (state.stage == LearnCardStage.Question) {
+            stringResource(R.string.learn_question)
+        } else {
+            stringResource(R.string.learn_answer)
+        }
     Box(
         modifier =
             modifier
                 .onSizeChanged { widthPx = it.width.toFloat() }
                 .testTag(SignKoreanTestTags.LEARN_KEYBOARD_STAGE)
+                .semantics { stateDescription = stageDescription }
                 .focusRequester(focusRequester)
                 .focusable()
                 .onPreviewKeyEvent { event ->
@@ -281,7 +296,33 @@ private fun ActiveCard(
                     alpha = if (isRating && motionPolicy.reduceMotion) 0f else 1f
                 },
     ) {
-        GameCard(modifier = Modifier.fillMaxSize().testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)) {
+        GameCard(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)
+                    .semantics {
+                        customActions =
+                            listOf(
+                                CustomAccessibilityAction(markAsGotItLabel) {
+                                    dispatchRatingAction(
+                                        state = state,
+                                        decision = RatingDecision.GotIt,
+                                        onAction = onAction,
+                                        hapticFeedback = hapticFeedback,
+                                    )
+                                },
+                                CustomAccessibilityAction(markForReviewLabel) {
+                                    dispatchRatingAction(
+                                        state = state,
+                                        decision = RatingDecision.Review,
+                                        onAction = onAction,
+                                        hapticFeedback = hapticFeedback,
+                                    )
+                                },
+                            )
+                    },
+        ) {
             ActiveCardContent(state, onAction, audioState)
         }
         (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
@@ -297,6 +338,18 @@ private fun ActiveCard(
             )
         }
     }
+}
+
+private fun dispatchRatingAction(
+    state: LearnSessionUiState.Active,
+    decision: RatingDecision,
+    onAction: (LearnUiAction) -> Unit,
+    hapticFeedback: androidx.compose.ui.hapticfeedback.HapticFeedback,
+): Boolean {
+    if (state.stage != LearnCardStage.Answer || state.isRating) return false
+    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+    onAction(LearnUiAction.RateCard(decision, RatingInputSource.Accessibility))
+    return true
 }
 
 @Composable
@@ -356,6 +409,7 @@ internal fun CardQuestion() {
     Column(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_QUESTION)) {
         Text(
             text = stringResource(R.string.learn_question),
+            modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
@@ -383,6 +437,7 @@ internal fun CardAnswer(
         ) {
             Text(
                 text = stringResource(R.string.learn_answer),
+                modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Black,
             )

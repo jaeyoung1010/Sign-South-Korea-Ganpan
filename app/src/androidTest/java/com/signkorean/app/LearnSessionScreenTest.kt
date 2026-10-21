@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -17,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanTheme
+import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.FocusRect
+import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
@@ -51,6 +55,12 @@ class LearnSessionScreenTest {
 
         composeRule.onNodeWithText("3 of 10").assertIsDisplayed()
         composeRule.onNodeWithTag(LearnSessionTestTags.PROGRESS).assertIsDisplayed()
+        composeRule.runOnIdle {
+            val positionConfig = composeRule.onNodeWithTag(LearnSessionTestTags.POSITION).fetchSemanticsNode().config
+            val progressConfig = composeRule.onNodeWithTag(LearnSessionTestTags.PROGRESS).fetchSemanticsNode().config
+            assertTrue(positionConfig.contains(SemanticsProperties.Heading))
+            assertEquals("3 of 10", progressConfig[SemanticsProperties.StateDescription])
+        }
     }
 
     @Test
@@ -82,6 +92,53 @@ class LearnSessionScreenTest {
         composeRule.onNodeWithText("Hongdae Entrance").assertDoesNotExist()
         composeRule.onNodeWithText("Words").assertDoesNotExist()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertIsDisplayed()
+    }
+
+    @Test
+    fun question_card_blocks_rating_custom_actions_until_the_answer_is_revealed() {
+        val dispatchedActions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(
+                    state = answerState().copy(stage = LearnCardStage.Question),
+                    onAction = dispatchedActions::add,
+                )
+            }
+        }
+
+        val config = composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ACTIVE_CARD).fetchSemanticsNode().config
+        val customActions = if (config.contains(SemanticsActions.CustomActions)) config[SemanticsActions.CustomActions] else emptyList()
+
+        assertEquals(listOf("Mark as Got it", "Mark for review"), customActions.map { it.label })
+        assertTrue(customActions.all { it.action() })
+        assertEquals(
+            listOf(LearnUiAction.CheckAnswerFirst, LearnUiAction.CheckAnswerFirst),
+            dispatchedActions,
+        )
+    }
+
+    @Test
+    fun answer_card_exposes_localized_rating_custom_actions_that_share_the_rating_transaction() {
+        val actions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(state = answerState(), onAction = actions::add)
+            }
+        }
+
+        val config = composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ACTIVE_CARD).fetchSemanticsNode().config
+        val customActions = if (config.contains(SemanticsActions.CustomActions)) config[SemanticsActions.CustomActions] else emptyList()
+
+        assertEquals(listOf("Mark as Got it", "Mark for review"), customActions.map { it.label })
+        assertTrue(customActions.first { it.label == "Mark as Got it" }.action())
+        assertTrue(customActions.first { it.label == "Mark for review" }.action())
+        assertEquals(
+            listOf(
+                LearnUiAction.RateCard(RatingDecision.GotIt, RatingInputSource.Accessibility),
+                LearnUiAction.RateCard(RatingDecision.Review, RatingInputSource.Accessibility),
+            ),
+            actions,
+        )
     }
 
     @Test

@@ -462,6 +462,43 @@ class LearnViewModelTest {
         }
 
     @Test
+    fun `accessibility rating uses the same toast and undo transaction as gesture rating`() =
+        runTest {
+            var receivedSource: RatingInputSource? = null
+            var undoCalls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase =
+                        RateCard {
+                            receivedSource = it.source
+                            RateCardResult.Rated(nextPosition = 1, completed = false)
+                        },
+                    undoRatingUseCase =
+                        UndoRating {
+                            undoCalls += 1
+                            UndoRatingResult.Undone("card-1", 0, RatingDecision.Review)
+                        },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Accessibility)
+            runCurrent()
+
+            assertEquals(RatingInputSource.Accessibility, receivedSource)
+            assertEquals(LearnFeedbackUiState("Marked as Review", canUndo = true), viewModel.feedbackState.value)
+
+            viewModel.finishRatingAnimation()
+            runCurrent()
+            viewModel.undoRating()
+            runCurrent()
+
+            assertEquals(1, undoCalls)
+            assertEquals(LearnFeedbackUiState("Last choice undone", canUndo = false), viewModel.feedbackState.value)
+        }
+
+    @Test
     fun `final rating exposes completion only after the exit animation finishes`() =
         runTest {
             val completion =
