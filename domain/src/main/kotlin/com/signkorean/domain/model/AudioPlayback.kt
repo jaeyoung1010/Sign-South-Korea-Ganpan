@@ -6,6 +6,16 @@ data class AudioPlayRequest(
     val assetUri: String,
 )
 
+data class AudioPlaybackFailedEvent(
+    val cardId: String,
+    val voiceId: VoiceId,
+    val reason: AudioPlaybackFailure,
+) {
+    init {
+        require(cardId.isNotBlank())
+    }
+}
+
 enum class AudioPlaybackFailure {
     AssetMissing,
     InvalidProvider,

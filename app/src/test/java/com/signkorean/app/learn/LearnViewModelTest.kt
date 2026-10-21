@@ -3,6 +3,7 @@ package com.signkorean.app.learn
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlayRequest
 import com.signkorean.domain.model.AudioPlaybackFailure
+import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.FocusRect
@@ -30,6 +31,7 @@ import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.AudioPlayerPort
+import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
@@ -104,10 +106,12 @@ class LearnViewModelTest {
     fun `publishes a privacy safe audio failure effect`() =
         runTest {
             val audioPlayer = RecordingAudioPlayer()
+            val analytics = RecordingAnalyticsSink()
             val viewModel =
                 LearnViewModel(
                     loadLearnSession = LoadLearnSession { active(position = 1, total = 1).copy(answerRevealed = true) },
                     audioPlayer = audioPlayer,
+                    analyticsSink = analytics,
                 )
             viewModel.load()
             advanceUntilIdle()
@@ -122,6 +126,16 @@ class LearnViewModelTest {
             advanceUntilIdle()
 
             assertEquals(LearnSessionEffect.AudioFailed(AudioPlaybackFailure.Decode), effect.await())
+            assertEquals(
+                listOf(
+                    AudioPlaybackFailedEvent(
+                        cardId = "card-1",
+                        voiceId = VoiceId.TYPECAST_EUNKYUNG,
+                        reason = AudioPlaybackFailure.Decode,
+                    ),
+                ),
+                analytics.audioFailures,
+            )
         }
 
     @Test
@@ -652,5 +666,15 @@ class LearnViewModelTest {
         }
 
         override fun observePlayback() = state
+    }
+
+    private class RecordingAnalyticsSink : AnalyticsSink {
+        val audioFailures = mutableListOf<AudioPlaybackFailedEvent>()
+
+        override fun recordAppStarted(event: com.signkorean.domain.model.AppStartupEvent) = Unit
+
+        override fun recordAudioPlaybackFailed(event: AudioPlaybackFailedEvent) {
+            audioFailures += event
+        }
     }
 }

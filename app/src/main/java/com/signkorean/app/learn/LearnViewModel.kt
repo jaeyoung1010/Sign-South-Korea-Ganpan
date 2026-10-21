@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlayRequest
 import com.signkorean.domain.model.AudioPlaybackFailure
+import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.LearnSessionError
@@ -32,6 +33,7 @@ import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingRequest
 import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.AudioPlayerPort
+import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
@@ -68,6 +70,7 @@ class LearnViewModel
         private val submitCardReportUseCase: SubmitCardReport = SubmitCardReport { SubmitCardReportResult.Unavailable },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
         private val audioPlayer: AudioPlayerPort = NoopAudioPlayer,
+        private val analyticsSink: AnalyticsSink = AnalyticsSink { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
@@ -94,6 +97,15 @@ class LearnViewModel
                 audioPlayer.observePlayback().collect { playbackState ->
                     mutableAudioState.value = playbackState
                     if (playbackState is AudioPlaybackState.Failed) {
+                        runCatching {
+                            analyticsSink.recordAudioPlaybackFailed(
+                                AudioPlaybackFailedEvent(
+                                    cardId = playbackState.cardId,
+                                    voiceId = playbackState.voiceId,
+                                    reason = playbackState.reason,
+                                ),
+                            )
+                        }
                         effectChannel.trySend(LearnSessionEffect.AudioFailed(playbackState.reason))
                     }
                 }

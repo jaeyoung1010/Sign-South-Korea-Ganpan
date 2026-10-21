@@ -2,6 +2,7 @@ package com.signkorean.domain.port.output
 
 import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
+import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardRatingUndoneEvent
 import com.signkorean.domain.model.SessionPausedEvent
@@ -23,6 +24,9 @@ fun interface AnalyticsSink {
 
     /** Records an answer transition only after it has been persisted. */
     fun recordAnswerRevealed(event: AnswerRevealedEvent) = Unit
+
+    /** Records only typed audio failure context; asset paths and user content are excluded. */
+    fun recordAudioPlaybackFailed(event: AudioPlaybackFailedEvent) = Unit
 
     /** Records a persisted rating and the input path that produced it. */
     fun recordCardRated(event: CardRatedEvent) = Unit
