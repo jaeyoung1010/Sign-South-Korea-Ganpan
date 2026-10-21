@@ -93,6 +93,7 @@ class LearnViewModel
             ratingJob?.cancel()
             reportJob?.cancel()
             isSubmittingReport = false
+            mutableReportState.value = ReportUiState()
             if (!preserveFeedback) {
                 undoJob?.cancel()
                 isUndoing = false
@@ -326,6 +327,7 @@ class LearnViewModel
         }
 
         fun selectReportReason(reason: CardReportReason) {
+            if (isSubmittingReport) return
             mutableReportState.value =
                 mutableReportState.value.copy(
                     selectedReason = reason,
@@ -335,6 +337,7 @@ class LearnViewModel
         }
 
         fun updateReportDetails(details: String) {
+            if (isSubmittingReport) return
             mutableReportState.value =
                 mutableReportState.value
                     .withDetails(details)

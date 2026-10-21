@@ -3,7 +3,10 @@
 package com.signkorean.feature.learn
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -11,13 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonRow
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.model.CardReportReason
+import com.signkorean.domain.model.ReportDetails
 
 enum class ReportStatus {
     Editing,
@@ -56,7 +59,7 @@ fun ReportSheet(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxHeight(0.85f).verticalScroll(rememberScrollState()),
         verticalArrangement =
             androidx.compose.foundation.layout.Arrangement
                 .spacedBy(SignKoreanSpacing.small),
@@ -81,7 +84,12 @@ fun ReportSheet(
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REPORT_DETAILS),
             label = { Text("Optional details") },
             placeholder = { Text("Do not include personal information") },
-            supportingText = { Text("${state.details.codePointCount(0, state.details.length)} / 500") },
+            supportingText = {
+                Text(
+                    "${state.details.codePointCount(0, state.details.length)} / " +
+                        ReportDetails.MAX_CODE_POINTS,
+                )
+            },
             minLines = 3,
             maxLines = 5,
             enabled = state.status != ReportStatus.Saving,
