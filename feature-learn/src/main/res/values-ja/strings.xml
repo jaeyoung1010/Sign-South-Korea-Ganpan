@@ -52,6 +52,11 @@
     <string name="learn_review">復習</string>
     <string name="learn_mark_as_got_it">わかったとして記録</string>
     <string name="learn_mark_for_review">復習として記録</string>
+    <string name="learn_feedback_marked_got_it">わかったとして記録しました</string>
+    <string name="learn_feedback_marked_review">復習として記録しました</string>
+    <string name="learn_feedback_last_choice_undone">直前の選択を元に戻しました</string>
+    <string name="learn_feedback_nothing_to_undo">元に戻す選択はありません</string>
+    <string name="learn_feedback_undo_failed">元に戻せませんでした。もう一度お試しください。</string>
     <string name="learn_question">この看板はどういう意味ですか？</string>
     <string name="learn_question_hint">答えを見る前に、看板を少し読んでみましょう。</string>
     <string name="learn_answer">答え</string>

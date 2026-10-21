@@ -37,6 +37,7 @@ import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.testsupport.FakeUserSettingsRepository
 import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnFeedbackMessage
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnSessionUiState
@@ -487,7 +488,7 @@ class LearnViewModelTest {
             runCurrent()
 
             assertEquals(RatingInputSource.Accessibility, receivedSource)
-            assertEquals(LearnFeedbackUiState("Marked as Review", canUndo = true), viewModel.feedbackState.value)
+            assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.MarkedReview, canUndo = true), viewModel.feedbackState.value)
 
             viewModel.finishRatingAnimation()
             runCurrent()
@@ -495,7 +496,7 @@ class LearnViewModelTest {
             runCurrent()
 
             assertEquals(1, undoCalls)
-            assertEquals(LearnFeedbackUiState("Last choice undone", canUndo = false), viewModel.feedbackState.value)
+            assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.LastChoiceUndone, canUndo = false), viewModel.feedbackState.value)
         }
 
     @Test
@@ -614,13 +615,13 @@ class LearnViewModelTest {
             viewModel.rateCard(RatingDecision.GotIt, RatingInputSource.Gesture)
             runCurrent()
 
-            assertEquals(LearnFeedbackUiState("Marked as Got it", canUndo = true), viewModel.feedbackState.value)
+            assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.MarkedGotIt, canUndo = true), viewModel.feedbackState.value)
             viewModel.finishRatingAnimation()
             runCurrent()
             viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
             runCurrent()
 
-            assertEquals(LearnFeedbackUiState("Marked as Review", canUndo = true), viewModel.feedbackState.value)
+            assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.MarkedReview, canUndo = true), viewModel.feedbackState.value)
             assertEquals(2, calls)
             advanceTimeBy(4_000)
             runCurrent()
@@ -653,7 +654,7 @@ class LearnViewModelTest {
             runCurrent()
 
             assertEquals(1, undoCalls)
-            assertEquals(LearnFeedbackUiState("Last choice undone", canUndo = false), viewModel.feedbackState.value)
+            assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.LastChoiceUndone, canUndo = false), viewModel.feedbackState.value)
             assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
         }
 

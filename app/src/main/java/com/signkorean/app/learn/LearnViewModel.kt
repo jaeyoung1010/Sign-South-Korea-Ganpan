@@ -42,6 +42,7 @@ import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
+import com.signkorean.feature.learn.LearnFeedbackMessage
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnPhotoUiModel
@@ -338,9 +339,9 @@ class LearnViewModel
                                 showFeedback(
                                     message =
                                         if (decision == RatingDecision.GotIt) {
-                                            "Marked as Got it"
+                                            LearnFeedbackMessage.MarkedGotIt
                                         } else {
-                                            "Marked as Review"
+                                            LearnFeedbackMessage.MarkedReview
                                         },
                                     canUndo = true,
                                 )
@@ -396,20 +397,20 @@ class LearnViewModel
                             lastRatedSessionId = null
                             pendingCompletion = null
                             mutableCompletionState.value = null
-                            showFeedback("Last choice undone", canUndo = false)
+                            showFeedback(LearnFeedbackMessage.LastChoiceUndone, canUndo = false)
                             load(preserveFeedback = true)
                         }
 
                         UndoRatingResult.NothingToUndo -> {
                             isUndoing = false
-                            showFeedback("Nothing to undo", canUndo = false)
+                            showFeedback(LearnFeedbackMessage.NothingToUndo, canUndo = false)
                         }
 
                         UndoRatingResult.Unavailable,
                         UndoRatingResult.Failed,
                         -> {
                             isUndoing = false
-                            showFeedback("Couldn’t undo rating. Try again.", canUndo = true)
+                            showFeedback(LearnFeedbackMessage.UndoFailed, canUndo = true)
                         }
                     }
                 }
@@ -527,7 +528,7 @@ class LearnViewModel
         }
 
         private fun showFeedback(
-            message: String,
+            message: LearnFeedbackMessage,
             canUndo: Boolean,
         ) {
             feedbackJob?.cancel()

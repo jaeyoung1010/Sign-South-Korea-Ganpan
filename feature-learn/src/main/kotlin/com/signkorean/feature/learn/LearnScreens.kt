@@ -167,9 +167,17 @@ data class LearnAnswerUiModel(
 }
 
 data class LearnFeedbackUiState(
-    val message: String,
+    val message: LearnFeedbackMessage,
     val canUndo: Boolean,
 )
+
+enum class LearnFeedbackMessage {
+    MarkedGotIt,
+    MarkedReview,
+    LastChoiceUndone,
+    NothingToUndo,
+    UndoFailed,
+}
 
 enum class LearnCardStage {
     Question,
@@ -507,7 +515,7 @@ private fun LearnFeedbackHost(
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
         ) {
             Text(
-                text = feedback.message,
+                text = stringResource(feedback.message.toStringResource()),
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Black,
@@ -523,6 +531,15 @@ private fun LearnFeedbackHost(
         }
     }
 }
+
+private fun LearnFeedbackMessage.toStringResource(): Int =
+    when (this) {
+        LearnFeedbackMessage.MarkedGotIt -> R.string.learn_feedback_marked_got_it
+        LearnFeedbackMessage.MarkedReview -> R.string.learn_feedback_marked_review
+        LearnFeedbackMessage.LastChoiceUndone -> R.string.learn_feedback_last_choice_undone
+        LearnFeedbackMessage.NothingToUndo -> R.string.learn_feedback_nothing_to_undo
+        LearnFeedbackMessage.UndoFailed -> R.string.learn_feedback_undo_failed
+    }
 
 @Composable
 private fun LearnLoadingState() {

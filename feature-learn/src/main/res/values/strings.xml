@@ -52,6 +52,11 @@
     <string name="learn_review">Review</string>
     <string name="learn_mark_as_got_it">Mark as Got it</string>
     <string name="learn_mark_for_review">Mark for review</string>
+    <string name="learn_feedback_marked_got_it">Marked as Got it</string>
+    <string name="learn_feedback_marked_review">Marked as Review</string>
+    <string name="learn_feedback_last_choice_undone">Last choice undone</string>
+    <string name="learn_feedback_nothing_to_undo">Nothing to undo</string>
+    <string name="learn_feedback_undo_failed">Couldn’t undo rating. Try again.</string>
     <string name="learn_question">What does this sign mean?</string>
     <string name="learn_question_hint">Take a moment to read the sign before you reveal it.</string>
     <string name="learn_answer">Answer</string>
