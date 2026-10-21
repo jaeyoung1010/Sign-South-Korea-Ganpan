@@ -29,6 +29,13 @@ class ReviewReminderWorker
         private val clock: ClockPort,
     ) : CoroutineWorker(appContext, workerParams) {
         override suspend fun doWork(): Result {
+            val scheduledZoneId = inputData.getString(KEY_ZONE_ID)
+            if (scheduledZoneId != null && scheduledZoneId != clock.zoneId().id) {
+                // A persisted one-time request keeps its old absolute instant across a timezone
+                // change. Recalculate before notifying so the user only sees local 7:00 PM.
+                enqueueNext(inputData.getString(KEY_LANGUAGE_TAG) ?: "en")
+                return Result.success()
+            }
             val progress = learningRepository.observeProgress(clock.now()).first()
             val dueCount =
                 progress.count { card ->
