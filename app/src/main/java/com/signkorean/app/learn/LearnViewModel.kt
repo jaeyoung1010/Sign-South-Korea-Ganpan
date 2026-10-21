@@ -118,6 +118,8 @@ class LearnViewModel
                                     source = source,
                                 ),
                             )
+                        } catch (cancellation: CancellationException) {
+                            throw cancellation
                         } catch (_: Exception) {
                             RateCardResult.Failed
                         }

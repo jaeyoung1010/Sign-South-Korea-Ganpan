@@ -7,6 +7,7 @@ import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.LearningRepository
+import kotlinx.coroutines.CancellationException
 
 class RateCardUseCase(
     private val learningRepository: LearningRepository,
@@ -15,9 +16,13 @@ class RateCardUseCase(
 ) : RateCard {
     override suspend fun invoke(request: RateCardRequest): RateCardResult {
         val result =
-            runCatching {
+            try {
                 learningRepository.rateCard(request, clock.now())
-            }.getOrElse { RateCardResult.Failed }
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
+                RateCardResult.Failed
+            }
         if (result is RateCardResult.Rated) {
             runCatching {
                 analyticsSink.recordCardRated(

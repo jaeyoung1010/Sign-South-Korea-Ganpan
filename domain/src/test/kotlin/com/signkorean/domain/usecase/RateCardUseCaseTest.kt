@@ -10,8 +10,10 @@ import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.LearningRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 import java.time.ZoneId
@@ -65,6 +67,33 @@ class RateCardUseCaseTest {
                 )
 
             assertEquals(RateCardResult.AlreadyRated, result)
+            assertEquals(emptyList<CardRatedEvent>(), analytics.events)
+        }
+
+    @Test
+    fun `cancellation is propagated instead of being converted to a retryable failure`() =
+        runTest {
+            val analytics = RecordingAnalytics()
+            val repository =
+                object : LearningRepository {
+                    override fun getReviewState(cardId: String): CardReviewState = CardReviewState.NotFound
+
+                    override suspend fun rateCard(
+                        request: RateCardRequest,
+                        ratedAt: Instant,
+                    ): RateCardResult = throw CancellationException("test cancellation")
+                }
+
+            var propagated = false
+            try {
+                RateCardUseCase(repository, analytics, fixedClock)(
+                    RateCardRequest("session-1", 0, "card-1", RatingDecision.Review, RatingInputSource.Gesture),
+                )
+            } catch (_: CancellationException) {
+                propagated = true
+            }
+
+            assertTrue(propagated)
             assertEquals(emptyList<CardRatedEvent>(), analytics.events)
         }
 
