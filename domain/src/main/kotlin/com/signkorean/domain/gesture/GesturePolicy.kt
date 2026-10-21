@@ -14,12 +14,12 @@ data class GesturePolicyConfig(
     val overlayFullStrengthDp: Float = 90f,
 ) {
     init {
-        require(axisLockThresholdDp > 0f)
-        require(horizontalDominanceRatio > 1f)
-        require(questionOffsetLimitDp > questionHintThresholdDp)
-        require(questionHintThresholdDp > 0f)
-        require(answerCommitThresholdDp > 0f)
-        require(overlayFullStrengthDp > 0f)
+        require(axisLockThresholdDp.isFinite() && axisLockThresholdDp > 0f)
+        require(horizontalDominanceRatio.isFinite() && horizontalDominanceRatio > 1f)
+        require(questionOffsetLimitDp.isFinite() && questionOffsetLimitDp > questionHintThresholdDp)
+        require(questionHintThresholdDp.isFinite() && questionHintThresholdDp > 0f)
+        require(answerCommitThresholdDp.isFinite() && answerCommitThresholdDp > 0f)
+        require(overlayFullStrengthDp.isFinite() && overlayFullStrengthDp > 0f)
     }
 }
 

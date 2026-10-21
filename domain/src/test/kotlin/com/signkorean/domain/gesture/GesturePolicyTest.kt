@@ -1,6 +1,7 @@
 package com.signkorean.domain.gesture
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Random
@@ -15,6 +16,22 @@ class GesturePolicyTest {
         assertEquals(DragAxis.Vertical, policy.axisFor(dxDp = 13f, dyDp = 11f))
         assertEquals(DragAxis.Horizontal, policy.axisFor(dxDp = 13.31f, dyDp = 11f))
         assertEquals(DragAxis.Horizontal, policy.axisFor(dxDp = -13f, dyDp = 1f, previousAxis = DragAxis.Horizontal))
+    }
+
+    @Test
+    fun `gesture configuration rejects non finite thresholds`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            GesturePolicyConfig(axisLockThresholdDp = Float.POSITIVE_INFINITY)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            GesturePolicyConfig(horizontalDominanceRatio = Float.POSITIVE_INFINITY)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            GesturePolicyConfig(questionOffsetLimitDp = Float.NaN)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            GesturePolicyConfig(answerCommitThresholdDp = Float.NEGATIVE_INFINITY)
+        }
     }
 
     @Test
