@@ -57,3 +57,14 @@ test('does not treat a longer requirement ID as an exact code tag', () => {
 
   assert.deepEqual(result.errors, ['Missing code tag: AC-01']);
 });
+
+test('rejects a self-referential E2E trace row', () => {
+  const result = validateTraceability({
+    ...validFixture,
+    manifest: 'E2E-01|43|tests/E2E.kt|tests/Phase43E2ETraceTest.kt#e2e01',
+    fileExists: () => true,
+    fileContents: () => 'fun e2e01() {}',
+  });
+
+  assert.deepEqual(result.errors, ['Missing trace row: AC-001', 'Missing trace row: F-APP-01', 'E2E trace must reference a flow test: E2E-01']);
+});

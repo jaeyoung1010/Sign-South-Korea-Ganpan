@@ -1,17 +1,20 @@
 # id-pattern|phase|evidence path|test reference
 F-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-FR-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-NFR-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+FR-*|43|domain/src/test/kotlin/com/signkorean/domain/usecase/StartSessionUseCaseTest.kt|domain/src/test/kotlin/com/signkorean/domain/usecase/StartSessionUseCaseTest.kt
+NFR-A11Y-*|43|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt
+NFR-OFF-*|43|data/src/test/kotlin/com/signkorean/data/asset/BundleContentAdapterTest.kt|data/src/test/kotlin/com/signkorean/data/asset/BundleContentAdapterTest.kt
+NFR-PERF-*|43|domain/src/test/kotlin/com/signkorean/domain/performance/PerformanceBudgetTest.kt|domain/src/test/kotlin/com/signkorean/domain/performance/PerformanceBudgetTest.kt
+NFR-SEC-*|43|scripts/quality/quality-rules.test.mjs|scripts/quality/quality-rules.test.mjs
 AC-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-01|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-02|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-03|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-04|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-05|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-06|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-07|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-08|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-09|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-10|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-11|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
-E2E-12|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-01|43|app/src/androidTest/java/com/signkorean/app/OnboardingDestinationsTest.kt|app/src/androidTest/java/com/signkorean/app/OnboardingDestinationsTest.kt#level_skip_selects_beginner_and_continues_to_interests
+E2E-02|43|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt#answer_screenshot_matrix_supports_width_locale_and_large_font_scale
+E2E-03|43|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt#answer_card_exposes_localized_rating_custom_actions_that_share_the_rating_transaction
+E2E-04|43|app/src/test/java/com/signkorean/app/learn/LearnViewModelTest.kt|app/src/test/java/com/signkorean/app/learn/LearnViewModelTest.kt#recovers a completed session after the active query is empty
+E2E-05|43|app/src/test/java/com/signkorean/app/learn/LearnViewModelTest.kt|app/src/test/java/com/signkorean/app/learn/LearnViewModelTest.kt#undo restores the previous answer card and replaces feedback
+E2E-06|43|platform/src/test/kotlin/com/signkorean/platform/audio/Media3AudioPlayerTest.kt|platform/src/test/kotlin/com/signkorean/platform/audio/Media3AudioPlayerTest.kt#plays the requested card voice and reports playing
+E2E-07|43|data/src/test/kotlin/com/signkorean/data/asset/BundleContentAdapterTest.kt|data/src/test/kotlin/com/signkorean/data/asset/BundleContentAdapterTest.kt#offline mode keeps cards loadable when one photo and one audio asset are missing
+E2E-08|43|app/src/test/java/com/signkorean/app/settings/SettingsViewModelTest.kt|app/src/test/java/com/signkorean/app/settings/SettingsViewModelTest.kt#settings flow restores the selected voice for a recreated view model
+E2E-09|43|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt|app/src/androidTest/java/com/signkorean/app/LearnSessionScreenTest.kt#answer_card_exposes_localized_rating_custom_actions_that_share_the_rating_transaction
+E2E-10|43|feature-learn/src/test/kotlin/com/signkorean/feature/learn/PointerBoundaryAdapterTest.kt|feature-learn/src/test/kotlin/com/signkorean/feature/learn/PointerBoundaryAdapterTest.kt#clamps an out of bounds move and terminates the pointer
+E2E-11|43|app/src/test/java/com/signkorean/app/settings/SettingsViewModelTest.kt|app/src/test/java/com/signkorean/app/settings/SettingsViewModelTest.kt#approved permission enables reminder when due cards exist
+E2E-12|43|data/src/test/kotlin/com/signkorean/data/asset/BundleContentAdapterTest.kt|data/src/test/kotlin/com/signkorean/data/asset/BundleContentAdapterTest.kt#offline mode keeps cards loadable when one photo and one audio asset are missing

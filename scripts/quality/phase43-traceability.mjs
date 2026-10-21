@@ -73,6 +73,9 @@ export function validateTraceability({
 
     const { filePath, method } = splitTestReference(row.testReference ?? '');
     const testFile = path.resolve(rootDirectory, filePath);
+    if (row.idPattern?.startsWith('E2E-') && filePath.endsWith('Phase43E2ETraceTest.kt')) {
+      errors.push(`E2E trace must reference a flow test: ${row.idPattern}`);
+    }
     if (!filePath || !fileExists(testFile)) {
       errors.push(`Missing test file: ${row.testReference}`);
     } else if (method && !fileContents(testFile).includes(method)) {

@@ -1,17 +1,38 @@
 package com.signkorean.app
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.signkorean.domain.model.LaunchDestination
+import com.signkorean.domain.port.input.ResolveLaunchDestination
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 /**
  * The fast E2E lane keeps the scenario-to-artifact contract executable. The referenced screen,
  * ViewModel, repository, and platform suites provide the actual flow assertions.
  */
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class Phase43E2ETraceTest {
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var resolveLaunchDestination: ResolveLaunchDestination
+
+    @Test
+    fun quickE2ELaneUsesHiltFakeBindings() {
+        hiltRule.inject()
+
+        assertEquals(LaunchDestination.HOME, runBlocking { resolveLaunchDestination() })
+    }
+
     @Test
     fun traceabilityRegistryContainsAllScenarios() {
         assertEquals((1..12).map { "E2E-${it.toString().padStart(2, '0')}" }, Phase43E2ETrace.scenarios.map { it.id })
