@@ -89,13 +89,14 @@ class PrivacySafeAnalyticsAdapterTest {
 
         logger.log(
             DiagnosticLogLevel.ERROR,
-            "details=wrong private street address path=/Users/choi/report.txt api_key=tts-secret user@example.com",
+            "details=wrong private street address; path=/sdcard/Download/report.txt api_key=tts-secret user=choi phone=010-1234-5678 user@example.com",
             mapOf(
                 "details" to "full report text",
                 "path" to "/private/data/report.txt",
                 "api_key" to "tts-secret",
                 "user_id" to "user-123",
                 "free_text" to "untrusted input",
+                "android_path" to "/sdcard/Download/report.txt",
                 "card_id" to "card-1",
             ),
         )
@@ -105,9 +106,12 @@ class PrivacySafeAnalyticsAdapterTest {
         assertFalse(rendered.contains("wrong private street address"))
         assertFalse(rendered.contains("/Users/choi/report.txt"))
         assertFalse(rendered.contains("tts-secret"))
+        assertFalse(rendered.contains("user=choi"))
+        assertFalse(rendered.contains("010-1234-5678"))
         assertFalse(rendered.contains("user@example.com"))
         assertFalse(rendered.contains("user-123"))
         assertFalse(rendered.contains("untrusted input"))
+        assertFalse(rendered.contains("/sdcard/Download/report.txt"))
         assertTrue(entry.attributes["card_id"] == "card-1")
     }
 
