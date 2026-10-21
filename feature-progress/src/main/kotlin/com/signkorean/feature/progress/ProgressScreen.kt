@@ -2,6 +2,7 @@
 
 package com.signkorean.feature.progress
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -135,6 +137,12 @@ fun ProgressScreen(
 ) {
     val dashboardScroll = rememberScrollState()
     val reviewListState = rememberLazyListState()
+    BackHandler(enabled = state.selectedReview != null) {
+        onAction(ProgressUiAction.CloseDetail)
+    }
+    BackHandler(enabled = state.isReviewListVisible && state.selectedReview == null) {
+        onAction(ProgressUiAction.CloseReviewList)
+    }
     Box(modifier = modifier.fillMaxSize().testTag(ProgressTestTags.SCREEN)) {
         if (state.isReviewListVisible) {
             ReviewList(
@@ -327,6 +335,7 @@ private fun ReviewList(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize().padding(top = SignKoreanSpacing.medium),
+                contentPadding = PaddingValues(bottom = 88.dp),
                 verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
             ) {
                 items(state.allReviews, key = { it.cardId }) { review -> ReviewCard(review, onAction) }
