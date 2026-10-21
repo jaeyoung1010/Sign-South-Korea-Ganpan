@@ -92,6 +92,7 @@ function unique(values) {
 export function validateContentGate({ rootDirectory, readText = (filePath) => fs.readFileSync(filePath, 'utf8'), fileExists = fs.existsSync }) {
   const errors = [];
   const warnings = [];
+  const requiredAssetPaths = new Set(['assets/content/manifest.json', 'assets/content/cards.base.json']);
   const contentRoot = path.join(rootDirectory, 'assets', 'content');
   const manifest = JSON.parse(readText(path.join(contentRoot, 'manifest.json')));
   const baseCards = JSON.parse(readText(path.join(contentRoot, 'cards.base.json')));
@@ -123,6 +124,7 @@ export function validateContentGate({ rootDirectory, readText = (filePath) => fs
     for (const assetPath of assetPaths) {
       const absolutePath = path.join(rootDirectory, assetPath);
       if (!fileExists(absolutePath)) errors.push(`Missing release asset: ${assetPath}`);
+      requiredAssetPaths.add(assetPath);
     }
     if (card.image?.reviewStatus !== 'approved') warnings.push(`Image review is not approved: ${card.id}`);
   }
@@ -132,12 +134,32 @@ export function validateContentGate({ rootDirectory, readText = (filePath) => fs
     if (audioManifest.files?.length !== 20) errors.push(`Release ${provider} audio manifest must contain 20 files`);
     for (const file of audioManifest.files ?? []) {
       if (!file.file.endsWith(expectedExtension)) errors.push(`Invalid ${provider} audio extension: ${file.file}`);
-      if (!fileExists(path.join(rootDirectory, 'assets', 'audio', provider, file.file))) {
+      const assetPath = `assets/audio/${provider}/${file.file}`;
+      requiredAssetPaths.add(assetPath);
+      if (!fileExists(path.join(rootDirectory, assetPath))) {
         errors.push(`Missing ${provider} audio asset: ${file.file}`);
       }
     }
   }
-  return { errors, warnings, cardCount: baseCards.length, languageCount: manifest.languages.length, audioCount: 40 };
+  for (const language of manifest.languages ?? []) {
+    const localizedAsset = manifest.localizedContent?.[language];
+    if (localizedAsset) requiredAssetPaths.add(`assets/${localizedAsset}`);
+  }
+  return {
+    errors,
+    warnings,
+    cardCount: baseCards.length,
+    languageCount: manifest.languages?.length ?? 0,
+    audioCount: 40,
+    requiredAssetPaths: [...requiredAssetPaths],
+  };
+}
+
+export function validatePackagedContent(entries, requiredAssetPaths) {
+  const entryNames = new Set(entries);
+  return requiredAssetPaths
+    .filter((assetPath) => !entryNames.has(`base/${assetPath}`))
+    .map((assetPath) => `Release AAB is missing packaged asset: ${assetPath}`);
 }
 
 export function scanArtifactEntries(entries) {
@@ -220,6 +242,7 @@ function run() {
     const allEntries = listAabEntries(aabPath);
     signed = allEntries.some((entry) => /^META-INF\/[^/]+\.(?:RSA|DSA|EC)$/iu.test(entry));
     errors.push(...scanArtifactEntries(entries));
+    errors.push(...validatePackagedContent(allEntries, content.requiredAssetPaths));
     artifactSha256 = sha256File(aabPath);
     if (requireSigned && !signed) errors.push('Release AAB is not signed');
     if (!signed) warnings.push('Release AAB is unsigned; provide signing credentials before distribution');

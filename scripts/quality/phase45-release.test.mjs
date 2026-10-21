@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   parsePermissions,
   scanArtifactEntries,
+  validatePackagedContent,
   validateBackupPolicy,
   validatePolicyGate,
   validateReleaseManifest,
@@ -71,4 +72,16 @@ test('rejects secrets and debug-only content in a release artifact', () => {
     'Release artifact contains debug-only marker: DebugQaActivity',
     'Release artifact contains a credential-shaped token',
   ]);
+});
+
+test('requires every declared content asset to be packaged in the AAB', () => {
+  assert.deepEqual(
+    validatePackagedContent(
+      ['base/assets/content/manifest.json', 'base/assets/signs/generated/01.jpg'],
+      ['assets/content/manifest.json', 'assets/content/cards.base.json', 'assets/signs/generated/01.jpg'],
+    ),
+    [
+      'Release AAB is missing packaged asset: assets/content/cards.base.json',
+    ],
+  );
 });

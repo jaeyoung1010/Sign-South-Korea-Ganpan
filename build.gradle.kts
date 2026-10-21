@@ -1,10 +1,12 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -45,9 +47,9 @@ abstract class VerifyReleaseQaExclusion : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val mergedReleaseManifest: RegularFileProperty
 
-    @get:InputFile
+    @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val releaseApk: RegularFileProperty
+    abstract val releaseApkDirectory: DirectoryProperty
 
     @TaskAction
     fun verify() {
@@ -60,7 +62,22 @@ abstract class VerifyReleaseQaExclusion : DefaultTask() {
         }
 
         val forbiddenApkStrings = forbiddenComponents + "Interactive QA menu"
-        ZipFile(releaseApk.get().asFile).use { apk ->
+        val releaseApk =
+            releaseApkDirectory
+                .get()
+                .asFile
+                .listFiles { file -> file.isFile && file.name.startsWith("app-release") && file.extension == "apk" }
+                ?.firstOrNull { file -> file.name == "app-release.apk" }
+                ?: releaseApkDirectory
+                    .get()
+                    .asFile
+                    .listFiles { file -> file.isFile && file.name.startsWith("app-release") && file.extension == "apk" }
+                    ?.firstOrNull()
+        checkNotNull(releaseApk) {
+            "Release APK is missing from ${releaseApkDirectory.get().asFile}"
+        }
+
+        ZipFile(releaseApk).use { apk ->
             val releaseDex =
                 apk
                     .entries()
@@ -76,6 +93,20 @@ abstract class VerifyReleaseQaExclusion : DefaultTask() {
             check(includedStrings.isEmpty()) {
                 "Release APK must exclude debug QA strings: ${includedStrings.joinToString()}"
             }
+        }
+    }
+}
+
+abstract class VerifySignedRelease : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val releaseReport: RegularFileProperty
+
+    @TaskAction
+    fun verify() {
+        val report = releaseReport.get().asFile
+        check(report.isFile && report.readText().contains("\"signed\": true")) {
+            "Phase 45 releaseGate requires a signed AAB; provide SIGNING_* credentials."
         }
     }
 }
@@ -163,10 +194,18 @@ val phase45ReleaseGate =
         commandLine(command)
     }
 
+val verifySignedRelease =
+    tasks.register<VerifySignedRelease>("verifySignedRelease") {
+        group = "verification"
+        description = "Rejects an unsigned Phase 45 release report."
+        dependsOn(phase45ReleaseGate)
+        releaseReport.set(layout.buildDirectory.file("reports/phase45/release-report.json"))
+    }
+
 tasks.register("releaseGate") {
     group = "verification"
-    description = "Runs the Phase 45 release candidate acceptance checks."
-    dependsOn(phase45ReleaseGate, "verifyReleaseQaExclusion")
+    description = "Runs the Phase 45 signed release candidate acceptance checks."
+    dependsOn(verifySignedRelease, "verifyReleaseQaExclusion")
 }
 
 val validateDependencyVersions =
@@ -214,7 +253,7 @@ val verifyReleaseQaExclusion =
                 "app/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml",
             ),
         )
-        releaseApk.set(layout.projectDirectory.file("app/build/outputs/apk/release/app-release-unsigned.apk"))
+        releaseApkDirectory.set(layout.projectDirectory.dir("app/build/outputs/apk/release"))
     }
 
 tasks.named("check") {
