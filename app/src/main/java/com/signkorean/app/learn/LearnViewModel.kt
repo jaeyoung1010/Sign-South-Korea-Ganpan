@@ -121,7 +121,7 @@ class LearnViewModel
         ) {
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
             if (active.stage == LearnCardStage.Answer) {
-                if (!active.isRating && !isRating) {
+                if (!active.isRating && !isRating && !isUndoing) {
                     if (active.sessionId.isNotBlank()) {
                         beginRating(active, decision, source)
                     }

@@ -320,6 +320,39 @@ class LearnViewModelTest {
             assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
         }
 
+    @Test
+    fun `rating input is blocked while undo is being persisted`() =
+        runTest {
+            val undoGate = CompletableDeferred<UndoRatingResult>()
+            var rateCalls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase =
+                        RateCard {
+                            rateCalls += 1
+                            RateCardResult.Rated(nextPosition = 1, completed = false)
+                        },
+                    undoRatingUseCase = UndoRating { undoGate.await() },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.GotIt, RatingInputSource.Gesture)
+            runCurrent()
+            viewModel.finishRatingAnimation()
+            runCurrent()
+            viewModel.undoRating()
+            runCurrent()
+
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
+            runCurrent()
+            assertEquals(1, rateCalls)
+
+            undoGate.complete(UndoRatingResult.Undone("card-1", 0, RatingDecision.GotIt))
+            runCurrent()
+        }
+
     private fun active(
         position: Int,
         total: Int,

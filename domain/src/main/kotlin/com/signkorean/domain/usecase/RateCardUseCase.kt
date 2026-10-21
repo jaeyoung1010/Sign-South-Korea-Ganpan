@@ -24,7 +24,7 @@ class RateCardUseCase(
                 RateCardResult.Failed
             }
         if (result is RateCardResult.Rated) {
-            runCatching {
+            try {
                 analyticsSink.recordCardRated(
                     CardRatedEvent(
                         cardId = request.cardId,
@@ -33,6 +33,9 @@ class RateCardUseCase(
                         source = request.source,
                     ),
                 )
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
             }
         }
         return result

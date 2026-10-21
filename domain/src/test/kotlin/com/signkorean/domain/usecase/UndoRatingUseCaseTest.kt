@@ -10,8 +10,10 @@ import com.signkorean.domain.port.input.UndoRatingRequest
 import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.LearningRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 
@@ -43,6 +45,29 @@ class UndoRatingUseCaseTest {
 
             assertEquals(UndoRatingResult.NothingToUndo, result)
             assertEquals(emptyList<CardRatingUndoneEvent>(), analytics.events)
+        }
+
+    @Test
+    fun `analytics cancellation is propagated`() =
+        runTest {
+            val analytics =
+                object : AnalyticsSink {
+                    override fun recordAppStarted(event: AppStartupEvent) = Unit
+
+                    override fun recordRatingUndone(event: CardRatingUndoneEvent): Unit = throw CancellationException("test cancellation")
+                }
+            var propagated = false
+
+            try {
+                UndoRatingUseCase(
+                    RecordingRepository(UndoRatingResult.Undone("card-1", 0, RatingDecision.GotIt)),
+                    analytics,
+                )(UndoRatingRequest("session-1"))
+            } catch (_: CancellationException) {
+                propagated = true
+            }
+
+            assertTrue(propagated)
         }
 
     private class RecordingRepository(

@@ -22,13 +22,16 @@ class UndoRatingUseCase(
                 UndoRatingResult.Failed
             }
         if (result is UndoRatingResult.Undone) {
-            runCatching {
+            try {
                 analyticsSink.recordRatingUndone(
                     CardRatingUndoneEvent(
                         cardId = result.cardId,
                         previousRating = result.rating,
                     ),
                 )
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
             }
         }
         return result

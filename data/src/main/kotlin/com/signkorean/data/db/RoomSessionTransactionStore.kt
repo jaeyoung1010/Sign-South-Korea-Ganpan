@@ -124,7 +124,7 @@ class RoomSessionTransactionStore(
                 database.sessionCardDao().get(sessionId, snapshot.position)
                     ?: return@runInTransaction UndoTransactionResult.Unavailable
             val rating = card.rating ?: return@runInTransaction UndoTransactionResult.Unavailable
-            if (card.cardId != snapshot.cardId || session.currentIndex != snapshot.position + 1) {
+            if (rating !in RATINGS || card.cardId != snapshot.cardId || session.currentIndex != snapshot.position + 1) {
                 return@runInTransaction UndoTransactionResult.Unavailable
             }
             if (snapshot.hadProgress) {

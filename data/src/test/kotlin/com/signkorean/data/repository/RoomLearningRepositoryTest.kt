@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.signkorean.data.db.CardProgressEntity
+import com.signkorean.data.db.RatingSnapshotEntity
 import com.signkorean.data.db.RoomSessionTransactionStore
 import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
@@ -159,6 +160,32 @@ class RoomLearningRepositoryTest {
             assertEquals("GOT_IT", database.sessionCardDao().get("session-1", 0)?.rating)
             assertEquals(1, database.cardProgressDao().get("card-1")?.stage)
             assertEquals("card-1", database.ratingSnapshotDao().forSession("session-1")?.cardId)
+        }
+
+    @Test
+    fun `undo rejects a corrupted rating without deleting the snapshot`() =
+        runTest {
+            database.sessionCardDao().update(
+                SessionCardEntity(
+                    sessionId = "session-1",
+                    position = 0,
+                    cardId = "card-1",
+                    source = "NEW",
+                    rating = "CORRUPT",
+                    ratedAt = ratedAt,
+                ),
+            )
+            database.sessionDao().update(database.sessionDao().get("session-1")!!.copy(currentIndex = 1))
+            database.ratingSnapshotDao().upsert(
+                RatingSnapshotEntity.noProgress("session-1", "card-1", 0),
+            )
+
+            val result = repository.undoLastRating(UndoRatingRequest("session-1"))
+
+            assertEquals(UndoRatingResult.Unavailable, result)
+            assertEquals("CORRUPT", database.sessionCardDao().get("session-1", 0)?.rating)
+            assertEquals("card-1", database.ratingSnapshotDao().forSession("session-1")?.cardId)
+            assertEquals(1, database.sessionDao().get("session-1")?.currentIndex)
         }
 
     private fun request(
