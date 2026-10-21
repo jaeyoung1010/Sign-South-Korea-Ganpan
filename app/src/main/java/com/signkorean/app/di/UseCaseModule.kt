@@ -42,6 +42,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Suppress("TooManyFunctions")
 object UseCaseModule {
     @Provides
     fun provideInitializeApp(

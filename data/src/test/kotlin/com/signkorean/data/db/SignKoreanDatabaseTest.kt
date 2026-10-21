@@ -127,6 +127,9 @@ class SignKoreanDatabaseTest {
     @Test
     fun `session creation preserves an existing active session`() {
         database.sessionDao().insert(SessionEntity.active(id = "existing-session", requestedLength = 1))
+        database.sessionCardDao().insertAll(
+            listOf(SessionCardEntity("existing-session", 0, "01-hongdae-entrance", "NEW")),
+        )
 
         val failure =
             runCatching {

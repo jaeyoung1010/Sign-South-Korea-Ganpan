@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming", "ktlint:standard:function-naming")
+@file:Suppress("FunctionNaming", "TooManyFunctions", "ktlint:standard:function-naming")
 
 package com.signkorean.app
 
@@ -141,7 +141,9 @@ private fun SignKoreanApp(
                 }
 
                 com.signkorean.app.learn.LearnSessionEffect.PauseFailed -> {
-                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save your progress. Try again."))
+                    navigationViewModel.dispatch(
+                        AppNavigationAction.ShowToast("Could not save your progress. Try again."),
+                    )
                 }
             }
         }
@@ -331,7 +333,7 @@ private fun NavigationEffects(
     }
     LaunchedEffect(state.backStack) { synchronizeBackStack() }
     BackHandler(enabled = state.handlesBack) {
-        if (state.currentRoute == AppRoute.Learn && state.sheet == null && !state.isViewerVisible && state.toastMessage == null) {
+        if (state.shouldRequestLearnClose()) {
             onRequestLearnClose()
         } else {
             onAction(AppNavigationAction.Back)
@@ -546,6 +548,7 @@ private fun TopLevelTabs(
 }
 
 @Composable
+@Suppress("LongMethod")
 private fun BoxScope.AppOverlayHost(
     state: AppNavigationUiState,
     categories: List<com.signkorean.feature.learn.HomeCategoryUiModel>,
@@ -564,41 +567,28 @@ private fun BoxScope.AppOverlayHost(
                         AppSheet.SessionLeave -> "Leave this session?"
                     },
             ) {
-                if (sheet == AppSheet.Category) {
-                    categories.forEach { category ->
-                        GameButton(
-                            text = "${category.label} · ${category.cardCount} signs",
-                            onClick = {
-                                onAction(AppNavigationAction.Back)
-                                onStartCategorySession(category.key)
-                            },
-                            modifier = Modifier.fillMaxWidth().testTag("home-sheet-category-${category.key}"),
-                            style = GameButtonStyle.Secondary,
-                        )
+                when (sheet) {
+                    AppSheet.Category -> {
+                        categories.forEach { category ->
+                            GameButton(
+                                text = "${category.label} · ${category.cardCount} signs",
+                                onClick = {
+                                    onAction(AppNavigationAction.Back)
+                                    onStartCategorySession(category.key)
+                                },
+                                modifier = Modifier.fillMaxWidth().testTag("home-sheet-category-${category.key}"),
+                                style = GameButtonStyle.Secondary,
+                            )
+                        }
                     }
-                } else if (sheet == AppSheet.Voice) {
-                    Text("Eunkyung is selected.", style = MaterialTheme.typography.bodyLarge)
-                } else {
-                    val completedCount = (learnSessionState as? LearnSessionUiState.Active)?.position?.minus(1)
-                    val totalCount = (learnSessionState as? LearnSessionUiState.Active)?.totalCount
-                    if (completedCount != null && totalCount != null) {
-                        Text("$completedCount of $totalCount signs complete", style = MaterialTheme.typography.bodyLarge)
+
+                    AppSheet.Voice -> {
+                        Text("Eunkyung is selected.", style = MaterialTheme.typography.bodyLarge)
                     }
-                    Text("Your progress is saved. You can resume this session from Home.", style = MaterialTheme.typography.bodyLarge)
-                    GameButton(
-                        text = "Keep learning",
-                        onClick = { onAction(AppNavigationAction.Back) },
-                        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_KEEP_LEARNING),
-                    )
-                    GameButton(
-                        text = "Leave for now",
-                        onClick = {
-                            onAction(AppNavigationAction.Back)
-                            onPauseSession()
-                        },
-                        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_LEAVE_FOR_NOW),
-                        style = GameButtonStyle.Secondary,
-                    )
+
+                    AppSheet.SessionLeave -> {
+                        SessionLeaveSheetContent(learnSessionState, onAction, onPauseSession)
+                    }
                 }
                 if (sheet != AppSheet.SessionLeave) {
                     GameButton(
@@ -634,6 +624,50 @@ private fun BoxScope.AppOverlayHost(
         )
     }
 }
+
+@Composable
+private fun SessionLeaveSheetContent(
+    learnSessionState: LearnSessionUiState,
+    onAction: (AppNavigationAction) -> Unit,
+    onPauseSession: () -> Unit,
+) {
+    val activeSession = learnSessionState as? LearnSessionUiState.Active
+    activeSession?.let {
+        Text(
+            text = "${it.position - 1} of ${it.totalCount} signs complete",
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
+    Text(
+        "Your progress is saved. You can resume this session from Home.",
+        style = MaterialTheme.typography.bodyLarge,
+    )
+    GameButton(
+        text = "Keep learning",
+        onClick = { onAction(AppNavigationAction.Back) },
+        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_KEEP_LEARNING),
+    )
+    GameButton(
+        text = "Leave for now",
+        onClick = {
+            onAction(AppNavigationAction.Back)
+            onPauseSession()
+        },
+        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_LEAVE_FOR_NOW),
+        style = GameButtonStyle.Secondary,
+    )
+}
+
+private fun AppNavigationUiState.shouldRequestLearnClose(): Boolean =
+    if (currentRoute != AppRoute.Learn) {
+        false
+    } else if (sheet != null) {
+        false
+    } else if (isViewerVisible) {
+        false
+    } else {
+        toastMessage == null
+    }
 
 private val AppRoute.topLevelTab: AppTopLevelTab
     get() =
