@@ -32,10 +32,11 @@ class AndroidCustomTabsPolicyBrowser
         }
 
         private fun hasValidatedNetwork(): Boolean {
-            val connectivity = context.getSystemService(ConnectivityManager::class.java) ?: return false
-            val network = connectivity.activeNetwork ?: return false
-            val capabilities = connectivity.getNetworkCapabilities(network) ?: return false
-            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            val capabilities =
+                context.getSystemService(ConnectivityManager::class.java)?.let { connectivity ->
+                    connectivity.activeNetwork?.let(connectivity::getNetworkCapabilities)
+                }
+            return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
                 capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }
     }

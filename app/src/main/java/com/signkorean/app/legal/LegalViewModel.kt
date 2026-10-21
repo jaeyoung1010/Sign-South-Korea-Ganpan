@@ -2,7 +2,6 @@ package com.signkorean.app.legal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.signkorean.domain.model.PolicyDocument
 import com.signkorean.domain.model.PolicyDocumentId
 import com.signkorean.domain.port.input.LoadPolicyDocument
 import com.signkorean.domain.port.input.OpenPolicyDocument
@@ -52,7 +51,12 @@ class LegalViewModel
                         documents = documents,
                         isLoading = false,
                         usingBundledFallback = true,
-                        loadError = if (documents.size == PolicyDocumentId.entries.size) null else "One or more policy copies could not be loaded.",
+                        loadError =
+                            if (documents.size == PolicyDocumentId.entries.size) {
+                                null
+                            } else {
+                                "One or more policy copies could not be loaded."
+                            },
                     )
                 }
             }

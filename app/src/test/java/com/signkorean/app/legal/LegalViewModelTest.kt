@@ -46,7 +46,10 @@ class LegalViewModelTest {
             viewModel.openOnline()
 
             assertTrue(viewModel.uiState.value.usingBundledFallback)
-            assertEquals("The online policy is unavailable. Showing the bundled copy.", viewModel.uiState.value.loadError)
+            assertEquals(
+                "The online policy is unavailable. Showing the bundled copy.",
+                viewModel.uiState.value.loadError,
+            )
         }
 
     @Test
