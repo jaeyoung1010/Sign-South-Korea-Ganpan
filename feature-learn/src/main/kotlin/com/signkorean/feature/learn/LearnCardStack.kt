@@ -264,7 +264,7 @@ private fun ActiveCard(
                 .focusable()
                 .border(
                     width = if (isFocused) FOCUS_INDICATOR_WIDTH else 0.dp,
-                    color = if (isFocused) Color(SignKoreanPalette.Y2K_YELLOW) else Color.Transparent,
+                    color = if (isFocused) Color(SignKoreanPalette.OUTLINE) else Color.Transparent,
                 )
                 .onPreviewKeyEvent { event ->
                     if (isRating || event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false

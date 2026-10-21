@@ -427,8 +427,8 @@ fun LearnSessionScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .testTag("screen-learn")
-                    .then(if (isCompact) Modifier.verticalScroll(rememberScrollState()) else Modifier.fillMaxSize()),
+                    .then(if (isCompact) Modifier.verticalScroll(rememberScrollState()) else Modifier.fillMaxSize())
+                    .testTag("screen-learn"),
             verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
         ) {
             LearnTopBar(onAction)
