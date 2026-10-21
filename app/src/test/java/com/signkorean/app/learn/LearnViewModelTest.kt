@@ -162,10 +162,12 @@ class LearnViewModelTest {
     @Test
     fun `auto play failure does not interrupt answer state`() =
         runTest {
+            val analytics = RecordingAnalyticsSink()
             val viewModel =
                 LearnViewModel(
                     loadLearnSession = LoadLearnSession { active(position = 1, total = 1) },
                     audioPlayer = ThrowingAudioPlayer(),
+                    analyticsSink = analytics,
                     userSettingsRepository = FakeUserSettingsRepository(UserSettings(autoPlayAudio = true)),
                 )
 
@@ -175,6 +177,7 @@ class LearnViewModelTest {
             advanceUntilIdle()
 
             assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
+            assertTrue(analytics.audioPlayed.isEmpty())
         }
 
     @Test

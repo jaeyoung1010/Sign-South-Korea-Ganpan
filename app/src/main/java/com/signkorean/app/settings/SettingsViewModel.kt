@@ -10,6 +10,7 @@ import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.feature.settings.SettingsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,6 +61,8 @@ class SettingsViewModel
                         // Analytics must not make a successful setting change look like a failure.
                     }
                     effectChannel.trySend(SettingsEffect.VoiceChanged(voice))
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
                 } catch (_: Exception) {
                     effectChannel.trySend(SettingsEffect.VoiceChangeFailed)
                 }

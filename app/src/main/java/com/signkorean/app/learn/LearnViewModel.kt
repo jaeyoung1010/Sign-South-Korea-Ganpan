@@ -50,6 +50,7 @@ import com.signkorean.feature.learn.ReportStatus
 import com.signkorean.feature.learn.ReportUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -98,11 +99,19 @@ class LearnViewModel
         private var isSubmittingReport = false
         private var userSettings = UserSettings()
         private var autoPlayedAnswerInstanceId: String? = null
+        private val settingsReady = CompletableDeferred<Unit>()
 
         init {
             viewModelScope.launch {
-                userSettingsRepository.settings.collect { settings ->
-                    userSettings = settings
+                try {
+                    userSettingsRepository.settings.collect { settings ->
+                        userSettings = settings
+                        settingsReady.complete(Unit)
+                    }
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    settingsReady.complete(Unit)
                 }
             }
             viewModelScope.launch {
@@ -153,6 +162,7 @@ class LearnViewModel
             loadJob =
                 viewModelScope.launch {
                     try {
+                        settingsReady.await()
                         val result = loadLearnSession()
                         if (result is LoadLearnSessionResult.Invalid && result.error == LearnSessionError.NoActiveSession) {
                             val sessionId = savedStateHandle.get<String>(SESSION_ID_KEY)
@@ -241,15 +251,19 @@ class LearnViewModel
                     voiceId = voiceId,
                     assetUri = active.audioAssetUris[voiceId].orEmpty(),
                 )
+            var playbackRequested = false
             try {
                 audioPlayer.play(request)
+                playbackRequested = true
             } catch (_: Exception) {
                 // Audio failures are reported by the adapter through playback state when available.
             }
-            try {
-                analyticsSink.recordAudioPlayed(AudioPlayedEvent(active.cardId, voiceId, autoPlay))
-            } catch (_: Exception) {
-                // Analytics must never block learning or playback.
+            if (playbackRequested) {
+                try {
+                    analyticsSink.recordAudioPlayed(AudioPlayedEvent(active.cardId, voiceId, autoPlay))
+                } catch (_: Exception) {
+                    // Analytics must never block learning or playback.
+                }
             }
         }
 
