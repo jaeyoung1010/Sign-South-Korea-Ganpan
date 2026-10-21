@@ -59,6 +59,6 @@ internal object Phase43E2ETrace {
             Phase43E2EScenario("E2E-09", listOf("LearnSessionScreenTest")),
             Phase43E2EScenario("E2E-10", listOf("PointerBoundaryAdapterTest", "LearnSessionScreenTest")),
             Phase43E2EScenario("E2E-11", listOf("SettingsViewModelTest")),
-            Phase43E2EScenario("E2E-12", listOf("BundleContentAdapterTest", "ProtoUserSettingsRepositoryTest")),
+            Phase43E2EScenario("E2E-12", listOf("LearnViewModelTest", "BundleContentAdapterTest")),
         )
 }
