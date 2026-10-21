@@ -15,6 +15,10 @@ object SignKoreanTestTags {
     const val LEARN_ZOOM_IMAGE = "learn.image.zoom"
     const val LEARN_IMAGE_VIEWER = "learn.image.viewer"
     const val LEARN_IMAGE_VIEWER_CLOSE = "learn.image.viewer.close"
+    const val LEARN_REPORT_DETAILS = "learn.report.details"
+    const val LEARN_REPORT_SUBMIT = "learn.report.submit"
+    const val LEARN_REPORT_CANCEL = "learn.report.cancel"
+    const val LEARN_REPORT_ERROR = "learn.report.error"
     const val LEARN_CLOSE_SESSION = "learn.session.close"
     const val GLOBAL_FEEDBACK = "global.feedback"
     const val LEARN_RATING_TOAST = "learn.rating.toast"
@@ -26,4 +30,6 @@ object SignKoreanTestTags {
     const val DONE_BACK_HOME = "done.back-home"
 
     fun learnCard(cardId: String): String = "learn.card.$cardId"
+
+    fun learnReportReason(reason: String): String = "learn.report.reason.$reason"
 }

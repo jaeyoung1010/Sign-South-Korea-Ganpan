@@ -12,9 +12,12 @@ import com.signkorean.domain.port.input.ResumeSession
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.input.StartSession
+import com.signkorean.domain.port.input.SubmitCardReport
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
+import com.signkorean.domain.port.output.CardReportIdGenerator
+import com.signkorean.domain.port.output.CardReportRepository
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.HomeActivityRepository
@@ -36,6 +39,7 @@ import com.signkorean.domain.usecase.ResumeSessionUseCase
 import com.signkorean.domain.usecase.RevealAnswerUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
 import com.signkorean.domain.usecase.StartSessionUseCase
+import com.signkorean.domain.usecase.SubmitCardReportUseCase
 import com.signkorean.domain.usecase.UndoRatingUseCase
 import dagger.Module
 import dagger.Provides
@@ -166,4 +170,11 @@ object UseCaseModule {
         sessionRepository: SessionRepository,
         analyticsSink: AnalyticsSink,
     ): ResumeSession = ResumeSessionUseCase(sessionRepository, analyticsSink)
+
+    @Provides
+    fun provideSubmitCardReport(
+        cardReportRepository: CardReportRepository,
+        clock: ClockPort,
+        idGenerator: CardReportIdGenerator,
+    ): SubmitCardReport = SubmitCardReportUseCase(cardReportRepository, clock, idGenerator)
 }

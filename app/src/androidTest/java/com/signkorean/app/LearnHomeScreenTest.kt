@@ -4,15 +4,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.signkorean.app.navigation.AppNavigationAction
 import com.signkorean.app.navigation.AppNavigationReducer
 import com.signkorean.app.navigation.AppNavigationUiState
 import com.signkorean.app.navigation.AppRoute
+import com.signkorean.app.navigation.AppSheet
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.feature.learn.HomeCategoryUiModel
 import com.signkorean.feature.learn.HomeSessionUiModel
@@ -86,6 +92,26 @@ class LearnHomeScreenTest {
 
         composeRule.onNodeWithText("All categories").assertIsDisplayed()
         composeRule.onNodeWithTag("home-sheet-category-TRANSPORT").assertIsDisplayed()
+    }
+
+    @Test
+    fun report_sheet_dismisses_when_the_background_is_tapped() {
+        val actions = mutableListOf<AppNavigationAction>()
+        var cancelled = 0
+        composeRule.setContent {
+            SignKoreanAppContent(
+                state = AppNavigationUiState(backStack = listOf(AppRoute.Learn), sheet = AppSheet.Report),
+                onAction = { actions += it },
+                onCancelReport = { cancelled += 1 },
+            )
+        }
+
+        composeRule.onRoot().performTouchInput { click(Offset(1f, 1f)) }
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(AppNavigationAction.Back), actions)
+            assertEquals(1, cancelled)
+        }
     }
 
     private fun regularHomeState() =

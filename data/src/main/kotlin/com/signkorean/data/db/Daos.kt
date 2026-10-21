@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CardProgressDao {
@@ -106,8 +107,14 @@ interface CardReportDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(report: CardReportEntity)
 
+    @Query("SELECT * FROM card_reports WHERE sync_state IN ('LOCAL_ONLY', 'PENDING', 'FAILED') ORDER BY created_at")
+    fun observePending(): Flow<List<CardReportEntity>>
+
     @Query("SELECT COUNT(*) FROM card_reports")
     fun count(): Int
+
+    @Query("SELECT COUNT(*) FROM card_reports WHERE report_id = :reportId")
+    fun count(reportId: String): Int
 }
 
 @Dao

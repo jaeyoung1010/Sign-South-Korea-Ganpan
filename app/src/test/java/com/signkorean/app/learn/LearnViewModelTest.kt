@@ -1,6 +1,7 @@
 package com.signkorean.app.learn
 
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionAnswer
 import com.signkorean.domain.model.LearnSessionError
@@ -20,6 +21,8 @@ import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.RevealAnswerResult
+import com.signkorean.domain.port.input.SubmitCardReport
+import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.feature.learn.LearnCardStage
@@ -470,6 +473,61 @@ class LearnViewModelTest {
 
             assertEquals(LearnSessionEffect.PauseFailed, effect.await())
             assertTrue(viewModel.uiState.value is LearnSessionUiState.Active)
+        }
+
+    @Test
+    fun `report submission is saved once and resets the form after success`() =
+        runTest {
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 5) },
+                    submitCardReportUseCase =
+                        SubmitCardReport {
+                            calls += 1
+                            SubmitCardReportResult.Saved("report-1")
+                        },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+
+            viewModel.openReport()
+            viewModel.selectReportReason(CardReportReason.WRONG_MEANING)
+            viewModel.updateReportDetails("The meaning looks wrong.")
+            val effect = async { viewModel.effects.first() }
+            viewModel.submitReport()
+            viewModel.submitReport()
+            advanceUntilIdle()
+
+            assertEquals(1, calls)
+            assertEquals(
+                com.signkorean.feature.learn
+                    .ReportUiState(),
+                viewModel.reportState.value,
+            )
+            assertEquals(LearnSessionEffect.ReportSubmitted, effect.await())
+        }
+
+    @Test
+    fun `report storage failure keeps the form and exposes a retryable error`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 5) },
+                    submitCardReportUseCase = SubmitCardReport { SubmitCardReportResult.Unavailable },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.openReport()
+            viewModel.selectReportReason(CardReportReason.PHOTO_PROBLEM)
+            viewModel.updateReportDetails("The image is blurry.")
+
+            viewModel.submitReport()
+            advanceUntilIdle()
+
+            assertEquals(com.signkorean.feature.learn.ReportStatus.Error, viewModel.reportState.value.status)
+            assertEquals("The image is blurry.", viewModel.reportState.value.details)
+            assertTrue(viewModel.reportState.value.canSubmit)
         }
 
     private fun active(

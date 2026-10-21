@@ -74,6 +74,7 @@ enum class AppSheet {
     Category,
     Voice,
     SessionLeave,
+    Report,
 }
 
 data class AppNavigationUiState(

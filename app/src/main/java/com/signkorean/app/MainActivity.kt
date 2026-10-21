@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -56,6 +57,7 @@ import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.feature.learn.CompletionScreen
@@ -67,6 +69,8 @@ import com.signkorean.feature.learn.LearnImageViewer
 import com.signkorean.feature.learn.LearnSessionScreen
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.feature.learn.LearnUiAction
+import com.signkorean.feature.learn.ReportSheet
+import com.signkorean.feature.learn.ReportUiState
 import com.signkorean.feature.onboarding.OnboardingChoiceUiState
 import com.signkorean.feature.onboarding.OnboardingScreen
 import com.signkorean.feature.onboarding.OnboardingStep
@@ -123,6 +127,7 @@ private fun SignKoreanApp(
     val learnSessionState by learnViewModel.uiState.collectAsState()
     val learnFeedbackState by learnViewModel.feedbackState.collectAsState()
     val completionState by learnViewModel.completionState.collectAsState()
+    val reportState by learnViewModel.reportState.collectAsState()
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
@@ -154,6 +159,11 @@ private fun SignKoreanApp(
                 is com.signkorean.app.learn.LearnSessionEffect.SessionCompleted -> {
                     navigationViewModel.dispatch(AppNavigationAction.Navigate(AppRoute.Done))
                 }
+
+                com.signkorean.app.learn.LearnSessionEffect.ReportSubmitted -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Back)
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Thanks. We'll review this card."))
+                }
             }
         }
     }
@@ -180,6 +190,12 @@ private fun SignKoreanApp(
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
         onUndoRating = learnViewModel::undoRating,
         onPauseSession = learnViewModel::pauseSession,
+        reportState = reportState,
+        onShowReport = learnViewModel::openReport,
+        onSelectReportReason = learnViewModel::selectReportReason,
+        onUpdateReportDetails = learnViewModel::updateReportDetails,
+        onSubmitReport = learnViewModel::submitReport,
+        onCancelReport = learnViewModel::cancelReport,
     )
 }
 
@@ -208,6 +224,12 @@ internal fun SignKoreanAppContent(
     onRatingAnimationFinished: () -> Unit = {},
     onUndoRating: () -> Unit = {},
     onPauseSession: () -> Unit = {},
+    reportState: ReportUiState = ReportUiState(),
+    onShowReport: () -> Unit = {},
+    onSelectReportReason: (CardReportReason) -> Unit = {},
+    onUpdateReportDetails: (String) -> Unit = {},
+    onSubmitReport: () -> Unit = {},
+    onCancelReport: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -234,6 +256,7 @@ internal fun SignKoreanAppContent(
             onRatingAnimationFinished,
             onUndoRating,
             onPauseSession,
+            onShowReport,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -273,6 +296,7 @@ internal fun SignKoreanAppContent(
                         onRateCard = onRateCard,
                         onRatingAnimationFinished = onRatingAnimationFinished,
                         onUndoRating = onUndoRating,
+                        onShowReport = onShowReport,
                     )
                 }
                 entry<AppRoute.Done> { DoneDestination(completionState, onAction) }
@@ -296,6 +320,9 @@ internal fun SignKoreanAppContent(
             }
         },
     )
+    LaunchedEffect(state.sheet) {
+        if (state.sheet != AppSheet.Report) onCancelReport()
+    }
 
     SignKoreanTheme {
         SignKoreanScreen(applySafeDrawingInsets = !state.isViewerVisible) {
@@ -319,6 +346,11 @@ internal fun SignKoreanAppContent(
                     onAction = onAction,
                     onStartCategorySession = onStartCategorySession,
                     onPauseSession = onPauseSession,
+                    reportState = reportState,
+                    onSelectReportReason = onSelectReportReason,
+                    onUpdateReportDetails = onUpdateReportDetails,
+                    onSubmitReport = onSubmitReport,
+                    onCancelReport = onCancelReport,
                 )
             }
         }
@@ -454,6 +486,7 @@ private fun LearnDestination(
     onRateCard: (RatingDecision, RatingInputSource) -> Unit,
     onRatingAnimationFinished: () -> Unit,
     onUndoRating: () -> Unit,
+    onShowReport: () -> Unit,
 ) {
     LearnSessionScreen(
         state = state,
@@ -493,7 +526,12 @@ private fun LearnDestination(
                 }
 
                 LearnUiAction.ShowSessionMenu -> {
-                    onAction(AppNavigationAction.ShowToast("More session options are coming soon."))
+                    if (state is LearnSessionUiState.Active) {
+                        onShowReport()
+                        onAction(AppNavigationAction.ShowSheet(AppSheet.Report))
+                    } else {
+                        onAction(AppNavigationAction.ShowToast("This card is not available."))
+                    }
                 }
 
                 else -> {
@@ -599,15 +637,32 @@ private fun BoxScope.AppOverlayHost(
     onAction: (AppNavigationAction) -> Unit,
     onStartCategorySession: (String) -> Unit,
     onPauseSession: () -> Unit,
+    reportState: ReportUiState,
+    onSelectReportReason: (CardReportReason) -> Unit,
+    onUpdateReportDetails: (String) -> Unit,
+    onSubmitReport: () -> Unit,
+    onCancelReport: () -> Unit,
 ) {
     state.sheet?.let { sheet ->
+        val dismissSheet = {
+            if (sheet == AppSheet.Report) onCancelReport()
+            onAction(AppNavigationAction.Back)
+        }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.32f))
+                        .clickable(onClick = dismissSheet),
+            )
             GameSheet(
                 title =
                     when (sheet) {
                         AppSheet.Category -> "All categories"
                         AppSheet.Voice -> "Choose a voice"
                         AppSheet.SessionLeave -> "Leave this session?"
+                        AppSheet.Report -> "Report this card"
                     },
             ) {
                 when (sheet) {
@@ -632,8 +687,18 @@ private fun BoxScope.AppOverlayHost(
                     AppSheet.SessionLeave -> {
                         SessionLeaveSheetContent(learnSessionState, onAction, onPauseSession)
                     }
+
+                    AppSheet.Report -> {
+                        ReportSheet(
+                            state = reportState,
+                            onReasonSelected = onSelectReportReason,
+                            onDetailsChanged = onUpdateReportDetails,
+                            onSubmit = onSubmitReport,
+                            onCancel = dismissSheet,
+                        )
+                    }
                 }
-                if (sheet != AppSheet.SessionLeave) {
+                if (sheet != AppSheet.SessionLeave && sheet != AppSheet.Report) {
                     GameButton(
                         text = "Close",
                         onClick = { onAction(AppNavigationAction.Back) },

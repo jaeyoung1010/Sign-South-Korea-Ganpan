@@ -4,9 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.ReportDetails
 import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.LoadSessionCompletion
@@ -19,6 +21,9 @@ import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.RevealAnswerResult
+import com.signkorean.domain.port.input.SubmitCardReport
+import com.signkorean.domain.port.input.SubmitCardReportRequest
+import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingRequest
 import com.signkorean.domain.port.input.UndoRatingResult
@@ -30,6 +35,8 @@ import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnPhotoUiModel
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.feature.learn.LearnWordPartUiModel
+import com.signkorean.feature.learn.ReportStatus
+import com.signkorean.feature.learn.ReportUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -52,6 +59,7 @@ class LearnViewModel
         private val rateCardUseCase: RateCard = RateCard { RateCardResult.Unavailable },
         private val undoRatingUseCase: UndoRating = UndoRating { UndoRatingResult.Unavailable },
         private val pauseSessionUseCase: PauseSession = PauseSession { PauseSessionResult.Unavailable },
+        private val submitCardReportUseCase: SubmitCardReport = SubmitCardReport { SubmitCardReportResult.Unavailable },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
@@ -60,6 +68,7 @@ class LearnViewModel
         private var ratingJob: Job? = null
         private var undoJob: Job? = null
         private var feedbackJob: Job? = null
+        private var reportJob: Job? = null
         private var isRevealing = false
         private var isRating = false
         private var isUndoing = false
@@ -69,16 +78,21 @@ class LearnViewModel
         private var isPausing = false
         private var pendingCompletion: SessionCompletion? = null
         private val mutableCompletionState = MutableStateFlow<SessionCompletion?>(null)
+        private val mutableReportState = MutableStateFlow(ReportUiState())
+        private var isSubmittingReport = false
 
         val uiState = mutableUiState.asStateFlow()
         val feedbackState = mutableFeedbackState.asStateFlow()
         val completionState = mutableCompletionState.asStateFlow()
+        val reportState = mutableReportState.asStateFlow()
         val effects = effectChannel.receiveAsFlow()
 
         fun load(preserveFeedback: Boolean = false) {
             loadJob?.cancel()
             revealJob?.cancel()
             ratingJob?.cancel()
+            reportJob?.cancel()
+            isSubmittingReport = false
             if (!preserveFeedback) {
                 undoJob?.cancel()
                 isUndoing = false
@@ -305,6 +319,84 @@ class LearnViewModel
             }
         }
 
+        fun openReport() {
+            if (mutableUiState.value is LearnSessionUiState.Active) {
+                mutableReportState.value = ReportUiState()
+            }
+        }
+
+        fun selectReportReason(reason: CardReportReason) {
+            mutableReportState.value =
+                mutableReportState.value.copy(
+                    selectedReason = reason,
+                    status = ReportStatus.Editing,
+                    errorMessage = null,
+                )
+        }
+
+        fun updateReportDetails(details: String) {
+            mutableReportState.value =
+                mutableReportState.value
+                    .withDetails(details)
+                    .copy(status = ReportStatus.Editing, errorMessage = null)
+        }
+
+        fun cancelReport() {
+            reportJob?.cancel()
+            isSubmittingReport = false
+            mutableReportState.value = ReportUiState()
+        }
+
+        fun submitReport() {
+            val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
+            val report = mutableReportState.value
+            val reason = report.selectedReason ?: return
+            if (!report.canSubmit || isSubmittingReport) return
+            isSubmittingReport = true
+            mutableReportState.value = report.copy(status = ReportStatus.Saving, errorMessage = null)
+            reportJob?.cancel()
+            reportJob =
+                viewModelScope.launch {
+                    val result =
+                        try {
+                            submitCardReportUseCase(
+                                SubmitCardReportRequest(
+                                    cardId = active.cardId,
+                                    reason = reason,
+                                    details = ReportDetails(report.details),
+                                ),
+                            )
+                        } catch (cancellation: CancellationException) {
+                            throw cancellation
+                        } catch (_: Exception) {
+                            SubmitCardReportResult.Unavailable
+                        }
+                    isSubmittingReport = false
+                    when (result) {
+                        is SubmitCardReportResult.Saved -> {
+                            mutableReportState.value = ReportUiState()
+                            effectChannel.trySend(LearnSessionEffect.ReportSubmitted)
+                        }
+
+                        SubmitCardReportResult.Duplicate -> {
+                            mutableReportState.value =
+                                report.copy(
+                                    status = ReportStatus.Error,
+                                    errorMessage = "This report is already queued.",
+                                )
+                        }
+
+                        SubmitCardReportResult.Unavailable -> {
+                            mutableReportState.value =
+                                report.copy(
+                                    status = ReportStatus.Error,
+                                    errorMessage = "Could not save the report. Try again.",
+                                )
+                        }
+                    }
+                }
+        }
+
         private fun showFeedback(
             message: String,
             canUndo: Boolean,
@@ -334,6 +426,8 @@ sealed interface LearnSessionEffect {
     data object SessionPaused : LearnSessionEffect
 
     data object PauseFailed : LearnSessionEffect
+
+    data object ReportSubmitted : LearnSessionEffect
 
     data class SessionCompleted(
         val completion: SessionCompletion,
