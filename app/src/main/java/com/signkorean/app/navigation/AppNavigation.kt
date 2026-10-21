@@ -120,6 +120,8 @@ sealed interface AppNavigationAction {
     data object StartOnboarding : AppNavigationAction
 
     data object Back : AppNavigationAction
+
+    data object BackHome : AppNavigationAction
 }
 
 sealed interface AppNavigationEffect {
@@ -148,6 +150,7 @@ class AppNavigationReducer {
             AppNavigationAction.CompleteOnboarding -> state.copy(backStack = listOf(AppRoute.Home)).clearOverlays()
             AppNavigationAction.StartOnboarding -> state.startOnboarding()
             AppNavigationAction.Back -> state.goBack()
+            AppNavigationAction.BackHome -> state.copy(backStack = listOf(AppRoute.Home)).clearOverlays()
         }
 
     fun reduceAll(actions: NavigationActions): State = actions.fold(AppNavigationUiState(), ::reduce)

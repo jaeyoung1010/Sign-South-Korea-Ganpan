@@ -8,8 +8,12 @@ import com.signkorean.domain.model.LearnSessionPreview
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.LocalizedWordPart
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.SessionCardScore
+import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.LoadSessionCompletion
+import com.signkorean.domain.port.input.LoadSessionCompletionRequest
 import com.signkorean.domain.port.input.PauseSession
 import com.signkorean.domain.port.input.PauseSessionResult
 import com.signkorean.domain.port.input.RateCard
@@ -230,6 +234,73 @@ class LearnViewModelTest {
             viewModel.finishRatingAnimation()
             advanceUntilIdle()
             assertEquals(1, assertActive(viewModel.uiState.value).position)
+        }
+
+    @Test
+    fun `final rating exposes completion only after the exit animation finishes`() =
+        runTest {
+            val completion =
+                SessionCompletion(
+                    sessionId = "session-2",
+                    totalCount = 2,
+                    gotItCount = 1,
+                    reviewCount = 1,
+                    scores = listOf(SessionCardScore("card-1", RatingDecision.GotIt), SessionCardScore("card-2", RatingDecision.Review)),
+                    nextReviewAt = null,
+                    durationMillis = 1_000,
+                )
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 2, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase = RateCard { RateCardResult.Rated(nextPosition = 2, completed = true, completion = completion) },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+            val effect = async { viewModel.effects.first() }
+
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Gesture)
+            advanceUntilIdle()
+            assertTrue(assertActive(viewModel.uiState.value).isRating)
+
+            viewModel.finishRatingAnimation()
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionUiState.Completed, viewModel.uiState.value)
+            assertEquals(completion, viewModel.completionState.value)
+            assertEquals(LearnSessionEffect.SessionCompleted(completion), effect.await())
+        }
+
+    @Test
+    fun `recovers a completed session after the active query is empty`() =
+        runTest {
+            val completion =
+                SessionCompletion(
+                    sessionId = "session-2",
+                    totalCount = 2,
+                    gotItCount = 2,
+                    reviewCount = 0,
+                    scores = listOf(SessionCardScore("card-1", RatingDecision.GotIt), SessionCardScore("card-2", RatingDecision.GotIt)),
+                    nextReviewAt = null,
+                    durationMillis = 2_000,
+                )
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { LoadLearnSessionResult.Invalid(LearnSessionError.NoActiveSession) },
+                    loadSessionCompletion =
+                        LoadSessionCompletion { request: LoadSessionCompletionRequest ->
+                            assertEquals("session-2", request.sessionId)
+                            completion
+                        },
+                    savedStateHandle = androidx.lifecycle.SavedStateHandle(mapOf("learn-session-id" to "session-2")),
+                )
+            val effect = async { viewModel.effects.first() }
+
+            viewModel.load()
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionUiState.Completed, viewModel.uiState.value)
+            assertEquals(completion, viewModel.completionState.value)
+            assertEquals(LearnSessionEffect.SessionCompleted(completion), effect.await())
         }
 
     @Test

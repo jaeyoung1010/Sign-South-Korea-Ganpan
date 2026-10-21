@@ -16,6 +16,7 @@ sealed interface RatingTransactionResult {
     data class Applied(
         val nextPosition: Int,
         val completed: Boolean,
+        val completion: com.signkorean.domain.model.SessionCompletion? = null,
     ) : RatingTransactionResult
 
     data object AlreadyRated : RatingTransactionResult
@@ -112,15 +113,19 @@ class RoomSessionTransactionStore(
             database.sessionCardDao().update(card.copy(rating = command.rating, ratedAt = command.ratedAt))
             val nextIndex = command.position + 1
             val isComplete = nextIndex == database.sessionCardDao().countForSession(command.sessionId)
-            database.sessionDao().update(
+            val updatedSession =
                 session.copy(
                     currentIndex = nextIndex,
                     status = if (isComplete) "COMPLETED" else "ACTIVE",
                     updatedAt = command.ratedAt,
                     completedAt = if (isComplete) command.ratedAt else null,
-                ),
+                )
+            database.sessionDao().update(updatedSession)
+            RatingTransactionResult.Applied(
+                nextPosition = nextIndex,
+                completed = isComplete,
+                completion = if (isComplete) database.toSessionCompletion(updatedSession) else null,
             )
-            RatingTransactionResult.Applied(nextPosition = nextIndex, completed = isComplete)
         }
 
     fun undoLastRating(sessionId: String) {

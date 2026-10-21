@@ -4,6 +4,7 @@ import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.LoadSessionCompletion
 import com.signkorean.domain.port.input.PauseSession
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.ResolveLaunchDestination
@@ -27,6 +28,7 @@ import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.LoadLearnSessionUseCase
+import com.signkorean.domain.usecase.LoadSessionCompletionUseCase
 import com.signkorean.domain.usecase.PauseSessionUseCase
 import com.signkorean.domain.usecase.RateCardUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
@@ -128,6 +130,10 @@ object UseCaseModule {
         cardCatalog: CardCatalog,
         userSettingsRepository: UserSettingsRepository,
     ): LoadLearnSession = LoadLearnSessionUseCase(sessionRepository, cardCatalog, userSettingsRepository)
+
+    @Provides
+    fun provideLoadSessionCompletion(sessionRepository: SessionRepository): LoadSessionCompletion =
+        LoadSessionCompletionUseCase(sessionRepository)
 
     @Provides
     fun provideRevealAnswer(

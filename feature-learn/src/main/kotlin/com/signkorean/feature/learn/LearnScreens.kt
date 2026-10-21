@@ -172,8 +172,13 @@ object LearnSessionTestTags {
 }
 
 data class CompletionUiState(
-    val title: String = "Great memory!",
+    val title: String = "Session complete",
     val summary: String = "You finished this sign deck.",
+    val totalCount: Int = 0,
+    val gotItCount: Int = 0,
+    val reviewCount: Int = 0,
+    val nextReviewLabel: String = "No review scheduled",
+    val reviewCardIds: List<String> = emptyList(),
 )
 
 sealed interface LearnUiAction {
@@ -211,6 +216,10 @@ sealed interface LearnUiAction {
     data object FinishSession : LearnUiAction
 
     data object OpenProgress : LearnUiAction
+
+    data object OpenReviewCards : LearnUiAction
+
+    data object BackHome : LearnUiAction
 
     data object OpenSettings : LearnUiAction
 }
@@ -537,6 +546,26 @@ fun CompletionScreen(
     GameCard(modifier = modifier.testTag("screen-done")) {
         Text(text = state.title, style = MaterialTheme.typography.headlineMedium)
         Text(text = state.summary, style = MaterialTheme.typography.bodyLarge)
-        GameButton("See progress", { onAction(LearnUiAction.OpenProgress) }, Modifier.fillMaxWidth())
+        Text(text = "${state.totalCount} signs practiced", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "Got it: ${state.gotItCount}", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "Review: ${state.reviewCount}", style = MaterialTheme.typography.bodyLarge)
+        Text(text = state.nextReviewLabel, style = MaterialTheme.typography.bodyLarge)
+        if (state.reviewCount > 0) {
+            GameButton(
+                text = "See review cards",
+                onClick = { onAction(LearnUiAction.OpenReviewCards) },
+                modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.DONE_REVIEW_CARDS),
+            )
+        }
+        GameButton(
+            text = "Back home",
+            onClick = { onAction(LearnUiAction.BackHome) },
+            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.DONE_BACK_HOME),
+        )
+        GameButton(
+            text = "See progress",
+            onClick = { onAction(LearnUiAction.OpenProgress) },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

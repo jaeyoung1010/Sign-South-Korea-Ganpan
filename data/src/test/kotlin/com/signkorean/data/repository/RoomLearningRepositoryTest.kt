@@ -78,6 +78,24 @@ class RoomLearningRepositoryTest {
         }
 
     @Test
+    fun `final rating returns an aggregate and removes the session from active work`() =
+        runTest {
+            repository.rateCard(request(0, "card-1", RatingDecision.GotIt), ratedAt)
+
+            val result = repository.rateCard(request(1, "card-2", RatingDecision.Review), ratedAt.plusSeconds(30))
+
+            assertTrue(result is RateCardResult.Rated)
+            val completion = (result as RateCardResult.Rated).completion
+            assertEquals(2, completion?.totalCount)
+            assertEquals(1, completion?.gotItCount)
+            assertEquals(1, completion?.reviewCount)
+            assertEquals(listOf("card-2"), completion?.reviewCardIds)
+            assertTrue(completion?.durationMillis ?: -1L >= 0L)
+            assertEquals("COMPLETED", database.sessionDao().get("session-1")?.status)
+            assertEquals(null, database.sessionDao().active())
+        }
+
+    @Test
     fun `database failure rolls back all rating writes and can be retried`() =
         runTest {
             database.openHelper.writableDatabase.execSQL(

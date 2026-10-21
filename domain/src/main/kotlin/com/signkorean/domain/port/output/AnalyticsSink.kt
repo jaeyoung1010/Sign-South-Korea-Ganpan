@@ -7,6 +7,7 @@ import com.signkorean.domain.model.CardRatingUndoneEvent
 import com.signkorean.domain.model.SessionPausedEvent
 import com.signkorean.domain.model.SessionResumedEvent
 import com.signkorean.domain.model.SessionStartedEvent
+import com.signkorean.domain.model.SessionCompletedEvent
 
 fun interface AnalyticsSink {
     fun recordAppStarted(event: AppStartupEvent)
@@ -34,4 +35,7 @@ fun interface AnalyticsSink {
 
     /** Records a resume without attaching card identifiers or user data. */
     fun recordSessionResumed(event: SessionResumedEvent) = Unit
+
+    /** Records only aggregate completion results and elapsed time. */
+    fun recordSessionCompleted(event: SessionCompletedEvent) = Unit
 }

@@ -1,6 +1,7 @@
 package com.signkorean.domain.usecase
 
 import com.signkorean.domain.model.CardRatedEvent
+import com.signkorean.domain.model.SessionCompletedEvent
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
@@ -36,6 +37,20 @@ class RateCardUseCase(
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (_: Exception) {
+            }
+            result.completion?.let { completion ->
+                try {
+                    analyticsSink.recordSessionCompleted(
+                        SessionCompletedEvent(
+                            gotItCount = completion.gotItCount,
+                            reviewCount = completion.reviewCount,
+                            durationMillis = completion.durationMillis,
+                        ),
+                    )
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                }
             }
         }
         return result

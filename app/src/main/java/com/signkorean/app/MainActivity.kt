@@ -57,6 +57,7 @@ import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.feature.learn.CompletionScreen
 import com.signkorean.feature.learn.CompletionUiState
 import com.signkorean.feature.learn.LearnFeedbackUiState
@@ -79,6 +80,8 @@ import com.signkorean.feature.settings.SettingsUiAction
 import com.signkorean.feature.settings.SettingsUiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -118,6 +121,7 @@ private fun SignKoreanApp(
     val learnHomeState by learnHomeViewModel.uiState.collectAsState()
     val learnSessionState by learnViewModel.uiState.collectAsState()
     val learnFeedbackState by learnViewModel.feedbackState.collectAsState()
+    val completionState by learnViewModel.completionState.collectAsState()
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
@@ -145,6 +149,10 @@ private fun SignKoreanApp(
                         AppNavigationAction.ShowToast("Could not save your progress. Try again."),
                     )
                 }
+
+                is com.signkorean.app.learn.LearnSessionEffect.SessionCompleted -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Navigate(AppRoute.Done))
+                }
             }
         }
     }
@@ -165,6 +173,7 @@ private fun SignKoreanApp(
         onCancelCategoryReplacement = learnHomeViewModel::cancelCategoryReplacement,
         learnSessionState = learnSessionState,
         learnFeedbackState = learnFeedbackState,
+        completionState = completionState,
         onRevealAnswer = learnViewModel::revealAnswer,
         onRateCard = learnViewModel::rateCard,
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
@@ -192,6 +201,7 @@ internal fun SignKoreanAppContent(
     onCancelCategoryReplacement: () -> Unit = {},
     learnSessionState: LearnSessionUiState = LearnSessionUiState.Loading,
     learnFeedbackState: LearnFeedbackUiState? = null,
+    completionState: SessionCompletion? = null,
     onRevealAnswer: () -> Unit = {},
     onRateCard: (RatingDecision, RatingInputSource) -> Unit = { _, _ -> },
     onRatingAnimationFinished: () -> Unit = {},
@@ -217,6 +227,7 @@ internal fun SignKoreanAppContent(
             onCancelCategoryReplacement,
             learnSessionState,
             learnFeedbackState,
+            completionState,
             onRevealAnswer,
             onRateCard,
             onRatingAnimationFinished,
@@ -263,7 +274,7 @@ internal fun SignKoreanAppContent(
                         onUndoRating = onUndoRating,
                     )
                 }
-                entry<AppRoute.Done> { DoneDestination(onAction) }
+                entry<AppRoute.Done> { DoneDestination(completionState, onAction) }
                 entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
                 entry<AppRoute.Settings> { SettingsDestination(onAction) }
                 entry<AppRoute.Legal> { LegalScreen(LegalUiState()) }
@@ -335,7 +346,9 @@ private fun NavigationEffects(
     }
     LaunchedEffect(state.backStack) { synchronizeBackStack() }
     BackHandler(enabled = state.handlesBack) {
-        if (state.shouldRequestLearnClose(learnSessionState)) {
+        if (state.currentRoute == AppRoute.Done) {
+            onAction(AppNavigationAction.BackHome)
+        } else if (state.shouldRequestLearnClose(learnSessionState)) {
             onRequestLearnClose()
         } else {
             onAction(AppNavigationAction.Back)
@@ -489,16 +502,36 @@ private fun LearnDestination(
 }
 
 @Composable
-private fun DoneDestination(onAction: (AppNavigationAction) -> Unit) {
+private fun DoneDestination(
+    completion: SessionCompletion?,
+    onAction: (AppNavigationAction) -> Unit,
+) {
     CompletionScreen(
-        state = CompletionUiState(),
+        state = completion?.toCompletionUiState() ?: CompletionUiState(),
         onAction = { action ->
-            if (action == LearnUiAction.OpenProgress) {
-                onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
+            when (action) {
+                LearnUiAction.BackHome -> onAction(AppNavigationAction.BackHome)
+                LearnUiAction.OpenReviewCards,
+                LearnUiAction.OpenProgress,
+                -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
+
+                else -> Unit
             }
         },
     )
 }
+
+private fun SessionCompletion.toCompletionUiState(): CompletionUiState =
+    CompletionUiState(
+        totalCount = totalCount,
+        gotItCount = gotItCount,
+        reviewCount = reviewCount,
+        nextReviewLabel =
+            nextReviewAt?.let {
+                "Next review: ${DateTimeFormatter.ISO_LOCAL_DATE.format(it.atZone(ZoneId.systemDefault()))}"
+            } ?: "No further review scheduled",
+        reviewCardIds = reviewCardIds,
+    )
 
 @Composable
 private fun SettingsDestination(onAction: (AppNavigationAction) -> Unit) {

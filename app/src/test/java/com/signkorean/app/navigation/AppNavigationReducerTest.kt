@@ -61,6 +61,16 @@ class AppNavigationReducerTest {
     }
 
     @Test
+    fun back_home_from_completion_resets_the_stack_instead_of_returning_to_learn() {
+        val done = AppNavigationUiState(backStack = listOf(AppRoute.Home, AppRoute.Learn, AppRoute.Done))
+
+        val home = reducer.reduce(done, AppNavigationAction.BackHome)
+
+        assertEquals(listOf(AppRoute.Home), home.backStack)
+        assertEquals(AppRoute.Home, home.currentRoute)
+    }
+
+    @Test
     fun top_level_tabs_map_to_their_prototype_destinations() {
         val state = AppNavigationUiState(backStack = listOf(AppRoute.Home))
 

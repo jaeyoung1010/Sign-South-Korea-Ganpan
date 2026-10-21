@@ -5,6 +5,8 @@ import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardReviewState
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.SessionCardScore
+import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.output.AnalyticsSink
@@ -51,6 +53,33 @@ class RateCardUseCaseTest {
             assertEquals(RateCardResult.Failed, result)
             assertEquals(emptyList<CardRatedEvent>(), analytics.events)
             assertEquals(1, repository.calls)
+        }
+
+    @Test
+    fun `records completion analytics only when the persisted result includes completion`() =
+        runTest {
+            val analytics = RecordingAnalytics()
+            val completion =
+                SessionCompletion(
+                    sessionId = "session-1",
+                    totalCount = 2,
+                    gotItCount = 1,
+                    reviewCount = 1,
+                    scores = listOf(SessionCardScore("card-1", RatingDecision.GotIt), SessionCardScore("card-2", RatingDecision.Review)),
+                    nextReviewAt = null,
+                    durationMillis = 7_000,
+                )
+
+            RateCardUseCase(
+                RecordingLearningRepository(RateCardResult.Rated(nextPosition = 2, completed = true, completion = completion)),
+                analytics,
+                fixedClock,
+            )(RateCardRequest("session-1", 1, "card-2", RatingDecision.Review, RatingInputSource.Gesture))
+
+            assertEquals(1, analytics.completionEvents.size)
+            assertEquals(1, analytics.completionEvents.single().gotItCount)
+            assertEquals(1, analytics.completionEvents.single().reviewCount)
+            assertEquals(7_000, analytics.completionEvents.single().durationMillis)
         }
 
     @Test
@@ -115,11 +144,16 @@ class RateCardUseCaseTest {
 
     private class RecordingAnalytics : AnalyticsSink {
         val events = mutableListOf<CardRatedEvent>()
+        val completionEvents = mutableListOf<com.signkorean.domain.model.SessionCompletedEvent>()
 
         override fun recordAppStarted(event: AppStartupEvent) = Unit
 
         override fun recordCardRated(event: CardRatedEvent) {
             events += event
+        }
+
+        override fun recordSessionCompleted(event: com.signkorean.domain.model.SessionCompletedEvent) {
+            completionEvents += event
         }
     }
 

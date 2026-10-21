@@ -45,7 +45,12 @@ class RoomLearningRepository(
                     ),
                 )
             when (result) {
-                is RatingTransactionResult.Applied -> RateCardResult.Rated(result.nextPosition, result.completed)
+                is RatingTransactionResult.Applied ->
+                    RateCardResult.Rated(
+                        nextPosition = result.nextPosition,
+                        completed = result.completed,
+                        completion = result.completion,
+                    )
                 RatingTransactionResult.AlreadyRated -> RateCardResult.AlreadyRated
                 RatingTransactionResult.Unavailable -> RateCardResult.Unavailable
             }

@@ -4,6 +4,7 @@ import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.SessionTransitionWriteResult
+import com.signkorean.domain.model.SessionCompletion
 import java.time.Instant
 
 interface SessionRepository {
@@ -12,6 +13,8 @@ interface SessionRepository {
     suspend fun getActiveSession(): ActiveSession? = null
 
     suspend fun getActiveLearnSession(): ActiveLearnSession? = null
+
+    suspend fun getSessionCompletion(sessionId: String): SessionCompletion? = null
 
     /** Reports whether the reveal was persisted, had already been persisted, or is stale. */
     suspend fun markAnswerRevealed(

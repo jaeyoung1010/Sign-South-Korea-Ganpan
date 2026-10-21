@@ -7,7 +7,10 @@ import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.LoadSessionCompletion
+import com.signkorean.domain.port.input.LoadSessionCompletionRequest
 import com.signkorean.domain.port.input.PauseSession
 import com.signkorean.domain.port.input.PauseSessionRequest
 import com.signkorean.domain.port.input.PauseSessionResult
@@ -43,6 +46,7 @@ class LearnViewModel
     @Inject
     constructor(
         private val loadLearnSession: LoadLearnSession,
+        private val loadSessionCompletion: LoadSessionCompletion = LoadSessionCompletion { null },
         private val savedStateHandle: SavedStateHandle = SavedStateHandle(),
         private val revealAnswerUseCase: RevealAnswer = RevealAnswer { RevealAnswerResult.Revealed },
         private val rateCardUseCase: RateCard = RateCard { RateCardResult.Unavailable },
@@ -63,9 +67,12 @@ class LearnViewModel
         private val mutableFeedbackState = MutableStateFlow<LearnFeedbackUiState?>(null)
         private val effectChannel = Channel<LearnSessionEffect>(Channel.BUFFERED)
         private var isPausing = false
+        private var pendingCompletion: SessionCompletion? = null
+        private val mutableCompletionState = MutableStateFlow<SessionCompletion?>(null)
 
         val uiState = mutableUiState.asStateFlow()
         val feedbackState = mutableFeedbackState.asStateFlow()
+        val completionState = mutableCompletionState.asStateFlow()
         val effects = effectChannel.receiveAsFlow()
 
         fun load(preserveFeedback: Boolean = false) {
@@ -77,6 +84,8 @@ class LearnViewModel
                 isUndoing = false
                 lastRatedSessionId = null
                 clearFeedback()
+                pendingCompletion = null
+                mutableCompletionState.value = null
             }
             isRevealing = false
             isRating = false
@@ -85,6 +94,18 @@ class LearnViewModel
                 viewModelScope.launch {
                     try {
                         val result = loadLearnSession()
+                        if (result is LoadLearnSessionResult.Invalid && result.error == LearnSessionError.NoActiveSession) {
+                            val sessionId = savedStateHandle.get<String>(SESSION_ID_KEY)
+                            if (sessionId != null) {
+                                val completion = loadSessionCompletion(LoadSessionCompletionRequest(sessionId))
+                                if (completion != null) {
+                                    mutableCompletionState.value = completion
+                                    mutableUiState.value = LearnSessionUiState.Completed
+                                    effectChannel.trySend(LearnSessionEffect.SessionCompleted(completion))
+                                    return@launch
+                                }
+                            }
+                        }
                         mutableUiState.value = result.toUiState()
                         if (result is LoadLearnSessionResult.Active) {
                             savedStateHandle[SESSION_ID_KEY] = result.sessionId
@@ -172,6 +193,7 @@ class LearnViewModel
                         }
                     when (result) {
                         is RateCardResult.Rated -> {
+                            pendingCompletion = result.completion
                             val current = mutableUiState.value as? LearnSessionUiState.Active
                             if (current?.cardId == active.cardId) {
                                 mutableUiState.value =
@@ -210,6 +232,14 @@ class LearnViewModel
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
             if (!active.isRating) return
             isRating = false
+            pendingCompletion?.let { completion ->
+                pendingCompletion = null
+                mutableCompletionState.value = completion
+                mutableUiState.value = LearnSessionUiState.Completed
+                clearFeedback()
+                effectChannel.trySend(LearnSessionEffect.SessionCompleted(completion))
+                return
+            }
             load(preserveFeedback = true)
         }
 
@@ -231,6 +261,8 @@ class LearnViewModel
                         is UndoRatingResult.Undone -> {
                             isUndoing = false
                             lastRatedSessionId = null
+                            pendingCompletion = null
+                            mutableCompletionState.value = null
                             showFeedback("Last choice undone", canUndo = false)
                             load(preserveFeedback = true)
                         }
@@ -302,6 +334,10 @@ sealed interface LearnSessionEffect {
     data object SessionPaused : LearnSessionEffect
 
     data object PauseFailed : LearnSessionEffect
+
+    data class SessionCompleted(
+        val completion: SessionCompletion,
+    ) : LearnSessionEffect
 }
 
 private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =

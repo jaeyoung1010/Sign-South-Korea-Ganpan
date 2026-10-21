@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.data.db.CardProgressEntity
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.SessionTransitionWriteResult
@@ -145,6 +146,38 @@ class RoomSessionRepositoryTest {
 
             assertEquals(null, repository.getActiveSession())
             assertEquals(SessionTransitionWriteResult.Unavailable, repository.resumeSession("done"))
+        }
+
+    @Test
+    fun `loads a completed aggregate without exposing it as resumable`() =
+        runTest {
+            val createdAt = Instant.parse("2026-10-21T00:00:00Z")
+            val completedAt = createdAt.plusSeconds(45)
+            database.sessionDao().insert(
+                SessionEntity.active(id = "done", requestedLength = 2, now = createdAt).copy(
+                    currentIndex = 2,
+                    status = "COMPLETED",
+                    updatedAt = completedAt,
+                    completedAt = completedAt,
+                ),
+            )
+            database.sessionCardDao().insertAll(
+                listOf(
+                    sessionCard(0, "card-1", sessionId = "done").copy(rating = "GOT_IT", ratedAt = createdAt.plusSeconds(10)),
+                    sessionCard(1, "card-2", sessionId = "done").copy(rating = "REVIEW", ratedAt = completedAt),
+                ),
+            )
+            database.cardProgressDao().upsert(CardProgressEntity.initial("card-1"))
+            database.cardProgressDao().upsert(CardProgressEntity.initial("card-2").copy(nextReviewAt = completedAt.plusSeconds(86_400)))
+
+            val completion = repository.getSessionCompletion("done")
+
+            assertEquals(2, completion?.totalCount)
+            assertEquals(1, completion?.gotItCount)
+            assertEquals(1, completion?.reviewCount)
+            assertEquals(listOf("card-2"), completion?.reviewCardIds)
+            assertEquals(45_000L, completion?.durationMillis)
+            assertEquals(null, repository.getActiveLearnSession())
         }
 
     private fun sessionCard(

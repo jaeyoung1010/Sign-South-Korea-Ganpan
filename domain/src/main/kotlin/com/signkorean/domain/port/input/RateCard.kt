@@ -2,6 +2,7 @@ package com.signkorean.domain.port.input
 
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.SessionCompletion
 
 fun interface RateCard {
     suspend operator fun invoke(request: RateCardRequest): RateCardResult
@@ -25,6 +26,7 @@ sealed interface RateCardResult {
     data class Rated(
         val nextPosition: Int,
         val completed: Boolean,
+        val completion: SessionCompletion? = null,
     ) : RateCardResult
 
     data object AlreadyRated : RateCardResult

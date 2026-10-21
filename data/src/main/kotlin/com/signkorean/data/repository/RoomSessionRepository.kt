@@ -3,12 +3,14 @@ package com.signkorean.data.repository
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.data.db.isConsistent
+import com.signkorean.data.db.toSessionCompletion
 import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.LearnSessionCard
 import com.signkorean.domain.model.SessionTransitionWriteResult
+import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.SessionRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -49,6 +51,11 @@ class RoomSessionRepository(
                         },
                 )
             }
+        }
+
+    override suspend fun getSessionCompletion(sessionId: String): SessionCompletion? =
+        withContext(dispatcher) {
+            database.sessionDao().get(sessionId)?.let(database::toSessionCompletion)
         }
 
     override suspend fun markAnswerRevealed(
