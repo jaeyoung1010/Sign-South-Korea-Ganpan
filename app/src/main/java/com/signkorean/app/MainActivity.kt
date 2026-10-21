@@ -212,7 +212,6 @@ private fun SignKoreanApp(
                 }
 
                 is SettingsEffect.SessionLengthChanged -> {
-                    navigationViewModel.dispatch(AppNavigationAction.Back)
                     navigationViewModel.dispatch(
                         AppNavigationAction.ShowToast("${effect.length} cards selected."),
                     )
@@ -838,7 +837,10 @@ private fun BoxScope.AppOverlayHost(
                                     } else {
                                         "$length cards · ~${length.estimatedMinutes()} min"
                                     },
-                                onClick = { onSelectSessionLength(length) },
+                                onClick = {
+                                    onSelectSessionLength(length)
+                                    onAction(AppNavigationAction.Back)
+                                },
                                 modifier = Modifier.fillMaxWidth().testTag("settings.session-length.$length"),
                                 style =
                                     if (length == settingsState.sessionLength) {

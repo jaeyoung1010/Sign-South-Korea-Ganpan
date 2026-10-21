@@ -150,6 +150,36 @@ class ProtoUserSettingsRepositoryTest {
         }
 
     @Test
+    fun `explicit app motion preference survives unrelated writes and a system change`() =
+        runTest {
+            val file = File(temporaryFolder.root, "explicit-motion-settings.pb")
+            val first = createFixture(file = file, systemReduceMotion = true)
+            first.repository.updateSettings {
+                it.copy(reduceMotion = false, followSystemReduceMotion = false)
+            }
+            first.repository.updateSettings { it.copy(autoPlayAudio = true) }
+            close(first.scope)
+
+            val reopened = createFixture(file = file, systemReduceMotion = false)
+
+            assertFalse(reopened.repository.settings.first().reduceMotion)
+            assertFalse(reopened.repository.settings.first().followSystemReduceMotion)
+            assertTrue(reopened.repository.settings.first().autoPlayAudio)
+        }
+
+    @Test
+    fun `legacy system-following value does not become an app reduce motion override`() =
+        runTest {
+            val fixture = createFixture(systemReduceMotion = false)
+            fixture.dataStore.updateData {
+                it.toBuilder().setReduceMotion(true).setHasExplicitReduceMotion(false).build()
+            }
+
+            assertFalse(fixture.repository.settings.first().reduceMotion)
+            assertTrue(fixture.repository.settings.first().followSystemReduceMotion)
+        }
+
+    @Test
     fun `corrupt data is replaced with safe defaults and reports recovery`() =
         runTest {
             val file = File(temporaryFolder.root, "corrupted-settings.pb")

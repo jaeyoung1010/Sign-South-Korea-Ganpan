@@ -25,7 +25,20 @@ class ProtoUserSettingsRepository(
     override suspend fun updateSettings(transform: (UserSettings) -> UserSettings): UserSettings =
         dataStore
             .updateData { persisted ->
-                transform(persisted.toDomain(systemReduceMotionSource.isReduceMotionEnabled())).toProto()
+                val systemReduceMotion = systemReduceMotionSource.isReduceMotionEnabled()
+                val current = persisted.toDomain(systemReduceMotion)
+                val transformed = transform(current)
+                val reducePreferenceChanged =
+                    transformed.reduceMotion != current.reduceMotion ||
+                        transformed.followSystemReduceMotion != current.followSystemReduceMotion
+                val appReduceMotion =
+                    when {
+                        transformed.followSystemReduceMotion -> false
+                        reducePreferenceChanged -> transformed.reduceMotion
+                        persisted.hasExplicitReduceMotion -> persisted.reduceMotion
+                        else -> false
+                    }
+                transformed.toProto(appReduceMotion)
             }.toDomain(systemReduceMotionSource.isReduceMotionEnabled())
 }
 
@@ -41,15 +54,15 @@ private fun UserSettingsProto.toDomain(systemReduceMotion: Boolean): UserSetting
         showRomanization = showRomanization,
         autoPlayAudio = autoPlayAudio,
         audioVoice = voice.toDomain(),
-        // Accessibility is monotonic: either the app or the operating system can request
-        // reduced motion, and neither source may silently override the other.
-        reduceMotion = reduceMotion || systemReduceMotion,
+        // Accessibility is monotonic when an app preference is present. Legacy/system-following
+        // records may contain the old effective value, which must not become a new app override.
+        reduceMotion = if (hasExplicitReduceMotion) reduceMotion || systemReduceMotion else systemReduceMotion,
         followSystemReduceMotion = !hasExplicitReduceMotion,
         reminderEnabled = reminderEnabled,
         reminderLocalTime = if (hasExplicitReminderLocalTime) reminderLocalTimeOrDefault() else LocalTime.of(19, 0),
     )
 
-private fun UserSettings.toProto(): UserSettingsProto =
+private fun UserSettings.toProto(appReduceMotion: Boolean = reduceMotion): UserSettingsProto =
     UserSettingsProto
         .newBuilder()
         .setSchemaVersion(1)
@@ -64,7 +77,7 @@ private fun UserSettings.toProto(): UserSettingsProto =
         .setVoice(audioVoice.toProto())
         // When following the system, persist only the app preference (off). The effective value
         // may be true because the current device has animations disabled.
-        .setReduceMotion(if (followSystemReduceMotion) false else reduceMotion)
+        .setReduceMotion(if (followSystemReduceMotion) false else appReduceMotion)
         .setHasExplicitReduceMotion(!followSystemReduceMotion)
         .setReminderEnabled(reminderEnabled)
         .setReminderLocalHour(reminderLocalTime.hour)
