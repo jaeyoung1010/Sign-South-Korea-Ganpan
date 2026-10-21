@@ -2,6 +2,7 @@ package com.signkorean.app.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.signkorean.app.di.AppVersionName
 import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
@@ -41,8 +42,9 @@ class SettingsViewModel
         private val configureReminder: ConfigureReminder = ConfigureReminder { _, _ -> ConfigureReminderResult.Disabled },
         private val observeProgress: ObserveProgress = ObserveProgress { flowOf(emptyProgressSnapshot()) },
         private val reminderScheduler: ReminderSchedulerPort = NoopReminderScheduler,
+        @AppVersionName private val appVersion: String = "0.1.0",
     ) : ViewModel() {
-        private val mutableUiState = MutableStateFlow(SettingsUiState())
+        private val mutableUiState = MutableStateFlow(SettingsUiState(appVersion = appVersion))
         private val effectChannel = Channel<SettingsEffect>(Channel.BUFFERED)
         private val settingsMutex = Mutex()
         private var selectionJob: Job? = null
@@ -61,6 +63,7 @@ class SettingsViewModel
                             reduceMotion = settings.reduceMotion,
                             followSystemReduceMotion = settings.followSystemReduceMotion,
                             reminderEnabled = settings.reminderEnabled,
+                            appVersion = appVersion,
                         )
                 }
             }

@@ -19,6 +19,7 @@ import com.signkorean.data.settings.SystemReduceMotionSource
 import com.signkorean.data.settings.UserSettingsDataStoreFactory
 import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.data.time.SystemClockAdapter
+import com.signkorean.app.legal.BundledPolicyDocumentRepository
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.CardReportIdGenerator
@@ -28,6 +29,7 @@ import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.HomeActivityRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import com.signkorean.domain.port.output.PolicyDocumentRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +43,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataAdapterModule {
+    @Provides
+    @Singleton
+    fun providePolicyDocumentRepository(
+        @ApplicationContext context: Context,
+        @IoDispatcher dispatcher: CoroutineDispatcher,
+    ): PolicyDocumentRepository = BundledPolicyDocumentRepository(context, dispatcher)
+
     @Provides
     @Singleton
     fun provideCardCatalog(

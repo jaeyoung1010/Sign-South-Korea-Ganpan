@@ -19,6 +19,8 @@ import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.input.StartSession
 import com.signkorean.domain.port.input.SubmitCardReport
 import com.signkorean.domain.port.input.UndoRating
+import com.signkorean.domain.port.input.LoadPolicyDocument
+import com.signkorean.domain.port.input.OpenPolicyDocument
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.CardReportIdGenerator
@@ -31,6 +33,8 @@ import com.signkorean.domain.port.output.SessionCreationRepository
 import com.signkorean.domain.port.output.SessionIdGenerator
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
+import com.signkorean.domain.port.output.PolicyBrowserPort
+import com.signkorean.domain.port.output.PolicyDocumentRepository
 import com.signkorean.domain.session.SessionBuilder
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.ConfigureReminderUseCase
@@ -51,6 +55,8 @@ import com.signkorean.domain.usecase.StartOnboardingUseCase
 import com.signkorean.domain.usecase.StartSessionUseCase
 import com.signkorean.domain.usecase.SubmitCardReportUseCase
 import com.signkorean.domain.usecase.UndoRatingUseCase
+import com.signkorean.domain.usecase.LoadPolicyDocumentUseCase
+import com.signkorean.domain.usecase.OpenPolicyDocumentUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,6 +66,14 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 @Suppress("TooManyFunctions")
 object UseCaseModule {
+    @Provides
+    fun provideLoadPolicyDocument(repository: PolicyDocumentRepository): LoadPolicyDocument =
+        LoadPolicyDocumentUseCase(repository)
+
+    @Provides
+    fun provideOpenPolicyDocument(browser: PolicyBrowserPort): OpenPolicyDocument =
+        OpenPolicyDocumentUseCase(browser)
+
     @Provides
     fun provideInitializeApp(
         userSettingsRepository: UserSettingsRepository,

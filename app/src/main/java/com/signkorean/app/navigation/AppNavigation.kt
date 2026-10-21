@@ -76,6 +76,7 @@ enum class AppSheet {
     SessionLength,
     SessionLeave,
     Report,
+    Account,
 }
 
 data class AppNavigationUiState(

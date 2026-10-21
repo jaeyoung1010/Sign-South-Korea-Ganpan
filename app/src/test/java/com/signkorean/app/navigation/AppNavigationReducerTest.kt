@@ -61,6 +61,17 @@ class AppNavigationReducerTest {
     }
 
     @Test
+    fun legal_back_returns_to_settings_after_account_sheet_is_closed() {
+        val settings = AppNavigationUiState(backStack = listOf(AppRoute.Home, AppRoute.Settings))
+        val legal = reducer.reduce(settings, AppNavigationAction.Navigate(AppRoute.Legal))
+        val account = reducer.reduce(legal, AppNavigationAction.ShowSheet(AppSheet.Account))
+
+        assertEquals(AppRoute.Legal, account.currentRoute)
+        assertEquals(AppRoute.Legal, reducer.reduce(account, AppNavigationAction.Back).currentRoute)
+        assertEquals(AppRoute.Settings, reducer.reduce(legal, AppNavigationAction.Back).currentRoute)
+    }
+
+    @Test
     fun back_home_from_completion_resets_the_stack_instead_of_returning_to_learn() {
         val done = AppNavigationUiState(backStack = listOf(AppRoute.Home, AppRoute.Learn, AppRoute.Done))
 

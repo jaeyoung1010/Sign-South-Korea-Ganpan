@@ -39,6 +39,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.signkorean.app.home.LearnHomeViewModel
+import com.signkorean.app.legal.LegalViewModel
 import com.signkorean.app.learn.LearnViewModel
 import com.signkorean.app.navigation.AppNavigationAction
 import com.signkorean.app.navigation.AppNavigationIntent
@@ -90,7 +91,10 @@ import com.signkorean.feature.progress.ProgressScreen
 import com.signkorean.feature.progress.ProgressUiAction
 import com.signkorean.feature.progress.ProgressUiState
 import com.signkorean.feature.settings.LegalScreen
+import com.signkorean.feature.settings.LegalUiAction
 import com.signkorean.feature.settings.LegalUiState
+import com.signkorean.feature.settings.AccountSheet
+import com.signkorean.feature.settings.AccountUiState
 import com.signkorean.feature.settings.SettingsScreen
 import com.signkorean.feature.settings.SettingsUiAction
 import com.signkorean.feature.settings.SettingsUiState
@@ -109,6 +113,7 @@ class MainActivity : ComponentActivity() {
     private val learnViewModel: LearnViewModel by viewModels()
     private val progressViewModel: ProgressViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
+    private val legalViewModel: LegalViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,6 +131,7 @@ class MainActivity : ComponentActivity() {
                 learnViewModel,
                 progressViewModel,
                 settingsViewModel,
+                legalViewModel,
             )
         }
     }
@@ -154,6 +160,7 @@ private fun SignKoreanApp(
     learnViewModel: LearnViewModel,
     progressViewModel: ProgressViewModel,
     settingsViewModel: SettingsViewModel,
+    legalViewModel: LegalViewModel,
 ) {
     val state by navigationViewModel.uiState.collectAsState()
     val launchState by launchViewModel.uiState.collectAsState()
@@ -166,6 +173,7 @@ private fun SignKoreanApp(
     val reportState by learnViewModel.reportState.collectAsState()
     val audioState by learnViewModel.audioState.collectAsState()
     val settingsState by settingsViewModel.uiState.collectAsState()
+    val legalState by legalViewModel.uiState.collectAsState()
     val reminderPermissionDeniedMessage = stringResource(R.string.reminder_permission_denied)
     val reminderPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -312,6 +320,14 @@ private fun SignKoreanApp(
         onToggleAutoPlay = settingsViewModel::toggleAutoPlay,
         onToggleReduceMotion = settingsViewModel::toggleReduceMotion,
         onToggleReminder = settingsViewModel::toggleReminder,
+        legalState = legalState,
+        onLegalAction = { action ->
+            when (action) {
+                is LegalUiAction.SelectDocument -> legalViewModel.selectDocument(action.id)
+                LegalUiAction.OpenOnline -> legalViewModel.openOnline()
+                LegalUiAction.Back -> navigationViewModel.dispatch(AppNavigationAction.Back)
+            }
+        },
         reportState = reportState,
         onShowReport = learnViewModel::openReport,
         onSelectReportReason = learnViewModel::selectReportReason,
@@ -358,6 +374,8 @@ internal fun SignKoreanAppContent(
     onToggleAutoPlay: () -> Unit = {},
     onToggleReduceMotion: () -> Unit = {},
     onToggleReminder: () -> Unit = {},
+    legalState: LegalUiState = LegalUiState(),
+    onLegalAction: (LegalUiAction) -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
     onShowReport: () -> Unit = {},
     onSelectReportReason: (CardReportReason) -> Unit = {},
@@ -402,6 +420,8 @@ internal fun SignKoreanAppContent(
             onToggleAutoPlay,
             onToggleReduceMotion,
             onToggleReminder,
+            legalState,
+            onLegalAction,
             onShowReport,
         ) {
             entryProvider<NavKey> {
@@ -477,9 +497,15 @@ internal fun SignKoreanAppContent(
                         onToggleAutoPlay = onToggleAutoPlay,
                         onToggleReduceMotion = onToggleReduceMotion,
                         onToggleReminder = onToggleReminder,
+                        onOpenAccount = { onAction(AppNavigationAction.ShowSheet(AppSheet.Account)) },
                     )
                 }
-                entry<AppRoute.Legal> { LegalScreen(LegalUiState()) }
+                entry<AppRoute.Legal> {
+                    LegalScreen(
+                        state = legalState,
+                        onAction = onLegalAction,
+                    )
+                }
             }
         }
 
@@ -531,6 +557,7 @@ internal fun SignKoreanAppContent(
                     settingsState = settingsState,
                     onSelectVoice = onSelectVoice,
                     onSelectSessionLength = onSelectSessionLength,
+                    accountState = AccountUiState(),
                 )
             }
         }
@@ -781,6 +808,7 @@ private fun SettingsDestination(
     onToggleAutoPlay: () -> Unit,
     onToggleReduceMotion: () -> Unit,
     onToggleReminder: () -> Unit,
+    onOpenAccount: () -> Unit,
 ) {
     SettingsScreen(
         state = state,
@@ -793,6 +821,7 @@ private fun SettingsDestination(
                 SettingsUiAction.ToggleReduceMotion -> onToggleReduceMotion()
                 SettingsUiAction.ToggleReminder -> onToggleReminder()
                 SettingsUiAction.OpenLegal -> onAction(AppNavigationAction.Navigate(AppRoute.Legal))
+                SettingsUiAction.OpenAccount -> onOpenAccount()
             }
         },
     )
@@ -855,6 +884,7 @@ private fun BoxScope.AppOverlayHost(
     settingsState: SettingsUiState,
     onSelectVoice: (AudioVoice) -> Unit,
     onSelectSessionLength: (Int) -> Unit,
+    accountState: AccountUiState,
 ) {
     state.sheet?.let { sheet ->
         val dismissSheet = {
@@ -877,6 +907,7 @@ private fun BoxScope.AppOverlayHost(
                         AppSheet.SessionLength -> "Session length"
                         AppSheet.SessionLeave -> "Leave this session?"
                         AppSheet.Report -> "Report this card"
+                        AppSheet.Account -> accountState.title
                     },
             ) {
                 when (sheet) {
@@ -954,6 +985,8 @@ private fun BoxScope.AppOverlayHost(
                             onCancel = dismissSheet,
                         )
                     }
+
+                    AppSheet.Account -> AccountSheet(state = accountState)
                 }
                 if (sheet != AppSheet.SessionLeave && sheet != AppSheet.Report) {
                     GameButton(

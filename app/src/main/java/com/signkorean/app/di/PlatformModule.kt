@@ -2,7 +2,9 @@ package com.signkorean.app.di
 
 import android.content.Context
 import com.signkorean.domain.port.output.AudioPlayerPort
+import com.signkorean.domain.port.output.PolicyBrowserPort
 import com.signkorean.domain.port.output.ReminderSchedulerPort
+import com.signkorean.app.legal.AndroidCustomTabsPolicyBrowser
 import com.signkorean.app.reminder.WorkManagerReminderScheduler
 import com.signkorean.platform.audio.ExoPlayerAudioPlayerFactory
 import com.signkorean.platform.audio.Media3AudioPlayer
@@ -18,6 +20,12 @@ import javax.inject.Singleton
 object PlatformModule {
     @Provides
     @Singleton
+    @AppVersionName
+    fun provideAppVersionName(@ApplicationContext context: Context): String =
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown"
+
+    @Provides
+    @Singleton
     fun provideAudioPlayer(
         @ApplicationContext context: Context,
     ): AudioPlayerPort = Media3AudioPlayer(ExoPlayerAudioPlayerFactory(context))
@@ -27,4 +35,10 @@ object PlatformModule {
     fun provideReminderScheduler(
         @ApplicationContext context: Context,
     ): ReminderSchedulerPort = WorkManagerReminderScheduler(context)
+
+    @Provides
+    @Singleton
+    fun providePolicyBrowser(
+        @ApplicationContext context: Context,
+    ): PolicyBrowserPort = AndroidCustomTabsPolicyBrowser(context)
 }

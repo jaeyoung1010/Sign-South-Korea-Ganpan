@@ -13,4 +13,11 @@
         <item quantity="other">%1$d signs are ready to review</item>
     </plurals>
     <string name="reminder_permission_denied">Notifications are off. You can enable them in Android settings.</string>
+    <string name="policy_privacy_url">https://signkorean.app/privacy</string>
+    <string name="policy_terms_url">https://signkorean.app/terms</string>
+    <string name="policy_privacy_version">1.0</string>
+    <string name="policy_terms_version">1.0</string>
+    <string name="policy_effective_date">2026–10–21</string>
+    <string name="policy_privacy_checksum">87198343eddfbf52ea29845a3dcde44b0f148e834de4ca5c669ca9b7401a6d8e</string>
+    <string name="policy_terms_checksum">c505bfcb3b9b40e7ed5aa1a396897a023c725afd0a7d091c7978d34d9de4919f</string>
 </resources>
