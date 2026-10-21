@@ -39,11 +39,12 @@ internal fun PhotoSurface(
     contentDescription: String?,
     focus: FocusRect?,
     modifier: Modifier = Modifier,
+    reduceEffects: Boolean = false,
 ) {
     var imageSize by remember(imageAssetUri) { mutableStateOf<PhotoSize?>(null) }
     var hasLoadError by remember(imageAssetUri) { mutableStateOf(imageAssetUri.isBlank()) }
     val backgroundModifier =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (!reduceEffects && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Modifier.blur(BLUR_RADIUS)
         } else {
             Modifier

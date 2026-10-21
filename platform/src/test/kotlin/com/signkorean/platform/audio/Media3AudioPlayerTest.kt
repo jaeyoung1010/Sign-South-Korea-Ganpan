@@ -28,7 +28,7 @@ class Media3AudioPlayerTest {
     }
 
     @Test
-    fun `restarting playback stops and releases the previous player`() {
+    fun `restarting playback reuses the player and releases it when stopped`() {
         val factory = RecordingFactory()
         val player = Media3AudioPlayer(factory)
         player.play(request("card-1", VoiceId.TYPECAST_EUNKYUNG, "file:///android_asset/audio/eunkyung/01.mp3"))
@@ -37,10 +37,12 @@ class Media3AudioPlayerTest {
         player.play(request("card-1", VoiceId.TYPECAST_EUNKYUNG, "file:///android_asset/audio/eunkyung/01.mp3"))
 
         assertTrue(previous.stopCalled)
+        assertEquals(1, factory.created.size)
+        assertEquals(2, factory.current.prepareCount)
+        assertEquals(2, factory.current.playCount)
+
+        player.stop()
         assertTrue(previous.releaseCalled)
-        assertEquals(2, factory.created.size)
-        assertEquals(1, factory.current.prepareCount)
-        assertEquals(1, factory.current.playCount)
     }
 
     @Test

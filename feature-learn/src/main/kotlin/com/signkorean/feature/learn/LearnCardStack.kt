@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,8 +88,12 @@ internal fun LearnCardStack(
             onAction(LearnUiAction.RatingAnimationFinished)
         }
     }
-    val layers = cardStackLayers(state.cardId, state.upcomingCards.map(LearnCardPreviewUiModel::cardId))
-    val previewsById = state.upcomingCards.associateBy(LearnCardPreviewUiModel::cardId)
+    val layers =
+        remember(state.cardId, state.upcomingCards) {
+            cardStackLayers(state.cardId, state.upcomingCards.map(LearnCardPreviewUiModel::cardId))
+        }
+    val previewsById = remember(state.cardId, state.upcomingCards) { state.upcomingCards.associateBy(LearnCardPreviewUiModel::cardId) }
+    val dragOffsetState = rememberUpdatedState(dragOffsetDp)
     val previewCount = layers.count { it.role != LearnCardLayerRole.Active }
     Box(modifier = modifier.testTag(SignKoreanTestTags.LEARN_CARD_STACK)) {
         layers
@@ -97,7 +102,9 @@ internal fun LearnCardStack(
                 val preview = checkNotNull(previewsById[layer.cardId])
                 PreviewCard(
                     preview = preview,
-                    visuals = cardPreviewVisuals(layer.role, dragOffsetDp, reduceMotion),
+                    role = layer.role,
+                    dragOffset = dragOffsetState,
+                    reduceEffects = reduceMotion,
                     modifier =
                         Modifier
                             .fillMaxSize()
@@ -204,22 +211,43 @@ internal fun LearnCardStack(
 @Composable
 private fun PreviewCard(
     preview: LearnCardPreviewUiModel,
-    visuals: CardPreviewVisuals,
+    role: LearnCardLayerRole,
+    dragOffset: androidx.compose.runtime.State<Float>,
+    reduceEffects: Boolean,
     modifier: Modifier,
 ) {
     GameCard(
         modifier =
             modifier
                 .graphicsLayer {
-                    scaleX = visuals.scale
-                    scaleY = visuals.scale
-                    alpha = visuals.alpha
+                    val progress =
+                        if (reduceEffects) {
+                            0f
+                        } else {
+                            (kotlin.math.abs(dragOffset.value) / 90f).coerceIn(0f, 1f)
+                        }
+                    val scale =
+                        when (role) {
+                            LearnCardLayerRole.Next -> 0.96f + 0.04f * progress
+                            LearnCardLayerRole.NextNext -> 0.92f + 0.03f * progress
+                            LearnCardLayerRole.Active -> 1f
+                        }
+                    val alpha =
+                        when (role) {
+                            LearnCardLayerRole.Next -> 0.9f + 0.1f * progress
+                            LearnCardLayerRole.NextNext -> 0.72f + 0.13f * progress
+                            LearnCardLayerRole.Active -> 1f
+                        }
+                    scaleX = scale
+                    scaleY = scale
+                    this.alpha = alpha
                 }.clearAndSetSemantics {},
     ) {
         PhotoSurface(
             imageAssetUri = preview.imageAssetUri,
             contentDescription = stringResource(R.string.learn_upcoming_card),
             focus = null,
+            reduceEffects = reduceEffects,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -333,7 +361,7 @@ private fun ActiveCard(
                             )
                     },
         ) {
-            ActiveCardContent(state, onAction, audioState)
+            ActiveCardContent(state, onAction, audioState, reduceEffects = motionPolicy.reduceMotion)
         }
         (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
             if (overlay == null) return@let
@@ -367,6 +395,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
     audioState: AudioPlaybackState,
+    reduceEffects: Boolean,
 ) {
     PhotoSurface(
         imageAssetUri = state.photo.imageAssetUri,
@@ -377,6 +406,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
                 state.photo.answerContentDescription
             },
         focus = state.photo.focus,
+        reduceEffects = reduceEffects,
         modifier =
             Modifier
                 .fillMaxWidth()

@@ -1,0 +1,2 @@
+HSPLcom/signkorean/app/SignKoreanApplication;->onCreate()V
+HSPLcom/signkorean/app/MainActivity;->onCreate(Landroid/os/Bundle;)V

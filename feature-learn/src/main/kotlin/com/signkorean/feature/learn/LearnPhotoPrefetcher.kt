@@ -8,7 +8,12 @@ class BoundedPhotoPrefetcher(
     private val enqueue: (String) -> Unit,
 ) : LearnPhotoPrefetcher {
     override fun prefetch(imageUris: List<String>) {
-        imageUris.distinct().take(MAX_PREFETCH_COUNT).forEach(enqueue)
+        val selected = LinkedHashSet<String>(MAX_PREFETCH_COUNT)
+        for (imageUri in imageUris) {
+            selected += imageUri
+            if (selected.size == MAX_PREFETCH_COUNT) break
+        }
+        selected.forEach(enqueue)
     }
 
     private companion object {

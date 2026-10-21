@@ -28,7 +28,12 @@ class CoilPhotoPrefetcher
                     ImageRequest
                         .Builder(context)
                         .data(imageUri)
+                        .size(PREFETCH_IMAGE_SIZE_PX)
                         .build(),
                 )
+        }
+
+        private companion object {
+            const val PREFETCH_IMAGE_SIZE_PX = 720
         }
     }
