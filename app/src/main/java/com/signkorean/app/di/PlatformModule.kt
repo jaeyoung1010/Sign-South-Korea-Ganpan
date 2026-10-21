@@ -1,11 +1,15 @@
 package com.signkorean.app.di
 
 import android.content.Context
+import com.signkorean.app.BuildConfig
+import com.signkorean.app.legal.AndroidCustomTabsPolicyBrowser
+import com.signkorean.app.observability.AndroidDiagnosticLogger
+import com.signkorean.app.reminder.WorkManagerReminderScheduler
+import com.signkorean.data.observability.RedactingDiagnosticLogger
 import com.signkorean.domain.port.output.AudioPlayerPort
+import com.signkorean.domain.port.output.DiagnosticLoggerPort
 import com.signkorean.domain.port.output.PolicyBrowserPort
 import com.signkorean.domain.port.output.ReminderSchedulerPort
-import com.signkorean.app.legal.AndroidCustomTabsPolicyBrowser
-import com.signkorean.app.reminder.WorkManagerReminderScheduler
 import com.signkorean.platform.audio.ExoPlayerAudioPlayerFactory
 import com.signkorean.platform.audio.Media3AudioPlayer
 import dagger.Module
@@ -18,6 +22,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object PlatformModule {
+    @Provides
+    @Singleton
+    fun provideDiagnosticLogger(): DiagnosticLoggerPort =
+        RedactingDiagnosticLogger(AndroidDiagnosticLogger(enabled = BuildConfig.DEBUG))
+
     @Provides
     @Singleton
     @AppVersionName

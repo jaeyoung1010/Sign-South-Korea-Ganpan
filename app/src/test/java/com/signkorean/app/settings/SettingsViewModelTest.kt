@@ -6,6 +6,7 @@ import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.VoiceChangedEvent
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
+import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ObserveProgress
@@ -113,11 +114,12 @@ class SettingsViewModelTest {
     fun `reminder is off by default and enabling asks for permission before saving`() =
         runTest {
             val repository = FakeUserSettingsRepository()
+            val analytics = RecordingAnalyticsSink()
             val viewModel =
                 SettingsViewModel(
                     repository,
                     RecordingAudioPlayer(),
-                    RecordingAnalyticsSink(),
+                    analytics,
                     configureReminder = RecordingConfigureReminder(repository),
                     observeProgress = ObserveProgress { flowOf(emptyProgressSnapshot()) },
                 )
@@ -134,11 +136,12 @@ class SettingsViewModelTest {
     fun `denied reminder permission keeps setting off and emits guidance effect`() =
         runTest {
             val repository = FakeUserSettingsRepository()
+            val analytics = RecordingAnalyticsSink()
             val viewModel =
                 SettingsViewModel(
                     repository,
                     RecordingAudioPlayer(),
-                    RecordingAnalyticsSink(),
+                    analytics,
                     configureReminder = RecordingConfigureReminder(repository),
                 )
             viewModel.onReminderPermissionResult(granted = false)
@@ -146,12 +149,14 @@ class SettingsViewModelTest {
 
             assertFalse(repository.settings.first().reminderEnabled)
             assertEquals(SettingsEffect.ReminderPermissionDenied, viewModel.effects.first())
+            assertEquals(listOf(ReminderChangedEvent(false)), analytics.reminderChanges)
         }
 
     @Test
     fun `approved permission enables reminder when due cards exist`() =
         runTest {
             val repository = FakeUserSettingsRepository()
+            val analytics = RecordingAnalyticsSink()
             val progress =
                 ProgressSnapshot(
                     learnedCount = 1,
@@ -165,7 +170,7 @@ class SettingsViewModelTest {
                 SettingsViewModel(
                     repository,
                     RecordingAudioPlayer(),
-                    RecordingAnalyticsSink(),
+                    analytics,
                     configureReminder = RecordingConfigureReminder(repository),
                     observeProgress = ObserveProgress { flowOf(progress) },
                 )
@@ -175,6 +180,7 @@ class SettingsViewModelTest {
 
             assertTrue(repository.settings.first().reminderEnabled)
             assertEquals(SettingsEffect.ReminderChanged(true), viewModel.effects.first())
+            assertEquals(listOf(ReminderChangedEvent(true)), analytics.reminderChanges)
         }
 
     private class RecordingAudioPlayer : AudioPlayerPort {
@@ -192,11 +198,16 @@ class SettingsViewModelTest {
 
     private class RecordingAnalyticsSink : AnalyticsSink {
         val voiceChanges = mutableListOf<VoiceChangedEvent>()
+        val reminderChanges = mutableListOf<ReminderChangedEvent>()
 
         override fun recordAppStarted(event: com.signkorean.domain.model.AppStartupEvent) = Unit
 
         override fun recordVoiceChanged(event: VoiceChangedEvent) {
             voiceChanges += event
+        }
+
+        override fun recordReminderChanged(event: ReminderChangedEvent) {
+            reminderChanges += event
         }
     }
 

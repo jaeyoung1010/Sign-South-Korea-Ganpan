@@ -3,6 +3,7 @@ package com.signkorean.domain.usecase
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.OnboardingCompletedEvent
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.UserSettingsRepository
@@ -32,7 +33,7 @@ class CompleteOnboardingUseCaseTest {
                 ),
                 settings.value,
             )
-            assertEquals(1, analytics.completedCount)
+            assertEquals(OnboardingCompletedEvent(LearningLevel.ELEMENTARY, 2), analytics.completedEvent)
         }
 
     private class RecordingSettingsRepository : UserSettingsRepository {
@@ -48,12 +49,12 @@ class CompleteOnboardingUseCaseTest {
     }
 
     private class RecordingAnalyticsSink : AnalyticsSink {
-        var completedCount = 0
+        var completedEvent: OnboardingCompletedEvent? = null
 
         override fun recordAppStarted(event: AppStartupEvent) = Unit
 
-        override fun recordOnboardingCompleted() {
-            completedCount += 1
+        override fun recordOnboardingCompleted(event: OnboardingCompletedEvent) {
+            completedEvent = event
         }
     }
 }

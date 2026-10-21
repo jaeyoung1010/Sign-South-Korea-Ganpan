@@ -2,6 +2,7 @@ package com.signkorean.domain.usecase
 
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.OnboardingCompletedEvent
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.domain.port.output.AnalyticsSink
@@ -23,7 +24,11 @@ class CompleteOnboardingUseCase(
                     interests = interests,
                 )
             }
-        runCatching { analyticsSink.recordOnboardingCompleted() }
+        runCatching {
+            analyticsSink.recordOnboardingCompleted(
+                OnboardingCompletedEvent(level = level, interestCount = interests.size),
+            )
+        }
         return savedSettings
     }
 }

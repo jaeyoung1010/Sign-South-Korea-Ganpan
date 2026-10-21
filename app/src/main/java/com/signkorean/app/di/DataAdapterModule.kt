@@ -7,7 +7,7 @@ import com.signkorean.data.asset.BundleContentAdapter
 import com.signkorean.data.db.RoomContentMigrationRepository
 import com.signkorean.data.db.RoomSessionTransactionStore
 import com.signkorean.data.db.SignKoreanDatabase
-import com.signkorean.data.repository.NoopAnalyticsSink
+import com.signkorean.data.observability.PrivacySafeAnalyticsAdapter
 import com.signkorean.data.repository.RoomCardReportRepository
 import com.signkorean.data.repository.RoomHomeActivityRepository
 import com.signkorean.data.repository.RoomSessionRepository
@@ -20,12 +20,14 @@ import com.signkorean.data.settings.UserSettingsDataStoreFactory
 import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.app.legal.BundledPolicyDocumentRepository
+import com.signkorean.domain.port.output.AnalyticsPort
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.CardReportIdGenerator
 import com.signkorean.domain.port.output.CardReportRepository
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
+import com.signkorean.domain.port.output.DiagnosticLoggerPort
 import com.signkorean.domain.port.output.HomeActivityRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
@@ -118,7 +120,12 @@ object DataAdapterModule {
 
     @Provides
     @Singleton
-    fun provideAnalyticsSink(): AnalyticsSink = NoopAnalyticsSink()
+    fun provideAnalyticsSink(diagnosticLogger: DiagnosticLoggerPort): AnalyticsSink =
+        PrivacySafeAnalyticsAdapter(diagnosticLogger)
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsPort(analyticsSink: AnalyticsSink): AnalyticsPort = analyticsSink
 
     @Provides
     @Singleton

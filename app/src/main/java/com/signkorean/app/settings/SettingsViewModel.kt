@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.app.di.AppVersionName
 import com.signkorean.domain.model.AudioVoice
+import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
 import com.signkorean.domain.model.UserSettings
@@ -167,9 +168,17 @@ class SettingsViewModel
                     val dueCount = observeProgress().first().dueCount
                     latestDueCount = dueCount
                     when (configureReminder(enabled = true, dueCount = dueCount)) {
-                        ConfigureReminderResult.Scheduled -> effectChannel.trySend(SettingsEffect.ReminderChanged(true))
-                        ConfigureReminderResult.NoDueCards -> effectChannel.trySend(SettingsEffect.ReminderChanged(false))
-                        ConfigureReminderResult.Disabled -> Unit
+                        ConfigureReminderResult.Scheduled -> {
+                            recordReminderChanged(enabled = true)
+                            effectChannel.trySend(SettingsEffect.ReminderChanged(true))
+                        }
+                        ConfigureReminderResult.NoDueCards -> {
+                            recordReminderChanged(enabled = false)
+                            effectChannel.trySend(SettingsEffect.ReminderChanged(false))
+                        }
+                        ConfigureReminderResult.Disabled -> {
+                            recordReminderChanged(enabled = false)
+                        }
                     }
                 } catch (cancellation: CancellationException) {
                     throw cancellation
@@ -183,6 +192,7 @@ class SettingsViewModel
             viewModelScope.launch {
                 try {
                     configureReminder(enabled = false, dueCount = latestDueCount)
+                    recordReminderChanged(enabled = false)
                     if (showDeniedMessage) effectChannel.trySend(SettingsEffect.ReminderPermissionDenied)
                     else effectChannel.trySend(SettingsEffect.ReminderChanged(false))
                 } catch (cancellation: CancellationException) {
@@ -190,6 +200,16 @@ class SettingsViewModel
                 } catch (_: Exception) {
                     effectChannel.trySend(SettingsEffect.SettingsChangeFailed)
                 }
+            }
+        }
+
+        private fun recordReminderChanged(enabled: Boolean) {
+            try {
+                analyticsSink.recordReminderChanged(ReminderChangedEvent(enabled))
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (_: Exception) {
+                // Analytics must not make a valid reminder state change fail.
             }
         }
 

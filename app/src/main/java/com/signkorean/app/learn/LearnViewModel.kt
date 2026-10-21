@@ -10,6 +10,7 @@ import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.AudioPlayedEvent
 import com.signkorean.domain.model.AudioVoice
+import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
@@ -495,6 +496,13 @@ class LearnViewModel
                     isSubmittingReport = false
                     when (result) {
                         is SubmitCardReportResult.Saved -> {
+                            try {
+                                analyticsSink.recordCardReportSaved(CardReportSavedEvent(active.cardId, reason))
+                            } catch (cancellation: CancellationException) {
+                                throw cancellation
+                            } catch (_: Exception) {
+                                // Diagnostics must not turn a persisted report into a failure.
+                            }
                             mutableReportState.value = ReportUiState()
                             effectChannel.trySend(LearnSessionEffect.ReportSubmitted)
                         }
