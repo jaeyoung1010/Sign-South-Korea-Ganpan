@@ -63,6 +63,7 @@ import com.signkorean.feature.learn.CompletionUiState
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnHomeScreen
 import com.signkorean.feature.learn.LearnHomeUiState
+import com.signkorean.feature.learn.LearnImageViewer
 import com.signkorean.feature.learn.LearnSessionScreen
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.feature.learn.LearnUiAction
@@ -346,7 +347,9 @@ private fun NavigationEffects(
     }
     LaunchedEffect(state.backStack) { synchronizeBackStack() }
     BackHandler(enabled = state.handlesBack) {
-        if (state.currentRoute == AppRoute.Done) {
+        if (state.isViewerVisible) {
+            onAction(AppNavigationAction.Back)
+        } else if (state.currentRoute == AppRoute.Done) {
             onAction(AppNavigationAction.BackHome)
         } else if (state.shouldRequestLearnClose(learnSessionState)) {
             onRequestLearnClose()
@@ -511,6 +514,7 @@ private fun DoneDestination(
         onAction = { action ->
             when (action) {
                 LearnUiAction.BackHome -> onAction(AppNavigationAction.BackHome)
+
                 LearnUiAction.OpenReviewCards,
                 LearnUiAction.OpenProgress,
                 -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
@@ -641,14 +645,24 @@ private fun BoxScope.AppOverlayHost(
         }
     }
     if (state.isViewerVisible) {
-        Box(
-            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.78f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            GameCard(modifier = Modifier.padding(SignKoreanSpacing.large)) {
-                Text("Full-screen sign viewer", style = MaterialTheme.typography.headlineSmall)
-                Text("The photo stays visible while you inspect the sign.", style = MaterialTheme.typography.bodyLarge)
-                GameButton("Close viewer", { onAction(AppNavigationAction.Back) }, Modifier.fillMaxWidth())
+        val activeSession = learnSessionState as? LearnSessionUiState.Active
+        if (activeSession != null) {
+            LearnImageViewer(
+                state = activeSession,
+                onClose = { onAction(AppNavigationAction.Back) },
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black),
+                contentAlignment = Alignment.Center,
+            ) {
+                GameButton(
+                    text = "Close viewer",
+                    onClick = { onAction(AppNavigationAction.Back) },
+                    modifier = Modifier.padding(SignKoreanSpacing.large),
+                    style = GameButtonStyle.Secondary,
+                )
             }
         }
     }
