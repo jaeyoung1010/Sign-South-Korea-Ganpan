@@ -41,6 +41,7 @@ export function validateQaMatrix({
   const errors = [];
   const rows = parseQaManifest(manifest);
   const seenCases = new Set();
+  const requiredCaseSet = new Set(requiredCases);
 
   for (const row of rows) {
     if (!row.caseId) {
@@ -49,6 +50,7 @@ export function validateQaMatrix({
     }
     if (seenCases.has(row.caseId)) errors.push(`Duplicate case: ${row.caseId}`);
     seenCases.add(row.caseId);
+    if (!requiredCaseSet.has(row.caseId)) errors.push(`Unknown case: ${row.caseId}`);
 
     for (const field of ['area', 'requirement', 'testReference', 'evidence', 'status']) {
       if (!row[field]) errors.push(`Missing ${field}: ${row.caseId}`);
@@ -78,7 +80,9 @@ export function validateQaMatrix({
   }
 
   const blockerMatch = blockerPattern.exec(blockerEvidence);
-  if (blockerMatch && Number(blockerMatch[1]) !== 0) {
+  if (!blockerMatch) {
+    errors.push('Missing release blocker count');
+  } else if (Number(blockerMatch[1]) !== 0) {
     errors.push(`Release blockers must be zero: ${blockerMatch[1]}`);
   }
 

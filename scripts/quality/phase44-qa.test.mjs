@@ -64,3 +64,13 @@ test('rejects a non-zero release blocker count', () => {
 
   assert.deepEqual(result.errors, ['Release blockers must be zero: 1']);
 });
+
+test('rejects an unknown case and a missing release blocker count', () => {
+  const result = validateQaMatrix({
+    ...validFixture,
+    manifest: `${validFixture.manifest}\nQA-99|unexpected|AC-021|tests/assets.kt#assets|docs/qa.md#QA-01|automated`,
+    blockerEvidence: 'QA checklist has not recorded the blocker count',
+  });
+
+  assert.deepEqual(result.errors, ['Unknown case: QA-99', 'Missing release blocker count']);
+});
