@@ -274,6 +274,7 @@ internal fun SignKoreanAppContent(
         state = state,
         launchState = launchState,
         onboardingState = onboardingState,
+        learnSessionState = learnSessionState,
         onAction = onAction,
         onRequestLearnClose = { onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLeave)) },
         synchronizeBackStack = {
@@ -317,6 +318,7 @@ private fun NavigationEffects(
     state: AppNavigationUiState,
     launchState: LaunchUiState,
     onboardingState: OnboardingChoiceUiState,
+    learnSessionState: LearnSessionUiState,
     onAction: (AppNavigationAction) -> Unit,
     onRequestLearnClose: () -> Unit,
     synchronizeBackStack: () -> Unit,
@@ -333,7 +335,7 @@ private fun NavigationEffects(
     }
     LaunchedEffect(state.backStack) { synchronizeBackStack() }
     BackHandler(enabled = state.handlesBack) {
-        if (state.shouldRequestLearnClose()) {
+        if (state.shouldRequestLearnClose(learnSessionState)) {
             onRequestLearnClose()
         } else {
             onAction(AppNavigationAction.Back)
@@ -451,7 +453,11 @@ private fun LearnDestination(
                 }
 
                 LearnUiAction.CloseSession -> {
-                    onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLeave))
+                    if (state is LearnSessionUiState.Active) {
+                        onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLeave))
+                    } else {
+                        onAction(AppNavigationAction.Back)
+                    }
                 }
 
                 is LearnUiAction.RateCard -> {
@@ -658,8 +664,10 @@ private fun SessionLeaveSheetContent(
     )
 }
 
-private fun AppNavigationUiState.shouldRequestLearnClose(): Boolean =
+private fun AppNavigationUiState.shouldRequestLearnClose(learnSessionState: LearnSessionUiState): Boolean =
     if (currentRoute != AppRoute.Learn) {
+        false
+    } else if (learnSessionState !is LearnSessionUiState.Active) {
         false
     } else if (sheet != null) {
         false
