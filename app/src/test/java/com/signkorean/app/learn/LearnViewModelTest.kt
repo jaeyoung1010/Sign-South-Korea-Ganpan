@@ -1,6 +1,9 @@
 package com.signkorean.app.learn
 
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.AudioPlayRequest
+import com.signkorean.domain.model.AudioPlaybackFailure
+import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionAnswer
@@ -12,6 +15,7 @@ import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCardScore
 import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.model.SignCard
+import com.signkorean.domain.model.VoiceId
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.LoadSessionCompletion
 import com.signkorean.domain.port.input.LoadSessionCompletionRequest
@@ -25,6 +29,7 @@ import com.signkorean.domain.port.input.SubmitCardReport
 import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingResult
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
@@ -32,6 +37,7 @@ import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.testsupport.MainDispatcherRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -61,6 +67,81 @@ class LearnViewModelTest {
             assertEquals(10, state.totalCount)
             assertEquals(.3f, state.progressFraction)
             assertEquals(LearnCardStage.Question, state.stage)
+        }
+
+    @Test
+    fun `plays the default bundled voice only after answer is visible`() =
+        runTest {
+            val audioPlayer = RecordingAudioPlayer()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = false) },
+                    audioPlayer = audioPlayer,
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.playAudio()
+            assertTrue(audioPlayer.requests.isEmpty())
+
+            viewModel.revealAnswer()
+            advanceUntilIdle()
+            viewModel.playAudio()
+
+            assertEquals(
+                listOf(
+                    AudioPlayRequest(
+                        cardId = "card-1",
+                        voiceId = VoiceId.TYPECAST_EUNKYUNG,
+                        assetUri = "file:///android_asset/audio/eunkyung/card-1.mp3",
+                    ),
+                ),
+                audioPlayer.requests,
+            )
+        }
+
+    @Test
+    fun `publishes a privacy safe audio failure effect`() =
+        runTest {
+            val audioPlayer = RecordingAudioPlayer()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 1).copy(answerRevealed = true) },
+                    audioPlayer = audioPlayer,
+                )
+            viewModel.load()
+            advanceUntilIdle()
+            val effect = async { viewModel.effects.first() }
+
+            audioPlayer.state.value =
+                AudioPlaybackState.Failed(
+                    cardId = "card-1",
+                    voiceId = VoiceId.TYPECAST_EUNKYUNG,
+                    reason = AudioPlaybackFailure.Decode,
+                )
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionEffect.AudioFailed(AudioPlaybackFailure.Decode), effect.await())
+        }
+
+    @Test
+    fun `stops audio before loading the next card`() =
+        runTest {
+            val audioPlayer = RecordingAudioPlayer()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    audioPlayer = audioPlayer,
+                )
+            viewModel.load()
+            advanceUntilIdle()
+            val stopsAfterInitialLoad = audioPlayer.stopCount
+
+            viewModel.playAudio()
+            viewModel.load()
+            advanceUntilIdle()
+
+            assertEquals(stopsAfterInitialLoad + 1, audioPlayer.stopCount)
         }
 
     @Test
@@ -543,7 +624,7 @@ class LearnViewModelTest {
                 category = "MARKET",
                 imageAssetUri = "asset://card-$position",
                 focus = FocusRect(0f, 0f, 1f, 1f),
-                audioAssetUris = emptyMap(),
+                audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "file:///android_asset/audio/eunkyung/card-$position.mp3"),
                 contentVersion = 1,
             ),
         position = position,
@@ -553,5 +634,23 @@ class LearnViewModelTest {
     private fun assertActive(state: LearnSessionUiState): LearnSessionUiState.Active {
         assertTrue(state is LearnSessionUiState.Active)
         return state as LearnSessionUiState.Active
+    }
+
+    private class RecordingAudioPlayer : AudioPlayerPort {
+        val requests = mutableListOf<AudioPlayRequest>()
+        val state = MutableStateFlow<AudioPlaybackState>(AudioPlaybackState.Idle)
+        var stopCount = 0
+
+        override fun play(request: AudioPlayRequest) {
+            requests += request
+            state.value = AudioPlaybackState.Playing(request.cardId, request.voiceId)
+        }
+
+        override fun stop() {
+            stopCount += 1
+            state.value = AudioPlaybackState.Idle
+        }
+
+        override fun observePlayback() = state
     }
 }

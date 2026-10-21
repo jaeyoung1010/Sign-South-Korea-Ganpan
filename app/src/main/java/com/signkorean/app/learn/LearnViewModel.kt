@@ -4,12 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.AudioPlayRequest
+import com.signkorean.domain.model.AudioPlaybackFailure
+import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.ReportDetails
 import com.signkorean.domain.model.SessionCompletion
+import com.signkorean.domain.model.VoiceId
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.LoadSessionCompletion
 import com.signkorean.domain.port.input.LoadSessionCompletionRequest
@@ -27,6 +31,7 @@ import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingRequest
 import com.signkorean.domain.port.input.UndoRatingResult
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
@@ -44,6 +49,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -61,6 +67,7 @@ class LearnViewModel
         private val pauseSessionUseCase: PauseSession = PauseSession { PauseSessionResult.Unavailable },
         private val submitCardReportUseCase: SubmitCardReport = SubmitCardReport { SubmitCardReportResult.Unavailable },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
+        private val audioPlayer: AudioPlayerPort = NoopAudioPlayer,
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
@@ -79,15 +86,29 @@ class LearnViewModel
         private var pendingCompletion: SessionCompletion? = null
         private val mutableCompletionState = MutableStateFlow<SessionCompletion?>(null)
         private val mutableReportState = MutableStateFlow(ReportUiState())
+        private val mutableAudioState = MutableStateFlow<AudioPlaybackState>(audioPlayer.observePlayback().value)
         private var isSubmittingReport = false
+
+        init {
+            viewModelScope.launch {
+                audioPlayer.observePlayback().collect { playbackState ->
+                    mutableAudioState.value = playbackState
+                    if (playbackState is AudioPlaybackState.Failed) {
+                        effectChannel.trySend(LearnSessionEffect.AudioFailed(playbackState.reason))
+                    }
+                }
+            }
+        }
 
         val uiState = mutableUiState.asStateFlow()
         val feedbackState = mutableFeedbackState.asStateFlow()
         val completionState = mutableCompletionState.asStateFlow()
         val reportState = mutableReportState.asStateFlow()
+        val audioState = mutableAudioState.asStateFlow()
         val effects = effectChannel.receiveAsFlow()
 
         fun load(preserveFeedback: Boolean = false) {
+            stopAudio()
             loadJob?.cancel()
             revealJob?.cancel()
             ratingJob?.cancel()
@@ -165,6 +186,23 @@ class LearnViewModel
                 }
         }
 
+        fun playAudio() {
+            val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
+            if (active.stage != LearnCardStage.Answer) return
+            val voiceId = VoiceId.TYPECAST_EUNKYUNG
+            audioPlayer.play(
+                AudioPlayRequest(
+                    cardId = active.cardId,
+                    voiceId = voiceId,
+                    assetUri = active.audioAssetUris[voiceId].orEmpty(),
+                ),
+            )
+        }
+
+        fun stopAudio() {
+            audioPlayer.stop()
+        }
+
         fun rateCard(
             decision: RatingDecision,
             source: RatingInputSource,
@@ -184,6 +222,7 @@ class LearnViewModel
             decision: RatingDecision,
             source: RatingInputSource,
         ) {
+            stopAudio()
             isRating = true
             lastRatedSessionId = active.sessionId
             clearFeedback()
@@ -300,6 +339,7 @@ class LearnViewModel
         fun pauseSession() {
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
             if (isPausing || active.sessionId.isBlank()) return
+            stopAudio()
             isPausing = true
             viewModelScope.launch {
                 try {
@@ -432,6 +472,10 @@ sealed interface LearnSessionEffect {
 
     data object ReportSubmitted : LearnSessionEffect
 
+    data class AudioFailed(
+        val reason: AudioPlaybackFailure,
+    ) : LearnSessionEffect
+
     data class SessionCompleted(
         val completion: SessionCompletion,
     ) : LearnSessionEffect
@@ -461,6 +505,7 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
                         streetNote = answer.streetNote,
                         showRomanization = answer.showRomanization,
                     ),
+                audioAssetUris = card.audioAssetUris,
                 upcomingCards = upcomingCards.map { LearnCardPreviewUiModel(it.cardId, it.imageAssetUri) },
                 stage = if (answerRevealed) LearnCardStage.Answer else LearnCardStage.Question,
             )
@@ -477,3 +522,15 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
 
 private const val MAX_PREFETCH_COUNT = 2
 private const val FEEDBACK_DURATION_MILLIS = 4_000L
+
+private object NoopAudioPlayer : AudioPlayerPort {
+    private val state = MutableStateFlow<AudioPlaybackState>(AudioPlaybackState.Idle)
+
+    override fun play(request: AudioPlayRequest) = Unit
+
+    override fun stop() {
+        state.value = AudioPlaybackState.Idle
+    }
+
+    override fun observePlayback() = state.asStateFlow()
+}

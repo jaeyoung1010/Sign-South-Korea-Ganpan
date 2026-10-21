@@ -21,4 +21,6 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(libs.androidx.media3.exoplayer)
+    testImplementation(libs.junit4)
 }

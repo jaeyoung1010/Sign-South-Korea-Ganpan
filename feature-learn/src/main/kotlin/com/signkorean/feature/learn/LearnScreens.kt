@@ -23,12 +23,15 @@ import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
+import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.VoiceId
 
 data class LearnHomeUiState(
     val streakDays: Int = 0,
@@ -88,6 +91,7 @@ sealed interface LearnSessionUiState {
         val totalCount: Int,
         val photo: LearnPhotoUiModel = LearnPhotoUiModel.placeholder(),
         val answer: LearnAnswerUiModel = LearnAnswerUiModel.placeholder(),
+        val audioAssetUris: Map<VoiceId, String> = emptyMap(),
         val upcomingCards: List<LearnCardPreviewUiModel> = emptyList(),
         val stage: LearnCardStage = LearnCardStage.Question,
         val isRating: Boolean = false,
@@ -193,6 +197,8 @@ sealed interface LearnUiAction {
     data object CancelCategoryReplacement : LearnUiAction
 
     data object RevealAnswer : LearnUiAction
+
+    data object PlayAudio : LearnUiAction
 
     data object CheckAnswerFirst : LearnUiAction
 
@@ -391,6 +397,7 @@ fun LearnSessionScreen(
     onAction: (LearnUiAction) -> Unit,
     modifier: Modifier = Modifier,
     feedback: LearnFeedbackUiState? = null,
+    audioState: AudioPlaybackState = AudioPlaybackState.Idle,
 ) {
     Column(
         modifier = modifier.fillMaxSize().testTag("screen-learn"),
@@ -399,7 +406,7 @@ fun LearnSessionScreen(
         LearnTopBar(onAction)
         when (state) {
             LearnSessionUiState.Loading -> LearnLoadingState()
-            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction, feedback)
+            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction, feedback, audioState)
             LearnSessionUiState.Completed -> LearnCompletedState(onAction)
             is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
         }
@@ -432,6 +439,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
     feedback: LearnFeedbackUiState?,
+    audioState: AudioPlaybackState,
 ) {
     Text(
         text = "${state.position} of ${state.totalCount}",
@@ -446,6 +454,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     LearnCardStack(
         state = state,
         onAction = onAction,
+        audioState = audioState,
         modifier = Modifier.fillMaxWidth().weight(1f),
     )
     feedback?.let { LearnFeedbackHost(it, onAction) }

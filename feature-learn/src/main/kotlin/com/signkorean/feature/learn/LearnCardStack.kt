@@ -3,8 +3,10 @@
 package com.signkorean.feature.learn
 
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -39,6 +41,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameCard
+import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.AnswerGestureInput
@@ -49,6 +52,7 @@ import com.signkorean.domain.gesture.GesturePolicy
 import com.signkorean.domain.gesture.QuestionGestureInput
 import com.signkorean.domain.gesture.QuestionRelease
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.RatingInputSource
 import kotlinx.coroutines.delay
 
@@ -56,6 +60,7 @@ import kotlinx.coroutines.delay
 internal fun LearnCardStack(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
+    audioState: AudioPlaybackState = AudioPlaybackState.Idle,
     modifier: Modifier = Modifier,
 ) {
     val policy = remember { GesturePolicy() }
@@ -94,6 +99,7 @@ internal fun LearnCardStack(
             ratingDecision = state.ratingDecision,
             isRating = state.isRating,
             onAction = onAction,
+            audioState = audioState,
             modifier =
                 Modifier
                     .fillMaxSize()
@@ -214,6 +220,7 @@ private fun ActiveCard(
     ratingDecision: RatingDecision?,
     isRating: Boolean,
     onAction: (LearnUiAction) -> Unit,
+    audioState: AudioPlaybackState,
     modifier: Modifier,
 ) {
     val density = LocalDensity.current.density
@@ -257,7 +264,7 @@ private fun ActiveCard(
                 },
     ) {
         GameCard(modifier = Modifier.fillMaxSize().testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)) {
-            ActiveCardContent(state)
+            ActiveCardContent(state, onAction, audioState)
         }
         (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
             if (overlay == null) return@let
@@ -275,7 +282,11 @@ private fun ActiveCard(
 }
 
 @Composable
-private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(state: LearnSessionUiState.Active) {
+private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
+    state: LearnSessionUiState.Active,
+    onAction: (LearnUiAction) -> Unit,
+    audioState: AudioPlaybackState,
+) {
     PhotoSurface(
         imageAssetUri = state.photo.imageAssetUri,
         contentDescription =
@@ -305,8 +316,19 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(sta
                 .testTag(SignKoreanTestTags.LEARN_INFO_PANEL),
     ) {
         when (state.stage) {
-            LearnCardStage.Question -> CardQuestion()
-            LearnCardStage.Answer -> CardAnswer(sign = state.sign, answer = state.answer)
+            LearnCardStage.Question -> {
+                CardQuestion()
+            }
+
+            LearnCardStage.Answer -> {
+                CardAnswer(
+                    cardId = state.cardId,
+                    sign = state.sign,
+                    answer = state.answer,
+                    audioState = audioState,
+                    onPlayAudio = { onAction(LearnUiAction.PlayAudio) },
+                )
+            }
         }
     }
 }
@@ -328,15 +350,31 @@ internal fun CardQuestion() {
 
 @Composable
 internal fun CardAnswer(
+    cardId: String = "",
     sign: String,
     answer: LearnAnswerUiModel,
+    onPlayAudio: () -> Unit,
+    audioState: AudioPlaybackState = AudioPlaybackState.Idle,
 ) {
+    val isPlaying = audioState is AudioPlaybackState.Playing && audioState.cardId == cardId
     Column(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_ANSWER)) {
-        Text(
-            text = "Answer",
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Black,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Answer",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Black,
+            )
+            GameIconButton(
+                symbol = if (isPlaying) "■" else "♪",
+                contentDescription = if (isPlaying) "Playing pronunciation" else "Play pronunciation",
+                onClick = onPlayAudio,
+                modifier = Modifier.testTag(SignKoreanTestTags.LEARN_PLAY_AUDIO),
+            )
+        }
         Text(text = sign, style = MaterialTheme.typography.displayMedium)
         Text(text = answer.displayMeaning, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
         if (answer.showRomanization && answer.pronunciationGuide.isNotBlank()) {

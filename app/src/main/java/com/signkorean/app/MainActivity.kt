@@ -57,6 +57,8 @@ import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.AudioPlaybackFailure
+import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCompletion
@@ -110,6 +112,11 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
+    override fun onStop() {
+        learnViewModel.stopAudio()
+        super.onStop()
+    }
 }
 
 @Composable
@@ -128,6 +135,7 @@ private fun SignKoreanApp(
     val learnFeedbackState by learnViewModel.feedbackState.collectAsState()
     val completionState by learnViewModel.completionState.collectAsState()
     val reportState by learnViewModel.reportState.collectAsState()
+    val audioState by learnViewModel.audioState.collectAsState()
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
@@ -164,6 +172,20 @@ private fun SignKoreanApp(
                     navigationViewModel.dispatch(AppNavigationAction.Back)
                     navigationViewModel.dispatch(AppNavigationAction.ShowToast("Thanks. We'll review this card."))
                 }
+
+                is com.signkorean.app.learn.LearnSessionEffect.AudioFailed -> {
+                    val message =
+                        when (effect.reason) {
+                            AudioPlaybackFailure.AudioFocusDenied -> "Audio focus is unavailable. Try again."
+
+                            AudioPlaybackFailure.AssetMissing,
+                            AudioPlaybackFailure.InvalidProvider,
+                            AudioPlaybackFailure.Decode,
+                            AudioPlaybackFailure.Unknown,
+                            -> "Audio is unavailable for this card."
+                        }
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(message))
+                }
             }
         }
     }
@@ -183,6 +205,7 @@ private fun SignKoreanApp(
         onConfirmCategoryReplacement = learnHomeViewModel::confirmCategoryReplacement,
         onCancelCategoryReplacement = learnHomeViewModel::cancelCategoryReplacement,
         learnSessionState = learnSessionState,
+        audioState = audioState,
         learnFeedbackState = learnFeedbackState,
         completionState = completionState,
         onRevealAnswer = learnViewModel::revealAnswer,
@@ -190,6 +213,7 @@ private fun SignKoreanApp(
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
         onUndoRating = learnViewModel::undoRating,
         onPauseSession = learnViewModel::pauseSession,
+        onPlayAudio = learnViewModel::playAudio,
         reportState = reportState,
         onShowReport = learnViewModel::openReport,
         onSelectReportReason = learnViewModel::selectReportReason,
@@ -217,6 +241,7 @@ internal fun SignKoreanAppContent(
     onConfirmCategoryReplacement: () -> Unit = {},
     onCancelCategoryReplacement: () -> Unit = {},
     learnSessionState: LearnSessionUiState = LearnSessionUiState.Loading,
+    audioState: AudioPlaybackState = AudioPlaybackState.Idle,
     learnFeedbackState: LearnFeedbackUiState? = null,
     completionState: SessionCompletion? = null,
     onRevealAnswer: () -> Unit = {},
@@ -224,6 +249,7 @@ internal fun SignKoreanAppContent(
     onRatingAnimationFinished: () -> Unit = {},
     onUndoRating: () -> Unit = {},
     onPauseSession: () -> Unit = {},
+    onPlayAudio: () -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
     onShowReport: () -> Unit = {},
     onSelectReportReason: (CardReportReason) -> Unit = {},
@@ -249,6 +275,7 @@ internal fun SignKoreanAppContent(
             onConfirmCategoryReplacement,
             onCancelCategoryReplacement,
             learnSessionState,
+            audioState,
             learnFeedbackState,
             completionState,
             onRevealAnswer,
@@ -256,6 +283,7 @@ internal fun SignKoreanAppContent(
             onRatingAnimationFinished,
             onUndoRating,
             onPauseSession,
+            onPlayAudio,
             onShowReport,
         ) {
             entryProvider<NavKey> {
@@ -290,12 +318,14 @@ internal fun SignKoreanAppContent(
                 entry<AppRoute.Learn> {
                     LearnDestination(
                         state = learnSessionState,
+                        audioState = audioState,
                         feedback = learnFeedbackState,
                         onAction = onAction,
                         onRevealAnswer = onRevealAnswer,
                         onRateCard = onRateCard,
                         onRatingAnimationFinished = onRatingAnimationFinished,
                         onUndoRating = onUndoRating,
+                        onPlayAudio = onPlayAudio,
                         onShowReport = onShowReport,
                     )
                 }
@@ -480,21 +510,28 @@ private fun LearnHomeDestination(
 @Composable
 private fun LearnDestination(
     state: LearnSessionUiState,
+    audioState: AudioPlaybackState,
     feedback: LearnFeedbackUiState?,
     onAction: (AppNavigationAction) -> Unit,
     onRevealAnswer: () -> Unit,
     onRateCard: (RatingDecision, RatingInputSource) -> Unit,
     onRatingAnimationFinished: () -> Unit,
     onUndoRating: () -> Unit,
+    onPlayAudio: () -> Unit,
     onShowReport: () -> Unit,
 ) {
     LearnSessionScreen(
         state = state,
+        audioState = audioState,
         feedback = feedback,
         onAction = { action ->
             when (action) {
                 LearnUiAction.RevealAnswer -> {
                     onRevealAnswer()
+                }
+
+                LearnUiAction.PlayAudio -> {
+                    onPlayAudio()
                 }
 
                 LearnUiAction.ShowImageViewer -> {

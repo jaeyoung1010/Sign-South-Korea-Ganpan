@@ -104,6 +104,22 @@ class LearnSessionScreenTest {
     }
 
     @Test
+    fun answer_speaker_action_emits_play_audio() {
+        val actions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(state = answerState(), onAction = actions::add)
+            }
+        }
+
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(LearnUiAction.PlayAudio), actions)
+        }
+    }
+
+    @Test
     fun answer_hides_the_pronunciation_guide_when_romanization_is_off() {
         composeRule.setContent {
             SignKoreanTheme {
