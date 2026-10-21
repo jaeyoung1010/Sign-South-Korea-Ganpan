@@ -28,39 +28,46 @@ internal fun Modifier.cardPointerInput(
                 )
             boundary.begin(PointerPoint(down.position.x, down.position.y))
             var finished = false
-            while (!finished) {
-                val event = awaitPointerEvent(PointerEventPass.Main)
-                val change = event.changes.firstOrNull { it.id == down.id }
-                if (change == null) {
-                    onRelease(true, false)
-                    finished = true
-                    continue
-                }
-                val result =
-                    when {
-                        change.changedToCancel() -> boundary.end(cancelled = true)
-                        change.changedToUp() -> boundary.end()
-                        else -> boundary.move(PointerPoint(change.position.x, change.position.y))
-                    }
-                when (result) {
-                    PointerBoundaryEvent.Ignored -> {
+            var releaseSent = false
+            try {
+                while (!finished) {
+                    val event = awaitPointerEvent(PointerEventPass.Main)
+                    val change = event.changes.firstOrNull { it.id == down.id }
+                    if (change == null) {
+                        onRelease(true, false)
+                        releaseSent = true
                         finished = true
+                        continue
                     }
+                    val result =
+                        when {
+                            change.changedToCancel() -> boundary.end(cancelled = true)
+                            change.changedToUp() -> boundary.end()
+                            else -> boundary.move(PointerPoint(change.position.x, change.position.y))
+                        }
+                    when (result) {
+                        PointerBoundaryEvent.Ignored -> {
+                            finished = true
+                        }
 
-                    is PointerBoundaryEvent.Moved -> {
-                        if (onMove(result.offsetXpx / density.density, result.offsetYpx / density.density)) {
-                            change.consume()
+                        is PointerBoundaryEvent.Moved -> {
+                            if (onMove(result.offsetXpx / density.density, result.offsetYpx / density.density)) {
+                                change.consume()
+                            }
+                        }
+
+                        is PointerBoundaryEvent.Ended -> {
+                            if (onMove(result.offsetXpx / density.density, result.offsetYpx / density.density)) {
+                                change.consume()
+                            }
+                            onRelease(result.cancelled && !result.outOfBounds, result.outOfBounds)
+                            releaseSent = true
+                            finished = true
                         }
                     }
-
-                    is PointerBoundaryEvent.Ended -> {
-                        if (onMove(result.offsetXpx / density.density, result.offsetYpx / density.density)) {
-                            change.consume()
-                        }
-                        onRelease(result.cancelled && !result.outOfBounds, result.outOfBounds)
-                        finished = true
-                    }
                 }
+            } finally {
+                if (!releaseSent) onRelease(true, false)
             }
         }
     }
