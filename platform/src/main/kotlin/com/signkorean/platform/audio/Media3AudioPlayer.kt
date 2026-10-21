@@ -1,6 +1,8 @@
 package com.signkorean.platform.audio
 
 import android.content.Context
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -161,6 +163,14 @@ class ExoPlayerAudioPlayerFactory(
     override fun create(callbacks: Media3PlayerCallbacks): Media3PlayerHandle =
         ExoPlayerHandle(
             ExoPlayer.Builder(context).build().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
+                        .build(),
+                    true,
+                )
+                setHandleAudioBecomingNoisy(true)
                 addListener(
                     object : Player.Listener {
                         override fun onPlaybackStateChanged(playbackState: Int) {
