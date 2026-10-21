@@ -794,6 +794,8 @@ LocalizedCardCopy는 다음 필드를 가진다.
 | contentVersion | 언어별 버전 |
 | reviewer | 내부 검수 식별자 |
 | reviewedAt | 검수 시각 |
+| factReviewer | 한국어 원문 사실 검수 식별자 |
+| factReviewedAt | 한국어 원문 사실 검수 시각 |
 
 ### 14.7 콘텐츠 제작 워크플로
 

@@ -38,6 +38,17 @@ class BundleContentAdapterTest {
         assertTrue(adapter.getLocalizedCopy("en").all { it.pronunciationGuide.isNotBlank() })
         assertTrue(adapter.getLocalizedCopy("en").all { it.imageAltTextQuestion.isNotBlank() && it.imageAltTextAnswer.isNotBlank() })
         assertTrue(adapter.getLocalizedCopy("en").all { !it.reviewer.isNullOrBlank() && it.reviewedAt == "2026-10-21" })
+        assertTrue(adapter.getLocalizedCopy("ja").all { it.pronunciationGuide.matches(JAPANESE_PRONUNCIATION_PATTERN) })
+        assertTrue(adapter.getLocalizedCopy("ja").all { it.imageAltTextQuestion.isNotBlank() && it.imageAltTextAnswer.isNotBlank() })
+        assertTrue(
+            adapter.getLocalizedCopy("ja").all {
+                it.reviewer == "native-japanese-review" &&
+                    it.reviewedAt == "2026-10-21" &&
+                    it.factReviewer == "korean-fact-review" &&
+                    it.factReviewedAt == "2026-10-21"
+            },
+        )
+        assertTrue(adapter.getLocalizedCopy("ja").all { it.contentVersion == 2 })
     }
 
     @Test
@@ -50,6 +61,53 @@ class BundleContentAdapterTest {
 
         refreshManifestChecksums(assets)
         assertFailsValidation(assets, "English reviewer")
+    }
+
+    @Test
+    fun `rejects a Japanese card without native review metadata`() {
+        val assets = validAssets().toMutableMap()
+        assets[JA_CARDS_PATH] = assets.getValue(JA_CARDS_PATH).replaceFirst(
+            "\"reviewer\":\"native-japanese-review\"",
+            "\"reviewer\":\"editor-draft\"",
+        )
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "Japanese reviewer")
+    }
+
+    @Test
+    fun `rejects a Japanese card without Korean fact review metadata`() {
+        val assets = validAssets().toMutableMap()
+        assets[JA_CARDS_PATH] = assets.getValue(JA_CARDS_PATH).replaceFirst(
+            "\"factReviewer\":\"korean-fact-review\"",
+            "\"factReviewer\":null",
+        )
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "Japanese fact reviewer")
+    }
+
+    @Test
+    fun `rejects Japanese copy that duplicates the English sentence structure`() {
+        val assets = validAssets().toMutableMap()
+        val englishStreetNote = "The gateway to Hongdae, a popular area for live music, cafés, shopping, and nightlife."
+        assets[JA_CARDS_PATH] = assets.getValue(JA_CARDS_PATH).replaceFirst(
+            "ライブハウスやカフェ、買い物でにぎわう弘大エリアの玄関口です。",
+            englishStreetNote,
+        )
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "independent Japanese")
+    }
+
+    @Test
+    fun `rejects a manifest without Japanese and Korean approval statuses`() {
+        val assets = validAssets().toMutableMap()
+        assets[MANIFEST_PATH] = assets.getValue(MANIFEST_PATH)
+            .replace("\"ja\": \"native-japanese-reviewed\"", "\"ja\": \"editor-reviewed\"")
+            .replace("\"ja\": \"korean-fact-reviewed\"", "\"ja\": \"pending\"")
+
+        assertFailsValidation(assets, "Japanese review status")
     }
 
     @Test
@@ -138,5 +196,9 @@ class BundleContentAdapterTest {
 
         assertTrue(error is BundleValidationException)
         assertTrue(error?.message.orEmpty().contains(expectedMessage, ignoreCase = true))
+    }
+
+    private companion object {
+        val JAPANESE_PRONUNCIATION_PATTERN = Regex("^[\\u30A0-\\u30FFー・\\s]+$")
     }
 }

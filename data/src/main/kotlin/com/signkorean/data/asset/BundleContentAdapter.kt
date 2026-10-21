@@ -57,6 +57,15 @@ class BundleContentAdapter(
         requireValidation(manifest.reviewStatus.getValue(ENGLISH_LANGUAGE_TAG) == NATIVE_ENGLISH_REVIEW_STATUS) {
             "English content must record native review status"
         }
+        requireValidation(manifest.reviewStatus.getValue(JAPANESE_LANGUAGE_TAG) == NATIVE_JAPANESE_REVIEW_STATUS) {
+            "Japanese review status must record native approval"
+        }
+        requireValidation(manifest.factReviewStatus.keys == REQUIRED_LANGUAGE_TAGS) {
+            "manifest must record Korean fact review status for every language"
+        }
+        requireValidation(manifest.factReviewStatus.values.all { it == KOREAN_FACT_REVIEW_STATUS }) {
+            "Korean fact review status must be approved for every language"
+        }
         requireValidation(manifest.checksums.keys == REQUIRED_CONTENT_PATHS) { "manifest must checksum every content file" }
 
         val contentTexts = REQUIRED_CONTENT_PATHS.associateWith(assetSource::readText)
@@ -66,18 +75,23 @@ class BundleContentAdapter(
 
         val baseCards = decode<List<BaseCardJson>>(contentTexts.getValue(BASE_CARDS_PATH), BASE_CARDS_PATH)
         validateBaseCards(baseCards, manifest.contentVersion)
-        val localizedCards =
+        val cardsById = baseCards.associateBy(BaseCardJson::id)
+        val localizedJson =
             manifest.languages.associateWith { languageTag ->
                 val path = localizedPath(languageTag)
                 decode<List<LocalizedCardCopyJson>>(contentTexts.getValue(path), path)
-                    .also {
-                        validateLocalizedCards(
-                            copies = it,
-                            languageTag = languageTag,
-                            cardsById = baseCards.associateBy(BaseCardJson::id),
-                            contentVersion = manifest.contentVersion,
-                        )
-                    }.map(LocalizedCardCopyJson::toDomain)
+            }
+        val englishCopies = localizedJson.getValue(ENGLISH_LANGUAGE_TAG).associateBy(LocalizedCardCopyJson::cardId)
+        val localizedCards =
+            localizedJson.mapValues { (languageTag, copies) ->
+                validateLocalizedCards(
+                    copies = copies,
+                    languageTag = languageTag,
+                    cardsById = cardsById,
+                    englishCopies = englishCopies,
+                    contentVersion = manifest.contentVersion,
+                )
+                copies.map(LocalizedCardCopyJson::toDomain)
             }
         return ValidatedBundle(baseCards.map(BaseCardJson::toDomain), localizedCards)
     }
@@ -110,6 +124,7 @@ class BundleContentAdapter(
         copies: List<LocalizedCardCopyJson>,
         languageTag: String,
         cardsById: Map<String, BaseCardJson>,
+        englishCopies: Map<String, LocalizedCardCopyJson>,
         contentVersion: Int,
     ) {
         requireValidation(copies.size == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT $languageTag localized cards" }
@@ -134,10 +149,27 @@ class BundleContentAdapter(
                 "question alt text reveals the answer for ${copy.cardId}"
             }
             if (languageTag == ENGLISH_LANGUAGE_TAG) {
-                requireValidation(!copy.reviewer.isNullOrBlank()) { "English reviewer missing for ${copy.cardId}" }
+                requireValidation(copy.reviewer == NATIVE_ENGLISH_REVIEWER) { "English reviewer missing for ${copy.cardId}" }
                 requireValidation(copy.reviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
                     "English review date missing for ${copy.cardId}"
                 }
+            } else if (languageTag == JAPANESE_LANGUAGE_TAG) {
+                requireValidation(copy.reviewer == NATIVE_JAPANESE_REVIEWER) { "Japanese reviewer missing for ${copy.cardId}" }
+                requireValidation(copy.reviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
+                    "Japanese review date missing for ${copy.cardId}"
+                }
+                requireValidation(copy.pronunciationGuide.matches(JAPANESE_PRONUNCIATION_PATTERN)) {
+                    "Japanese pronunciation guide must use Katakana for ${copy.cardId}"
+                }
+                requireValidation(copy.streetNote != englishCopies.getValue(copy.cardId).streetNote) {
+                    "independent Japanese copy is required for ${copy.cardId}"
+                }
+            }
+            requireValidation(copy.factReviewer == KOREAN_FACT_REVIEWER) {
+                "${if (languageTag == JAPANESE_LANGUAGE_TAG) "Japanese" else "English"} fact reviewer missing for ${copy.cardId}"
+            }
+            requireValidation(copy.factReviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
+                "$languageTag fact review date missing for ${copy.cardId}"
             }
         }
     }
@@ -188,12 +220,19 @@ class BundleContentAdapter(
         const val EN_CARDS_PATH = "content/en/cards.json"
         const val JA_CARDS_PATH = "content/ja/cards.json"
         const val ENGLISH_LANGUAGE_TAG = "en"
+        const val JAPANESE_LANGUAGE_TAG = "ja"
         const val NATIVE_ENGLISH_REVIEW_STATUS = "native-english-reviewed"
+        const val NATIVE_JAPANESE_REVIEW_STATUS = "native-japanese-reviewed"
+        const val KOREAN_FACT_REVIEW_STATUS = "korean-fact-reviewed"
+        const val NATIVE_ENGLISH_REVIEWER = "native-english-review"
+        const val NATIVE_JAPANESE_REVIEWER = "native-japanese-review"
+        const val KOREAN_FACT_REVIEWER = "korean-fact-review"
         val REQUIRED_CONTENT_PATHS = setOf(BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH)
         val REQUIRED_LANGUAGE_TAGS = setOf("en", "ja")
         val PERCENT_RANGE = 0f..100f
         val IMAGE_REVIEW_STATUSES = setOf("approved", "pending")
         val REVIEW_DATE_PATTERN = Regex("\\d{4}-\\d{2}-\\d{2}")
+        val JAPANESE_PRONUNCIATION_PATTERN = Regex("^[\\u30A0-\\u30FFー・\\s]+$")
     }
 }
 
@@ -225,6 +264,7 @@ private data class ContentManifest(
     val cardCount: Int,
     val languages: List<String>,
     val reviewStatus: Map<String, String>,
+    val factReviewStatus: Map<String, String> = emptyMap(),
     val checksums: Map<String, String>,
 )
 
@@ -287,6 +327,8 @@ private data class LocalizedCardCopyJson(
     val contentVersion: Int,
     val reviewer: String?,
     val reviewedAt: String?,
+    val factReviewer: String? = null,
+    val factReviewedAt: String? = null,
 ) {
     fun toDomain() =
         LocalizedCardCopy(
@@ -302,6 +344,8 @@ private data class LocalizedCardCopyJson(
             contentVersion = contentVersion,
             reviewer = reviewer,
             reviewedAt = reviewedAt,
+            factReviewer = factReviewer,
+            factReviewedAt = factReviewedAt,
         )
 }
 

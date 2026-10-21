@@ -1,14 +1,18 @@
 {
-  "contentVersion": 1,
+  "contentVersion": 2,
   "cardCount": 20,
   "languages": ["en", "ja"],
   "reviewStatus": {
     "en": "native-english-reviewed",
-    "ja": "editor-reviewed"
+    "ja": "native-japanese-reviewed"
+  },
+  "factReviewStatus": {
+    "en": "korean-fact-reviewed",
+    "ja": "korean-fact-reviewed"
   },
   "checksums": {
-    "content/cards.base.json": "fc2d88088a501237bdfffb69d9e64b4974375df077ac37775a294156eb4fb326",
-    "content/en/cards.json": "f1b452447c90ae01f412a2e7ef03603724e944f68d4dd1021797ea5a37417f26",
-    "content/ja/cards.json": "8bce075b0fdf1cd27d0ed050a904bcd30f8aebf8f7f72bf9c6dad3e65b2f031b"
+    "content/cards.base.json": "8045b6e7016f8d5458978e17d757cbd4551f4f9747152a2b27ef2cadcfa86ffa",
+    "content/en/cards.json": "26951151329bdd54442a75b50a092c40b6bd7e424306407161bb5a868878ccb4",
+    "content/ja/cards.json": "7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b"
   }
 }

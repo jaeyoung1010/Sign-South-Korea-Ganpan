@@ -41,6 +41,8 @@ data class LocalizedCardCopy(
     val contentVersion: Int,
     val reviewer: String? = null,
     val reviewedAt: String? = null,
+    val factReviewer: String? = null,
+    val factReviewedAt: String? = null,
 )
 
 data class BundleValidationReport(
