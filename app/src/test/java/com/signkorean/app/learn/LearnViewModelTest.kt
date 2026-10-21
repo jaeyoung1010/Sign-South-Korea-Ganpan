@@ -5,6 +5,8 @@ import com.signkorean.domain.model.AudioPlayRequest
 import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
+import com.signkorean.domain.model.AudioPlayedEvent
+import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionAnswer
@@ -16,6 +18,7 @@ import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCardScore
 import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.model.SignCard
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.model.VoiceId
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.LoadSessionCompletion
@@ -32,6 +35,7 @@ import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.testsupport.FakeUserSettingsRepository
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
@@ -99,6 +103,105 @@ class LearnViewModelTest {
                     ),
                 ),
                 audioPlayer.requests,
+            )
+        }
+
+    @Test
+    fun `plays the persisted Gemini voice for the current answer`() =
+        runTest {
+            val audioPlayer = RecordingAudioPlayer()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 1).copy(answerRevealed = true) },
+                    audioPlayer = audioPlayer,
+                    userSettingsRepository = FakeUserSettingsRepository(UserSettings(audioVoice = AudioVoice.GEMINI_KORE)),
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.playAudio()
+
+            assertEquals(
+                listOf(
+                    AudioPlayRequest(
+                        cardId = "card-1",
+                        voiceId = VoiceId.GEMINI_KORE,
+                        assetUri = "file:///android_asset/audio/gemini/card-1.wav",
+                    ),
+                ),
+                audioPlayer.requests,
+            )
+        }
+
+    @Test
+    fun `auto plays once for an answer instance and does not replay on reload`() =
+        runTest {
+            var loadCount = 0
+            val audioPlayer = RecordingAudioPlayer()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession {
+                        loadCount += 1
+                        active(position = 1, total = 1).copy(answerRevealed = loadCount > 1)
+                    },
+                    audioPlayer = audioPlayer,
+                    userSettingsRepository = FakeUserSettingsRepository(UserSettings(autoPlayAudio = true)),
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.revealAnswer()
+            advanceUntilIdle()
+            viewModel.load()
+            advanceUntilIdle()
+
+            assertEquals(1, audioPlayer.requests.size)
+            assertEquals(VoiceId.TYPECAST_EUNKYUNG, audioPlayer.requests.single().voiceId)
+        }
+
+    @Test
+    fun `auto play failure does not interrupt answer state`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 1) },
+                    audioPlayer = ThrowingAudioPlayer(),
+                    userSettingsRepository = FakeUserSettingsRepository(UserSettings(autoPlayAudio = true)),
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.revealAnswer()
+            advanceUntilIdle()
+
+            assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
+        }
+
+    @Test
+    fun `records whether playback was requested automatically`() =
+        runTest {
+            val audioPlayer = RecordingAudioPlayer()
+            val analytics = RecordingAnalyticsSink()
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 1) },
+                    audioPlayer = audioPlayer,
+                    analyticsSink = analytics,
+                    userSettingsRepository = FakeUserSettingsRepository(UserSettings(autoPlayAudio = true)),
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.revealAnswer()
+            advanceUntilIdle()
+            viewModel.playAudio()
+
+            assertEquals(
+                listOf(
+                    AudioPlayedEvent("card-1", VoiceId.TYPECAST_EUNKYUNG, autoPlay = true),
+                    AudioPlayedEvent("card-1", VoiceId.TYPECAST_EUNKYUNG, autoPlay = false),
+                ),
+                analytics.audioPlayed,
             )
         }
 
@@ -638,7 +741,11 @@ class LearnViewModelTest {
                 category = "MARKET",
                 imageAssetUri = "asset://card-$position",
                 focus = FocusRect(0f, 0f, 1f, 1f),
-                audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "file:///android_asset/audio/eunkyung/card-$position.mp3"),
+                audioAssetUris =
+                    mapOf(
+                        VoiceId.TYPECAST_EUNKYUNG to "file:///android_asset/audio/eunkyung/card-$position.mp3",
+                        VoiceId.GEMINI_KORE to "file:///android_asset/audio/gemini/card-$position.wav",
+                    ),
                 contentVersion = 1,
             ),
         position = position,
@@ -668,13 +775,30 @@ class LearnViewModelTest {
         override fun observePlayback() = state
     }
 
+    private class ThrowingAudioPlayer : AudioPlayerPort {
+        private val state = MutableStateFlow<AudioPlaybackState>(AudioPlaybackState.Idle)
+
+        override fun play(request: AudioPlayRequest) {
+            error("decoder unavailable")
+        }
+
+        override fun stop() = Unit
+
+        override fun observePlayback() = state
+    }
+
     private class RecordingAnalyticsSink : AnalyticsSink {
         val audioFailures = mutableListOf<AudioPlaybackFailedEvent>()
+        val audioPlayed = mutableListOf<AudioPlayedEvent>()
 
         override fun recordAppStarted(event: com.signkorean.domain.model.AppStartupEvent) = Unit
 
         override fun recordAudioPlaybackFailed(event: AudioPlaybackFailedEvent) {
             audioFailures += event
+        }
+
+        override fun recordAudioPlayed(event: AudioPlayedEvent) {
+            audioPlayed += event
         }
     }
 }

@@ -8,12 +8,15 @@ import com.signkorean.domain.model.AudioPlayRequest
 import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
+import com.signkorean.domain.model.AudioPlayedEvent
+import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.ReportDetails
 import com.signkorean.domain.model.SessionCompletion
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.model.VoiceId
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.LoadSessionCompletion
@@ -34,6 +37,7 @@ import com.signkorean.domain.port.input.UndoRatingRequest
 import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
@@ -71,6 +75,7 @@ class LearnViewModel
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
         private val audioPlayer: AudioPlayerPort = NoopAudioPlayer,
         private val analyticsSink: AnalyticsSink = AnalyticsSink { },
+        private val userSettingsRepository: UserSettingsRepository = NoopUserSettingsRepository,
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
@@ -91,8 +96,15 @@ class LearnViewModel
         private val mutableReportState = MutableStateFlow(ReportUiState())
         private val mutableAudioState = MutableStateFlow<AudioPlaybackState>(audioPlayer.observePlayback().value)
         private var isSubmittingReport = false
+        private var userSettings = UserSettings()
+        private var autoPlayedAnswerInstanceId: String? = null
 
         init {
+            viewModelScope.launch {
+                userSettingsRepository.settings.collect { settings ->
+                    userSettings = settings
+                }
+            }
             viewModelScope.launch {
                 audioPlayer.observePlayback().collect { playbackState ->
                     mutableAudioState.value = playbackState
@@ -154,7 +166,11 @@ class LearnViewModel
                                 }
                             }
                         }
-                        mutableUiState.value = result.toUiState()
+                        val nextUiState = result.toUiState()
+                        mutableUiState.value = nextUiState
+                        if (nextUiState is LearnSessionUiState.Active && nextUiState.stage == LearnCardStage.Answer) {
+                            maybeAutoPlay(nextUiState)
+                        }
                         if (result is LoadLearnSessionResult.Active) {
                             savedStateHandle[SESSION_ID_KEY] = result.sessionId
                             savedStateHandle[ANSWER_REVEALED_KEY] = result.answerRevealed
@@ -183,8 +199,10 @@ class LearnViewModel
                             -> {
                                 val current = mutableUiState.value as? LearnSessionUiState.Active ?: return@launch
                                 if (current.cardId == active.cardId && current.stage == LearnCardStage.Question) {
-                                    mutableUiState.value = current.copy(stage = LearnCardStage.Answer)
+                                    val answerState = current.copy(stage = LearnCardStage.Answer)
+                                    mutableUiState.value = answerState
                                     savedStateHandle[ANSWER_REVEALED_KEY] = true
+                                    maybeAutoPlay(answerState)
                                 }
                             }
 
@@ -201,14 +219,38 @@ class LearnViewModel
         fun playAudio() {
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
             if (active.stage != LearnCardStage.Answer) return
-            val voiceId = VoiceId.TYPECAST_EUNKYUNG
-            audioPlayer.play(
+            playAudio(active, autoPlay = false)
+        }
+
+        private fun maybeAutoPlay(active: LearnSessionUiState.Active) {
+            if (!userSettings.autoPlayAudio) return
+            val answerInstanceId = "${active.sessionId}:${active.position}:${active.cardId}"
+            if (autoPlayedAnswerInstanceId == answerInstanceId) return
+            autoPlayedAnswerInstanceId = answerInstanceId
+            playAudio(active, autoPlay = true)
+        }
+
+        private fun playAudio(
+            active: LearnSessionUiState.Active,
+            autoPlay: Boolean,
+        ) {
+            val voiceId = userSettings.audioVoice.toVoiceId()
+            val request =
                 AudioPlayRequest(
                     cardId = active.cardId,
                     voiceId = voiceId,
                     assetUri = active.audioAssetUris[voiceId].orEmpty(),
-                ),
-            )
+                )
+            try {
+                audioPlayer.play(request)
+            } catch (_: Exception) {
+                // Audio failures are reported by the adapter through playback state when available.
+            }
+            try {
+                analyticsSink.recordAudioPlayed(AudioPlayedEvent(active.cardId, voiceId, autoPlay))
+            } catch (_: Exception) {
+                // Analytics must never block learning or playback.
+            }
         }
 
         fun stopAudio() {
@@ -546,3 +588,21 @@ private object NoopAudioPlayer : AudioPlayerPort {
 
     override fun observePlayback() = state.asStateFlow()
 }
+
+private object NoopUserSettingsRepository : UserSettingsRepository {
+    private val state = MutableStateFlow(UserSettings())
+
+    override val settings = state.asStateFlow()
+
+    override suspend fun updateSettings(transform: (UserSettings) -> UserSettings): UserSettings {
+        val updated = transform(state.value)
+        state.value = updated
+        return updated
+    }
+}
+
+private fun AudioVoice.toVoiceId(): VoiceId =
+    when (this) {
+        AudioVoice.TYPECAST_EUNKYUNG -> VoiceId.TYPECAST_EUNKYUNG
+        AudioVoice.GEMINI_KORE -> VoiceId.GEMINI_KORE
+    }

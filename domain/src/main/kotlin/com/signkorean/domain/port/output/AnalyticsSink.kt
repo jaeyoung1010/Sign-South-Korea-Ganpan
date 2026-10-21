@@ -3,12 +3,14 @@ package com.signkorean.domain.port.output
 import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
+import com.signkorean.domain.model.AudioPlayedEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardRatingUndoneEvent
 import com.signkorean.domain.model.SessionPausedEvent
 import com.signkorean.domain.model.SessionResumedEvent
 import com.signkorean.domain.model.SessionStartedEvent
 import com.signkorean.domain.model.SessionCompletedEvent
+import com.signkorean.domain.model.VoiceChangedEvent
 
 fun interface AnalyticsSink {
     fun recordAppStarted(event: AppStartupEvent)
@@ -27,6 +29,12 @@ fun interface AnalyticsSink {
 
     /** Records only typed audio failure context; asset paths and user content are excluded. */
     fun recordAudioPlaybackFailed(event: AudioPlaybackFailedEvent) = Unit
+
+    /** Records a playback request without retaining its asset path or spoken content. */
+    fun recordAudioPlayed(event: AudioPlayedEvent) = Unit
+
+    /** Records only the old and new bundled voice identifiers. */
+    fun recordVoiceChanged(event: VoiceChangedEvent) = Unit
 
     /** Records a persisted rating and the input path that produced it. */
     fun recordCardRated(event: CardRatedEvent) = Unit

@@ -47,6 +47,8 @@ import com.signkorean.app.navigation.LaunchFailure
 import com.signkorean.app.navigation.LaunchUiState
 import com.signkorean.app.navigation.LaunchViewModel
 import com.signkorean.app.onboarding.OnboardingViewModel
+import com.signkorean.app.settings.SettingsEffect
+import com.signkorean.app.settings.SettingsViewModel
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
@@ -59,6 +61,7 @@ import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackState
+import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCompletion
@@ -85,6 +88,7 @@ import com.signkorean.feature.settings.LegalUiState
 import com.signkorean.feature.settings.SettingsScreen
 import com.signkorean.feature.settings.SettingsUiAction
 import com.signkorean.feature.settings.SettingsUiState
+import com.signkorean.feature.settings.displayName
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.time.ZoneId
@@ -97,6 +101,7 @@ class MainActivity : ComponentActivity() {
     private val onboardingViewModel: OnboardingViewModel by viewModels()
     private val learnHomeViewModel: LearnHomeViewModel by viewModels()
     private val learnViewModel: LearnViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +114,7 @@ class MainActivity : ComponentActivity() {
                 onboardingViewModel,
                 learnHomeViewModel,
                 learnViewModel,
+                settingsViewModel,
             )
         }
     }
@@ -126,6 +132,7 @@ private fun SignKoreanApp(
     onboardingViewModel: OnboardingViewModel,
     learnHomeViewModel: LearnHomeViewModel,
     learnViewModel: LearnViewModel,
+    settingsViewModel: SettingsViewModel,
 ) {
     val state by navigationViewModel.uiState.collectAsState()
     val launchState by launchViewModel.uiState.collectAsState()
@@ -136,6 +143,7 @@ private fun SignKoreanApp(
     val completionState by learnViewModel.completionState.collectAsState()
     val reportState by learnViewModel.reportState.collectAsState()
     val audioState by learnViewModel.audioState.collectAsState()
+    val settingsState by settingsViewModel.uiState.collectAsState()
     LaunchedEffect(state.currentRoute) {
         if (state.currentRoute == AppRoute.Home) {
             learnHomeViewModel.refresh()
@@ -189,6 +197,22 @@ private fun SignKoreanApp(
             }
         }
     }
+    LaunchedEffect(settingsViewModel) {
+        settingsViewModel.effects.collect { effect ->
+            when (effect) {
+                is SettingsEffect.VoiceChanged -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Back)
+                    navigationViewModel.dispatch(
+                        AppNavigationAction.ShowToast("${effect.voice.displayName()} selected."),
+                    )
+                }
+
+                SettingsEffect.VoiceChangeFailed -> {
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save the voice. Try again."))
+                }
+            }
+        }
+    }
     SignKoreanAppContent(
         state = state,
         onAction = navigationViewModel::dispatch,
@@ -214,6 +238,8 @@ private fun SignKoreanApp(
         onUndoRating = learnViewModel::undoRating,
         onPauseSession = learnViewModel::pauseSession,
         onPlayAudio = learnViewModel::playAudio,
+        settingsState = settingsState,
+        onSelectVoice = settingsViewModel::selectVoice,
         reportState = reportState,
         onShowReport = learnViewModel::openReport,
         onSelectReportReason = learnViewModel::selectReportReason,
@@ -250,6 +276,8 @@ internal fun SignKoreanAppContent(
     onUndoRating: () -> Unit = {},
     onPauseSession: () -> Unit = {},
     onPlayAudio: () -> Unit = {},
+    settingsState: SettingsUiState = SettingsUiState(),
+    onSelectVoice: (AudioVoice) -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
     onShowReport: () -> Unit = {},
     onSelectReportReason: (CardReportReason) -> Unit = {},
@@ -284,6 +312,8 @@ internal fun SignKoreanAppContent(
             onUndoRating,
             onPauseSession,
             onPlayAudio,
+            settingsState,
+            onSelectVoice,
             onShowReport,
         ) {
             entryProvider<NavKey> {
@@ -331,7 +361,7 @@ internal fun SignKoreanAppContent(
                 }
                 entry<AppRoute.Done> { DoneDestination(completionState, onAction) }
                 entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
-                entry<AppRoute.Settings> { SettingsDestination(onAction) }
+                entry<AppRoute.Settings> { SettingsDestination(settingsState, onAction) }
                 entry<AppRoute.Legal> { LegalScreen(LegalUiState()) }
             }
         }
@@ -381,6 +411,8 @@ internal fun SignKoreanAppContent(
                     onUpdateReportDetails = onUpdateReportDetails,
                     onSubmitReport = onSubmitReport,
                     onCancelReport = onCancelReport,
+                    settingsState = settingsState,
+                    onSelectVoice = onSelectVoice,
                 )
             }
         }
@@ -613,9 +645,12 @@ private fun SessionCompletion.toCompletionUiState(): CompletionUiState =
     )
 
 @Composable
-private fun SettingsDestination(onAction: (AppNavigationAction) -> Unit) {
+private fun SettingsDestination(
+    state: SettingsUiState,
+    onAction: (AppNavigationAction) -> Unit,
+) {
     SettingsScreen(
-        state = SettingsUiState(),
+        state = state,
         onAction = { action ->
             when (action) {
                 SettingsUiAction.SelectVoice -> onAction(AppNavigationAction.ShowSheet(AppSheet.Voice))
@@ -679,6 +714,8 @@ private fun BoxScope.AppOverlayHost(
     onUpdateReportDetails: (String) -> Unit,
     onSubmitReport: () -> Unit,
     onCancelReport: () -> Unit,
+    settingsState: SettingsUiState,
+    onSelectVoice: (AudioVoice) -> Unit,
 ) {
     state.sheet?.let { sheet ->
         val dismissSheet = {
@@ -718,7 +755,25 @@ private fun BoxScope.AppOverlayHost(
                     }
 
                     AppSheet.Voice -> {
-                        Text("Eunkyung is selected.", style = MaterialTheme.typography.bodyLarge)
+                        Text("Choose pronunciation voice", style = MaterialTheme.typography.bodyLarge)
+                        AudioVoice.entries.forEach { voice ->
+                            GameButton(
+                                text =
+                                    if (voice == settingsState.selectedVoice) {
+                                        "✓ ${voice.displayName()}"
+                                    } else {
+                                        voice.displayName()
+                                    },
+                                onClick = { onSelectVoice(voice) },
+                                modifier = Modifier.fillMaxWidth().testTag("settings.voice.${voice.name.lowercase()}"),
+                                style =
+                                    if (voice == settingsState.selectedVoice) {
+                                        GameButtonStyle.Primary
+                                    } else {
+                                        GameButtonStyle.Secondary
+                                    },
+                            )
+                        }
                     }
 
                     AppSheet.SessionLeave -> {

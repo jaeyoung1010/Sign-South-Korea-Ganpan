@@ -12,10 +12,11 @@ import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
+import com.signkorean.domain.model.AudioVoice
 
 data class SettingsUiState(
     val title: String = "Settings",
-    val selectedVoice: String = "Eunkyung",
+    val selectedVoice: AudioVoice = AudioVoice.TYPECAST_EUNKYUNG,
 )
 
 data class LegalUiState(
@@ -44,7 +45,7 @@ fun SettingsScreen(
     GameCard(modifier = modifier.testTag("screen-settings")) {
         Text(text = state.title, style = MaterialTheme.typography.headlineMedium)
         GameButton(
-            text = "Voice: ${state.selectedVoice}",
+            text = "Voice: ${state.selectedVoice.displayName()}",
             onClick = { onAction(SettingsUiAction.SelectVoice) },
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.SETTINGS_VOICE),
             style = GameButtonStyle.Secondary,
@@ -57,6 +58,12 @@ fun SettingsScreen(
         )
     }
 }
+
+fun AudioVoice.displayName(): String =
+    when (this) {
+        AudioVoice.TYPECAST_EUNKYUNG -> "Typecast · Eunkyung"
+        AudioVoice.GEMINI_KORE -> "Gemini Flash · Kore"
+    }
 
 @Composable
 fun LegalScreen(

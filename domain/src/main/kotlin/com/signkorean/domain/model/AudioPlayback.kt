@@ -16,6 +16,21 @@ data class AudioPlaybackFailedEvent(
     }
 }
 
+data class AudioPlayedEvent(
+    val cardId: String,
+    val voiceId: VoiceId,
+    val autoPlay: Boolean,
+) {
+    init {
+        require(cardId.isNotBlank())
+    }
+}
+
+data class VoiceChangedEvent(
+    val previousVoice: AudioVoice,
+    val selectedVoice: AudioVoice,
+)
+
 enum class AudioPlaybackFailure {
     AssetMissing,
     InvalidProvider,
