@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,9 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
@@ -223,11 +222,13 @@ private fun ChoiceCard(
 ) {
     Surface(
         modifier =
-            modifier
-                .semantics {
-                    this.role = role
-                    this.selected = selected
-                }.clickable(onClick = onClick),
+            modifier.then(
+                if (role == Role.Checkbox) {
+                    Modifier.toggleable(value = selected, role = role, onValueChange = { onClick() })
+                } else {
+                    Modifier.selectable(selected = selected, role = role, onClick = onClick)
+                },
+            ),
         color = if (selected) Color(SignKoreanPalette.LILAC) else Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
         shape = SignKoreanShapes.medium,

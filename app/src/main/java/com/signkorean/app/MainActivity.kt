@@ -268,6 +268,7 @@ private fun SignKoreanApp(
                 }
 
                 is SettingsEffect.LanguageChanged -> {
+                    legalViewModel.load(force = true)
                     navigationViewModel.dispatch(AppNavigationAction.Back)
                     navigationViewModel.dispatch(
                         AppNavigationAction.ShowToast(resources.getString(R.string.toast_language_saved)),
@@ -401,49 +402,7 @@ internal fun SignKoreanAppContent(
     onCancelReport: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
-    val entries =
-        remember(
-            onAction,
-            state,
-            launchState,
-            onLaunchRetry,
-            onboardingState,
-            onSelectLevel,
-            onSkipLevel,
-            onToggleInterest,
-            onCompleteOnboarding,
-            learnHomeState,
-            onStartSession,
-            onStartCategorySession,
-            onConfirmCategoryReplacement,
-            onCancelCategoryReplacement,
-            learnSessionState,
-            audioState,
-            learnFeedbackState,
-            completionState,
-            progressState,
-            onProgressAction,
-            onOpenProgressReviews,
-            onRevealAnswer,
-            onRateCard,
-            onRatingAnimationFinished,
-            onUndoRating,
-            onRetryRating,
-            onPauseSession,
-            onPlayAudio,
-            settingsState,
-            onSelectLanguage,
-            onSelectVoice,
-            onSelectSessionLength,
-            onToggleRomanization,
-            onToggleAutoPlay,
-            onToggleReduceMotion,
-            onToggleReminder,
-            legalState,
-            onLegalAction,
-            onShowReport,
-        ) {
-            entryProvider<NavKey> {
+    val entries = entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
                 entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
                 entry<AppRoute.Tutorial> { OnboardingDestination(OnboardingStep.Tutorial, onAction) }
@@ -526,7 +485,6 @@ internal fun SignKoreanAppContent(
                         onAction = onLegalAction,
                     )
                 }
-            }
         }
 
     NavigationEffects(
@@ -949,7 +907,13 @@ private fun BoxScope.AppOverlayHost(
                     AppSheet.Category -> {
                         categories.forEach { category ->
                             GameButton(
-                                text = resources.getQuantityString(com.signkorean.feature.learn.R.plurals.learn_category_signs, category.cardCount, category.label, category.cardCount),
+                                text =
+                                    resources.getQuantityString(
+                                        com.signkorean.feature.learn.R.plurals.learn_category_signs,
+                                        category.cardCount,
+                                        resources.getString(category.labelResource()),
+                                        category.cardCount,
+                                    ),
                                 onClick = {
                                     onAction(AppNavigationAction.Back)
                                     onStartCategorySession(category.key)
@@ -1089,6 +1053,15 @@ private fun BoxScope.AppOverlayHost(
         )
     }
 }
+
+private fun com.signkorean.feature.learn.HomeCategoryUiModel.labelResource(): Int =
+    when (key) {
+        "LANDMARK" -> com.signkorean.feature.learn.R.string.learn_category_landmarks
+        "NEIGHBORHOOD" -> com.signkorean.feature.learn.R.string.learn_category_neighborhoods
+        "MARKET" -> com.signkorean.feature.learn.R.string.learn_category_markets
+        "TRANSPORT" -> com.signkorean.feature.learn.R.string.learn_category_transport
+        else -> com.signkorean.feature.learn.R.string.learn_category_landmarks
+    }
 
 private fun String.displayName(resources: android.content.res.Resources): String =
     when (lowercase()) {

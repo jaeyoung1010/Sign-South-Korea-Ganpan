@@ -51,7 +51,8 @@ object DataAdapterModule {
     fun providePolicyDocumentRepository(
         @ApplicationContext context: Context,
         @IoDispatcher dispatcher: CoroutineDispatcher,
-    ): PolicyDocumentRepository = BundledPolicyDocumentRepository(context, dispatcher)
+        appLocalePort: AppLocalePort,
+    ): PolicyDocumentRepository = BundledPolicyDocumentRepository(context, dispatcher, appLocalePort)
 
     @Provides
     @Singleton

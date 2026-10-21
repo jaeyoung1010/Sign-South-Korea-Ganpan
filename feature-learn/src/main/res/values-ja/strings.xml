@@ -20,6 +20,10 @@
     <string name="learn_keep_current_session">現在のセッションを続ける</string>
     <string name="learn_explore_category">カテゴリーから探す</string>
     <string name="learn_see_all">すべて見る</string>
+    <string name="learn_category_landmarks">名所</string>
+    <string name="learn_category_neighborhoods">街並み</string>
+    <string name="learn_category_markets">市場</string>
+    <string name="learn_category_transport">交通</string>
     <plurals name="learn_category_signs"><item quantity="other">%1$s · %2$d枚</item></plurals>
     <string name="learn_your_week">今週</string>
     <string name="learn_close">閉じる</string>

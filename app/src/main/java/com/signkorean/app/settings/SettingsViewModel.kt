@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -100,9 +101,10 @@ class SettingsViewModel
             val previousVoice = mutableUiState.value.selectedVoice
             selectionJob = viewModelScope.launch {
                 try {
-                    settingsMutex.withLock {
+                    val updatedSettings = settingsMutex.withLock {
                         userSettingsRepository.updateSettings { settings -> settings.copy(audioVoice = voice) }
                     }
+                    mutableUiState.update { it.copy(selectedVoice = updatedSettings.audioVoice) }
                     try {
                         analyticsSink.recordVoiceChanged(VoiceChangedEvent(previousVoice, voice))
                     } catch (_: Exception) {
@@ -122,9 +124,10 @@ class SettingsViewModel
             sessionLengthJob =
                 viewModelScope.launch {
                     try {
-                        settingsMutex.withLock {
+                        val updatedSettings = settingsMutex.withLock {
                             userSettingsRepository.updateSettings { settings -> settings.copy(sessionLength = length) }
                         }
+                        mutableUiState.update { it.copy(sessionLength = updatedSettings.sessionLength) }
                         effectChannel.trySend(SettingsEffect.SessionLengthChanged(length))
                     } catch (cancellation: CancellationException) {
                         throw cancellation

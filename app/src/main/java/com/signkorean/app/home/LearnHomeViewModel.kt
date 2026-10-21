@@ -171,6 +171,7 @@ private fun LearnHomeDashboard.toUiState(): LearnHomeUiState =
                 WeekActivityUiModel(
                     label = it.date.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.ENGLISH),
                     count = it.count,
+                    date = it.date,
                 )
             },
     )

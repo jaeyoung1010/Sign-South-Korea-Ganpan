@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -41,6 +42,8 @@ import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.RatingInputSource
+import java.time.LocalDate
+import java.time.format.TextStyle
 import com.signkorean.domain.model.VoiceId
 
 data class LearnHomeUiState(
@@ -82,6 +85,7 @@ data class HomeCategoryUiModel(
 data class WeekActivityUiModel(
     val label: String,
     val count: Int,
+    val date: LocalDate? = null,
 )
 
 object HomeTestTags {
@@ -386,7 +390,7 @@ private fun CategorySection(
         ) {
             categories.forEach { category ->
                 GameButton(
-                    text = pluralStringResource(R.plurals.learn_category_signs, category.cardCount, category.label, category.cardCount),
+                    text = pluralStringResource(R.plurals.learn_category_signs, category.cardCount, category.localizedLabel(), category.cardCount),
                     onClick = { onAction(LearnUiAction.StartCategorySession(category.key)) },
                     modifier = Modifier.width(176.dp),
                     enabled = !isStarting,
@@ -398,7 +402,20 @@ private fun CategorySection(
 }
 
 @Composable
+private fun HomeCategoryUiModel.localizedLabel(): String =
+    stringResource(
+        when (key) {
+            "LANDMARK" -> R.string.learn_category_landmarks
+            "NEIGHBORHOOD" -> R.string.learn_category_neighborhoods
+            "MARKET" -> R.string.learn_category_markets
+            "TRANSPORT" -> R.string.learn_category_transport
+            else -> R.string.learn_category_landmarks
+        },
+    )
+
+@Composable
 private fun WeekSection(week: List<WeekActivityUiModel>) {
+    val locale = LocalConfiguration.current.locales[0]
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
         Text(text = stringResource(R.string.learn_your_week), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
         GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
@@ -406,7 +423,10 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                 week.forEach { day ->
                     Column {
                         Text(text = day.count.toString(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                        Text(text = day.label, style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            text = day.date?.dayOfWeek?.getDisplayName(TextStyle.NARROW, locale) ?: day.label,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                     }
                 }
             }

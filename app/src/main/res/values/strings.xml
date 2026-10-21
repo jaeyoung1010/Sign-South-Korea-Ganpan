@@ -54,4 +54,6 @@
     <string name="policy_effective_date">2026–10–21</string>
     <string name="policy_privacy_checksum">87198343eddfbf52ea29845a3dcde44b0f148e834de4ca5c669ca9b7401a6d8e</string>
     <string name="policy_terms_checksum">c505bfcb3b9b40e7ed5aa1a396897a023c725afd0a7d091c7978d34d9de4919f</string>
+    <string name="policy_privacy_checksum_ja">1e05a88d26595159e30679e1316bc679583c0f49903a3780960754e279b8a9c6</string>
+    <string name="policy_terms_checksum_ja">ff549e500c945166f7de1fae72d90198a8c307d563bd24ca92fb0c8e4f314578</string>
 </resources>

@@ -6,6 +6,10 @@ import coil3.request.ImageRequest
 import com.signkorean.feature.learn.BoundedPhotoPrefetcher
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,9 +20,12 @@ class CoilPhotoPrefetcher
         @ApplicationContext private val context: Context,
     ) : LearnPhotoPrefetcher {
         private val boundedPrefetcher = BoundedPhotoPrefetcher(::enqueue)
+        private val prefetchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
         override fun prefetch(imageUris: List<String>) {
-            boundedPrefetcher.prefetch(imageUris)
+            prefetchScope.launch {
+                runCatching { boundedPrefetcher.prefetch(imageUris) }
+            }
         }
 
         private fun enqueue(imageUri: String) {

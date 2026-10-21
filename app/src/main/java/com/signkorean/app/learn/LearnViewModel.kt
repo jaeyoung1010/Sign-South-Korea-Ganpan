@@ -198,9 +198,9 @@ class LearnViewModel
                         if (result is LoadLearnSessionResult.Active) {
                             savedStateHandle[SESSION_ID_KEY] = result.sessionId
                             savedStateHandle[ANSWER_REVEALED_KEY] = result.answerRevealed
-                            photoPrefetcher.prefetch(
-                                result.upcomingCards.take(MAX_PREFETCH_COUNT).map { it.imageAssetUri },
-                            )
+                            val upcomingImageUris =
+                                result.upcomingCards.take(MAX_PREFETCH_COUNT).map { it.imageAssetUri }
+                            photoPrefetcher.prefetch(upcomingImageUris)
                         }
                     } catch (cancellation: CancellationException) {
                         throw cancellation
