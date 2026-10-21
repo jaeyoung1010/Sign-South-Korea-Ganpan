@@ -14,6 +14,7 @@ import com.signkorean.domain.model.SessionTransitionWriteResult
 import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.SessionRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -57,15 +58,25 @@ class RoomSessionRepository(
     private fun SignKoreanDatabase.validResumableSession(): SessionEntity? {
         val session = sessionDao().resumable() ?: return null
         if (isConsistent(session)) return session
-        sessionDao().update(session.copy(status = ABANDONED_STATUS, updatedAt = clock.now()))
+        quarantine(session)
         return null
     }
 
     private fun SignKoreanDatabase.validActiveSession(): SessionEntity? {
         val session = sessionDao().active() ?: return null
         if (isStructurallyConsistent(session)) return session
-        sessionDao().update(session.copy(status = ABANDONED_STATUS, updatedAt = clock.now()))
+        quarantine(session)
         return null
+    }
+
+    private fun SignKoreanDatabase.quarantine(session: SessionEntity) {
+        try {
+            sessionDao().update(session.copy(status = ABANDONED_STATUS, updatedAt = clock.now()))
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (_: Exception) {
+            // A failed quarantine must not turn recoverable startup data loss into a startup crash.
+        }
     }
 
     override suspend fun getSessionCompletion(sessionId: String): SessionCompletion? =

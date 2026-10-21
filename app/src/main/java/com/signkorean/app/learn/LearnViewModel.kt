@@ -367,6 +367,7 @@ class LearnViewModel
                         }
 
                         RateCardResult.AlreadyRated -> {
+                            pendingRating = null
                             isRating = false
                             val current = mutableUiState.value as? LearnSessionUiState.Active
                             if (current?.cardId == active.cardId) {
