@@ -70,7 +70,7 @@ internal fun LearnCardStack(
     var dragAxis by remember(state.cardId, state.stage) { mutableStateOf(DragAxis.Undecided) }
     var dragOverlay by remember(state.cardId, state.stage) { mutableStateOf<DragOverlay?>(null) }
     val hapticFeedback = LocalHapticFeedback.current
-    LaunchedEffect(state.isRating, motionPolicy) {
+    LaunchedEffect(state.isRating) {
         if (state.isRating) {
             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
             delay(motionPolicy.ratingAnimationDurationMillis)
