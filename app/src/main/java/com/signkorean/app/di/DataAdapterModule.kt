@@ -74,7 +74,8 @@ object DataAdapterModule {
     fun provideSessionRepository(
         database: SignKoreanDatabase,
         @IoDispatcher dispatcher: CoroutineDispatcher,
-    ): SessionRepository = RoomSessionRepository(database, dispatcher)
+        clock: ClockPort,
+    ): SessionRepository = RoomSessionRepository(database, dispatcher, clock)
 
     @Provides
     @Singleton

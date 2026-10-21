@@ -10,6 +10,8 @@ import com.signkorean.domain.model.LocalizedWordPart
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.PauseSession
+import com.signkorean.domain.port.input.PauseSessionResult
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
@@ -22,6 +24,8 @@ import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.testsupport.MainDispatcherRule
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -351,6 +355,50 @@ class LearnViewModelTest {
 
             undoGate.complete(UndoRatingResult.Undone("card-1", 0, RatingDecision.GotIt))
             runCurrent()
+        }
+
+    @Test
+    fun `pause emits a navigation effect only after persistence succeeds`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 2, total = 5) },
+                    pauseSessionUseCase =
+                        PauseSession {
+                            assertEquals("session-5", it.sessionId)
+                            PauseSessionResult.Paused(
+                                com.signkorean.domain.model
+                                    .ActiveSession(1, 5, "session-5", isPaused = true),
+                            )
+                        },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+
+            val effect = async { viewModel.effects.first() }
+            viewModel.pauseSession()
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionEffect.SessionPaused, effect.await())
+        }
+
+    @Test
+    fun `pause failure keeps the learn screen available`() =
+        runTest {
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 5) },
+                    pauseSessionUseCase = PauseSession { PauseSessionResult.Unavailable },
+                )
+            viewModel.load()
+            advanceUntilIdle()
+
+            val effect = async { viewModel.effects.first() }
+            viewModel.pauseSession()
+            advanceUntilIdle()
+
+            assertEquals(LearnSessionEffect.PauseFailed, effect.await())
+            assertTrue(viewModel.uiState.value is LearnSessionUiState.Active)
         }
 
     private fun active(

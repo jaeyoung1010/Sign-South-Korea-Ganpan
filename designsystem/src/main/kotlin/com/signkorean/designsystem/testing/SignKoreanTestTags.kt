@@ -17,6 +17,8 @@ object SignKoreanTestTags {
     const val GLOBAL_FEEDBACK = "global.feedback"
     const val LEARN_RATING_TOAST = "learn.rating.toast"
     const val LEARN_UNDO_RATING = "learn.rating.undo"
+    const val LEARN_KEEP_LEARNING = "learn.session.keep-learning"
+    const val LEARN_LEAVE_FOR_NOW = "learn.session.leave-for-now"
     const val SETTINGS_VOICE = "settings.voice"
 
     fun learnCard(cardId: String): String = "learn.card.$cardId"

@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.model.LearnHomeDashboard
 import com.signkorean.domain.port.input.LoadLearnHome
+import com.signkorean.domain.port.input.ResumeSession
+import com.signkorean.domain.port.input.ResumeSessionRequest
+import com.signkorean.domain.port.input.ResumeSessionResult
 import com.signkorean.domain.port.input.StartSession
 import com.signkorean.domain.port.input.StartSessionRequest
 import com.signkorean.domain.port.input.StartSessionResult
@@ -29,6 +32,7 @@ class LearnHomeViewModel
     constructor(
         private val loadLearnHome: LoadLearnHome,
         private val startSession: StartSession,
+        private val resumeSession: ResumeSession = ResumeSession { ResumeSessionResult.Unavailable },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow(LearnHomeUiState())
         private val effectChannel = Channel<HomeSessionEffect>(Channel.BUFFERED)
@@ -58,7 +62,11 @@ class LearnHomeViewModel
         }
 
         fun startDailySession() {
-            start(StartSessionRequest.daily())
+            if (mutableUiState.value.session.isPaused) {
+                resume()
+            } else {
+                start(StartSessionRequest.daily())
+            }
         }
 
         fun startCategorySession(category: String) {
@@ -107,6 +115,37 @@ class LearnHomeViewModel
                 }
             }
         }
+
+        private fun resume() {
+            if (!startMutex.tryLock()) return
+            val sessionId = mutableUiState.value.session.sessionId
+            if (sessionId.isBlank()) {
+                startMutex.unlock()
+                mutableUiState.value = mutableUiState.value.copy(hasStartError = true)
+                return
+            }
+            viewModelScope.launch {
+                mutableUiState.value = mutableUiState.value.copy(isStarting = true, hasStartError = false)
+                try {
+                    when (resumeSession(ResumeSessionRequest(sessionId))) {
+                        is ResumeSessionResult.Resumed,
+                        is ResumeSessionResult.AlreadyActive,
+                        -> {
+                            effectChannel.trySend(HomeSessionEffect.NavigateToLearn)
+                        }
+
+                        ResumeSessionResult.Unavailable -> {
+                            mutableUiState.value = mutableUiState.value.copy(hasStartError = true)
+                        }
+                    }
+                } catch (_: Exception) {
+                    mutableUiState.value = mutableUiState.value.copy(hasStartError = true)
+                } finally {
+                    mutableUiState.value = mutableUiState.value.copy(isStarting = false)
+                    startMutex.unlock()
+                }
+            }
+        }
     }
 
 sealed interface HomeSessionEffect {
@@ -123,6 +162,8 @@ private fun LearnHomeDashboard.toUiState(): LearnHomeUiState =
                 reviewCount = session.reviewCount,
                 newCount = session.newCount,
                 completedCount = session.activeSession?.completedCount,
+                isPaused = session.activeSession?.isPaused == true,
+                sessionId = session.activeSession?.sessionId.orEmpty(),
             ),
         categories = categories.map { HomeCategoryUiModel(it.key, it.label, it.cardCount) },
         week =

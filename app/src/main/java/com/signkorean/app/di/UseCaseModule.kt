@@ -4,8 +4,10 @@ import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.PauseSession
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.ResolveLaunchDestination
+import com.signkorean.domain.port.input.ResumeSession
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.StartOnboarding
 import com.signkorean.domain.port.input.StartSession
@@ -25,8 +27,10 @@ import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.LoadLearnSessionUseCase
+import com.signkorean.domain.usecase.PauseSessionUseCase
 import com.signkorean.domain.usecase.RateCardUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
+import com.signkorean.domain.usecase.ResumeSessionUseCase
 import com.signkorean.domain.usecase.RevealAnswerUseCase
 import com.signkorean.domain.usecase.StartOnboardingUseCase
 import com.signkorean.domain.usecase.StartSessionUseCase
@@ -143,4 +147,16 @@ object UseCaseModule {
         learningRepository: LearningRepository,
         analyticsSink: AnalyticsSink,
     ): UndoRating = UndoRatingUseCase(learningRepository, analyticsSink)
+
+    @Provides
+    fun providePauseSession(
+        sessionRepository: SessionRepository,
+        analyticsSink: AnalyticsSink,
+    ): PauseSession = PauseSessionUseCase(sessionRepository, analyticsSink)
+
+    @Provides
+    fun provideResumeSession(
+        sessionRepository: SessionRepository,
+        analyticsSink: AnalyticsSink,
+    ): ResumeSession = ResumeSessionUseCase(sessionRepository, analyticsSink)
 }

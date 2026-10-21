@@ -4,6 +4,9 @@ import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.LearnHomeDashboard
 import com.signkorean.domain.model.LearnHomeSession
 import com.signkorean.domain.port.input.LoadLearnHome
+import com.signkorean.domain.port.input.ResumeSession
+import com.signkorean.domain.port.input.ResumeSessionRequest
+import com.signkorean.domain.port.input.ResumeSessionResult
 import com.signkorean.domain.port.input.StartSession
 import com.signkorean.domain.port.input.StartSessionRequest
 import com.signkorean.domain.port.input.StartSessionResult
@@ -195,13 +198,40 @@ class LearnHomeViewModelTest {
             assertEquals(null, viewModel.uiState.value.pendingCategoryReplacement)
         }
 
+    @Test
+    fun `paused session is shown as resumable and resumes before navigation`() =
+        runTest {
+            val active = ActiveSession(completedCount = 3, totalCount = 10, sessionId = "session-1", isPaused = true)
+            var resumedId: String? = null
+            val viewModel =
+                LearnHomeViewModel(
+                    LoadLearnHome { dashboard(streakDays = 0, activeSession = active) },
+                    noCardsStartSession(),
+                    ResumeSession {
+                        resumedId = it.sessionId
+                        ResumeSessionResult.Resumed(active.copy(isPaused = false))
+                    },
+                )
+            val effect = async { viewModel.effects.first() }
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value.session.isPaused)
+            viewModel.startDailySession()
+            advanceUntilIdle()
+
+            assertEquals("session-1", resumedId)
+            assertEquals(HomeSessionEffect.NavigateToLearn, effect.await())
+        }
+
     private fun noCardsStartSession(): StartSession = StartSession { StartSessionResult.NoCardsAvailable }
 
-    private fun dashboard(streakDays: Int) =
-        LearnHomeDashboard(
-            streakDays = streakDays,
-            session = LearnHomeSession(20, 8, 0, 20, activeSession = null),
-            categories = emptyList(),
-            weeklyActivity = emptyList(),
-        )
+    private fun dashboard(
+        streakDays: Int,
+        activeSession: ActiveSession? = null,
+    ) = LearnHomeDashboard(
+        streakDays = streakDays,
+        session = LearnHomeSession(20, 8, 0, 20, activeSession = activeSession),
+        categories = emptyList(),
+        weeklyActivity = emptyList(),
+    )
 }

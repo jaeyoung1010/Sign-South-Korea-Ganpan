@@ -1,5 +1,6 @@
 package com.signkorean.app.learn
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.gesture.RatingDecision
@@ -7,6 +8,9 @@ import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.PauseSession
+import com.signkorean.domain.port.input.PauseSessionRequest
+import com.signkorean.domain.port.input.PauseSessionResult
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
@@ -26,9 +30,11 @@ import com.signkorean.feature.learn.LearnWordPartUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,9 +43,11 @@ class LearnViewModel
     @Inject
     constructor(
         private val loadLearnSession: LoadLearnSession,
+        private val savedStateHandle: SavedStateHandle = SavedStateHandle(),
         private val revealAnswerUseCase: RevealAnswer = RevealAnswer { RevealAnswerResult.Revealed },
         private val rateCardUseCase: RateCard = RateCard { RateCardResult.Unavailable },
         private val undoRatingUseCase: UndoRating = UndoRating { UndoRatingResult.Unavailable },
+        private val pauseSessionUseCase: PauseSession = PauseSession { PauseSessionResult.Unavailable },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
@@ -53,9 +61,12 @@ class LearnViewModel
         private var isUndoing = false
         private var lastRatedSessionId: String? = null
         private val mutableFeedbackState = MutableStateFlow<LearnFeedbackUiState?>(null)
+        private val effectChannel = Channel<LearnSessionEffect>(Channel.BUFFERED)
+        private var isPausing = false
 
         val uiState = mutableUiState.asStateFlow()
         val feedbackState = mutableFeedbackState.asStateFlow()
+        val effects = effectChannel.receiveAsFlow()
 
         fun load(preserveFeedback: Boolean = false) {
             loadJob?.cancel()
@@ -76,6 +87,8 @@ class LearnViewModel
                         val result = loadLearnSession()
                         mutableUiState.value = result.toUiState()
                         if (result is LoadLearnSessionResult.Active) {
+                            savedStateHandle[SESSION_ID_KEY] = result.sessionId
+                            savedStateHandle[ANSWER_REVEALED_KEY] = result.answerRevealed
                             photoPrefetcher.prefetch(
                                 result.upcomingCards.take(MAX_PREFETCH_COUNT).map { it.imageAssetUri },
                             )
@@ -102,6 +115,7 @@ class LearnViewModel
                                 val current = mutableUiState.value as? LearnSessionUiState.Active ?: return@launch
                                 if (current.cardId == active.cardId && current.stage == LearnCardStage.Question) {
                                     mutableUiState.value = current.copy(stage = LearnCardStage.Answer)
+                                    savedStateHandle[ANSWER_REVEALED_KEY] = true
                                 }
                             }
 
@@ -236,6 +250,29 @@ class LearnViewModel
                 }
         }
 
+        fun pauseSession() {
+            val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
+            if (isPausing || active.sessionId.isBlank()) return
+            isPausing = true
+            viewModelScope.launch {
+                try {
+                    when (pauseSessionUseCase(PauseSessionRequest(active.sessionId))) {
+                        is PauseSessionResult.Paused,
+                        is PauseSessionResult.AlreadyPaused,
+                        -> effectChannel.trySend(LearnSessionEffect.SessionPaused)
+
+                        PauseSessionResult.Unavailable -> effectChannel.trySend(LearnSessionEffect.PauseFailed)
+                    }
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    effectChannel.trySend(LearnSessionEffect.PauseFailed)
+                } finally {
+                    isPausing = false
+                }
+            }
+        }
+
         private fun showFeedback(
             message: String,
             canUndo: Boolean,
@@ -254,7 +291,18 @@ class LearnViewModel
             feedbackJob = null
             mutableFeedbackState.value = null
         }
+
+        private companion object {
+            const val SESSION_ID_KEY = "learn-session-id"
+            const val ANSWER_REVEALED_KEY = "learn-answer-revealed"
+        }
     }
+
+sealed interface LearnSessionEffect {
+    data object SessionPaused : LearnSessionEffect
+
+    data object PauseFailed : LearnSessionEffect
+}
 
 private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
     when (this) {

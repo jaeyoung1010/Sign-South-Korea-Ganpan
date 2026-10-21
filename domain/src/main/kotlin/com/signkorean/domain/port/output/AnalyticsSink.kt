@@ -4,6 +4,8 @@ import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardRatingUndoneEvent
+import com.signkorean.domain.model.SessionPausedEvent
+import com.signkorean.domain.model.SessionResumedEvent
 import com.signkorean.domain.model.SessionStartedEvent
 
 fun interface AnalyticsSink {
@@ -26,4 +28,10 @@ fun interface AnalyticsSink {
 
     /** Records that the latest persisted rating was rolled back. */
     fun recordRatingUndone(event: CardRatingUndoneEvent) = Unit
+
+    /** Records a pause without attaching card identifiers or user data. */
+    fun recordSessionPaused(event: SessionPausedEvent) = Unit
+
+    /** Records a resume without attaching card identifiers or user data. */
+    fun recordSessionResumed(event: SessionResumedEvent) = Unit
 }

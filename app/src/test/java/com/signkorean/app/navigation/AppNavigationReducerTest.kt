@@ -172,4 +172,14 @@ class AppNavigationReducerTest {
         assertTrue(AppNavigationUiState(backStack = listOf(AppRoute.Welcome), sheet = AppSheet.Category).handlesBack)
         assertTrue(AppNavigationUiState(backStack = listOf(AppRoute.Welcome, AppRoute.Tutorial)).handlesBack)
     }
+
+    @Test
+    fun learn_leave_confirmation_is_an_overlay_that_back_can_dismiss_without_leaving() {
+        val learn = AppNavigationUiState(backStack = listOf(AppRoute.Home, AppRoute.Learn))
+        val sheet = reducer.reduce(learn, AppNavigationAction.ShowSheet(AppSheet.SessionLeave))
+
+        assertEquals(AppSheet.SessionLeave, sheet.sheet)
+        assertEquals(AppRoute.Learn, reducer.reduce(sheet, AppNavigationAction.Back).currentRoute)
+        assertEquals(null, reducer.reduce(sheet, AppNavigationAction.Back).sheet)
+    }
 }

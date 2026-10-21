@@ -36,7 +36,7 @@ class RoomContentMigrationRepository(
         }
 
     private fun SignKoreanDatabase.invalidateActiveSessionIfNeeded(validCardIds: Set<String>): Boolean {
-        val session = sessionDao().active() ?: return false
+        val session = sessionDao().resumable() ?: return false
         val containsUnknownCard = sessionCardDao().forSession(session.sessionId).any { it.cardId !in validCardIds }
         if (!containsUnknownCard) return false
 

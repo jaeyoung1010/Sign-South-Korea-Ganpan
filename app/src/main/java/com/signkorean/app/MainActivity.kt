@@ -133,6 +133,19 @@ private fun SignKoreanApp(
             }
         }
     }
+    LaunchedEffect(learnViewModel) {
+        learnViewModel.effects.collect { effect ->
+            when (effect) {
+                com.signkorean.app.learn.LearnSessionEffect.SessionPaused -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Navigate(AppRoute.Home))
+                }
+
+                com.signkorean.app.learn.LearnSessionEffect.PauseFailed -> {
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save your progress. Try again."))
+                }
+            }
+        }
+    }
     SignKoreanAppContent(
         state = state,
         onAction = navigationViewModel::dispatch,
@@ -154,6 +167,7 @@ private fun SignKoreanApp(
         onRateCard = learnViewModel::rateCard,
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
         onUndoRating = learnViewModel::undoRating,
+        onPauseSession = learnViewModel::pauseSession,
     )
 }
 
@@ -180,6 +194,7 @@ internal fun SignKoreanAppContent(
     onRateCard: (RatingDecision, RatingInputSource) -> Unit = { _, _ -> },
     onRatingAnimationFinished: () -> Unit = {},
     onUndoRating: () -> Unit = {},
+    onPauseSession: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -204,6 +219,7 @@ internal fun SignKoreanAppContent(
             onRateCard,
             onRatingAnimationFinished,
             onUndoRating,
+            onPauseSession,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -257,6 +273,7 @@ internal fun SignKoreanAppContent(
         launchState = launchState,
         onboardingState = onboardingState,
         onAction = onAction,
+        onRequestLearnClose = { onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLeave)) },
         synchronizeBackStack = {
             if (backStack.toList() != state.backStack) {
                 backStack.clear()
@@ -283,8 +300,10 @@ internal fun SignKoreanAppContent(
                 AppOverlayHost(
                     state = state,
                     categories = learnHomeState.categories,
+                    learnSessionState = learnSessionState,
                     onAction = onAction,
                     onStartCategorySession = onStartCategorySession,
+                    onPauseSession = onPauseSession,
                 )
             }
         }
@@ -297,6 +316,7 @@ private fun NavigationEffects(
     launchState: LaunchUiState,
     onboardingState: OnboardingChoiceUiState,
     onAction: (AppNavigationAction) -> Unit,
+    onRequestLearnClose: () -> Unit,
     synchronizeBackStack: () -> Unit,
 ) {
     LaunchedEffect(launchState) {
@@ -310,7 +330,13 @@ private fun NavigationEffects(
         }
     }
     LaunchedEffect(state.backStack) { synchronizeBackStack() }
-    BackHandler(enabled = state.handlesBack) { onAction(AppNavigationAction.Back) }
+    BackHandler(enabled = state.handlesBack) {
+        if (state.currentRoute == AppRoute.Learn && state.sheet == null && !state.isViewerVisible && state.toastMessage == null) {
+            onRequestLearnClose()
+        } else {
+            onAction(AppNavigationAction.Back)
+        }
+    }
 }
 
 @Composable
@@ -423,7 +449,7 @@ private fun LearnDestination(
                 }
 
                 LearnUiAction.CloseSession -> {
-                    onAction(AppNavigationAction.Back)
+                    onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLeave))
                 }
 
                 is LearnUiAction.RateCard -> {
@@ -523,12 +549,21 @@ private fun TopLevelTabs(
 private fun BoxScope.AppOverlayHost(
     state: AppNavigationUiState,
     categories: List<com.signkorean.feature.learn.HomeCategoryUiModel>,
+    learnSessionState: LearnSessionUiState,
     onAction: (AppNavigationAction) -> Unit,
     onStartCategorySession: (String) -> Unit,
+    onPauseSession: () -> Unit,
 ) {
     state.sheet?.let { sheet ->
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            GameSheet(title = if (sheet == AppSheet.Category) "All categories" else "Choose a voice") {
+            GameSheet(
+                title =
+                    when (sheet) {
+                        AppSheet.Category -> "All categories"
+                        AppSheet.Voice -> "Choose a voice"
+                        AppSheet.SessionLeave -> "Leave this session?"
+                    },
+            ) {
                 if (sheet == AppSheet.Category) {
                     categories.forEach { category ->
                         GameButton(
@@ -541,15 +576,38 @@ private fun BoxScope.AppOverlayHost(
                             style = GameButtonStyle.Secondary,
                         )
                     }
-                } else {
+                } else if (sheet == AppSheet.Voice) {
                     Text("Eunkyung is selected.", style = MaterialTheme.typography.bodyLarge)
+                } else {
+                    val completedCount = (learnSessionState as? LearnSessionUiState.Active)?.position?.minus(1)
+                    val totalCount = (learnSessionState as? LearnSessionUiState.Active)?.totalCount
+                    if (completedCount != null && totalCount != null) {
+                        Text("$completedCount of $totalCount signs complete", style = MaterialTheme.typography.bodyLarge)
+                    }
+                    Text("Your progress is saved. You can resume this session from Home.", style = MaterialTheme.typography.bodyLarge)
+                    GameButton(
+                        text = "Keep learning",
+                        onClick = { onAction(AppNavigationAction.Back) },
+                        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_KEEP_LEARNING),
+                    )
+                    GameButton(
+                        text = "Leave for now",
+                        onClick = {
+                            onAction(AppNavigationAction.Back)
+                            onPauseSession()
+                        },
+                        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_LEAVE_FOR_NOW),
+                        style = GameButtonStyle.Secondary,
+                    )
                 }
-                GameButton(
-                    text = "Close",
-                    onClick = { onAction(AppNavigationAction.Back) },
-                    modifier = Modifier.fillMaxWidth(),
-                    style = GameButtonStyle.Secondary,
-                )
+                if (sheet != AppSheet.SessionLeave) {
+                    GameButton(
+                        text = "Close",
+                        onClick = { onAction(AppNavigationAction.Back) },
+                        modifier = Modifier.fillMaxWidth(),
+                        style = GameButtonStyle.Secondary,
+                    )
+                }
             }
         }
     }

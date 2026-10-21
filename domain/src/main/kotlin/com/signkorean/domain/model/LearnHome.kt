@@ -6,6 +6,8 @@ import java.time.LocalDate
 data class ActiveSession(
     val completedCount: Int,
     val totalCount: Int,
+    val sessionId: String = "",
+    val isPaused: Boolean = false,
 ) {
     init {
         require(completedCount in 0..totalCount) { "Completed count must be within the session length" }

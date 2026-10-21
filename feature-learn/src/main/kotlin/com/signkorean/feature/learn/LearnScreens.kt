@@ -46,6 +46,8 @@ data class HomeSessionUiModel(
     val reviewCount: Int = 0,
     val newCount: Int = 0,
     val completedCount: Int? = null,
+    val sessionId: String = "",
+    val isPaused: Boolean = false,
 ) {
     val isActive: Boolean
         get() = completedCount != null

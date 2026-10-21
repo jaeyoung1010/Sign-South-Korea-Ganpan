@@ -73,6 +73,7 @@ enum class AppTopLevelTab {
 enum class AppSheet {
     Category,
     Voice,
+    SessionLeave,
 }
 
 data class AppNavigationUiState(

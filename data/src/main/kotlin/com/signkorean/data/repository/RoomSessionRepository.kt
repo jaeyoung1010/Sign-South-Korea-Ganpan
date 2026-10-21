@@ -1,10 +1,15 @@
 package com.signkorean.data.repository
 
+import com.signkorean.data.db.SessionCardEntity
+import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.LearnSessionCard
+import com.signkorean.domain.model.SessionTransitionWriteResult
+import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.SessionRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -13,16 +18,17 @@ import java.time.Instant
 class RoomSessionRepository(
     private val database: SignKoreanDatabase,
     private val dispatcher: CoroutineDispatcher,
+    private val clock: ClockPort = SystemClockAdapter(),
 ) : SessionRepository {
     override suspend fun hasActiveSession(): Boolean =
         withContext(dispatcher) {
-            database.sessionDao().active() != null
+            database.sessionDao().resumable()?.takeIf { database.isConsistent(it) } != null
         }
 
     override suspend fun getActiveSession(): ActiveSession? =
         withContext(dispatcher) {
-            database.sessionDao().active()?.let { session ->
-                ActiveSession(completedCount = session.currentIndex, totalCount = session.requestedLength)
+            database.sessionDao().resumable()?.takeIf { database.isConsistent(it) }?.let { session ->
+                session.toActiveSession()
             }
         }
 
@@ -71,4 +77,75 @@ class RoomSessionRepository(
                 }
             }
         }
+
+    override suspend fun pauseSession(sessionId: String): SessionTransitionWriteResult =
+        withContext(dispatcher) {
+            database.runInTransaction<SessionTransitionWriteResult> {
+                val session = database.sessionDao().get(sessionId) ?: return@runInTransaction SessionTransitionWriteResult.Unavailable
+                if (!database.isConsistent(session)) return@runInTransaction SessionTransitionWriteResult.Unavailable
+                when (session.status) {
+                    ACTIVE_STATUS -> {
+                        val paused = session.copy(status = PAUSED_STATUS, updatedAt = clock.now())
+                        database.sessionDao().update(paused)
+                        SessionTransitionWriteResult.Changed(paused.toActiveSession())
+                    }
+
+                    PAUSED_STATUS -> {
+                        SessionTransitionWriteResult.AlreadyInState(session.toActiveSession())
+                    }
+
+                    else -> {
+                        SessionTransitionWriteResult.Unavailable
+                    }
+                }
+            }
+        }
+
+    override suspend fun resumeSession(sessionId: String): SessionTransitionWriteResult =
+        withContext(dispatcher) {
+            database.runInTransaction<SessionTransitionWriteResult> {
+                val session = database.sessionDao().get(sessionId) ?: return@runInTransaction SessionTransitionWriteResult.Unavailable
+                if (!database.isConsistent(session)) return@runInTransaction SessionTransitionWriteResult.Unavailable
+                when (session.status) {
+                    PAUSED_STATUS -> {
+                        val resumed = session.copy(status = ACTIVE_STATUS, updatedAt = clock.now())
+                        database.sessionDao().update(resumed)
+                        SessionTransitionWriteResult.Changed(resumed.toActiveSession())
+                    }
+
+                    ACTIVE_STATUS -> {
+                        SessionTransitionWriteResult.AlreadyInState(session.toActiveSession())
+                    }
+
+                    else -> {
+                        SessionTransitionWriteResult.Unavailable
+                    }
+                }
+            }
+        }
+
+    private fun SessionEntity.toActiveSession() =
+        ActiveSession(
+            completedCount = currentIndex,
+            totalCount = requestedLength,
+            sessionId = sessionId,
+            isPaused = status == PAUSED_STATUS,
+        )
+
+    private fun SignKoreanDatabase.isConsistent(session: SessionEntity): Boolean {
+        val cards = sessionCardDao().forSession(session.sessionId)
+        val ratings = setOf("GOT_IT", "REVIEW")
+        val ratedCards = cards.take(session.currentIndex)
+        val pendingCards = cards.drop(session.currentIndex)
+        return cards.size == session.requestedLength &&
+            cards.map(SessionCardEntity::position) == cards.indices.toList() &&
+            session.currentIndex in 0 until session.requestedLength &&
+            ratedCards.all { it.rating in ratings && it.ratedAt != null } &&
+            pendingCards.all { it.rating == null && it.ratedAt == null }
+    }
+
+    private companion object {
+        const val ACTIVE_STATUS = "ACTIVE"
+        const val PAUSED_STATUS = "PAUSED"
+    }
 }

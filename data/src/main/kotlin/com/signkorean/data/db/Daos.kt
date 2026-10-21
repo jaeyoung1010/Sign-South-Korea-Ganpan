@@ -41,7 +41,10 @@ interface SessionDao {
     @Query("SELECT * FROM sessions WHERE status = 'ACTIVE' LIMIT 1")
     fun active(): SessionEntity?
 
-    @Query("UPDATE sessions SET status = 'ABANDONED', updated_at = :updatedAt WHERE status = 'ACTIVE'")
+    @Query("SELECT * FROM sessions WHERE status IN ('ACTIVE', 'PAUSED') ORDER BY updated_at DESC LIMIT 1")
+    fun resumable(): SessionEntity?
+
+    @Query("UPDATE sessions SET status = 'ABANDONED', updated_at = :updatedAt WHERE status IN ('ACTIVE', 'PAUSED')")
     fun abandonActive(updatedAt: java.time.Instant)
 }
 
