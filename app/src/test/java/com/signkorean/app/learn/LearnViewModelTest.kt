@@ -233,7 +233,11 @@ class LearnViewModelTest {
                     rateCardUseCase =
                         RateCard {
                             calls += 1
-                            if (calls == 1) RateCardResult.Failed else RateCardResult.Rated(nextPosition = 1, completed = false)
+                            if (calls == 1) {
+                                RateCardResult.Failed
+                            } else {
+                                RateCardResult.Rated(nextPosition = 1, completed = false)
+                            }
                         },
                 )
 

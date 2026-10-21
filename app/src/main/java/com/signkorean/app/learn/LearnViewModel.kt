@@ -102,7 +102,20 @@ class LearnViewModel
             source: RatingInputSource,
         ) {
             val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
-            if (active.stage != LearnCardStage.Answer || active.isRating || isRating || active.sessionId.isBlank()) return
+            if (active.stage == LearnCardStage.Answer) {
+                if (!active.isRating && !isRating) {
+                    if (active.sessionId.isNotBlank()) {
+                        beginRating(active, decision, source)
+                    }
+                }
+            }
+        }
+
+        private fun beginRating(
+            active: LearnSessionUiState.Active,
+            decision: RatingDecision,
+            source: RatingInputSource,
+        ) {
             isRating = true
             ratingJob?.cancel()
             ratingJob =
@@ -127,7 +140,12 @@ class LearnViewModel
                         is RateCardResult.Rated -> {
                             val current = mutableUiState.value as? LearnSessionUiState.Active
                             if (current?.cardId == active.cardId) {
-                                mutableUiState.value = current.copy(isRating = true, ratingDecision = decision, ratingError = false)
+                                mutableUiState.value =
+                                    current.copy(
+                                        isRating = true,
+                                        ratingDecision = decision,
+                                        ratingError = false,
+                                    )
                             }
                         }
 
