@@ -21,8 +21,8 @@ class ConfigureReminderUseCase(
         require(dueCount >= 0) { "Due count must not be negative" }
         val settings = userSettingsRepository.settings.first()
         if (!enabled) {
-            userSettingsRepository.updateSettings { it.copy(reminderEnabled = false) }
             reminderScheduler.cancel()
+            userSettingsRepository.updateSettings { it.copy(reminderEnabled = false) }
             return ConfigureReminderResult.Disabled
         }
 
@@ -34,20 +34,27 @@ class ConfigureReminderUseCase(
                 now = clock.now(),
                 zoneId = clock.zoneId(),
             )
-        userSettingsRepository.updateSettings { it.copy(reminderEnabled = triggerAt != null) }
         if (triggerAt == null) {
             reminderScheduler.cancel()
+            userSettingsRepository.updateSettings { it.copy(reminderEnabled = false) }
             return ConfigureReminderResult.NoDueCards
         }
 
-        reminderScheduler.schedule(
-            ReminderSchedule(
-                triggerAt = triggerAt,
-                localTime = settings.reminderLocalTime,
-                zoneId = clock.zoneId(),
-                appLanguageTag = settings.appLanguageTag,
-            ),
-        )
+        try {
+            reminderScheduler.schedule(
+                ReminderSchedule(
+                    triggerAt = triggerAt,
+                    localTime = settings.reminderLocalTime,
+                    zoneId = clock.zoneId(),
+                    appLanguageTag = settings.appLanguageTag,
+                ),
+            )
+            userSettingsRepository.updateSettings { it.copy(reminderEnabled = true) }
+        } catch (error: Exception) {
+            reminderScheduler.cancel()
+            userSettingsRepository.updateSettings { it.copy(reminderEnabled = false) }
+            throw error
+        }
         return ConfigureReminderResult.Scheduled
     }
 }

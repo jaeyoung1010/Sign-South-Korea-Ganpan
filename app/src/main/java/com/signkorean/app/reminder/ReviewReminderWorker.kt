@@ -1,5 +1,6 @@
 package com.signkorean.app.reminder
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
@@ -94,6 +95,7 @@ class ReviewReminderWorker
             )
         }
 
+        @SuppressLint("AppBundleLocaleChanges")
         private fun Context.localized(languageTag: String): Context {
             val locale = java.util.Locale.forLanguageTag(languageTag)
             val configuration = resources.configuration

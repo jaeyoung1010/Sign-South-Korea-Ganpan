@@ -60,9 +60,9 @@ import kotlinx.coroutines.delay
 internal fun LearnCardStack(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
+    modifier: Modifier = Modifier,
     audioState: AudioPlaybackState = AudioPlaybackState.Idle,
     reduceMotion: Boolean = false,
-    modifier: Modifier = Modifier,
 ) {
     val policy = remember { GesturePolicy() }
     val motionPolicy = remember(reduceMotion) { MotionPolicy(reduceMotion) }

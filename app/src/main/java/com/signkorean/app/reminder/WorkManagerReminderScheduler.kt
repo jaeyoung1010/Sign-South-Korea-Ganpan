@@ -61,7 +61,6 @@ object NotificationChannels {
     const val REVIEW_CHANNEL_ID = "review-reminders"
 
     fun ensure(context: Context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = context.getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(
             NotificationChannel(

@@ -175,6 +175,7 @@ class ExoPlayerAudioPlayerFactory(
                     object : Player.Listener {
                         override fun onPlaybackStateChanged(playbackState: Int) {
                             when (playbackState) {
+                                Player.STATE_IDLE -> Unit
                                 Player.STATE_BUFFERING -> callbacks.onBuffering()
                                 Player.STATE_READY -> callbacks.onReady()
                                 Player.STATE_ENDED -> callbacks.onEnded()

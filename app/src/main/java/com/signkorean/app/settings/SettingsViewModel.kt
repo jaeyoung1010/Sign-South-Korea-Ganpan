@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -158,7 +159,11 @@ class SettingsViewModel
             }
             viewModelScope.launch {
                 try {
-                    when (configureReminder(enabled = true, dueCount = latestDueCount)) {
+                    // Read a fresh snapshot after the permission dialog. The initial progress
+                    // collection can still be pending when the user answers quickly.
+                    val dueCount = observeProgress().first().dueCount
+                    latestDueCount = dueCount
+                    when (configureReminder(enabled = true, dueCount = dueCount)) {
                         ConfigureReminderResult.Scheduled -> effectChannel.trySend(SettingsEffect.ReminderChanged(true))
                         ConfigureReminderResult.NoDueCards -> effectChannel.trySend(SettingsEffect.ReminderChanged(false))
                         ConfigureReminderResult.Disabled -> Unit

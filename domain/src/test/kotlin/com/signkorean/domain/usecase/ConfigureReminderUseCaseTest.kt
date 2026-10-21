@@ -63,7 +63,21 @@ class ConfigureReminderUseCaseTest {
             assertEquals(1, scheduler.cancelCount)
         }
 
-    private class RecordingReminderScheduler : ReminderSchedulerPort {
+    @Test
+    fun `failed scheduling rolls the setting back off`() =
+        runTest {
+            val repository = FakeUserSettingsRepository()
+            val scheduler = RecordingReminderScheduler(failOnSchedule = true)
+
+            runCatching { ConfigureReminderUseCase(repository, scheduler, clock)(true, 1) }
+
+            assertTrue(!repository.settings.first().reminderEnabled)
+            assertEquals(1, scheduler.cancelCount)
+        }
+
+    private class RecordingReminderScheduler(
+        private val failOnSchedule: Boolean = false,
+    ) : ReminderSchedulerPort {
         val schedules = mutableListOf<ReminderSchedule>()
         var cancelCount = 0
         private val permission = MutableStateFlow(ReminderPermission.GRANTED)
@@ -71,6 +85,7 @@ class ConfigureReminderUseCaseTest {
         override fun observePermission(): Flow<ReminderPermission> = permission
 
         override suspend fun schedule(schedule: ReminderSchedule) {
+            if (failOnSchedule) error("schedule failed")
             schedules += schedule
         }
 
