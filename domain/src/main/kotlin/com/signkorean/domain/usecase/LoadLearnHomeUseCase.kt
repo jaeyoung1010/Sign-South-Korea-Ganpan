@@ -11,7 +11,6 @@ import com.signkorean.domain.port.output.HomeActivityRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
 import kotlinx.coroutines.flow.first
-import java.time.LocalDate
 
 class LoadLearnHomeUseCase(
     private val userSettingsRepository: UserSettingsRepository,
@@ -32,10 +31,8 @@ class LoadLearnHomeUseCase(
         val sessionLength = activeSession?.totalCount ?: settings.sessionLength
         val reviewCount = dueCount.coerceAtMost(sessionLength)
         val newCount = newCardCount.coerceAtMost(sessionLength - reviewCount)
-        val today = now.atZone(clock.zoneId()).toLocalDate()
-
         return LearnHomeDashboard(
-            streakDays = activity.reviewedAt.streakEndingOn(today),
+            streakDays = ProgressStatistics.streak(activity.reviewedAt, now, clock.zoneId()),
             session =
                 LearnHomeSession(
                     length = sessionLength,
@@ -45,7 +42,10 @@ class LoadLearnHomeUseCase(
                     activeSession = activeSession,
                 ),
             categories = cards.categories(),
-            weeklyActivity = activity.reviewedAt.lastSevenDaysEndingOn(today),
+            weeklyActivity =
+                ProgressStatistics
+                    .lastSevenDays(activity.reviewedAt, now, clock.zoneId())
+                    .map { LearnHomeDay(it.date, it.count) },
         )
     }
 
@@ -56,23 +56,6 @@ class LoadLearnHomeUseCase(
                 label = label,
                 cardCount = count { it.category == key },
             )
-        }
-
-    private fun List<java.time.Instant>.streakEndingOn(today: LocalDate): Int {
-        val activityDays = map { it.atZone(clock.zoneId()).toLocalDate() }.toSet()
-        var date = today
-        var streak = 0
-        while (date in activityDays) {
-            streak += 1
-            date = date.minusDays(1)
-        }
-        return streak
-    }
-
-    private fun List<java.time.Instant>.lastSevenDaysEndingOn(today: LocalDate): List<LearnHomeDay> =
-        (6 downTo 0).map { offset ->
-            val date = today.minusDays(offset.toLong())
-            LearnHomeDay(date, count { it.atZone(clock.zoneId()).toLocalDate() == date })
         }
 
     private fun Int.estimatedMinutes(): Int =

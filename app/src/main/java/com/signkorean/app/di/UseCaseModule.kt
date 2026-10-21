@@ -5,6 +5,8 @@ import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
 import com.signkorean.domain.port.input.LoadLearnSession
 import com.signkorean.domain.port.input.LoadSessionCompletion
+import com.signkorean.domain.port.input.ObserveProgress
+import com.signkorean.domain.port.input.ObserveReviewCards
 import com.signkorean.domain.port.input.PauseSession
 import com.signkorean.domain.port.input.RateCard
 import com.signkorean.domain.port.input.ResolveLaunchDestination
@@ -32,6 +34,8 @@ import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
 import com.signkorean.domain.usecase.LoadLearnSessionUseCase
 import com.signkorean.domain.usecase.LoadSessionCompletionUseCase
+import com.signkorean.domain.usecase.ObserveProgressUseCase
+import com.signkorean.domain.usecase.ObserveReviewCardsUseCase
 import com.signkorean.domain.usecase.PauseSessionUseCase
 import com.signkorean.domain.usecase.RateCardUseCase
 import com.signkorean.domain.usecase.ResolveLaunchDestinationUseCase
@@ -127,6 +131,17 @@ object UseCaseModule {
             sessionRepository = sessionRepository,
             clock = clock,
         )
+
+    @Provides
+    fun provideObserveProgress(
+        learningRepository: LearningRepository,
+        cardCatalog: CardCatalog,
+        clock: ClockPort,
+    ): ObserveProgress = ObserveProgressUseCase(learningRepository, cardCatalog, clock)
+
+    @Provides
+    fun provideObserveReviewCards(learningRepository: LearningRepository): ObserveReviewCards =
+        ObserveReviewCardsUseCase(learningRepository)
 
     @Provides
     fun provideLoadLearnSession(

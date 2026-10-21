@@ -1,6 +1,7 @@
 package com.signkorean.data.repository
 
 import com.signkorean.data.db.CardProgressEntity
+import com.signkorean.data.db.RatingActivityRow
 import com.signkorean.data.db.RatingCommand
 import com.signkorean.data.db.RatingTransactionResult
 import com.signkorean.data.db.RoomSessionTransactionStore
@@ -9,6 +10,8 @@ import com.signkorean.data.db.UndoTransactionResult
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.CardProgress
 import com.signkorean.domain.model.CardReviewState
+import com.signkorean.domain.model.ProgressReview
+import com.signkorean.domain.model.RatingActivity
 import com.signkorean.domain.port.input.RateCardRequest
 import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.UndoRatingRequest
@@ -16,6 +19,8 @@ import com.signkorean.domain.port.input.UndoRatingResult
 import com.signkorean.domain.port.output.LearningRepository
 import com.signkorean.domain.review.ReviewPolicy
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.time.Instant
 
@@ -25,6 +30,17 @@ class RoomLearningRepository(
     private val dispatcher: CoroutineDispatcher,
 ) : LearningRepository {
     override fun getReviewState(cardId: String): CardReviewState = CardReviewState.NotFound
+
+    override fun observeProgress(now: Instant): Flow<List<CardProgress>> =
+        database.cardProgressDao().observeAll().map { progress -> progress.map { it.toDomain() } }
+
+    override fun observeRatingActivity(): Flow<List<RatingActivity>> =
+        database.sessionCardDao().observeRatingActivity().map { activity -> activity.mapNotNull { it.toDomain() } }
+
+    override fun observeReviewCards(limit: Int, offset: Int): Flow<List<ProgressReview>> =
+        database.sessionCardDao().observeRecentReviews(limit, offset).map { reviews ->
+            reviews.map { ProgressReview(cardId = it.cardId, reviewedAt = it.ratedAt) }
+        }
 
     override suspend fun rateCard(
         request: RateCardRequest,
@@ -93,6 +109,13 @@ class RoomLearningRepository(
             gotItCount = gotItCount,
             version = version,
         )
+
+    private fun RatingActivityRow.toDomain(): RatingActivity? =
+        when (rating) {
+            "GOT_IT" -> RatingActivity(cardId, RatingDecision.GotIt, ratedAt)
+            "REVIEW" -> RatingActivity(cardId, RatingDecision.Review, ratedAt)
+            else -> null
+        }
 
     private fun String.toDecision(): RatingDecision? =
         when (this) {

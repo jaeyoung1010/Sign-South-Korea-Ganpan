@@ -1,6 +1,7 @@
 package com.signkorean.data.db
 
 import androidx.room.Dao
+import androidx.room.ColumnInfo
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -26,6 +27,9 @@ interface CardProgressDao {
 
     @Query("SELECT * FROM card_progress")
     fun all(): List<CardProgressEntity>
+
+    @Query("SELECT * FROM card_progress ORDER BY card_id")
+    fun observeAll(): Flow<List<CardProgressEntity>>
 }
 
 @Dao
@@ -88,6 +92,31 @@ interface SessionCardDao {
 
     @Query(
         """
+        SELECT card_id, MAX(rated_at) AS rated_at
+        FROM session_cards
+        WHERE rating = 'REVIEW' AND rated_at IS NOT NULL
+        GROUP BY card_id
+        ORDER BY rated_at DESC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    fun observeRecentReviews(
+        limit: Int,
+        offset: Int,
+    ): Flow<List<ReviewCardRow>>
+
+    @Query(
+        """
+        SELECT card_id, rating, rated_at
+        FROM session_cards
+        WHERE rating IN ('GOT_IT', 'REVIEW') AND rated_at IS NOT NULL
+        ORDER BY rated_at DESC
+        """,
+    )
+    fun observeRatingActivity(): Flow<List<RatingActivityRow>>
+
+    @Query(
+        """
         UPDATE session_cards
         SET answer_revealed_at = :revealedAt
         WHERE session_id = :sessionId
@@ -106,6 +135,17 @@ interface SessionCardDao {
     @Update
     fun update(card: SessionCardEntity)
 }
+
+data class ReviewCardRow(
+    @ColumnInfo(name = "card_id") val cardId: String,
+    @ColumnInfo(name = "rated_at") val ratedAt: java.time.Instant,
+)
+
+data class RatingActivityRow(
+    @ColumnInfo(name = "card_id") val cardId: String,
+    val rating: String,
+    @ColumnInfo(name = "rated_at") val ratedAt: java.time.Instant,
+)
 
 @Dao
 interface RatingSnapshotDao {
