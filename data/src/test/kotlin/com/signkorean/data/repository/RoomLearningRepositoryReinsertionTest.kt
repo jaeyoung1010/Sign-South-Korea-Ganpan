@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.signkorean.data.db.RoomSessionTransactionStore
+import com.signkorean.data.db.CardProgressEntity
 import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
@@ -108,6 +109,35 @@ class RoomLearningRepositoryReinsertionTest {
             assertEquals(6, database.sessionCardDao().countForSession("session-1"))
             assertEquals(6, database.sessionDao().get("session-1")?.requestedLength)
             assertEquals(listOf("card-0", "card-1", "card-2", "card-3", "card-4", "card-5"), database.sessionCardDao().forSession("session-1").map { it.cardId })
+        }
+
+    @Test
+    fun `large review count clamps reinsertion to the end without leaving position gaps`() =
+        runTest {
+            database.sessionCardDao().forSession("session-1").filter { it.position >= 4 }.forEach {
+                database.sessionCardDao().delete(it.sessionId, it.position)
+            }
+            database.sessionDao().update(database.sessionDao().get("session-1")!!.copy(requestedLength = 4))
+            database.cardProgressDao().upsert(
+                CardProgressEntity(
+                    cardId = "card-0",
+                    stage = 0,
+                    mastered = false,
+                    lastRating = "REVIEW",
+                    lastReviewedAt = ratedAt.minusSeconds(1),
+                    nextReviewAt = ratedAt,
+                    reviewCount = 2,
+                    gotItCount = 0,
+                    version = 2,
+                ),
+            )
+
+            repository.rateCard(request(0, "card-0"), ratedAt)
+
+            val cards = database.sessionCardDao().forSession("session-1")
+            assertEquals(5, cards.size)
+            assertEquals((0 until cards.size).toList(), cards.map { it.position })
+            assertEquals("card-0", cards.last().cardId)
         }
 
     private fun request(position: Int, cardId: String) =

@@ -8,14 +8,21 @@ object ReinsertionPolicy {
     fun gapFor(reviewCount: Int): Int =
         MIN_GAP + ((reviewCount - 1).coerceAtLeast(0) % (MAX_GAP - MIN_GAP + 1))
 
+    fun insertionIndex(
+        remainingSize: Int,
+        reviewCount: Int,
+    ): Int? {
+        if (remainingSize < MIN_GAP) return null
+        return gapFor(reviewCount).coerceAtMost(remainingSize)
+    }
+
     fun reinsert(
         reviewedCardId: String,
         remainingCardIds: List<String>,
         reviewCount: Int,
     ): List<String> {
         require(reviewedCardId.isNotBlank()) { "Reviewed card ID must not be blank" }
-        if (remainingCardIds.size < MIN_GAP) return remainingCardIds
-        val insertionIndex = gapFor(reviewCount).coerceAtMost(remainingCardIds.size)
+        val insertionIndex = insertionIndex(remainingCardIds.size, reviewCount) ?: return remainingCardIds
         return remainingCardIds.toMutableList().apply { add(insertionIndex, reviewedCardId) }
     }
 }

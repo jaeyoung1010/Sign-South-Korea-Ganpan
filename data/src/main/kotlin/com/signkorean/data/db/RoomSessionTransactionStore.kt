@@ -114,9 +114,14 @@ class RoomSessionTransactionStore(
             database.sessionCardDao().update(card.copy(rating = command.rating, ratedAt = command.ratedAt))
             val nextIndex = command.position + 1
             val remainingCount = database.sessionCardDao().countForSession(command.sessionId) - nextIndex
-            val shouldReinsert = command.rating == "REVIEW" && remainingCount >= ReinsertionPolicy.MIN_GAP
-            if (shouldReinsert) {
-                val gap = ReinsertionPolicy.gapFor(command.updatedProgress.reviewCount)
+            val insertionGap =
+                if (command.rating == "REVIEW") {
+                    ReinsertionPolicy.insertionIndex(remainingCount, command.updatedProgress.reviewCount)
+                } else {
+                    null
+                }
+            if (insertionGap != null) {
+                val gap = insertionGap
                 val insertionPosition = command.position + 1 + gap
                 database.sessionCardDao().forSession(command.sessionId)
                     .asSequence()
@@ -210,7 +215,10 @@ class RoomSessionTransactionStore(
         progressAfterRating: CardProgressEntity?,
     ) {
         if (ratedCard.rating != "REVIEW") return
-        val insertionPosition = snapshot.position + 1 + ReinsertionPolicy.gapFor(progressAfterRating?.reviewCount ?: return)
+        val remainingAfterRating = database.sessionCardDao().countForSession(session.sessionId) - (snapshot.position + 1)
+        val originalRemaining = (remainingAfterRating - 1).coerceAtLeast(0)
+        val gap = ReinsertionPolicy.insertionIndex(originalRemaining, progressAfterRating?.reviewCount ?: return) ?: return
+        val insertionPosition = snapshot.position + 1 + gap
         val reinserted = database.sessionCardDao().get(session.sessionId, insertionPosition)
         if (reinserted?.cardId == snapshot.cardId && reinserted.rating == null && reinserted.source == "REVIEW") {
             check(database.sessionCardDao().delete(session.sessionId, insertionPosition) == 1) {
