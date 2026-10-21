@@ -173,8 +173,8 @@ private fun ProgressDashboard(
         modifier = Modifier.fillMaxSize().verticalScroll(scrollState).padding(bottom = 88.dp),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
-        Text(text = state.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-        Text(text = state.summary, style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(R.string.progress_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.progress_summary), style = MaterialTheme.typography.bodyLarge)
         if (state.isLoading) {
             GameCard(modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(R.string.progress_loading), style = MaterialTheme.typography.bodyLarge)

@@ -53,6 +53,10 @@ class BundleContentAdapter(
         requireValidation(manifest.cardCount == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT cards" }
         requireValidation(manifest.languages.toSet() == REQUIRED_LANGUAGE_TAGS) { "supported languages must be en and ja" }
         requireValidation(manifest.languages.distinct().size == manifest.languages.size) { "duplicate language in manifest" }
+        requireValidation(manifest.reviewStatus.keys == REQUIRED_LANGUAGE_TAGS) { "manifest must record review status for every language" }
+        requireValidation(manifest.reviewStatus.getValue(ENGLISH_LANGUAGE_TAG) == NATIVE_ENGLISH_REVIEW_STATUS) {
+            "English content must record native review status"
+        }
         requireValidation(manifest.checksums.keys == REQUIRED_CONTENT_PATHS) { "manifest must checksum every content file" }
 
         val contentTexts = REQUIRED_CONTENT_PATHS.associateWith(assetSource::readText)
@@ -129,6 +133,12 @@ class BundleContentAdapter(
             requireValidation(!copy.imageAltTextQuestion.contains(cardsById.getValue(copy.cardId).korean)) {
                 "question alt text reveals the answer for ${copy.cardId}"
             }
+            if (languageTag == ENGLISH_LANGUAGE_TAG) {
+                requireValidation(!copy.reviewer.isNullOrBlank()) { "English reviewer missing for ${copy.cardId}" }
+                requireValidation(copy.reviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
+                    "English review date missing for ${copy.cardId}"
+                }
+            }
         }
     }
 
@@ -177,10 +187,13 @@ class BundleContentAdapter(
         const val BASE_CARDS_PATH = "content/cards.base.json"
         const val EN_CARDS_PATH = "content/en/cards.json"
         const val JA_CARDS_PATH = "content/ja/cards.json"
+        const val ENGLISH_LANGUAGE_TAG = "en"
+        const val NATIVE_ENGLISH_REVIEW_STATUS = "native-english-reviewed"
         val REQUIRED_CONTENT_PATHS = setOf(BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH)
         val REQUIRED_LANGUAGE_TAGS = setOf("en", "ja")
         val PERCENT_RANGE = 0f..100f
         val IMAGE_REVIEW_STATUSES = setOf("approved", "pending")
+        val REVIEW_DATE_PATTERN = Regex("\\d{4}-\\d{2}-\\d{2}")
     }
 }
 
@@ -211,6 +224,7 @@ private data class ContentManifest(
     val contentVersion: Int,
     val cardCount: Int,
     val languages: List<String>,
+    val reviewStatus: Map<String, String>,
     val checksums: Map<String, String>,
 )
 
@@ -286,6 +300,8 @@ private data class LocalizedCardCopyJson(
             imageAltTextAnswer = imageAltTextAnswer,
             searchTerms = searchTerms,
             contentVersion = contentVersion,
+            reviewer = reviewer,
+            reviewedAt = reviewedAt,
         )
 }
 

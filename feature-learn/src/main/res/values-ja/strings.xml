@@ -1,0 +1,74 @@
+<resources>
+    <string name="learn_ready_title">韓国の街を読んでみましょう</string>
+    <string name="learn_ready_description">短い街歩きリーディングを始められます。</string>
+    <string name="learn_brand_name">Sign Korean</string>
+    <plurals name="learn_streak_days"><item quantity="other">%1$d日</item></plurals>
+    <string name="learn_today_session">今日のセッション</string>
+    <string name="learn_pick_up">続きから始める</string>
+    <plurals name="learn_street_signs"><item quantity="other">%1$d枚の看板</item></plurals>
+    <plurals name="learn_signs_complete"><item quantity="other">%1$d / %2$d枚を完了</item></plurals>
+    <plurals name="learn_about_minutes"><item quantity="other">約%1$d分</item></plurals>
+    <plurals name="learn_review_count"><item quantity="other">復習 %1$d枚</item></plurals>
+    <plurals name="learn_new_count"><item quantity="other">新規 %1$d枚</item></plurals>
+    <string name="learn_starting_session">セッションを開始中…</string>
+    <string name="learn_resume_session">セッションを再開</string>
+    <string name="learn_start_session">セッションを開始</string>
+    <string name="learn_start_error">セッションを開始できませんでした。もう一度お試しください。</string>
+    <string name="learn_replace_title">現在のセッションを置き換えますか？</string>
+    <string name="learn_replace_body">%1$sを始めると、進行中のセッションが置き換わります。</string>
+    <string name="learn_replace_session">セッションを置き換える</string>
+    <string name="learn_keep_current_session">現在のセッションを続ける</string>
+    <string name="learn_explore_category">カテゴリーから探す</string>
+    <string name="learn_see_all">すべて見る</string>
+    <plurals name="learn_category_signs"><item quantity="other">%1$s · %2$d枚</item></plurals>
+    <string name="learn_your_week">今週</string>
+    <string name="learn_close">閉じる</string>
+    <string name="learn_more">その他</string>
+    <string name="learn_position">%1$d / %2$d</string>
+    <string name="learn_show_answer">答えを見る</string>
+    <string name="learn_view_sign_photo">看板の写真を見る</string>
+    <string name="learn_undo">元に戻す</string>
+    <string name="learn_loading_session">セッションを読み込み中…</string>
+    <string name="learn_session_complete">セッション完了</string>
+    <string name="learn_no_cards">復習する看板は残っていません。</string>
+    <string name="learn_back_to_learn">学習に戻る</string>
+    <string name="learn_card_unavailable">このセッションの看板は利用できません。</string>
+    <string name="learn_error_no_active">学習中のセッションはありません。</string>
+    <string name="learn_error_empty">保存されたセッションに看板がありません。</string>
+    <string name="learn_error_restart">保存されたセッションをもう一度開始してください。</string>
+    <string name="learn_error_unknown_card">この看板は利用できなくなりました。</string>
+    <string name="learn_error_unavailable">保存されたセッションを読み込めませんでした。</string>
+    <plurals name="learn_signs_practiced"><item quantity="other">%1$d枚の看板を練習</item></plurals>
+    <string name="learn_got_it_count">わかった：%1$d</string>
+    <string name="learn_review_count_label">復習：%1$d</string>
+    <string name="learn_see_review_cards">復習カードを見る</string>
+    <string name="learn_back_home">ホームに戻る</string>
+    <string name="learn_see_progress">進捗を見る</string>
+    <string name="learn_no_further_review">次の復習予定はありません</string>
+    <string name="learn_upcoming_card">次のカード</string>
+    <string name="learn_got_it">わかった</string>
+    <string name="learn_review">復習</string>
+    <string name="learn_question">この看板はどういう意味ですか？</string>
+    <string name="learn_question_hint">答えを見る前に、看板を少し読んでみましょう。</string>
+    <string name="learn_answer">答え</string>
+    <string name="learn_playing_pronunciation">発音を再生中</string>
+    <string name="learn_play_pronunciation">発音を再生</string>
+    <string name="learn_words">単語</string>
+    <string name="learn_street_note">街でのメモ</string>
+    <string name="learn_gesture_hint">← わかった · 復習 →</string>
+    <string name="learn_close_viewer">ビューアーを閉じる</string>
+    <string name="learn_photo_unavailable">写真を利用できません</string>
+    <string name="learn_photo_alt">街の看板の写真。</string>
+    <string name="learn_report_title">何を確認しますか？</string>
+    <string name="learn_report_details_label">詳細（任意）</string>
+    <string name="learn_report_details_hint">個人情報は入力しないでください</string>
+    <string name="learn_report_privacy_notice">個人情報は入力しないでください。</string>
+    <string name="learn_report_sending">送信中…</string>
+    <string name="learn_report_send">報告を送信</string>
+    <string name="learn_report_cancel">キャンセル</string>
+    <string name="learn_report_wrong_korean">韓国語の表記が間違っている</string>
+    <string name="learn_report_wrong_meaning">意味が間違っている</string>
+    <string name="learn_report_photo_problem">写真の問題</string>
+    <string name="learn_report_audio_problem">音声の問題</string>
+    <string name="learn_report_other">その他</string>
+</resources>

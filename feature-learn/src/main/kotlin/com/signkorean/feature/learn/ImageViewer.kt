@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
@@ -98,7 +99,7 @@ fun LearnImageViewer(
         }
 
         GameButton(
-            text = "Close viewer",
+            text = stringResource(R.string.learn_close_viewer),
             onClick = onClose,
             modifier =
                 Modifier

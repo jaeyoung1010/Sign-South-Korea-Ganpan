@@ -1,0 +1,35 @@
+<resources>
+    <string name="settings_title">設定</string>
+    <string name="settings_voice">音声：%1$s</string>
+    <string name="settings_session_length">セッションの長さ：%1$d · 約%2$d分</string>
+    <string name="settings_show_romanization">ローマ字を表示</string>
+    <string name="settings_answer_only">答えのみ</string>
+    <string name="settings_auto_play">音声を自動再生</string>
+    <string name="settings_answer_appears">答えが表示されたとき</string>
+    <string name="settings_reduce_motion">動きを減らす</string>
+    <string name="settings_system_setting">システム設定を使用</string>
+    <string name="settings_app_preference">アプリの設定</string>
+    <string name="settings_review_reminder">復習リマインダー</string>
+    <string name="settings_daily_reminder">復習カードがある日に毎日19:00</string>
+    <string name="settings_legal">法的情報</string>
+    <string name="settings_account_sync">アカウントと同期</string>
+    <string name="settings_version">バージョン %1$s</string>
+    <string name="settings_voice_typecast">Typecast · Eunkyung</string>
+    <string name="settings_voice_gemini">Gemini Flash · Kore</string>
+    <string name="legal_title">法的情報</string>
+    <string name="legal_summary">利用規約、プライバシー、コンテンツに関する情報。</string>
+    <string name="legal_privacy_policy">プライバシーポリシー</string>
+    <string name="legal_terms_of_use">利用規約</string>
+    <string name="legal_loading">ポリシーを読み込み中…</string>
+    <string name="legal_unavailable">同梱のポリシーを読み込めませんでした。</string>
+    <string name="legal_offline_copy">オフライン版 · インターネット接続なしで利用できます</string>
+    <string name="legal_version_effective">バージョン %1$s · 発効日 %2$s</string>
+    <string name="legal_read_online">オンラインで読む</string>
+    <string name="legal_back_to_settings">設定に戻る</string>
+    <string name="account_guest">ゲストとして学習中</string>
+    <string name="account_saved_on_device">進捗はこの端末に保存されます。</string>
+    <string name="account_no_email">メールアドレスは保存しません。</string>
+    <string name="account_delete_notice">アプリを削除またはアンインストールすると、この端末の進捗も削除されます。</string>
+    <string name="account_connect">アカウントを接続</string>
+    <string name="account_cloud_unavailable">このバージョンではクラウド同期を利用できません。</string>
+</resources>

@@ -1,0 +1,74 @@
+<resources>
+    <string name="learn_ready_title">Ready to read Korea?</string>
+    <string name="learn_ready_description">A short street-reading session is waiting.</string>
+    <string name="learn_brand_name">Sign Korean</string>
+    <plurals name="learn_streak_days"><item quantity="one">%1$d day</item><item quantity="other">%1$d days</item></plurals>
+    <string name="learn_today_session">TODAY\'S SESSION</string>
+    <string name="learn_pick_up">Pick up where you left off</string>
+    <plurals name="learn_street_signs"><item quantity="one">%1$d street sign</item><item quantity="other">%1$d street signs</item></plurals>
+    <plurals name="learn_signs_complete"><item quantity="one">%1$d of %2$d sign complete</item><item quantity="other">%1$d of %2$d signs complete</item></plurals>
+    <plurals name="learn_about_minutes"><item quantity="one">About %1$d minute</item><item quantity="other">About %1$d minutes</item></plurals>
+    <plurals name="learn_review_count"><item quantity="one">%1$d review</item><item quantity="other">%1$d reviews</item></plurals>
+    <plurals name="learn_new_count"><item quantity="one">%1$d new</item><item quantity="other">%1$d new</item></plurals>
+    <string name="learn_starting_session">Starting session…</string>
+    <string name="learn_resume_session">Resume session</string>
+    <string name="learn_start_session">Start session</string>
+    <string name="learn_start_error">Could not start the session. Please try again.</string>
+    <string name="learn_replace_title">Replace your current session?</string>
+    <string name="learn_replace_body">Starting %1$s will replace the session you have in progress.</string>
+    <string name="learn_replace_session">Replace session</string>
+    <string name="learn_keep_current_session">Keep current session</string>
+    <string name="learn_explore_category">Explore by category</string>
+    <string name="learn_see_all">See all</string>
+    <plurals name="learn_category_signs"><item quantity="one">%1$s · %2$d sign</item><item quantity="other">%1$s · %2$d signs</item></plurals>
+    <string name="learn_your_week">Your week</string>
+    <string name="learn_close">Close</string>
+    <string name="learn_more">More</string>
+    <string name="learn_position">%1$d of %2$d</string>
+    <string name="learn_show_answer">Show answer</string>
+    <string name="learn_view_sign_photo">View sign photo</string>
+    <string name="learn_undo">Undo</string>
+    <string name="learn_loading_session">Loading session…</string>
+    <string name="learn_session_complete">Session complete</string>
+    <string name="learn_no_cards">This session has no cards left to review.</string>
+    <string name="learn_back_to_learn">Back to learn</string>
+    <string name="learn_card_unavailable">This session card is unavailable</string>
+    <string name="learn_error_no_active">There is no active learning session.</string>
+    <string name="learn_error_empty">This saved session has no cards.</string>
+    <string name="learn_error_restart">This saved session needs to be started again.</string>
+    <string name="learn_error_unknown_card">This sign is no longer available.</string>
+    <string name="learn_error_unavailable">Your saved session could not be loaded.</string>
+    <plurals name="learn_signs_practiced"><item quantity="one">%1$d sign practiced</item><item quantity="other">%1$d signs practiced</item></plurals>
+    <string name="learn_got_it_count">Got it: %1$d</string>
+    <string name="learn_review_count_label">Review: %1$d</string>
+    <string name="learn_see_review_cards">See review cards</string>
+    <string name="learn_back_home">Back home</string>
+    <string name="learn_see_progress">See progress</string>
+    <string name="learn_no_further_review">No further review scheduled</string>
+    <string name="learn_upcoming_card">Upcoming card</string>
+    <string name="learn_got_it">Got it</string>
+    <string name="learn_review">Review</string>
+    <string name="learn_question">What does this sign mean?</string>
+    <string name="learn_question_hint">Take a moment to read the sign before you reveal it.</string>
+    <string name="learn_answer">Answer</string>
+    <string name="learn_playing_pronunciation">Playing pronunciation</string>
+    <string name="learn_play_pronunciation">Play pronunciation</string>
+    <string name="learn_words">Words</string>
+    <string name="learn_street_note">Street note</string>
+    <string name="learn_gesture_hint">← Got it · Review →</string>
+    <string name="learn_close_viewer">Close viewer</string>
+    <string name="learn_photo_unavailable">Photo unavailable</string>
+    <string name="learn_photo_alt">Street sign photo.</string>
+    <string name="learn_report_title">What should we check?</string>
+    <string name="learn_report_details_label">Optional details</string>
+    <string name="learn_report_details_hint">Do not include personal information</string>
+    <string name="learn_report_privacy_notice">Please do not include personal information.</string>
+    <string name="learn_report_sending">Sending…</string>
+    <string name="learn_report_send">Send report</string>
+    <string name="learn_report_cancel">Cancel</string>
+    <string name="learn_report_wrong_korean">Korean text looks wrong</string>
+    <string name="learn_report_wrong_meaning">Meaning looks wrong</string>
+    <string name="learn_report_photo_problem">Photo problem</string>
+    <string name="learn_report_audio_problem">Audio problem</string>
+    <string name="learn_report_other">Something else</string>
+</resources>

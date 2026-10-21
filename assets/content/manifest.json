@@ -2,9 +2,13 @@
   "contentVersion": 1,
   "cardCount": 20,
   "languages": ["en", "ja"],
+  "reviewStatus": {
+    "en": "native-english-reviewed",
+    "ja": "editor-reviewed"
+  },
   "checksums": {
     "content/cards.base.json": "fc2d88088a501237bdfffb69d9e64b4974375df077ac37775a294156eb4fb326",
-    "content/en/cards.json": "2ef7e133b5304d76c503d7a8ae71713d88025f0bd92518e12b3a3e46b5ae9f27",
+    "content/en/cards.json": "f1b452447c90ae01f412a2e7ef03603724e944f68d4dd1021797ea5a37417f26",
     "content/ja/cards.json": "8bce075b0fdf1cd27d0ed050a904bcd30f8aebf8f7f72bf9c6dad3e65b2f031b"
   }
 }

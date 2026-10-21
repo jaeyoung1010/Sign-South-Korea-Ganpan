@@ -35,6 +35,21 @@ class BundleContentAdapterTest {
         assertEquals(cardIds, adapter.getLocalizedCopy("ja").map { it.cardId }.toSet())
         assertTrue(adapter.getLocalizedCopy("en").all { it.wordParts.isNotEmpty() })
         assertTrue(adapter.getLocalizedCopy("ja").all { it.wordParts.isNotEmpty() })
+        assertTrue(adapter.getLocalizedCopy("en").all { it.pronunciationGuide.isNotBlank() })
+        assertTrue(adapter.getLocalizedCopy("en").all { it.imageAltTextQuestion.isNotBlank() && it.imageAltTextAnswer.isNotBlank() })
+        assertTrue(adapter.getLocalizedCopy("en").all { !it.reviewer.isNullOrBlank() && it.reviewedAt == "2026-10-21" })
+    }
+
+    @Test
+    fun `rejects an English card without native review metadata`() {
+        val assets = validAssets().toMutableMap()
+        assets[EN_CARDS_PATH] = assets.getValue(EN_CARDS_PATH).replaceFirst(
+            "\"reviewer\":\"native-english-review\"",
+            "\"reviewer\":null",
+        )
+
+        refreshManifestChecksums(assets)
+        assertFailsValidation(assets, "English reviewer")
     }
 
     @Test

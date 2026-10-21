@@ -1,4 +1,6 @@
 <resources>
+    <string name="progress_title">あなたの進捗</string>
+    <string name="progress_summary">看板を読む力の成長を確認しましょう。</string>
     <string name="progress_loading">進捗を読み込み中…</string>
     <string name="progress_retry">もう一度試す</string>
     <string name="progress_empty_title">まだ進捗がありません</string>

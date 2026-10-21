@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -65,7 +66,7 @@ internal fun PhotoSurface(
             )
             AsyncImage(
                 model = imageAssetUri,
-                contentDescription = contentDescription,
+                contentDescription = contentDescription?.takeIf { it.isNotBlank() } ?: stringResource(R.string.learn_photo_alt),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize(),
                 onSuccess = { success ->
@@ -95,7 +96,7 @@ internal fun PhotoSurface(
         }
         if (hasLoadError) {
             Text(
-                text = "Photo unavailable",
+                text = stringResource(R.string.learn_photo_unavailable),
                 color = Color.White,
                 style = MaterialTheme.typography.bodyLarge,
             )

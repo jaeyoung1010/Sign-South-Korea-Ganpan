@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -208,7 +209,7 @@ private fun PreviewCard(
     ) {
         PhotoSurface(
             imageAssetUri = preview.imageAssetUri,
-            contentDescription = "Upcoming card",
+            contentDescription = stringResource(R.string.learn_upcoming_card),
             focus = null,
             modifier = Modifier.fillMaxSize(),
         )
@@ -286,7 +287,7 @@ private fun ActiveCard(
         (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
             if (overlay == null) return@let
             Text(
-                text = if (overlay == DragOverlay.GotIt) "Got it" else "Review",
+                text = if (overlay == DragOverlay.GotIt) stringResource(R.string.learn_got_it) else stringResource(R.string.learn_review),
                 modifier =
                     Modifier
                         .align(if (overlay == DragOverlay.GotIt) Alignment.CenterStart else Alignment.CenterEnd)
@@ -354,12 +355,12 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
 internal fun CardQuestion() {
     Column(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_QUESTION)) {
         Text(
-            text = "What does this sign mean?",
+            text = stringResource(R.string.learn_question),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
         Text(
-            text = "Take a moment to read the sign before you reveal it.",
+            text = stringResource(R.string.learn_question_hint),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
@@ -381,13 +382,13 @@ internal fun CardAnswer(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Answer",
+                text = stringResource(R.string.learn_answer),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Black,
             )
             GameIconButton(
                 symbol = if (isPlaying) "■" else "♪",
-                contentDescription = if (isPlaying) "Playing pronunciation" else "Play pronunciation",
+                contentDescription = if (isPlaying) stringResource(R.string.learn_playing_pronunciation) else stringResource(R.string.learn_play_pronunciation),
                 onClick = onPlayAudio,
                 modifier = Modifier.testTag(SignKoreanTestTags.LEARN_PLAY_AUDIO),
             )
@@ -400,17 +401,17 @@ internal fun CardAnswer(
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
-        Text(text = "Words", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_words), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
         answer.wordParts.forEach { wordPart ->
             Text(
                 text = "${wordPart.korean} · ${wordPart.meaning}",
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
-        Text(text = "Street note", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_street_note), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
         Text(text = answer.streetNote, style = MaterialTheme.typography.bodyLarge)
         Text(
-            text = "← Got it · Review →",
+            text = stringResource(R.string.learn_gesture_hint),
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Black,
         )

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonRow
@@ -65,13 +66,13 @@ fun ReportSheet(
                 .spacedBy(SignKoreanSpacing.small),
     ) {
         Text(
-            text = "What should we check?",
+            text = stringResource(R.string.learn_report_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Black,
         )
         CardReportReason.entries.forEach { reason ->
             GameButton(
-                text = reason.label,
+                text = stringResource(reason.labelResource),
                 onClick = { onReasonSelected(reason) },
                 modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.learnReportReason(reason.name)),
                 style = if (state.selectedReason == reason) GameButtonStyle.Primary else GameButtonStyle.Secondary,
@@ -82,8 +83,8 @@ fun ReportSheet(
             value = state.details,
             onValueChange = onDetailsChanged,
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REPORT_DETAILS),
-            label = { Text("Optional details") },
-            placeholder = { Text("Do not include personal information") },
+            label = { Text(stringResource(R.string.learn_report_details_label)) },
+            placeholder = { Text(stringResource(R.string.learn_report_details_hint)) },
             supportingText = {
                 Text(
                     "${state.details.codePointCount(0, state.details.length)} / " +
@@ -95,7 +96,7 @@ fun ReportSheet(
             enabled = state.status != ReportStatus.Saving,
         )
         Text(
-            text = "Please do not include personal information.",
+            text = stringResource(R.string.learn_report_privacy_notice),
             style = MaterialTheme.typography.bodySmall,
         )
         state.errorMessage?.let { message ->
@@ -106,14 +107,14 @@ fun ReportSheet(
             )
         }
         GameButton(
-            text = if (state.status == ReportStatus.Saving) "Sending…" else "Send report",
+            text = if (state.status == ReportStatus.Saving) stringResource(R.string.learn_report_sending) else stringResource(R.string.learn_report_send),
             onClick = onSubmit,
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REPORT_SUBMIT),
             enabled = state.canSubmit,
         )
         GameButtonRow {
             GameButton(
-                text = "Cancel",
+                text = stringResource(R.string.learn_report_cancel),
                 onClick = onCancel,
                 modifier = Modifier.weight(1f).testTag(SignKoreanTestTags.LEARN_REPORT_CANCEL),
                 style = GameButtonStyle.Secondary,
@@ -122,12 +123,12 @@ fun ReportSheet(
     }
 }
 
-private val CardReportReason.label: String
+private val CardReportReason.labelResource: Int
     get() =
         when (this) {
-            CardReportReason.WRONG_KOREAN -> "Korean text looks wrong"
-            CardReportReason.WRONG_MEANING -> "Meaning looks wrong"
-            CardReportReason.PHOTO_PROBLEM -> "Photo problem"
-            CardReportReason.AUDIO_PROBLEM -> "Audio problem"
-            CardReportReason.OTHER -> "Something else"
+            CardReportReason.WRONG_KOREAN -> R.string.learn_report_wrong_korean
+            CardReportReason.WRONG_MEANING -> R.string.learn_report_wrong_meaning
+            CardReportReason.PHOTO_PROBLEM -> R.string.learn_report_photo_problem
+            CardReportReason.AUDIO_PROBLEM -> R.string.learn_report_audio_problem
+            CardReportReason.OTHER -> R.string.learn_report_other
         }

@@ -39,6 +39,8 @@ data class LocalizedCardCopy(
     val imageAltTextAnswer: String,
     val searchTerms: List<String>,
     val contentVersion: Int,
+    val reviewer: String? = null,
+    val reviewedAt: String? = null,
 )
 
 data class BundleValidationReport(

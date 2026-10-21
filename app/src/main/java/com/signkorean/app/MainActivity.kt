@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -162,6 +163,7 @@ private fun SignKoreanApp(
     settingsViewModel: SettingsViewModel,
     legalViewModel: LegalViewModel,
 ) {
+    val resources = LocalResources.current
     val state by navigationViewModel.uiState.collectAsState()
     val launchState by launchViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
@@ -203,7 +205,7 @@ private fun SignKoreanApp(
 
                 com.signkorean.app.learn.LearnSessionEffect.PauseFailed -> {
                     navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast("Could not save your progress. Try again."),
+                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_save_progress_failed)),
                     )
                 }
 
@@ -213,19 +215,19 @@ private fun SignKoreanApp(
 
                 com.signkorean.app.learn.LearnSessionEffect.ReportSubmitted -> {
                     navigationViewModel.dispatch(AppNavigationAction.Back)
-                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Thanks. We'll review this card."))
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_report_thanks)))
                 }
 
                 is com.signkorean.app.learn.LearnSessionEffect.AudioFailed -> {
                     val message =
                         when (effect.reason) {
-                            AudioPlaybackFailure.AudioFocusDenied -> "Audio focus is unavailable. Try again."
+                            AudioPlaybackFailure.AudioFocusDenied -> resources.getString(R.string.toast_audio_focus_unavailable)
 
                             AudioPlaybackFailure.AssetMissing,
                             AudioPlaybackFailure.InvalidProvider,
                             AudioPlaybackFailure.Decode,
                             AudioPlaybackFailure.Unknown,
-                            -> "Audio is unavailable for this card."
+                            -> resources.getString(R.string.toast_audio_unavailable)
                         }
                     navigationViewModel.dispatch(AppNavigationAction.ShowToast(message))
                 }
@@ -247,22 +249,22 @@ private fun SignKoreanApp(
                 is SettingsEffect.VoiceChanged -> {
                     navigationViewModel.dispatch(AppNavigationAction.Back)
                     navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast("${effect.voice.displayName()} selected."),
+                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_voice_saved, effect.voice.displayName())),
                     )
                 }
 
                 SettingsEffect.VoiceChangeFailed -> {
-                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save the voice. Try again."))
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_voice_save_failed)))
                 }
 
                 is SettingsEffect.SessionLengthChanged -> {
                     navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast("${effect.length} cards selected."),
+                        AppNavigationAction.ShowToast(resources.getQuantityString(R.plurals.toast_cards_selected, effect.length, effect.length)),
                     )
                 }
 
                 SettingsEffect.SettingsChangeFailed -> {
-                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save that setting. Try again."))
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_setting_save_failed)))
                 }
 
                 SettingsEffect.ReminderPermissionRequested -> {
@@ -279,7 +281,7 @@ private fun SignKoreanApp(
 
                 is SettingsEffect.ReminderChanged -> {
                     if (!effect.enabled) {
-                        navigationViewModel.dispatch(AppNavigationAction.ShowToast("Review reminders are off."))
+                        navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_reminders_off)))
                     }
                 }
             }
@@ -698,6 +700,7 @@ private fun LearnDestination(
     onPlayAudio: () -> Unit,
     onShowReport: () -> Unit,
 ) {
+    val resources = LocalResources.current
     LearnSessionScreen(
         state = state,
         audioState = audioState,
@@ -738,7 +741,7 @@ private fun LearnDestination(
                 }
 
                 LearnUiAction.CheckAnswerFirst -> {
-                    onAction(AppNavigationAction.ShowToast("Reveal the answer first."))
+                    onAction(AppNavigationAction.ShowToast(resources.getString(R.string.toast_reveal_first)))
                 }
 
                 LearnUiAction.ShowSessionMenu -> {
@@ -746,7 +749,7 @@ private fun LearnDestination(
                         onShowReport()
                         onAction(AppNavigationAction.ShowSheet(AppSheet.Report))
                     } else {
-                        onAction(AppNavigationAction.ShowToast("This card is not available."))
+                        onAction(AppNavigationAction.ShowToast(resources.getString(R.string.toast_card_unavailable)))
                     }
                 }
 
@@ -836,13 +839,13 @@ private fun TopLevelTabs(
     GameCard(modifier = modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
             GameButton(
-                text = "Learn",
+                text = stringResource(R.string.learn_tab),
                 onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn)) },
                 modifier = Modifier.weight(1f),
                 style = if (selectedTab == AppTopLevelTab.Learn) GameButtonStyle.Primary else GameButtonStyle.Secondary,
             )
             GameButton(
-                text = "Progress",
+                text = stringResource(R.string.progress_tab),
                 onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress)) },
                 modifier = Modifier.weight(1f),
                 style =
@@ -853,7 +856,7 @@ private fun TopLevelTabs(
                     },
             )
             GameButton(
-                text = "Settings",
+                text = stringResource(R.string.settings_tab),
                 onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings)) },
                 modifier = Modifier.weight(1f),
                 style =
@@ -886,6 +889,7 @@ private fun BoxScope.AppOverlayHost(
     onSelectSessionLength: (Int) -> Unit,
     accountState: AccountUiState,
 ) {
+    val resources = LocalResources.current
     state.sheet?.let { sheet ->
         val dismissSheet = {
             if (sheet == AppSheet.Report) onCancelReport()
@@ -902,11 +906,11 @@ private fun BoxScope.AppOverlayHost(
             GameSheet(
                 title =
                     when (sheet) {
-                        AppSheet.Category -> "All categories"
-                        AppSheet.Voice -> "Choose a voice"
-                        AppSheet.SessionLength -> "Session length"
-                        AppSheet.SessionLeave -> "Leave this session?"
-                        AppSheet.Report -> "Report this card"
+                        AppSheet.Category -> stringResource(R.string.sheet_all_categories)
+                        AppSheet.Voice -> stringResource(R.string.sheet_choose_voice)
+                        AppSheet.SessionLength -> stringResource(R.string.sheet_session_length)
+                        AppSheet.SessionLeave -> stringResource(R.string.sheet_leave_session)
+                        AppSheet.Report -> stringResource(R.string.sheet_report_card)
                         AppSheet.Account -> accountState.title
                     },
             ) {
@@ -914,7 +918,7 @@ private fun BoxScope.AppOverlayHost(
                     AppSheet.Category -> {
                         categories.forEach { category ->
                             GameButton(
-                                text = "${category.label} · ${category.cardCount} signs",
+                                text = resources.getQuantityString(com.signkorean.feature.learn.R.plurals.learn_category_signs, category.cardCount, category.label, category.cardCount),
                                 onClick = {
                                     onAction(AppNavigationAction.Back)
                                     onStartCategorySession(category.key)
@@ -926,7 +930,7 @@ private fun BoxScope.AppOverlayHost(
                     }
 
                     AppSheet.Voice -> {
-                        Text("Choose pronunciation voice", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.sheet_choose_pronunciation_voice), style = MaterialTheme.typography.bodyLarge)
                         AudioVoice.entries.forEach { voice ->
                             GameButton(
                                 text =
@@ -948,14 +952,14 @@ private fun BoxScope.AppOverlayHost(
                     }
 
                     AppSheet.SessionLength -> {
-                        Text("How many signs should a new session include?", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.sheet_session_length_question), style = MaterialTheme.typography.bodyLarge)
                         listOf(5, 10, 20).forEach { length ->
                             GameButton(
                                 text =
                                     if (length == settingsState.sessionLength) {
-                                        "✓ $length cards · ~${length.estimatedMinutes()} min"
+                                        "✓ ${resources.getQuantityString(R.plurals.sheet_cards_length, length, length, length.estimatedMinutes())}"
                                     } else {
-                                        "$length cards · ~${length.estimatedMinutes()} min"
+                                        resources.getQuantityString(R.plurals.sheet_cards_length, length, length, length.estimatedMinutes())
                                     },
                                 onClick = {
                                     onSelectSessionLength(length)
@@ -990,7 +994,7 @@ private fun BoxScope.AppOverlayHost(
                 }
                 if (sheet != AppSheet.SessionLeave && sheet != AppSheet.Report) {
                     GameButton(
-                        text = "Close",
+                        text = stringResource(R.string.close),
                         onClick = { onAction(AppNavigationAction.Back) },
                         modifier = Modifier.fillMaxWidth(),
                         style = GameButtonStyle.Secondary,
@@ -1013,7 +1017,7 @@ private fun BoxScope.AppOverlayHost(
                 contentAlignment = Alignment.Center,
             ) {
                 GameButton(
-                    text = "Close viewer",
+                    text = stringResource(R.string.close_viewer),
                     onClick = { onAction(AppNavigationAction.Back) },
                     modifier =
                         Modifier
@@ -1042,24 +1046,25 @@ private fun SessionLeaveSheetContent(
     onAction: (AppNavigationAction) -> Unit,
     onPauseSession: () -> Unit,
 ) {
+    val resources = LocalResources.current
     val activeSession = learnSessionState as? LearnSessionUiState.Active
     activeSession?.let {
         Text(
-            text = "${it.position - 1} of ${it.totalCount} signs complete",
+            text = resources.getQuantityString(R.plurals.session_signs_complete, it.totalCount, it.position - 1, it.totalCount),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
     Text(
-        "Your progress is saved. You can resume this session from Home.",
+        stringResource(R.string.session_leave_saved),
         style = MaterialTheme.typography.bodyLarge,
     )
     GameButton(
-        text = "Keep learning",
+        text = stringResource(R.string.session_keep_learning),
         onClick = { onAction(AppNavigationAction.Back) },
         modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_KEEP_LEARNING),
     )
     GameButton(
-        text = "Leave for now",
+        text = stringResource(R.string.session_leave_for_now),
         onClick = {
             onAction(AppNavigationAction.Back)
             onPauseSession()

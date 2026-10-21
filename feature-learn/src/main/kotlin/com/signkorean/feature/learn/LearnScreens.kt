@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
@@ -124,8 +126,8 @@ data class LearnPhotoUiModel(
             LearnPhotoUiModel(
                 imageAssetUri = "",
                 focus = FocusRect(0f, 0f, 100f, 100f),
-                questionContentDescription = "Street sign photo.",
-                answerContentDescription = "Street sign photo.",
+                questionContentDescription = "",
+                answerContentDescription = "",
             )
     }
 }
@@ -176,12 +178,12 @@ object LearnSessionTestTags {
 }
 
 data class CompletionUiState(
-    val title: String = "Session complete",
-    val summary: String = "You finished this sign deck.",
+    val title: String = "",
+    val summary: String = "",
     val totalCount: Int = 0,
     val gotItCount: Int = 0,
     val reviewCount: Int = 0,
-    val nextReviewLabel: String = "No review scheduled",
+    val nextReviewLabel: String = "",
     val reviewCardIds: List<String> = emptyList(),
 )
 
@@ -256,8 +258,8 @@ fun LearnHomeScreen(
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
         HomeBrandBar(state.streakDays)
-        Text(text = "Ready to read Korea?", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-        Text(text = "A short street-reading session is waiting.", style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_ready_description), style = MaterialTheme.typography.bodyLarge)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
         state.pendingCategoryReplacement?.let { category -> CategoryReplacementCard(category, state.isStarting, onAction) }
         CategorySection(state.categories, state.isStarting, onAction)
@@ -268,8 +270,8 @@ fun LearnHomeScreen(
 @Composable
 private fun HomeBrandBar(streakDays: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "Sign Korean", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-        Text(text = "$streakDays days", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_brand_name), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
     }
 }
 
@@ -281,38 +283,38 @@ private fun HomeSessionCard(
     onAction: (LearnUiAction) -> Unit,
 ) {
     GameCard(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "TODAY'S SESSION", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_today_session), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
         Text(
-            text = if (session.isActive) "Pick up where you left off" else "${session.length} street signs",
+            text = if (session.isActive) stringResource(R.string.learn_pick_up) else pluralStringResource(R.plurals.learn_street_signs, session.length, session.length),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
         Text(
             text =
-                session.completedCount?.let { "$it of ${session.length} signs complete" }
-                    ?: "About ${session.estimatedMinutes} minutes",
+                session.completedCount?.let { pluralStringResource(R.plurals.learn_signs_complete, session.length, it, session.length) }
+                    ?: pluralStringResource(R.plurals.learn_about_minutes, session.estimatedMinutes, session.estimatedMinutes),
             style = MaterialTheme.typography.bodyLarge,
         )
         if (!session.isActive) {
             Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-                Text(text = "${session.reviewCount} review", style = MaterialTheme.typography.labelLarge)
-                Text(text = "${session.newCount} new", style = MaterialTheme.typography.labelLarge)
+                Text(text = pluralStringResource(R.plurals.learn_review_count, session.reviewCount, session.reviewCount), style = MaterialTheme.typography.labelLarge)
+                Text(text = pluralStringResource(R.plurals.learn_new_count, session.newCount, session.newCount), style = MaterialTheme.typography.labelLarge)
             }
         }
         GameButton(
             text =
                 if (isStarting) {
-                    "Starting session…"
+                    stringResource(R.string.learn_starting_session)
                 } else if (session.isActive) {
-                    "Resume session"
+                    stringResource(R.string.learn_resume_session)
                 } else {
-                    "Start session"
+                    stringResource(R.string.learn_start_session)
                 },
             onClick = { onAction(LearnUiAction.StartSession) },
             modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.SESSION_ACTION),
             enabled = !isStarting,
         )
-        if (hasStartError) Text("Could not start the session. Please try again.", style = MaterialTheme.typography.bodyLarge)
+        if (hasStartError) Text(stringResource(R.string.learn_start_error), style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -323,16 +325,16 @@ private fun CategoryReplacementCard(
     onAction: (LearnUiAction) -> Unit,
 ) {
     GameCard(modifier = Modifier.fillMaxWidth()) {
-        Text("Replace your current session?", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-        Text("Starting $category will replace the session you have in progress.", style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(R.string.learn_replace_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(stringResource(R.string.learn_replace_body, category), style = MaterialTheme.typography.bodyLarge)
         GameButton(
-            text = if (isStarting) "Starting session…" else "Replace session",
+            text = if (isStarting) stringResource(R.string.learn_starting_session) else stringResource(R.string.learn_replace_session),
             onClick = { onAction(LearnUiAction.ConfirmCategoryReplacement) },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isStarting,
         )
         GameButton(
-            text = "Keep current session",
+            text = stringResource(R.string.learn_keep_current_session),
             onClick = { onAction(LearnUiAction.CancelCategoryReplacement) },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isStarting,
@@ -349,9 +351,9 @@ private fun CategorySection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = "Explore by category", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text(text = stringResource(R.string.learn_explore_category), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             GameButton(
-                text = "See all",
+                text = stringResource(R.string.learn_see_all),
                 onClick = { onAction(LearnUiAction.ShowDeckSheet) },
                 modifier = Modifier.testTag(HomeTestTags.SEE_ALL),
                 style = GameButtonStyle.Secondary,
@@ -363,7 +365,7 @@ private fun CategorySection(
         ) {
             categories.forEach { category ->
                 GameButton(
-                    text = "${category.label} · ${category.cardCount} signs",
+                    text = pluralStringResource(R.plurals.learn_category_signs, category.cardCount, category.label, category.cardCount),
                     onClick = { onAction(LearnUiAction.StartCategorySession(category.key)) },
                     modifier = Modifier.width(176.dp),
                     enabled = !isStarting,
@@ -377,7 +379,7 @@ private fun CategorySection(
 @Composable
 private fun WeekSection(week: List<WeekActivityUiModel>) {
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-        Text(text = "Your week", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_your_week), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
         GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 week.forEach { day ->
@@ -421,13 +423,13 @@ fun LearnSessionScreen(
 private fun LearnTopBar(onAction: (LearnUiAction) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         GameButton(
-            text = "Close",
+            text = stringResource(R.string.learn_close),
             onClick = { onAction(LearnUiAction.CloseSession) },
             modifier = Modifier.testTag(SignKoreanTestTags.LEARN_CLOSE_SESSION),
             style = GameButtonStyle.Secondary,
         )
         GameButton(
-            text = "More",
+            text = stringResource(R.string.learn_more),
             onClick = { onAction(LearnUiAction.ShowSessionMenu) },
             modifier = Modifier.testTag(LearnSessionTestTags.MORE),
             style = GameButtonStyle.Secondary,
@@ -444,7 +446,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     reduceMotion: Boolean,
 ) {
     Text(
-        text = "${state.position} of ${state.totalCount}",
+        text = stringResource(R.string.learn_position, state.position, state.totalCount),
         modifier = Modifier.testTag(LearnSessionTestTags.POSITION),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Black,
@@ -463,13 +465,13 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     feedback?.let { LearnFeedbackHost(it, onAction) }
     if (state.stage == LearnCardStage.Question) {
         GameButton(
-            text = "Show answer",
+            text = stringResource(R.string.learn_show_answer),
             onClick = { onAction(LearnUiAction.RevealAnswer) },
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
         )
     }
     GameButton(
-        text = "View sign photo",
+        text = stringResource(R.string.learn_view_sign_photo),
         onClick = { onAction(LearnUiAction.ShowImageViewer) },
         modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE),
         style = GameButtonStyle.Secondary,
@@ -495,7 +497,7 @@ private fun LearnFeedbackHost(
             )
             if (feedback.canUndo) {
                 GameButton(
-                    text = "Undo",
+                    text = stringResource(R.string.learn_undo),
                     onClick = { onAction(LearnUiAction.UndoRating) },
                     modifier = Modifier.testTag(SignKoreanTestTags.LEARN_UNDO_RATING),
                     style = GameButtonStyle.Secondary,
@@ -508,16 +510,16 @@ private fun LearnFeedbackHost(
 @Composable
 private fun LearnLoadingState() {
     GameCard(modifier = Modifier.fillMaxWidth()) {
-        Text("Loading session…", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(stringResource(R.string.learn_loading_session), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
     }
 }
 
 @Composable
 private fun LearnCompletedState(onAction: (LearnUiAction) -> Unit) {
     GameCard(modifier = Modifier.fillMaxWidth()) {
-        Text("Session complete", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-        Text("This session has no cards left to review.", style = MaterialTheme.typography.bodyLarge)
-        GameButton("Back to learn", { onAction(LearnUiAction.CloseSession) }, Modifier.fillMaxWidth())
+        Text(stringResource(R.string.learn_session_complete), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(stringResource(R.string.learn_no_cards), style = MaterialTheme.typography.bodyLarge)
+        GameButton(stringResource(R.string.learn_back_to_learn), { onAction(LearnUiAction.CloseSession) }, Modifier.fillMaxWidth())
     }
 }
 
@@ -527,26 +529,26 @@ private fun LearnErrorState(
     onAction: (LearnUiAction) -> Unit,
 ) {
     GameCard(modifier = Modifier.fillMaxWidth()) {
-        Text("This session card is unavailable", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-        Text(error.toDisplayMessage(), style = MaterialTheme.typography.bodyLarge)
-        GameButton("Back to learn", { onAction(LearnUiAction.CloseSession) }, Modifier.fillMaxWidth())
+        Text(stringResource(R.string.learn_card_unavailable), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(stringResource(error.toStringResource()), style = MaterialTheme.typography.bodyLarge)
+        GameButton(stringResource(R.string.learn_back_to_learn), { onAction(LearnUiAction.CloseSession) }, Modifier.fillMaxWidth())
     }
 }
 
-private fun LearnSessionError.toDisplayMessage(): String =
+private fun LearnSessionError.toStringResource(): Int =
     when (this) {
-        LearnSessionError.NoActiveSession -> "There is no active learning session."
+        LearnSessionError.NoActiveSession -> R.string.learn_error_no_active
 
-        LearnSessionError.EmptySession -> "This saved session has no cards."
+        LearnSessionError.EmptySession -> R.string.learn_error_empty
 
         LearnSessionError.InvalidCardCount,
         LearnSessionError.InvalidCardOrder,
         LearnSessionError.InvalidCurrentIndex,
-        -> "This saved session needs to be started again."
+        -> R.string.learn_error_restart
 
-        LearnSessionError.UnknownCard -> "This sign is no longer available."
+        LearnSessionError.UnknownCard -> R.string.learn_error_unknown_card
 
-        LearnSessionError.Unavailable -> "Your saved session could not be loaded."
+        LearnSessionError.Unavailable -> R.string.learn_error_unavailable
     }
 
 @Composable
@@ -556,26 +558,26 @@ fun CompletionScreen(
     modifier: Modifier = Modifier,
 ) {
     GameCard(modifier = modifier.testTag("screen-done")) {
-        Text(text = state.title, style = MaterialTheme.typography.headlineMedium)
-        Text(text = state.summary, style = MaterialTheme.typography.bodyLarge)
-        Text(text = "${state.totalCount} signs practiced", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Got it: ${state.gotItCount}", style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Review: ${state.reviewCount}", style = MaterialTheme.typography.bodyLarge)
-        Text(text = state.nextReviewLabel, style = MaterialTheme.typography.bodyLarge)
+        Text(text = state.title.ifBlank { stringResource(R.string.learn_session_complete) }, style = MaterialTheme.typography.headlineMedium)
+        Text(text = state.summary.ifBlank { stringResource(R.string.learn_no_cards) }, style = MaterialTheme.typography.bodyLarge)
+        Text(text = pluralStringResource(R.plurals.learn_signs_practiced, state.totalCount, state.totalCount), style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(R.string.learn_got_it_count, state.gotItCount), style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(R.string.learn_review_count_label, state.reviewCount), style = MaterialTheme.typography.bodyLarge)
+        Text(text = state.nextReviewLabel.ifBlank { stringResource(R.string.learn_no_further_review) }, style = MaterialTheme.typography.bodyLarge)
         if (state.reviewCount > 0) {
             GameButton(
-                text = "See review cards",
+                text = stringResource(R.string.learn_see_review_cards),
                 onClick = { onAction(LearnUiAction.OpenReviewCards) },
                 modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.DONE_REVIEW_CARDS),
             )
         }
         GameButton(
-            text = "Back home",
+            text = stringResource(R.string.learn_back_home),
             onClick = { onAction(LearnUiAction.BackHome) },
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.DONE_BACK_HOME),
         )
         GameButton(
-            text = "See progress",
+            text = stringResource(R.string.learn_see_progress),
             onClick = { onAction(LearnUiAction.OpenProgress) },
             modifier = Modifier.fillMaxWidth(),
         )

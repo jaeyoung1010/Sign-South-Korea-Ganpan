@@ -12,6 +12,34 @@
         <item quantity="other">復習する標識が%1$d件あります</item>
     </plurals>
     <string name="reminder_permission_denied">通知はオフです。Androidの設定から有効にできます。</string>
+    <string name="toast_save_progress_failed">進捗を保存できませんでした。もう一度お試しください。</string>
+    <string name="toast_report_thanks">ありがとうございます。この看板を確認します。</string>
+    <string name="toast_audio_focus_unavailable">音声フォーカスを取得できません。もう一度お試しください。</string>
+    <string name="toast_audio_unavailable">この看板の音声を利用できません。</string>
+    <string name="toast_voice_saved">%1$sを選択しました。</string>
+    <string name="toast_voice_save_failed">音声を保存できませんでした。もう一度お試しください。</string>
+    <plurals name="toast_cards_selected"><item quantity="other">%1$d枚を選択しました。</item></plurals>
+    <string name="toast_setting_save_failed">設定を保存できませんでした。もう一度お試しください。</string>
+    <string name="toast_reminders_off">復習リマインダーはオフです。</string>
+    <string name="toast_reveal_first">先に答えを表示してください。</string>
+    <string name="toast_card_unavailable">この看板は利用できません。</string>
+    <string name="learn_tab">学習</string>
+    <string name="progress_tab">進捗</string>
+    <string name="settings_tab">設定</string>
+    <string name="sheet_all_categories">すべてのカテゴリー</string>
+    <string name="sheet_choose_voice">音声を選択</string>
+    <string name="sheet_session_length">セッションの長さ</string>
+    <string name="sheet_leave_session">このセッションを終了しますか？</string>
+    <string name="sheet_report_card">この看板を報告</string>
+    <string name="sheet_choose_pronunciation_voice">発音音声を選択</string>
+    <string name="sheet_session_length_question">新しいセッションに何枚の看板を入れますか？</string>
+    <plurals name="sheet_cards_length"><item quantity="other">%1$d枚 · 約%2$d分</item></plurals>
+    <string name="close">閉じる</string>
+    <string name="close_viewer">ビューアーを閉じる</string>
+    <plurals name="session_signs_complete"><item quantity="other">%1$d / %2$d枚を完了</item></plurals>
+    <string name="session_leave_saved">進捗は保存されます。ホームからこのセッションを再開できます。</string>
+    <string name="session_keep_learning">学習を続ける</string>
+    <string name="session_leave_for_now">今は終了する</string>
     <string name="policy_privacy_url">https://signkorean.app/privacy</string>
     <string name="policy_terms_url">https://signkorean.app/terms</string>
     <string name="policy_privacy_version">1.0</string>

@@ -13,6 +13,34 @@
         <item quantity="other">%1$d signs are ready to review</item>
     </plurals>
     <string name="reminder_permission_denied">Notifications are off. You can enable them in Android settings.</string>
+    <string name="toast_save_progress_failed">Could not save your progress. Try again.</string>
+    <string name="toast_report_thanks">Thanks. We\'ll review this card.</string>
+    <string name="toast_audio_focus_unavailable">Audio focus is unavailable. Try again.</string>
+    <string name="toast_audio_unavailable">Audio is unavailable for this card.</string>
+    <string name="toast_voice_saved">%1$s selected.</string>
+    <string name="toast_voice_save_failed">Could not save the voice. Try again.</string>
+    <plurals name="toast_cards_selected"><item quantity="one">%1$d card selected.</item><item quantity="other">%1$d cards selected.</item></plurals>
+    <string name="toast_setting_save_failed">Could not save that setting. Try again.</string>
+    <string name="toast_reminders_off">Review reminders are off.</string>
+    <string name="toast_reveal_first">Reveal the answer first.</string>
+    <string name="toast_card_unavailable">This card is not available.</string>
+    <string name="learn_tab">Learn</string>
+    <string name="progress_tab">Progress</string>
+    <string name="settings_tab">Settings</string>
+    <string name="sheet_all_categories">All categories</string>
+    <string name="sheet_choose_voice">Choose a voice</string>
+    <string name="sheet_session_length">Session length</string>
+    <string name="sheet_leave_session">Leave this session?</string>
+    <string name="sheet_report_card">Report this card</string>
+    <string name="sheet_choose_pronunciation_voice">Choose pronunciation voice</string>
+    <string name="sheet_session_length_question">How many signs should a new session include?</string>
+    <plurals name="sheet_cards_length"><item quantity="one">%1$d card · ~%2$d min</item><item quantity="other">%1$d cards · ~%2$d min</item></plurals>
+    <string name="close">Close</string>
+    <string name="close_viewer">Close viewer</string>
+    <plurals name="session_signs_complete"><item quantity="one">%1$d of %2$d sign complete</item><item quantity="other">%1$d of %2$d signs complete</item></plurals>
+    <string name="session_leave_saved">Your progress is saved. You can resume this session from Home.</string>
+    <string name="session_keep_learning">Keep learning</string>
+    <string name="session_leave_for_now">Leave for now</string>
     <string name="policy_privacy_url">https://signkorean.app/privacy</string>
     <string name="policy_terms_url">https://signkorean.app/terms</string>
     <string name="policy_privacy_version">1.0</string>
