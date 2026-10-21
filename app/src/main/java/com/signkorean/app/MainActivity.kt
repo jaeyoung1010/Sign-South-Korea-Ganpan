@@ -298,7 +298,7 @@ internal fun SignKoreanAppContent(
     )
 
     SignKoreanTheme {
-        SignKoreanScreen {
+        SignKoreanScreen(applySafeDrawingInsets = !state.isViewerVisible) {
             Box(modifier = Modifier.fillMaxSize()) {
                 NavDisplay(
                     backStack = backStack,
@@ -660,7 +660,10 @@ private fun BoxScope.AppOverlayHost(
                 GameButton(
                     text = "Close viewer",
                     onClick = { onAction(AppNavigationAction.Back) },
-                    modifier = Modifier.padding(SignKoreanSpacing.large),
+                    modifier =
+                        Modifier
+                            .padding(SignKoreanSpacing.large)
+                            .testTag(SignKoreanTestTags.LEARN_IMAGE_VIEWER_CLOSE),
                     style = GameButtonStyle.Secondary,
                 )
             }

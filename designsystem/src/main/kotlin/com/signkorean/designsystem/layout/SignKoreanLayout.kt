@@ -19,15 +19,22 @@ import com.signkorean.designsystem.theme.SignKoreanPalette
 @Composable
 fun SignKoreanScreen(
     modifier: Modifier = Modifier,
+    applySafeDrawingInsets: Boolean = true,
     content: @Composable () -> Unit,
 ) {
+    val safeDrawingModifier =
+        if (applySafeDrawingInsets) {
+            Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
+        } else {
+            Modifier
+        }
     Box(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(Color(SignKoreanPalette.BACKGROUND))
                 .diaryGridBackground()
-                .windowInsetsPadding(WindowInsets.safeDrawing),
+                .then(safeDrawingModifier),
     ) {
         content()
     }
