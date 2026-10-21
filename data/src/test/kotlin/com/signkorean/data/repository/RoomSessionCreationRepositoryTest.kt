@@ -3,6 +3,7 @@ package com.signkorean.data.repository
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.domain.model.SessionCardSource
@@ -61,6 +62,22 @@ class RoomSessionCreationRepositoryTest {
             assertEquals("ABANDONED", database.sessionDao().get("old")?.status)
             assertEquals("replacement", database.sessionDao().active()?.sessionId)
             assertEquals(2, database.sessionCardDao().countForSession("replacement"))
+        }
+
+    @Test
+    fun `new session abandons a malformed resumable snapshot before inserting`() =
+        runTest {
+            database.sessionDao().insert(SessionEntity.active(id = "broken", requestedLength = 2).copy(currentIndex = 4))
+            database.sessionCardDao().insertAll(
+                listOf(
+                    SessionCardEntity("broken", 0, "card-1", "NEW"),
+                ),
+            )
+
+            repository.save(session("recovered"), replaceActiveSession = false)
+
+            assertEquals("ABANDONED", database.sessionDao().get("broken")?.status)
+            assertEquals("recovered", database.sessionDao().active()?.sessionId)
         }
 
     @Test

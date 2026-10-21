@@ -71,7 +71,18 @@ class RoomSessionTransactionStore(
             if (replaceActiveSession) {
                 database.sessionDao().abandonActive(command.session.createdAt)
             } else {
-                require(database.sessionDao().active() == null) { "An active session already exists" }
+                val existingSession = database.sessionDao().resumable()
+                if (existingSession != null) {
+                    if (database.isConsistent(existingSession)) {
+                        error("An active session already exists")
+                    }
+                    database.sessionDao().update(
+                        existingSession.copy(
+                            status = "ABANDONED",
+                            updatedAt = command.session.createdAt,
+                        ),
+                    )
+                }
             }
             database.sessionDao().insert(command.session)
             database.sessionCardDao().insertAll(command.cards)

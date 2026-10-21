@@ -1,8 +1,8 @@
 package com.signkorean.data.repository
 
-import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.data.db.isConsistent
 import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
@@ -131,18 +131,6 @@ class RoomSessionRepository(
             sessionId = sessionId,
             isPaused = status == PAUSED_STATUS,
         )
-
-    private fun SignKoreanDatabase.isConsistent(session: SessionEntity): Boolean {
-        val cards = sessionCardDao().forSession(session.sessionId)
-        val ratings = setOf("GOT_IT", "REVIEW")
-        val ratedCards = cards.take(session.currentIndex)
-        val pendingCards = cards.drop(session.currentIndex)
-        return cards.size == session.requestedLength &&
-            cards.map(SessionCardEntity::position) == cards.indices.toList() &&
-            session.currentIndex in 0 until session.requestedLength &&
-            ratedCards.all { it.rating in ratings && it.ratedAt != null } &&
-            pendingCards.all { it.rating == null && it.ratedAt == null }
-    }
 
     private companion object {
         const val ACTIVE_STATUS = "ACTIVE"

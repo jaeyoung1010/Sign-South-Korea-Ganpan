@@ -120,6 +120,18 @@ class RoomSessionRepositoryTest {
         }
 
     @Test
+    fun `negative session index is treated as unavailable without throwing`() =
+        runTest {
+            database.sessionDao().insert(SessionEntity.active(id = "negative", requestedLength = 2).copy(currentIndex = -1))
+            database.sessionCardDao().insertAll(
+                listOf(sessionCard(0, "card-1", sessionId = "negative"), sessionCard(1, "card-2", sessionId = "negative")),
+            )
+
+            assertEquals(SessionTransitionWriteResult.Unavailable, repository.pauseSession("negative"))
+            assertEquals(null, repository.getActiveSession())
+        }
+
+    @Test
     fun `completed session is not resumable`() =
         runTest {
             database.sessionDao().insert(
