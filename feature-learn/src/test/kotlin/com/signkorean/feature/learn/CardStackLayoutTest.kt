@@ -1,7 +1,9 @@
 package com.signkorean.feature.learn
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.math.roundToInt
 
 class CardStackLayoutTest {
     @Test
@@ -24,5 +26,18 @@ class CardStackLayoutTest {
             listOf(LearnCardLayer(cardId = "active", role = LearnCardLayerRole.Active)),
             cardStackLayers(activeCardId = "active", upcomingCardIds = emptyList()),
         )
+    }
+
+    @Test
+    fun `next and third card visuals interpolate with horizontal drag`() {
+        val nextAtRest = cardPreviewVisuals(LearnCardLayerRole.Next, 0f)
+        val nextDragged = cardPreviewVisuals(LearnCardLayerRole.Next, 90f)
+        val thirdDragged = cardPreviewVisuals(LearnCardLayerRole.NextNext, 90f)
+
+        assertEquals(0.96f, nextAtRest.scale, 0.001f)
+        assertTrue(nextDragged.scale > nextAtRest.scale)
+        assertTrue(nextDragged.alpha > nextAtRest.alpha)
+        assertTrue(thirdDragged.scale > cardPreviewVisuals(LearnCardLayerRole.NextNext, 0f).scale)
+        assertEquals(1f, (nextDragged.alpha * 1000f).roundToInt() / 1000f, 0.001f)
     }
 }

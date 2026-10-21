@@ -9,6 +9,8 @@ object SignKoreanTestTags {
     const val LEARN_QUESTION = "learn.card.question"
     const val LEARN_ANSWER = "learn.card.answer"
     const val LEARN_INFO_PANEL = "learn.card.info"
+    const val LEARN_DRAG_OVERLAY = "learn.card.drag-overlay"
+    const val LEARN_KEYBOARD_STAGE = "learn.card.keyboard-stage"
     const val LEARN_PLAY_AUDIO = "learn.audio.play"
     const val LEARN_ZOOM_IMAGE = "learn.image.zoom"
     const val LEARN_CLOSE_SESSION = "learn.session.close"

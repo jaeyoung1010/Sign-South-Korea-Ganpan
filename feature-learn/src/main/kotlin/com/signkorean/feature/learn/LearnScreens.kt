@@ -25,6 +25,7 @@ import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
+import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
 
@@ -175,6 +176,12 @@ sealed interface LearnUiAction {
     data object CancelCategoryReplacement : LearnUiAction
 
     data object RevealAnswer : LearnUiAction
+
+    data object CheckAnswerFirst : LearnUiAction
+
+    data class RateCard(
+        val decision: RatingDecision,
+    ) : LearnUiAction
 
     data object ShowImageViewer : LearnUiAction
 
@@ -407,6 +414,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     )
     LearnCardStack(
         state = state,
+        onAction = onAction,
         modifier = Modifier.fillMaxWidth().weight(1f),
     )
     if (state.stage == LearnCardStage.Question) {
