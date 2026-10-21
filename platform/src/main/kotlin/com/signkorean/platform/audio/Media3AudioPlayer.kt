@@ -53,35 +53,9 @@ class Media3AudioPlayer(
     private val mutableState = MutableStateFlow<AudioPlaybackState>(AudioPlaybackState.Idle)
     private var player: Media3PlayerHandle? = null
     private var currentRequest: AudioPlayRequest? = null
-    private val callbacks =
-        object : Media3PlayerCallbacks {
-            override fun onBuffering() {
-                currentRequest?.let { request ->
-                    mutableState.value = AudioPlaybackState.Preparing(request.cardId, request.voiceId)
-                }
-            }
-
-            override fun onReady() {
-                currentRequest?.let { request ->
-                    mutableState.value = AudioPlaybackState.Playing(request.cardId, request.voiceId)
-                }
-            }
-
-            override fun onEnded() {
-                stop()
-            }
-
-            override fun onDecodeError() {
-                currentRequest?.let { request -> fail(request, AudioPlaybackFailure.Decode) }
-            }
-
-            override fun onAudioFocusDenied() {
-                currentRequest?.let { request -> fail(request, AudioPlaybackFailure.AudioFocusDenied) }
-            }
-        }
 
     override fun play(request: AudioPlayRequest) {
-        stopPlayback()
+        stop()
         when {
             request.assetUri.isBlank() -> {
                 mutableState.value = request.failed(AudioPlaybackFailure.AssetMissing)
@@ -96,18 +70,20 @@ class Media3AudioPlayer(
 
         currentRequest = request
         mutableState.value = AudioPlaybackState.Preparing(request.cardId, request.voiceId)
-        val activePlayer =
-            player ?: try {
-                factory.create(callbacks).also { player = it }
+        val callbacks = callbacksFor(request)
+        val createdPlayer =
+            try {
+                factory.create(callbacks)
             } catch (_: Exception) {
                 currentRequest = null
                 mutableState.value = request.failed(AudioPlaybackFailure.Unknown)
                 return
             }
+        player = createdPlayer
         try {
-            activePlayer.setMediaItem(request.assetUri)
-            activePlayer.prepare()
-            activePlayer.play()
+            createdPlayer.setMediaItem(request.assetUri)
+            createdPlayer.prepare()
+            createdPlayer.play()
         } catch (_: Exception) {
             fail(request, AudioPlaybackFailure.Decode)
         }
@@ -122,13 +98,40 @@ class Media3AudioPlayer(
         mutableState.value = AudioPlaybackState.Idle
     }
 
-    private fun stopPlayback() {
-        player?.runCatching { stop() }
-        currentRequest = null
-        mutableState.value = AudioPlaybackState.Idle
-    }
-
     override fun observePlayback(): StateFlow<AudioPlaybackState> = mutableState.asStateFlow()
+
+    private fun callbacksFor(request: AudioPlayRequest) =
+        object : Media3PlayerCallbacks {
+            override fun onBuffering() {
+                if (isCurrent(request)) {
+                    mutableState.value = AudioPlaybackState.Preparing(request.cardId, request.voiceId)
+                }
+            }
+
+            override fun onReady() {
+                if (isCurrent(request)) {
+                    mutableState.value = AudioPlaybackState.Playing(request.cardId, request.voiceId)
+                }
+            }
+
+            override fun onEnded() {
+                if (isCurrent(request)) {
+                    stop()
+                }
+            }
+
+            override fun onDecodeError() {
+                if (isCurrent(request)) {
+                    fail(request, AudioPlaybackFailure.Decode)
+                }
+            }
+
+            override fun onAudioFocusDenied() {
+                if (isCurrent(request)) {
+                    fail(request, AudioPlaybackFailure.AudioFocusDenied)
+                }
+            }
+        }
 
     private fun fail(
         request: AudioPlayRequest,
@@ -142,6 +145,8 @@ class Media3AudioPlayer(
         activePlayer?.runCatching { stop() }
         activePlayer?.runCatching { release() }
     }
+
+    private fun isCurrent(request: AudioPlayRequest): Boolean = currentRequest === request
 
     private fun AudioPlayRequest.failed(reason: AudioPlaybackFailure) =
         AudioPlaybackState.Failed(cardId = cardId, voiceId = voiceId, reason = reason)
