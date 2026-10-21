@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -87,7 +90,15 @@ jobs:
           api-level: 26
           arch: x86_64
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest --stacktrace
+          script: |
+            if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+              for attempt in 1 2 3; do
+                echo "Phase 43 E2E run $attempt/3"
+                ./gradlew connectedDebugAndroidTest --stacktrace
+              done
+            else
+              ./gradlew connectedDebugAndroidTest --stacktrace
+            fi
 
       - name: Upload instrumentation reports
         if: always()

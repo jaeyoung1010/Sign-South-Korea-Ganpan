@@ -1,0 +1,17 @@
+# id-pattern|phase|evidence path|test reference
+F-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+FR-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+NFR-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+AC-*|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-01|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-02|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-03|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-04|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-05|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-06|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-07|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-08|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-09|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-10|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-11|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios
+E2E-12|43|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt|app/src/androidTest/java/com/signkorean/app/Phase43E2ETraceTest.kt#traceabilityRegistryContainsAllScenarios

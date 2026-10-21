@@ -117,7 +117,19 @@ val qualityToolTests =
     tasks.register<Exec>("qualityToolTests") {
         group = "verification"
         description = "Runs tests for the repository quality scanners."
-        commandLine("node", "--test", "scripts/quality/quality-rules.test.mjs")
+        commandLine(
+            "node",
+            "--test",
+            "scripts/quality/quality-rules.test.mjs",
+            "scripts/quality/phase43-traceability.test.mjs",
+        )
+    }
+
+val validatePhase43Traceability =
+    tasks.register<Exec>("validatePhase43Traceability") {
+        group = "verification"
+        description = "Verifies that every documented requirement and E2E scenario has code and test evidence."
+        commandLine("node", "scripts/quality/phase43-traceability.mjs")
     }
 
 val validateDependencyVersions =
@@ -136,9 +148,10 @@ val secretScan =
 
 tasks.register("qualityGate") {
     group = "verification"
-    description = "Builds the app and runs all Phase 1 through Phase 4 quality checks."
+    description = "Builds the app and runs repository quality and traceability checks."
     dependsOn(
         qualityToolTests,
+        validatePhase43Traceability,
         validateDependencyVersions,
         secretScan,
         tasks.named("spotlessCheck"),
@@ -167,7 +180,14 @@ val verifyReleaseQaExclusion =
     }
 
 tasks.named("check") {
-    dependsOn(qualityToolTests, validateDependencyVersions, secretScan, tasks.named("spotlessCheck"), verifyReleaseQaExclusion)
+    dependsOn(
+        qualityToolTests,
+        validatePhase43Traceability,
+        validateDependencyVersions,
+        secretScan,
+        tasks.named("spotlessCheck"),
+        verifyReleaseQaExclusion,
+    )
 }
 
 val allowedDependenciesByModule =
