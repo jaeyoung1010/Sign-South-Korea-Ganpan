@@ -20,6 +20,8 @@
     <string name="toast_voice_save_failed">音声を保存できませんでした。もう一度お試しください。</string>
     <plurals name="toast_cards_selected"><item quantity="other">%1$d枚を選択しました。</item></plurals>
     <string name="toast_setting_save_failed">設定を保存できませんでした。もう一度お試しください。</string>
+    <string name="toast_language_saved">言語を変更しました。</string>
+    <string name="toast_language_save_failed">言語を変更できませんでした。もう一度お試しください。</string>
     <string name="toast_reminders_off">復習リマインダーはオフです。</string>
     <string name="toast_reveal_first">先に答えを表示してください。</string>
     <string name="toast_card_unavailable">この看板は利用できません。</string>

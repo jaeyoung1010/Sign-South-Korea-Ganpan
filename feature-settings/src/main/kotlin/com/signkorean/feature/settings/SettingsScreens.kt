@@ -37,6 +37,8 @@ data class SettingsUiState(
     val reduceMotion: Boolean = false,
     val followSystemReduceMotion: Boolean = true,
     val reminderEnabled: Boolean = false,
+    val appLanguageTag: String = "en",
+    val supportedLanguageTags: List<String> = listOf("en", "ja"),
     val appVersion: String = "0.1.0",
 )
 
@@ -60,6 +62,8 @@ data class AccountUiState(
 )
 
 sealed interface SettingsUiAction {
+    data object SelectLanguage : SettingsUiAction
+
     data object SelectVoice : SettingsUiAction
 
     data object SelectSessionLength : SettingsUiAction
@@ -95,6 +99,12 @@ fun SettingsScreen(
             text = stringResource(R.string.settings_voice, stringResource(state.selectedVoice.resourceId)),
             onClick = { onAction(SettingsUiAction.SelectVoice) },
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.SETTINGS_VOICE),
+            style = GameButtonStyle.Secondary,
+        )
+        GameButton(
+            text = stringResource(R.string.settings_language, state.appLanguageTag.languageDisplayName()),
+            onClick = { onAction(SettingsUiAction.SelectLanguage) },
+            modifier = Modifier.fillMaxWidth().testTag("settings.language"),
             style = GameButtonStyle.Secondary,
         )
         GameButton(
@@ -267,6 +277,14 @@ fun LegalScreen(
         )
     }
 }
+
+@Composable
+private fun String.languageDisplayName(): String =
+    when (lowercase()) {
+        "en" -> stringResource(R.string.language_english)
+        "ja" -> stringResource(R.string.language_japanese)
+        else -> this
+    }
 
 sealed interface LegalUiAction {
     data class SelectDocument(val id: PolicyDocumentId) : LegalUiAction

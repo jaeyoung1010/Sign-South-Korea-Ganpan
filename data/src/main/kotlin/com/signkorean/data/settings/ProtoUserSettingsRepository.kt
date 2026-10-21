@@ -8,7 +8,9 @@ import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.LanguageTag
 import com.signkorean.domain.model.UserSettings
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.UserSettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,15 +20,21 @@ import java.time.LocalTime
 class ProtoUserSettingsRepository(
     private val dataStore: DataStore<UserSettingsProto>,
     private val systemReduceMotionSource: SystemReduceMotionSource,
+    private val appLocalePort: AppLocalePort,
 ) : UserSettingsRepository {
     override val settings: Flow<UserSettings> =
-        dataStore.data.map { settings -> settings.toDomain(systemReduceMotionSource.isReduceMotionEnabled()) }
+        dataStore.data.map { settings ->
+            settings.toDomain(
+                systemReduceMotion = systemReduceMotionSource.isReduceMotionEnabled(),
+                appLocalePort = appLocalePort,
+            )
+        }
 
     override suspend fun updateSettings(transform: (UserSettings) -> UserSettings): UserSettings =
         dataStore
             .updateData { persisted ->
                 val systemReduceMotion = systemReduceMotionSource.isReduceMotionEnabled()
-                val current = persisted.toDomain(systemReduceMotion)
+                val current = persisted.toDomain(systemReduceMotion, appLocalePort)
                 val transformed = transform(current)
                 val reducePreferenceChanged =
                     transformed.reduceMotion != current.reduceMotion ||
@@ -38,19 +46,30 @@ class ProtoUserSettingsRepository(
                         persisted.hasExplicitReduceMotion -> persisted.reduceMotion
                         else -> false
                     }
-                transformed.toProto(appReduceMotion)
-            }.toDomain(systemReduceMotionSource.isReduceMotionEnabled())
+                val supportedLanguageTags = appLocalePort.validSupportedLanguageTags()
+                transformed.toProto(
+                    supportedLanguageTags = supportedLanguageTags,
+                    fallbackLanguageTag = appLocalePort.safeFallbackLanguageTag(supportedLanguageTags),
+                    appReduceMotion = appReduceMotion,
+                )
+            }.toDomain(systemReduceMotionSource.isReduceMotionEnabled(), appLocalePort)
 }
 
-private fun UserSettingsProto.toDomain(systemReduceMotion: Boolean): UserSettings =
-    UserSettings(
+private fun UserSettingsProto.toDomain(
+    systemReduceMotion: Boolean,
+    appLocalePort: AppLocalePort,
+): UserSettings {
+    val supportedLanguageTags = appLocalePort.validSupportedLanguageTags()
+    val fallbackLanguageTag = appLocalePort.safeFallbackLanguageTag(supportedLanguageTags)
+
+    return UserSettings(
         onboardingCompleted = onboardingCompleted,
         level = level.toDomain(),
         interests = interestsList.mapNotNull(InterestProto::toDomain).toSet(),
         sessionLength = sessionLength.takeIf(UserSettings.SESSION_LENGTH_OPTIONS::contains) ?: UserSettings.DEFAULT_SESSION_LENGTH,
-        appLanguageTag = appLanguageTag.supportedLanguageTagOrDefault(),
+        appLanguageTag = appLanguageTag.supportedLanguageTagOrDefault(supportedLanguageTags, fallbackLanguageTag),
         learningExplanationLanguageTag =
-            learningExplanationLanguageTag.supportedLanguageTagOrDefault(),
+            learningExplanationLanguageTag.supportedLanguageTagOrDefault(supportedLanguageTags, fallbackLanguageTag),
         showRomanization = showRomanization,
         autoPlayAudio = autoPlayAudio,
         audioVoice = voice.toDomain(),
@@ -61,8 +80,13 @@ private fun UserSettingsProto.toDomain(systemReduceMotion: Boolean): UserSetting
         reminderEnabled = reminderEnabled,
         reminderLocalTime = if (hasExplicitReminderLocalTime) reminderLocalTimeOrDefault() else LocalTime.of(19, 0),
     )
+}
 
-private fun UserSettings.toProto(appReduceMotion: Boolean = reduceMotion): UserSettingsProto =
+private fun UserSettings.toProto(
+    supportedLanguageTags: Set<String>,
+    fallbackLanguageTag: String,
+    appReduceMotion: Boolean = reduceMotion,
+): UserSettingsProto =
     UserSettingsProto
         .newBuilder()
         .setSchemaVersion(1)
@@ -70,8 +94,10 @@ private fun UserSettings.toProto(appReduceMotion: Boolean = reduceMotion): UserS
         .setLevel(level.toProto())
         .addAllInterests(interests.map(Interest::toProto))
         .setSessionLength(sessionLength)
-        .setAppLanguageTag(appLanguageTag.supportedLanguageTagOrDefault())
-        .setLearningExplanationLanguageTag(learningExplanationLanguageTag.supportedLanguageTagOrDefault())
+        .setAppLanguageTag(appLanguageTag.supportedLanguageTagOrDefault(supportedLanguageTags, fallbackLanguageTag))
+        .setLearningExplanationLanguageTag(
+            learningExplanationLanguageTag.supportedLanguageTagOrDefault(supportedLanguageTags, fallbackLanguageTag),
+        )
         .setShowRomanization(showRomanization)
         .setAutoPlayAudio(autoPlayAudio)
         .setVoice(audioVoice.toProto())
@@ -139,5 +165,17 @@ private fun UserSettingsProto.reminderLocalTimeOrDefault(): LocalTime =
         LocalTime.of(19, 0)
     }
 
-private fun String.supportedLanguageTagOrDefault(): String =
-    takeIf(UserSettings.SUPPORTED_LANGUAGE_TAGS::contains) ?: UserSettings.DEFAULT_LANGUAGE_TAG
+private fun String.supportedLanguageTagOrDefault(
+    supportedLanguageTags: Set<String>,
+    fallbackLanguageTag: String,
+): String =
+    takeIf { it in supportedLanguageTags } ?: fallbackLanguageTag
+
+private fun AppLocalePort.validSupportedLanguageTags(): Set<String> =
+    getSupported().mapNotNull(LanguageTag::parseOrNull).map(LanguageTag::value).toSet()
+
+private fun AppLocalePort.safeFallbackLanguageTag(supportedLanguageTags: Set<String>): String =
+    getCurrent().takeIf { it in supportedLanguageTags }
+        ?: UserSettings.DEFAULT_LANGUAGE_TAG.takeIf { it in supportedLanguageTags }
+        ?: supportedLanguageTags.firstOrNull()
+        ?: UserSettings.DEFAULT_LANGUAGE_TAG

@@ -2,6 +2,7 @@ package com.signkorean.data.asset
 
 import com.signkorean.domain.model.BundleValidationReport
 import com.signkorean.domain.model.FocusRect
+import com.signkorean.domain.model.LanguageTag
 import com.signkorean.domain.model.LocalizedCardCopy
 import com.signkorean.domain.model.LocalizedWordPart
 import com.signkorean.domain.model.SignCard
@@ -51,24 +52,34 @@ class BundleContentAdapter(
         val manifest = decode<ContentManifest>(manifestText, MANIFEST_PATH)
         requireValidation(manifest.contentVersion > 0) { "contentVersion must be positive" }
         requireValidation(manifest.cardCount == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT cards" }
-        requireValidation(manifest.languages.toSet() == REQUIRED_LANGUAGE_TAGS) { "supported languages must be en and ja" }
+        requireValidation(manifest.languages.containsAll(REQUIRED_LANGUAGE_TAGS)) { "supported languages must include en and ja" }
         requireValidation(manifest.languages.distinct().size == manifest.languages.size) { "duplicate language in manifest" }
-        requireValidation(manifest.reviewStatus.keys == REQUIRED_LANGUAGE_TAGS) { "manifest must record review status for every language" }
+        requireValidation(manifest.languages.all { LanguageTag.parseOrNull(it) != null }) { "manifest contains an invalid BCP-47 language tag" }
+        requireValidation(manifest.reviewStatus.keys == manifest.languages.toSet()) { "manifest must record review status for every language" }
         requireValidation(manifest.reviewStatus.getValue(ENGLISH_LANGUAGE_TAG) == NATIVE_ENGLISH_REVIEW_STATUS) {
             "English content must record native review status"
         }
         requireValidation(manifest.reviewStatus.getValue(JAPANESE_LANGUAGE_TAG) == NATIVE_JAPANESE_REVIEW_STATUS) {
             "Japanese review status must record native approval"
         }
-        requireValidation(manifest.factReviewStatus.keys == REQUIRED_LANGUAGE_TAGS) {
+        requireValidation(manifest.factReviewStatus.keys == manifest.languages.toSet()) {
             "manifest must record Korean fact review status for every language"
         }
         requireValidation(manifest.factReviewStatus.values.all { it == KOREAN_FACT_REVIEW_STATUS }) {
             "Korean fact review status must be approved for every language"
         }
-        requireValidation(manifest.checksums.keys == REQUIRED_CONTENT_PATHS) { "manifest must checksum every content file" }
+        val localizedPaths =
+            manifest.languages.associateWith { languageTag ->
+                manifest.localizedContent[languageTag] ?: localizedPath(languageTag)
+            }
+        requireValidation(localizedPaths.values.all { it.startsWith("content/") && it.endsWith(".json") }) {
+            "manifest contains an invalid localized content path"
+        }
+        requireValidation(manifest.checksums.keys == (setOf(BASE_CARDS_PATH) + localizedPaths.values)) {
+            "manifest must checksum every content file"
+        }
 
-        val contentTexts = REQUIRED_CONTENT_PATHS.associateWith(assetSource::readText)
+        val contentTexts = manifest.checksums.keys.associateWith(assetSource::readText)
         manifest.checksums.forEach { (path, checksum) ->
             requireValidation(sha256(contentTexts.getValue(path)) == checksum) { "checksum mismatch for $path" }
         }
@@ -78,7 +89,7 @@ class BundleContentAdapter(
         val cardsById = baseCards.associateBy(BaseCardJson::id)
         val localizedJson =
             manifest.languages.associateWith { languageTag ->
-                val path = localizedPath(languageTag)
+                val path = localizedPaths.getValue(languageTag)
                 decode<List<LocalizedCardCopyJson>>(contentTexts.getValue(path), path)
             }
         val englishCopies = localizedJson.getValue(ENGLISH_LANGUAGE_TAG).associateBy(LocalizedCardCopyJson::cardId)
@@ -148,22 +159,21 @@ class BundleContentAdapter(
             requireValidation(!copy.imageAltTextQuestion.contains(cardsById.getValue(copy.cardId).korean)) {
                 "question alt text reveals the answer for ${copy.cardId}"
             }
+            requireValidation(copy.reviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
+                "$languageTag review date missing for ${copy.cardId}"
+            }
             if (languageTag == ENGLISH_LANGUAGE_TAG) {
                 requireValidation(copy.reviewer == NATIVE_ENGLISH_REVIEWER) { "English reviewer missing for ${copy.cardId}" }
-                requireValidation(copy.reviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
-                    "English review date missing for ${copy.cardId}"
-                }
             } else if (languageTag == JAPANESE_LANGUAGE_TAG) {
                 requireValidation(copy.reviewer == NATIVE_JAPANESE_REVIEWER) { "Japanese reviewer missing for ${copy.cardId}" }
-                requireValidation(copy.reviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
-                    "Japanese review date missing for ${copy.cardId}"
-                }
                 requireValidation(copy.pronunciationGuide.matches(JAPANESE_PRONUNCIATION_PATTERN)) {
                     "Japanese pronunciation guide must use Katakana for ${copy.cardId}"
                 }
                 requireValidation(copy.streetNote != englishCopies.getValue(copy.cardId).streetNote) {
                     "independent Japanese copy is required for ${copy.cardId}"
                 }
+            } else {
+                requireValidation(!copy.reviewer.isNullOrBlank()) { "$languageTag reviewer missing for ${copy.cardId}" }
             }
             requireValidation(copy.factReviewer == KOREAN_FACT_REVIEWER) {
                 "${if (languageTag == JAPANESE_LANGUAGE_TAG) "Japanese" else "English"} fact reviewer missing for ${copy.cardId}"
@@ -217,8 +227,6 @@ class BundleContentAdapter(
         const val REQUIRED_CARD_COUNT = 20
         const val MANIFEST_PATH = "content/manifest.json"
         const val BASE_CARDS_PATH = "content/cards.base.json"
-        const val EN_CARDS_PATH = "content/en/cards.json"
-        const val JA_CARDS_PATH = "content/ja/cards.json"
         const val ENGLISH_LANGUAGE_TAG = "en"
         const val JAPANESE_LANGUAGE_TAG = "ja"
         const val NATIVE_ENGLISH_REVIEW_STATUS = "native-english-reviewed"
@@ -227,8 +235,7 @@ class BundleContentAdapter(
         const val NATIVE_ENGLISH_REVIEWER = "native-english-review"
         const val NATIVE_JAPANESE_REVIEWER = "native-japanese-review"
         const val KOREAN_FACT_REVIEWER = "korean-fact-review"
-        val REQUIRED_CONTENT_PATHS = setOf(BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH)
-        val REQUIRED_LANGUAGE_TAGS = setOf("en", "ja")
+        val REQUIRED_LANGUAGE_TAGS = setOf(ENGLISH_LANGUAGE_TAG, JAPANESE_LANGUAGE_TAG)
         val PERCENT_RANGE = 0f..100f
         val IMAGE_REVIEW_STATUSES = setOf("approved", "pending")
         val REVIEW_DATE_PATTERN = Regex("\\d{4}-\\d{2}-\\d{2}")
@@ -263,6 +270,7 @@ private data class ContentManifest(
     val contentVersion: Int,
     val cardCount: Int,
     val languages: List<String>,
+    val localizedContent: Map<String, String> = emptyMap(),
     val reviewStatus: Map<String, String>,
     val factReviewStatus: Map<String, String> = emptyMap(),
     val checksums: Map<String, String>,

@@ -46,7 +46,10 @@ internal fun validAssets(): Map<String, String> {
 
 internal fun refreshManifestChecksums(assets: MutableMap<String, String>) {
     var manifest = assets.getValue(MANIFEST_PATH)
-    listOf(BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH).forEach { path ->
+    assets.keys
+        .filter { it.startsWith("content/") && it.endsWith(".json") && it != MANIFEST_PATH }
+        .sorted()
+        .forEach { path ->
         val checksum = sha256ForTest(assets.getValue(path))
         val checksumPattern = "\"$path\": \"[0-9a-f]{64}\"".toRegex()
         manifest = manifest.replace(checksumPattern, "\"$path\": \"$checksum\"")

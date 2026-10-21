@@ -166,6 +166,38 @@ class BundleContentAdapterTest {
     }
 
     @Test
+    fun `loads a future BCP 47 locale without changing domain use cases`() {
+        val assets = validAssets().toMutableMap()
+        assets["content/fr/cards.json"] = assets.getValue(JA_CARDS_PATH).replace("\"languageTag\":\"ja\"", "\"languageTag\":\"fr\"")
+        assets[MANIFEST_PATH] =
+            assets
+                .getValue(MANIFEST_PATH)
+                .replace("[\"en\", \"ja\"]", "[\"en\", \"ja\", \"fr\"]")
+                .replace(
+                    "\"ja\": \"native-japanese-reviewed\"\n  },",
+                    "\"ja\": \"native-japanese-reviewed\",\n    \"fr\": \"future-native-reviewed\"\n  },",
+                )
+                .replace(
+                    "\"ja\": \"korean-fact-reviewed\"\n  },",
+                    "\"ja\": \"korean-fact-reviewed\",\n    \"fr\": \"korean-fact-reviewed\"\n  },",
+                )
+                .replace(
+                    "\"languages\": [\"en\", \"ja\"],",
+                    "\"languages\": [\"en\", \"ja\", \"fr\"],\n  \"localizedContent\": {\"en\": \"content/en/cards.json\", \"ja\": \"content/ja/cards.json\", \"fr\": \"content/fr/cards.json\"},",
+                )
+                .replace(
+                    "\"content/ja/cards.json\": \"7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b\"",
+                    "\"content/ja/cards.json\": \"7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
+                )
+
+        refreshManifestChecksums(assets)
+        val adapter = BundleContentAdapter(FakeAssetSource(assets))
+
+        assertEquals(20, adapter.getLocalizedCopy("fr").size)
+        assertEquals(setOf("en", "ja", "fr"), adapter.validateBundle().languages)
+    }
+
+    @Test
     fun `rejects a missing audio asset`() {
         val assets = validAssets().toMutableMap()
         assets.remove("audio/gemini/20-seoul-station.wav")

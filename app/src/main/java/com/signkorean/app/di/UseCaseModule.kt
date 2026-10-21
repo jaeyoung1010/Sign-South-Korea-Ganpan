@@ -1,6 +1,7 @@
 package com.signkorean.app.di
 
 import com.signkorean.domain.port.input.CompleteOnboarding
+import com.signkorean.domain.port.input.ChangeAppLanguage
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.InitializeApp
 import com.signkorean.domain.port.input.LoadLearnHome
@@ -22,6 +23,7 @@ import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.LoadPolicyDocument
 import com.signkorean.domain.port.input.OpenPolicyDocument
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.CardReportIdGenerator
 import com.signkorean.domain.port.output.CardReportRepository
@@ -37,6 +39,7 @@ import com.signkorean.domain.port.output.PolicyBrowserPort
 import com.signkorean.domain.port.output.PolicyDocumentRepository
 import com.signkorean.domain.session.SessionBuilder
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
+import com.signkorean.domain.usecase.ChangeAppLanguageUseCase
 import com.signkorean.domain.usecase.ConfigureReminderUseCase
 import com.signkorean.domain.usecase.InitializeAppUseCase
 import com.signkorean.domain.usecase.LoadLearnHomeUseCase
@@ -66,6 +69,12 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 @Suppress("TooManyFunctions")
 object UseCaseModule {
+    @Provides
+    fun provideChangeAppLanguage(
+        appLocalePort: AppLocalePort,
+        userSettingsRepository: UserSettingsRepository,
+    ): ChangeAppLanguage = ChangeAppLanguageUseCase(appLocalePort, userSettingsRepository)
+
     @Provides
     fun provideLoadPolicyDocument(repository: PolicyDocumentRepository): LoadPolicyDocument =
         LoadPolicyDocumentUseCase(repository)

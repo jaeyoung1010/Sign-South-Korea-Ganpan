@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.Manifest
 import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -106,7 +106,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val navigationViewModel: AppNavigationViewModel by viewModels()
     private val launchViewModel: LaunchViewModel by viewModels()
     private val onboardingViewModel: OnboardingViewModel by viewModels()
@@ -267,6 +267,17 @@ private fun SignKoreanApp(
                     navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_setting_save_failed)))
                 }
 
+                is SettingsEffect.LanguageChanged -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Back)
+                    navigationViewModel.dispatch(
+                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_language_saved)),
+                    )
+                }
+
+                SettingsEffect.LanguageChangeFailed -> {
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_language_save_failed)))
+                }
+
                 SettingsEffect.ReminderPermissionRequested -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         reminderPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -316,6 +327,7 @@ private fun SignKoreanApp(
         onPauseSession = learnViewModel::pauseSession,
         onPlayAudio = learnViewModel::playAudio,
         settingsState = settingsState,
+        onSelectLanguage = settingsViewModel::selectLanguage,
         onSelectVoice = settingsViewModel::selectVoice,
         onSelectSessionLength = settingsViewModel::selectSessionLength,
         onToggleRomanization = settingsViewModel::toggleRomanization,
@@ -370,6 +382,7 @@ internal fun SignKoreanAppContent(
     onPauseSession: () -> Unit = {},
     onPlayAudio: () -> Unit = {},
     settingsState: SettingsUiState = SettingsUiState(),
+    onSelectLanguage: (String) -> Unit = {},
     onSelectVoice: (AudioVoice) -> Unit = {},
     onSelectSessionLength: (Int) -> Unit = {},
     onToggleRomanization: () -> Unit = {},
@@ -416,6 +429,7 @@ internal fun SignKoreanAppContent(
             onPauseSession,
             onPlayAudio,
             settingsState,
+            onSelectLanguage,
             onSelectVoice,
             onSelectSessionLength,
             onToggleRomanization,
@@ -557,6 +571,7 @@ internal fun SignKoreanAppContent(
                     onSubmitReport = onSubmitReport,
                     onCancelReport = onCancelReport,
                     settingsState = settingsState,
+                    onSelectLanguage = onSelectLanguage,
                     onSelectVoice = onSelectVoice,
                     onSelectSessionLength = onSelectSessionLength,
                     accountState = AccountUiState(),
@@ -821,6 +836,7 @@ private fun SettingsDestination(
         state = state,
         onAction = { action ->
             when (action) {
+                SettingsUiAction.SelectLanguage -> onAction(AppNavigationAction.ShowSheet(AppSheet.Language))
                 SettingsUiAction.SelectVoice -> onAction(AppNavigationAction.ShowSheet(AppSheet.Voice))
                 SettingsUiAction.SelectSessionLength -> onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLength))
                 SettingsUiAction.ToggleRomanization -> onToggleRomanization()
@@ -889,6 +905,7 @@ private fun BoxScope.AppOverlayHost(
     onSubmitReport: () -> Unit,
     onCancelReport: () -> Unit,
     settingsState: SettingsUiState,
+    onSelectLanguage: (String) -> Unit,
     onSelectVoice: (AudioVoice) -> Unit,
     onSelectSessionLength: (Int) -> Unit,
     accountState: AccountUiState,
@@ -916,6 +933,7 @@ private fun BoxScope.AppOverlayHost(
                         AppSheet.SessionLeave -> stringResource(R.string.sheet_leave_session)
                         AppSheet.Report -> stringResource(R.string.sheet_report_card)
                         AppSheet.Account -> accountState.title
+                        AppSheet.Language -> stringResource(com.signkorean.feature.settings.R.string.sheet_choose_language)
                     },
             ) {
                 when (sheet) {
@@ -995,6 +1013,25 @@ private fun BoxScope.AppOverlayHost(
                     }
 
                     AppSheet.Account -> AccountSheet(state = accountState)
+
+                    AppSheet.Language -> {
+                        Text(
+                            stringResource(com.signkorean.feature.settings.R.string.sheet_language_question),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        settingsState.supportedLanguageTags.forEach { languageTag ->
+                            val selected = languageTag == settingsState.appLanguageTag
+                            GameButton(
+                                text = (if (selected) "✓ " else "") + languageTag.displayName(resources),
+                                onClick = {
+                                    onSelectLanguage(languageTag)
+                                    onAction(AppNavigationAction.Back)
+                                },
+                                modifier = Modifier.fillMaxWidth().testTag("settings.language.$languageTag"),
+                                style = if (selected) GameButtonStyle.Primary else GameButtonStyle.Secondary,
+                            )
+                        }
+                    }
                 }
                 if (sheet != AppSheet.SessionLeave && sheet != AppSheet.Report) {
                     GameButton(
@@ -1043,6 +1080,13 @@ private fun BoxScope.AppOverlayHost(
         )
     }
 }
+
+private fun String.displayName(resources: android.content.res.Resources): String =
+    when (lowercase()) {
+        "en" -> resources.getString(com.signkorean.feature.settings.R.string.language_english)
+        "ja" -> resources.getString(com.signkorean.feature.settings.R.string.language_japanese)
+        else -> this
+    }
 
 @Composable
 private fun SessionLeaveSheetContent(

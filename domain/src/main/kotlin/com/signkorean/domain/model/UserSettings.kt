@@ -39,14 +39,13 @@ data class UserSettings(
 ) {
     init {
         require(sessionLength in SESSION_LENGTH_OPTIONS) { "Unsupported session length: $sessionLength" }
-        require(appLanguageTag.isNotBlank()) { "App language tag must not be blank" }
-        require(learningExplanationLanguageTag.isNotBlank()) { "Explanation language tag must not be blank" }
+        LanguageTag(appLanguageTag)
+        LanguageTag(learningExplanationLanguageTag)
     }
 
     companion object {
         const val DEFAULT_SESSION_LENGTH = 20
         const val DEFAULT_LANGUAGE_TAG = "en"
         val SESSION_LENGTH_OPTIONS = setOf(5, 10, 20)
-        val SUPPORTED_LANGUAGE_TAGS = setOf("en", "ja")
     }
 }

@@ -2,6 +2,10 @@
   "contentVersion": 2,
   "cardCount": 20,
   "languages": ["en", "ja"],
+  "localizedContent": {
+    "en": "content/en/cards.json",
+    "ja": "content/ja/cards.json"
+  },
   "reviewStatus": {
     "en": "native-english-reviewed",
     "ja": "native-japanese-reviewed"

@@ -21,6 +21,8 @@
     <string name="toast_voice_save_failed">Could not save the voice. Try again.</string>
     <plurals name="toast_cards_selected"><item quantity="one">%1$d card selected.</item><item quantity="other">%1$d cards selected.</item></plurals>
     <string name="toast_setting_save_failed">Could not save that setting. Try again.</string>
+    <string name="toast_language_saved">Language updated.</string>
+    <string name="toast_language_save_failed">Could not change the language. Try again.</string>
     <string name="toast_reminders_off">Review reminders are off.</string>
     <string name="toast_reveal_first">Reveal the answer first.</string>
     <string name="toast_card_unavailable">This card is not available.</string>

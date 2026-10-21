@@ -21,6 +21,7 @@ import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.app.legal.BundledPolicyDocumentRepository
 import com.signkorean.domain.port.output.AnalyticsPort
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.AnalyticsSink
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.CardReportIdGenerator
@@ -82,7 +83,8 @@ object DataAdapterModule {
     fun provideUserSettingsRepository(
         dataStore: DataStore<UserSettingsProto>,
         systemReduceMotionSource: SystemReduceMotionSource,
-    ): UserSettingsRepository = ProtoUserSettingsRepository(dataStore, systemReduceMotionSource)
+        appLocalePort: AppLocalePort,
+    ): UserSettingsRepository = ProtoUserSettingsRepository(dataStore, systemReduceMotionSource, appLocalePort)
 
     @Provides
     @Singleton

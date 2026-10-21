@@ -11,6 +11,8 @@ import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.model.VoiceChangedEvent
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.ConfigureReminderResult
+import com.signkorean.domain.port.input.ChangeAppLanguage
+import com.signkorean.domain.port.input.ChangeAppLanguageResult
 import com.signkorean.domain.port.input.ObserveProgress
 import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
@@ -43,6 +45,7 @@ class SettingsViewModel
         private val configureReminder: ConfigureReminder = ConfigureReminder { _, _ -> ConfigureReminderResult.Disabled },
         private val observeProgress: ObserveProgress = ObserveProgress { flowOf(emptyProgressSnapshot()) },
         private val reminderScheduler: ReminderSchedulerPort = NoopReminderScheduler,
+        private val changeAppLanguage: ChangeAppLanguage = NoopChangeAppLanguage,
         @AppVersionName private val appVersion: String = "0.1.0",
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow(SettingsUiState(appVersion = appVersion))
@@ -64,6 +67,8 @@ class SettingsViewModel
                             reduceMotion = settings.reduceMotion,
                             followSystemReduceMotion = settings.followSystemReduceMotion,
                             reminderEnabled = settings.reminderEnabled,
+                            appLanguageTag = settings.appLanguageTag,
+                            supportedLanguageTags = changeAppLanguage.supportedLanguageTags.toList(),
                             appVersion = appVersion,
                         )
                 }
@@ -127,6 +132,25 @@ class SettingsViewModel
                         effectChannel.trySend(SettingsEffect.SettingsChangeFailed)
                     }
                 }
+        }
+
+        fun selectLanguage(languageTag: String) {
+            if (languageTag !in changeAppLanguage.supportedLanguageTags) return
+            viewModelScope.launch {
+                try {
+                    when (val result = changeAppLanguage(languageTag)) {
+                        is ChangeAppLanguageResult.Changed -> effectChannel.trySend(SettingsEffect.LanguageChanged(result.languageTag))
+                        ChangeAppLanguageResult.InvalidTag,
+                        is ChangeAppLanguageResult.Unsupported,
+                        ChangeAppLanguageResult.Failed,
+                        -> effectChannel.trySend(SettingsEffect.LanguageChangeFailed)
+                    }
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    effectChannel.trySend(SettingsEffect.LanguageChangeFailed)
+                }
+            }
         }
 
         fun toggleRomanization() {
@@ -241,6 +265,10 @@ sealed interface SettingsEffect {
 
     data object SettingsChangeFailed : SettingsEffect
 
+    data class LanguageChanged(val languageTag: String) : SettingsEffect
+
+    data object LanguageChangeFailed : SettingsEffect
+
     data object ReminderPermissionRequested : SettingsEffect
 
     data object ReminderPermissionDenied : SettingsEffect
@@ -254,6 +282,12 @@ private object NoopReminderScheduler : ReminderSchedulerPort {
     override suspend fun schedule(schedule: com.signkorean.domain.port.output.ReminderSchedule) = Unit
 
     override suspend fun cancel() = Unit
+}
+
+private object NoopChangeAppLanguage : ChangeAppLanguage {
+    override val supportedLanguageTags: Set<String> = setOf("en", "ja")
+
+    override suspend fun invoke(languageTag: String): ChangeAppLanguageResult = ChangeAppLanguageResult.Failed
 }
 
 private fun emptyProgressSnapshot() =

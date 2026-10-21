@@ -1,6 +1,7 @@
 package com.signkorean.data.settings
 
 import com.signkorean.domain.port.output.UserSettingsRepository
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.testsupport.contract.UserSettingsRepositoryContract
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +37,14 @@ class ProtoUserSettingsRepositoryContractTest : UserSettingsRepositoryContract()
                     scope = scope,
                 ),
             systemReduceMotionSource = SystemReduceMotionSource { false },
+            appLocalePort =
+                object : AppLocalePort {
+                    override fun getSupported() = setOf("en", "ja")
+
+                    override fun getCurrent() = "en"
+
+                    override fun setCurrent(languageTag: String) = Unit
+                },
         )
     }
 }

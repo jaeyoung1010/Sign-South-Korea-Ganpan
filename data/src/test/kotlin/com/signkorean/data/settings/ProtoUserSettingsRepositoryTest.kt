@@ -6,6 +6,7 @@ import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.UserSettings
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,41 @@ class ProtoUserSettingsRepositoryTest {
             val fixture = createFixture(systemReduceMotion = true)
 
             assertEquals(UserSettings(reduceMotion = true), fixture.repository.settings.first())
+        }
+
+    @Test
+    fun `uses Japanese as the initial language when the device language is Japanese`() =
+        runTest {
+            val fixture = createFixture(deviceLanguageTag = "ja")
+
+            assertEquals("ja", fixture.repository.settings.first().appLanguageTag)
+            assertEquals("ja", fixture.repository.settings.first().learningExplanationLanguageTag)
+        }
+
+    @Test
+    fun `falls back to English for an unsupported device language`() =
+        runTest {
+            val fixture = createFixture(deviceLanguageTag = "fr")
+
+            assertEquals("en", fixture.repository.settings.first().appLanguageTag)
+            assertEquals("en", fixture.repository.settings.first().learningExplanationLanguageTag)
+        }
+
+    @Test
+    fun `falls back from a corrupted Japanese setting when only English is available`() =
+        runTest {
+            val fixture = createFixture(supportedLanguageTags = setOf("en"))
+            fixture.dataStore.updateData {
+                it.toBuilder()
+                    .setAppLanguageTag("ja")
+                    .setLearningExplanationLanguageTag("ja")
+                    .build()
+            }
+
+            val settings = fixture.repository.settings.first()
+
+            assertEquals("en", settings.appLanguageTag)
+            assertEquals("en", settings.learningExplanationLanguageTag)
         }
 
     @Test
@@ -272,11 +308,18 @@ class ProtoUserSettingsRepositoryTest {
         file: File = File(temporaryFolder.root, "${System.nanoTime()}.pb"),
         systemReduceMotion: Boolean = false,
         diagnostics: RecordingSettingsDiagnostics = RecordingSettingsDiagnostics(),
+        deviceLanguageTag: String = "en",
+        supportedLanguageTags: Set<String> = setOf("en", "ja"),
     ): SettingsFixture {
         val scope = newScope()
         val dataStore = UserSettingsDataStoreFactory.create(file, diagnostics, scope)
         return SettingsFixture(
-            repository = ProtoUserSettingsRepository(dataStore, SystemReduceMotionSource { systemReduceMotion }),
+            repository =
+                ProtoUserSettingsRepository(
+                    dataStore,
+                    SystemReduceMotionSource { systemReduceMotion },
+                    FakeAppLocalePort(supportedLanguageTags, deviceLanguageTag),
+                ),
             dataStore = dataStore,
             scope = scope,
         )
@@ -300,6 +343,19 @@ class ProtoUserSettingsRepositoryTest {
 
         override fun onCorruptionRecovered() {
             recoveryCount += 1
+        }
+    }
+
+    private class FakeAppLocalePort(
+        private val supportedLanguageTags: Set<String>,
+        var currentTag: String,
+    ) : AppLocalePort {
+        override fun getSupported(): Set<String> = supportedLanguageTags
+
+        override fun getCurrent(): String = currentTag
+
+        override fun setCurrent(languageTag: String) {
+            currentTag = languageTag
         }
     }
 

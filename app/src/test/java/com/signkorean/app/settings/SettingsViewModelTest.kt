@@ -9,6 +9,8 @@ import com.signkorean.domain.model.ProgressSnapshot
 import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.ConfigureReminderResult
+import com.signkorean.domain.port.input.ChangeAppLanguage
+import com.signkorean.domain.port.input.ChangeAppLanguageResult
 import com.signkorean.domain.port.input.ObserveProgress
 import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
@@ -108,6 +110,30 @@ class SettingsViewModelTest {
             advanceUntilIdle()
 
             assertEquals(20, repository.settings.first().sessionLength)
+        }
+
+    @Test
+    fun `selecting an app language persists it and emits a refresh effect`() =
+        runTest {
+            val repository = FakeUserSettingsRepository()
+            val languageUseCase = RecordingChangeAppLanguage(repository)
+            val viewModel =
+                SettingsViewModel(
+                    repository,
+                    RecordingAudioPlayer(),
+                    RecordingAnalyticsSink(),
+                    changeAppLanguage = languageUseCase,
+                )
+            advanceUntilIdle()
+
+            viewModel.selectLanguage("ja")
+            advanceUntilIdle()
+
+            assertEquals("ja", repository.settings.first().appLanguageTag)
+            assertEquals("ja", repository.settings.first().learningExplanationLanguageTag)
+            assertEquals(SettingsEffect.LanguageChanged("ja"), viewModel.effects.first())
+            assertEquals(listOf("ja"), languageUseCase.requestedTags)
+            assertEquals("ja", viewModel.uiState.value.appLanguageTag)
         }
 
     @Test
@@ -217,6 +243,21 @@ class SettingsViewModelTest {
         override suspend fun invoke(enabled: Boolean, dueCount: Int): ConfigureReminderResult {
             repository.updateSettings { it.copy(reminderEnabled = enabled && dueCount > 0) }
             return if (!enabled) ConfigureReminderResult.Disabled else if (dueCount > 0) ConfigureReminderResult.Scheduled else ConfigureReminderResult.NoDueCards
+        }
+    }
+
+    private class RecordingChangeAppLanguage(
+        private val repository: FakeUserSettingsRepository,
+    ) : ChangeAppLanguage {
+        override val supportedLanguageTags: Set<String> = setOf("en", "ja")
+        val requestedTags = mutableListOf<String>()
+
+        override suspend fun invoke(languageTag: String): ChangeAppLanguageResult {
+            requestedTags += languageTag
+            repository.updateSettings {
+                it.copy(appLanguageTag = languageTag, learningExplanationLanguageTag = languageTag)
+            }
+            return ChangeAppLanguageResult.Changed(languageTag)
         }
     }
 

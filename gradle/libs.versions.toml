@@ -25,6 +25,7 @@ media3 = "1.11.1"
 work = "2.12.0"
 androidx-hilt = "1.4.0"
 browser = "1.10.0"
+appcompat = "1.8.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -63,6 +64,7 @@ androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

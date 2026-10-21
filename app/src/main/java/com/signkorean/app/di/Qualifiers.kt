@@ -17,3 +17,7 @@ annotation class BundledContentJson
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class AppVersionName
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class SupportedLanguageTags
