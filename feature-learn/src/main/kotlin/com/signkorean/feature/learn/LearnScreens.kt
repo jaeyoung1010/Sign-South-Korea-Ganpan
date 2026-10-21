@@ -378,8 +378,8 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
 fun LearnSessionScreen(
     state: LearnSessionUiState,
     onAction: (LearnUiAction) -> Unit,
-    feedback: LearnFeedbackUiState? = null,
     modifier: Modifier = Modifier,
+    feedback: LearnFeedbackUiState? = null,
 ) {
     Column(
         modifier = modifier.fillMaxSize().testTag("screen-learn"),
