@@ -3,6 +3,7 @@ package com.signkorean.domain.session
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.UserSettings
+import java.time.Instant
 
 /** The information needed to select a card without coupling selection to persistence. */
 data class SessionCandidate(
@@ -11,10 +12,13 @@ data class SessionCandidate(
     val category: String,
     val isDue: Boolean,
     val isNew: Boolean,
+    val nextReviewAt: Instant? = null,
+    val reviewCount: Int = 0,
 ) {
     init {
         require(cardId.isNotBlank()) { "Card ID must not be blank" }
         require(category.isNotBlank()) { "Category must not be blank" }
+        require(reviewCount >= 0) { "Review count must not be negative" }
     }
 }
 
@@ -37,6 +41,7 @@ data class SessionBuildRequest(
     val category: String? = null,
     val practiceCardId: String? = null,
     val seed: Long,
+    val now: Instant = Instant.EPOCH,
 ) {
     init {
         when (type) {
@@ -63,6 +68,7 @@ data class SessionBuildRequest(
             interests: Set<Interest>,
             level: LearningLevel,
             seed: Long,
+            now: Instant = Instant.EPOCH,
         ): SessionBuildRequest =
             SessionBuildRequest(
                 type = SessionType.DAILY,
@@ -71,6 +77,7 @@ data class SessionBuildRequest(
                 interests = interests,
                 level = level,
                 seed = seed,
+                now = now,
             )
 
         fun category(
@@ -80,6 +87,7 @@ data class SessionBuildRequest(
             interests: Set<Interest> = emptySet(),
             level: LearningLevel = LearningLevel.BEGINNER,
             seed: Long,
+            now: Instant = Instant.EPOCH,
         ): SessionBuildRequest =
             SessionBuildRequest(
                 type = SessionType.CATEGORY,
@@ -89,12 +97,14 @@ data class SessionBuildRequest(
                 level = level,
                 category = category,
                 seed = seed,
+                now = now,
             )
 
         fun practice(
             cardId: String,
             candidates: List<SessionCandidate>,
             seed: Long,
+            now: Instant = Instant.EPOCH,
         ): SessionBuildRequest =
             SessionBuildRequest(
                 type = SessionType.PRACTICE,
@@ -102,6 +112,7 @@ data class SessionBuildRequest(
                 candidates = candidates,
                 practiceCardId = cardId,
                 seed = seed,
+                now = now,
             )
     }
 }
@@ -109,9 +120,10 @@ data class SessionBuildRequest(
 /** A later review phase can replace this hook without changing session selection. */
 enum class ReviewReinsertionPolicy {
     DEFERRED,
+    RUNTIME_QUEUE,
 }
 
 data class SessionPlan(
     val cardIds: List<String>,
-    val reviewReinsertionPolicy: ReviewReinsertionPolicy = ReviewReinsertionPolicy.DEFERRED,
+    val reviewReinsertionPolicy: ReviewReinsertionPolicy = ReviewReinsertionPolicy.RUNTIME_QUEUE,
 )

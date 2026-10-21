@@ -7,6 +7,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Random
+import java.time.Instant
 
 class SessionBuilderTest {
     private val builder = SessionBuilder()
@@ -57,7 +58,33 @@ class SessionBuilderTest {
             )
 
         assertEquals(listOf("card-0", "card-1", "card-2"), plan.cardIds.take(3))
-        assertEquals(ReviewReinsertionPolicy.DEFERRED, plan.reviewReinsertionPolicy)
+        assertEquals(ReviewReinsertionPolicy.RUNTIME_QUEUE, plan.reviewReinsertionPolicy)
+    }
+
+    @Test
+    fun `daily session prioritizes overdue cards and then review count`() {
+        val now = Instant.parse("2026-10-21T00:00:00Z")
+        val candidates =
+            listOf(
+                candidate("future", 0, isDue = true).copy(nextReviewAt = now.plusSeconds(10), reviewCount = 99),
+                candidate("overdue-low", 1, isDue = true).copy(nextReviewAt = now.minusSeconds(20), reviewCount = 1),
+                candidate("overdue-high", 2, isDue = true).copy(nextReviewAt = now.minusSeconds(10), reviewCount = 4),
+                candidate("new", 3),
+            )
+
+        val plan =
+            builder.build(
+                SessionBuildRequest.daily(
+                    length = 5,
+                    candidates = candidates,
+                    interests = emptySet(),
+                    level = LearningLevel.BEGINNER,
+                    seed = 1L,
+                    now = now,
+                ),
+            )
+
+        assertEquals(listOf("overdue-high", "overdue-low", "future"), plan.cardIds.take(3))
     }
 
     @Test

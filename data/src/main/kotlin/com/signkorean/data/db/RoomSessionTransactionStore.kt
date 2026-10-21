@@ -1,6 +1,7 @@
 package com.signkorean.data.db
 
 import com.signkorean.domain.port.output.ClockPort
+import com.signkorean.domain.session.ReinsertionPolicy
 import java.time.Instant
 
 data class RatingCommand(
@@ -112,10 +113,41 @@ class RoomSessionTransactionStore(
             database.cardProgressDao().upsert(command.updatedProgress)
             database.sessionCardDao().update(card.copy(rating = command.rating, ratedAt = command.ratedAt))
             val nextIndex = command.position + 1
-            val isComplete = nextIndex == database.sessionCardDao().countForSession(command.sessionId)
+            val remainingCount = database.sessionCardDao().countForSession(command.sessionId) - nextIndex
+            val shouldReinsert = command.rating == "REVIEW" && remainingCount >= ReinsertionPolicy.MIN_GAP
+            if (shouldReinsert) {
+                val gap = ReinsertionPolicy.gapFor(command.updatedProgress.reviewCount)
+                val insertionPosition = command.position + 1 + gap
+                database.sessionCardDao().forSession(command.sessionId)
+                    .asSequence()
+                    .filter { it.position >= insertionPosition }
+                    .sortedByDescending(SessionCardEntity::position)
+                    .forEach { shifted ->
+                        check(
+                            database.sessionCardDao().move(
+                                sessionId = command.sessionId,
+                                oldPosition = shifted.position,
+                                newPosition = shifted.position + 1,
+                            ) == 1,
+                        ) { "Could not shift session card at ${shifted.position}" }
+                    }
+                database.sessionCardDao().insertAll(
+                    listOf(
+                        SessionCardEntity(
+                            sessionId = command.sessionId,
+                            position = insertionPosition,
+                            cardId = command.cardId,
+                            source = "REVIEW",
+                        ),
+                    ),
+                )
+            }
+            val sessionLength = database.sessionCardDao().countForSession(command.sessionId)
+            val isComplete = nextIndex == sessionLength
             val updatedSession =
                 session.copy(
                     currentIndex = nextIndex,
+                    requestedLength = sessionLength,
                     status = if (isComplete) "COMPLETED" else "ACTIVE",
                     updatedAt = command.ratedAt,
                     completedAt = if (isComplete) command.ratedAt else null,
@@ -150,15 +182,18 @@ class RoomSessionTransactionStore(
             if (rating !in RATINGS || card.cardId != snapshot.cardId || session.currentIndex != snapshot.position + 1) {
                 return@runInTransaction UndoTransactionResult.Unavailable
             }
+            val progressAfterRating = database.cardProgressDao().get(snapshot.cardId)
             if (snapshot.hadProgress) {
                 database.cardProgressDao().upsert(snapshot.toProgress())
             } else {
                 database.cardProgressDao().delete(snapshot.cardId)
             }
+            removeReinsertedCardIfPresent(session, snapshot, card, progressAfterRating)
             database.sessionCardDao().update(card.copy(rating = null, ratedAt = null))
             database.sessionDao().update(
                 session.copy(
                     currentIndex = snapshot.position,
+                    requestedLength = database.sessionCardDao().countForSession(sessionId),
                     status = snapshot.previousStatus,
                     updatedAt = clock.now(),
                     completedAt = snapshot.previousCompletedAt,
@@ -167,6 +202,35 @@ class RoomSessionTransactionStore(
             database.ratingSnapshotDao().delete(sessionId)
             UndoTransactionResult.Restored(card.cardId, card.position, rating)
         }
+
+    private fun removeReinsertedCardIfPresent(
+        session: SessionEntity,
+        snapshot: RatingSnapshotEntity,
+        ratedCard: SessionCardEntity,
+        progressAfterRating: CardProgressEntity?,
+    ) {
+        if (ratedCard.rating != "REVIEW") return
+        val insertionPosition = snapshot.position + 1 + ReinsertionPolicy.gapFor(progressAfterRating?.reviewCount ?: return)
+        val reinserted = database.sessionCardDao().get(session.sessionId, insertionPosition)
+        if (reinserted?.cardId == snapshot.cardId && reinserted.rating == null && reinserted.source == "REVIEW") {
+            check(database.sessionCardDao().delete(session.sessionId, insertionPosition) == 1) {
+                "Could not remove the reinserted card"
+            }
+            database.sessionCardDao().forSession(session.sessionId)
+                .asSequence()
+                .filter { it.position > insertionPosition }
+                .sortedBy(SessionCardEntity::position)
+                .forEach { shifted ->
+                    check(
+                        database.sessionCardDao().move(
+                            sessionId = session.sessionId,
+                            oldPosition = shifted.position,
+                            newPosition = shifted.position - 1,
+                        ) == 1,
+                    ) { "Could not compact session card at ${shifted.position}" }
+                }
+        }
+    }
 
     private fun snapshot(
         session: SessionEntity,

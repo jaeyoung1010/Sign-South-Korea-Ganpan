@@ -19,7 +19,19 @@ data class HomeActivitySnapshot(
     val progressedCardIds: Set<String> = emptySet(),
     val dueCardIds: Set<String> = emptySet(),
     val reviewedAt: List<Instant> = emptyList(),
+    val dueCards: List<DueCard> = emptyList(),
 )
+
+data class DueCard(
+    val cardId: String,
+    val nextReviewAt: Instant,
+    val reviewCount: Int,
+) {
+    init {
+        require(cardId.isNotBlank()) { "Due card ID must not be blank" }
+        require(reviewCount >= 0) { "Review count must not be negative" }
+    }
+}
 
 data class LearnHomeDashboard(
     val streakDays: Int,

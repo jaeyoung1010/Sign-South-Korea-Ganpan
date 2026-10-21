@@ -66,6 +66,23 @@ interface SessionCardDao {
     @Query("SELECT COUNT(*) FROM session_cards WHERE session_id = :sessionId")
     fun countForSession(sessionId: String): Int
 
+    @Query("DELETE FROM session_cards WHERE session_id = :sessionId AND position = :position")
+    fun delete(sessionId: String, position: Int): Int
+
+    @Query(
+        """
+        UPDATE session_cards
+        SET position = :newPosition
+        WHERE session_id = :sessionId
+          AND position = :oldPosition
+        """,
+    )
+    fun move(
+        sessionId: String,
+        oldPosition: Int,
+        newPosition: Int,
+    ): Int
+
     @Query("SELECT rated_at FROM session_cards WHERE rated_at IS NOT NULL")
     fun ratedAt(): List<java.time.Instant>
 

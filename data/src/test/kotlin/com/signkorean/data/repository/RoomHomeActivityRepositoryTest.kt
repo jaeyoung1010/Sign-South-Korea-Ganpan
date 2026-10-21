@@ -50,6 +50,10 @@ class RoomHomeActivityRepositoryTest {
 
             assertEquals(setOf("due-card", "newer-card"), snapshot.progressedCardIds)
             assertEquals(setOf("due-card"), snapshot.dueCardIds)
+            assertEquals(1, snapshot.dueCards.size)
+            assertEquals("due-card", snapshot.dueCards.single().cardId)
+            assertEquals(at(10), snapshot.dueCards.single().nextReviewAt)
+            assertEquals(0, snapshot.dueCards.single().reviewCount)
             assertEquals(listOf(at(1), at(2)), snapshot.reviewedAt)
         }
 

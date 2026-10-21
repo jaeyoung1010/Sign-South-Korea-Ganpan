@@ -50,6 +50,8 @@ class StartSessionUseCase(
                     category = card.category,
                     isDue = card.id in activity.dueCardIds,
                     isNew = card.id !in activity.progressedCardIds,
+                    nextReviewAt = activity.dueCards.firstOrNull { it.cardId == card.id }?.nextReviewAt,
+                    reviewCount = activity.dueCards.firstOrNull { it.cardId == card.id }?.reviewCount ?: 0,
                 )
             }
         val plan =
@@ -59,6 +61,7 @@ class StartSessionUseCase(
                     candidates = candidates,
                     interests = settings.interests,
                     level = settings.level,
+                    now = now,
                 ),
             )
         if (plan.cardIds.isEmpty()) return StartSessionResult.NoCardsAvailable
@@ -103,11 +106,12 @@ class StartSessionUseCase(
         candidates: List<SessionCandidate>,
         interests: Set<com.signkorean.domain.model.Interest>,
         level: com.signkorean.domain.model.LearningLevel,
+        now: java.time.Instant,
     ): SessionBuildRequest =
         when (type) {
-            SessionType.DAILY -> SessionBuildRequest.daily(length, candidates, interests, level, seed())
-            SessionType.CATEGORY -> SessionBuildRequest.category(length, checkNotNull(category), candidates, interests, level, seed())
-            SessionType.PRACTICE -> SessionBuildRequest.practice(checkNotNull(practiceCardId), candidates, seed())
+            SessionType.DAILY -> SessionBuildRequest.daily(length, candidates, interests, level, seed(), now = now)
+            SessionType.CATEGORY -> SessionBuildRequest.category(length, checkNotNull(category), candidates, interests, level, seed(), now = now)
+            SessionType.PRACTICE -> SessionBuildRequest.practice(checkNotNull(practiceCardId), candidates, seed(), now = now)
         }
 
     private fun StartSessionRequest.seed(): Long =

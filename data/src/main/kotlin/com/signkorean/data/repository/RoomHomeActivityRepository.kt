@@ -1,6 +1,7 @@
 package com.signkorean.data.repository
 
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.domain.model.DueCard
 import com.signkorean.domain.model.HomeActivitySnapshot
 import com.signkorean.domain.port.output.HomeActivityRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,6 +25,16 @@ class RoomHomeActivityRepository(
                                     now,
                                 )
                         }.mapTo(mutableSetOf()) { it.cardId },
+                dueCards =
+                    progress
+                        .filter { it.nextReviewAt != null && !it.nextReviewAt.isAfter(now) }
+                        .map { due ->
+                            DueCard(
+                                cardId = due.cardId,
+                                nextReviewAt = checkNotNull(due.nextReviewAt),
+                                reviewCount = due.reviewCount,
+                            )
+                        },
                 reviewedAt = database.sessionCardDao().ratedAt(),
             )
         }

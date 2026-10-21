@@ -13,7 +13,10 @@ class SessionBuilder(
                 SessionType.PRACTICE -> buildPractice(request, candidates)
             }
 
-        return SessionPlan(cardIds = selected.map(SessionCandidate::cardId))
+        return SessionPlan(
+            cardIds = selected.map(SessionCandidate::cardId),
+            reviewReinsertionPolicy = ReviewReinsertionPolicy.RUNTIME_QUEUE,
+        )
     }
 
     private fun buildDaily(
@@ -21,7 +24,10 @@ class SessionBuilder(
         candidates: List<SessionCandidate>,
     ): List<SessionCandidate> {
         val due = candidates.filter(SessionCandidate::isDue)
-        val selectedDue = prioritize(request, due).take(maxDueCount(request.length))
+        val selectedDue =
+            DuePriority
+                .prioritize(prioritize(request, due), request.now)
+                .take(maxDueCount(request.length))
         val selectedIds = selectedDue.mapTo(mutableSetOf(), SessionCandidate::cardId)
         val nonDue = candidates.filterNot { it.cardId in selectedIds || it.isDue }
 
@@ -63,6 +69,9 @@ class SessionBuilder(
                     retained.copy(
                         isDue = retained.isDue || duplicate.isDue,
                         isNew = retained.isNew && duplicate.isNew,
+                        nextReviewAt =
+                            listOfNotNull(retained.nextReviewAt, duplicate.nextReviewAt).minOrNull(),
+                        reviewCount = maxOf(retained.reviewCount, duplicate.reviewCount),
                     )
                 }
             }
