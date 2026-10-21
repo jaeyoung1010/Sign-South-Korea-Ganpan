@@ -121,10 +121,17 @@ class RoomSessionTransactionStore(
                     completedAt = if (isComplete) command.ratedAt else null,
                 )
             database.sessionDao().update(updatedSession)
+            val completion =
+                if (isComplete) {
+                    database.toSessionCompletion(updatedSession)
+                        ?: error("Completed session could not be aggregated")
+                } else {
+                    null
+                }
             RatingTransactionResult.Applied(
                 nextPosition = nextIndex,
                 completed = isComplete,
-                completion = if (isComplete) database.toSessionCompletion(updatedSession) else null,
+                completion = completion,
             )
         }
 

@@ -96,6 +96,30 @@ class RoomLearningRepositoryTest {
         }
 
     @Test
+    fun `invalid prior score rolls back the final write instead of committing an unusable completion`() =
+        runTest {
+            database.sessionDao().update(database.sessionDao().get("session-1")!!.copy(currentIndex = 1))
+            database.sessionCardDao().update(
+                SessionCardEntity(
+                    sessionId = "session-1",
+                    position = 0,
+                    cardId = "card-1",
+                    source = "NEW",
+                    rating = "CORRUPT",
+                    ratedAt = ratedAt,
+                ),
+            )
+
+            val failure = runCatching { repository.rateCard(request(1, "card-2", RatingDecision.GotIt), ratedAt.plusSeconds(1)) }
+
+            assertTrue(failure.isFailure)
+            assertEquals("ACTIVE", database.sessionDao().get("session-1")?.status)
+            assertEquals(1, database.sessionDao().get("session-1")?.currentIndex)
+            assertNull(database.sessionCardDao().get("session-1", 1)?.rating)
+            assertNull(database.cardProgressDao().get("card-2"))
+        }
+
+    @Test
     fun `database failure rolls back all rating writes and can be retried`() =
         runTest {
             database.openHelper.writableDatabase.execSQL(
