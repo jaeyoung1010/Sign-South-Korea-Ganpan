@@ -296,7 +296,9 @@ class LearnSessionScreenTest {
                             )
                         }
                     assertTrue(artifact.bytes.size >= 4)
-                    composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE))
+                    if (fontScale >= 1.5f) {
+                        composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE))
+                    }
                     composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE).assertIsDisplayed()
                 }
             }
