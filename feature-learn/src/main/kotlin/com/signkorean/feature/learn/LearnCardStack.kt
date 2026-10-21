@@ -61,17 +61,19 @@ internal fun LearnCardStack(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
     audioState: AudioPlaybackState = AudioPlaybackState.Idle,
+    reduceMotion: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val policy = remember { GesturePolicy() }
+    val motionPolicy = remember(reduceMotion) { MotionPolicy(reduceMotion) }
     var dragOffsetDp by remember(state.cardId, state.stage) { mutableFloatStateOf(0f) }
     var dragAxis by remember(state.cardId, state.stage) { mutableStateOf(DragAxis.Undecided) }
     var dragOverlay by remember(state.cardId, state.stage) { mutableStateOf<DragOverlay?>(null) }
     val hapticFeedback = LocalHapticFeedback.current
-    LaunchedEffect(state.isRating) {
+    LaunchedEffect(state.isRating, motionPolicy) {
         if (state.isRating) {
             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-            delay(RATING_ANIMATION_MILLIS)
+            delay(motionPolicy.ratingAnimationDurationMillis)
             onAction(LearnUiAction.RatingAnimationFinished)
         }
     }
@@ -85,7 +87,7 @@ internal fun LearnCardStack(
                 val preview = checkNotNull(previewsById[layer.cardId])
                 PreviewCard(
                     preview = preview,
-                    visuals = cardPreviewVisuals(layer.role, dragOffsetDp),
+                    visuals = cardPreviewVisuals(layer.role, dragOffsetDp, reduceMotion),
                     modifier =
                         Modifier
                             .fillMaxSize()
@@ -100,6 +102,7 @@ internal fun LearnCardStack(
             isRating = state.isRating,
             onAction = onAction,
             audioState = audioState,
+            motionPolicy = motionPolicy,
             modifier =
                 Modifier
                     .fillMaxSize()
@@ -221,6 +224,7 @@ private fun ActiveCard(
     isRating: Boolean,
     onAction: (LearnUiAction) -> Unit,
     audioState: AudioPlaybackState,
+    motionPolicy: MotionPolicy,
     modifier: Modifier,
 ) {
     val density = LocalDensity.current.density
@@ -259,8 +263,21 @@ private fun ActiveCard(
                             RatingDecision.Review -> 1f
                             null -> 0f
                         }
-                    translationX = if (isRating) exitDirection * widthPx * 1.25f else dragOffsetDp * density
-                    rotationZ = if (isRating) exitDirection * 8f else (dragOffsetDp / 12f).coerceIn(-8f, 8f)
+                    translationX =
+                        if (isRating) {
+                            exitDirection * widthPx * motionPolicy.cardExitTranslationFactor
+                        } else {
+                            dragOffsetDp * density
+                        }
+                    rotationZ =
+                        if (isRating) {
+                            exitDirection * motionPolicy.cardExitRotationDegrees
+                        } else if (motionPolicy.reduceMotion) {
+                            0f
+                        } else {
+                            (dragOffsetDp / 12f).coerceIn(-8f, 8f)
+                        }
+                    alpha = if (isRating && motionPolicy.reduceMotion) 0f else 1f
                 },
     ) {
         GameCard(modifier = Modifier.fillMaxSize().testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)) {
@@ -410,8 +427,6 @@ private fun LearnCardLayer.previewOffset() =
 private val PREVIEW_OFFSET = 14.dp
 private const val PHOTO_PORTION = .62f
 private const val INFO_PORTION = .38f
-private const val RATING_ANIMATION_MILLIS = 220L
-
 private fun RatingDecision.toOverlay(): DragOverlay =
     when (this) {
         RatingDecision.GotIt -> DragOverlay.GotIt

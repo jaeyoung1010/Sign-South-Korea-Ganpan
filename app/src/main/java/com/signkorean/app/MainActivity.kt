@@ -210,6 +210,17 @@ private fun SignKoreanApp(
                 SettingsEffect.VoiceChangeFailed -> {
                     navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save the voice. Try again."))
                 }
+
+                is SettingsEffect.SessionLengthChanged -> {
+                    navigationViewModel.dispatch(AppNavigationAction.Back)
+                    navigationViewModel.dispatch(
+                        AppNavigationAction.ShowToast("${effect.length} cards selected."),
+                    )
+                }
+
+                SettingsEffect.SettingsChangeFailed -> {
+                    navigationViewModel.dispatch(AppNavigationAction.ShowToast("Could not save that setting. Try again."))
+                }
             }
         }
     }
@@ -240,6 +251,10 @@ private fun SignKoreanApp(
         onPlayAudio = learnViewModel::playAudio,
         settingsState = settingsState,
         onSelectVoice = settingsViewModel::selectVoice,
+        onSelectSessionLength = settingsViewModel::selectSessionLength,
+        onToggleRomanization = settingsViewModel::toggleRomanization,
+        onToggleAutoPlay = settingsViewModel::toggleAutoPlay,
+        onToggleReduceMotion = settingsViewModel::toggleReduceMotion,
         reportState = reportState,
         onShowReport = learnViewModel::openReport,
         onSelectReportReason = learnViewModel::selectReportReason,
@@ -278,6 +293,10 @@ internal fun SignKoreanAppContent(
     onPlayAudio: () -> Unit = {},
     settingsState: SettingsUiState = SettingsUiState(),
     onSelectVoice: (AudioVoice) -> Unit = {},
+    onSelectSessionLength: (Int) -> Unit = {},
+    onToggleRomanization: () -> Unit = {},
+    onToggleAutoPlay: () -> Unit = {},
+    onToggleReduceMotion: () -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
     onShowReport: () -> Unit = {},
     onSelectReportReason: (CardReportReason) -> Unit = {},
@@ -314,6 +333,10 @@ internal fun SignKoreanAppContent(
             onPlayAudio,
             settingsState,
             onSelectVoice,
+            onSelectSessionLength,
+            onToggleRomanization,
+            onToggleAutoPlay,
+            onToggleReduceMotion,
             onShowReport,
         ) {
             entryProvider<NavKey> {
@@ -356,12 +379,21 @@ internal fun SignKoreanAppContent(
                         onRatingAnimationFinished = onRatingAnimationFinished,
                         onUndoRating = onUndoRating,
                         onPlayAudio = onPlayAudio,
+                        reduceMotion = settingsState.reduceMotion,
                         onShowReport = onShowReport,
                     )
                 }
                 entry<AppRoute.Done> { DoneDestination(completionState, onAction) }
                 entry<AppRoute.Progress> { ProgressScreen(ProgressUiState(), onAction = {}) }
-                entry<AppRoute.Settings> { SettingsDestination(settingsState, onAction) }
+                entry<AppRoute.Settings> {
+                    SettingsDestination(
+                        state = settingsState,
+                        onAction = onAction,
+                        onToggleRomanization = onToggleRomanization,
+                        onToggleAutoPlay = onToggleAutoPlay,
+                        onToggleReduceMotion = onToggleReduceMotion,
+                    )
+                }
                 entry<AppRoute.Legal> { LegalScreen(LegalUiState()) }
             }
         }
@@ -413,6 +445,7 @@ internal fun SignKoreanAppContent(
                     onCancelReport = onCancelReport,
                     settingsState = settingsState,
                     onSelectVoice = onSelectVoice,
+                    onSelectSessionLength = onSelectSessionLength,
                 )
             }
         }
@@ -544,6 +577,7 @@ private fun LearnDestination(
     state: LearnSessionUiState,
     audioState: AudioPlaybackState,
     feedback: LearnFeedbackUiState?,
+    reduceMotion: Boolean,
     onAction: (AppNavigationAction) -> Unit,
     onRevealAnswer: () -> Unit,
     onRateCard: (RatingDecision, RatingInputSource) -> Unit,
@@ -556,6 +590,7 @@ private fun LearnDestination(
         state = state,
         audioState = audioState,
         feedback = feedback,
+        reduceMotion = reduceMotion,
         onAction = { action ->
             when (action) {
                 LearnUiAction.RevealAnswer -> {
@@ -644,16 +679,31 @@ private fun SessionCompletion.toCompletionUiState(): CompletionUiState =
         reviewCardIds = reviewCardIds,
     )
 
+private fun Int.estimatedMinutes(): Int =
+    when (this) {
+        5 -> 2
+        10 -> 4
+        20 -> 8
+        else -> 1
+    }
+
 @Composable
 private fun SettingsDestination(
     state: SettingsUiState,
     onAction: (AppNavigationAction) -> Unit,
+    onToggleRomanization: () -> Unit,
+    onToggleAutoPlay: () -> Unit,
+    onToggleReduceMotion: () -> Unit,
 ) {
     SettingsScreen(
         state = state,
         onAction = { action ->
             when (action) {
                 SettingsUiAction.SelectVoice -> onAction(AppNavigationAction.ShowSheet(AppSheet.Voice))
+                SettingsUiAction.SelectSessionLength -> onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLength))
+                SettingsUiAction.ToggleRomanization -> onToggleRomanization()
+                SettingsUiAction.ToggleAutoPlay -> onToggleAutoPlay()
+                SettingsUiAction.ToggleReduceMotion -> onToggleReduceMotion()
                 SettingsUiAction.OpenLegal -> onAction(AppNavigationAction.Navigate(AppRoute.Legal))
             }
         },
@@ -716,6 +766,7 @@ private fun BoxScope.AppOverlayHost(
     onCancelReport: () -> Unit,
     settingsState: SettingsUiState,
     onSelectVoice: (AudioVoice) -> Unit,
+    onSelectSessionLength: (Int) -> Unit,
 ) {
     state.sheet?.let { sheet ->
         val dismissSheet = {
@@ -735,6 +786,7 @@ private fun BoxScope.AppOverlayHost(
                     when (sheet) {
                         AppSheet.Category -> "All categories"
                         AppSheet.Voice -> "Choose a voice"
+                        AppSheet.SessionLength -> "Session length"
                         AppSheet.SessionLeave -> "Leave this session?"
                         AppSheet.Report -> "Report this card"
                     },
@@ -768,6 +820,28 @@ private fun BoxScope.AppOverlayHost(
                                 modifier = Modifier.fillMaxWidth().testTag("settings.voice.${voice.name.lowercase()}"),
                                 style =
                                     if (voice == settingsState.selectedVoice) {
+                                        GameButtonStyle.Primary
+                                    } else {
+                                        GameButtonStyle.Secondary
+                                    },
+                            )
+                        }
+                    }
+
+                    AppSheet.SessionLength -> {
+                        Text("How many signs should a new session include?", style = MaterialTheme.typography.bodyLarge)
+                        listOf(5, 10, 20).forEach { length ->
+                            GameButton(
+                                text =
+                                    if (length == settingsState.sessionLength) {
+                                        "✓ $length cards · ~${length.estimatedMinutes()} min"
+                                    } else {
+                                        "$length cards · ~${length.estimatedMinutes()} min"
+                                    },
+                                onClick = { onSelectSessionLength(length) },
+                                modifier = Modifier.fillMaxWidth().testTag("settings.session-length.$length"),
+                                style =
+                                    if (length == settingsState.sessionLength) {
                                         GameButtonStyle.Primary
                                     } else {
                                         GameButtonStyle.Secondary

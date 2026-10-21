@@ -50,6 +50,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -131,6 +132,26 @@ class LearnViewModelTest {
                 ),
                 audioPlayer.requests,
             )
+        }
+
+    @Test
+    fun `romanization setting updates the visible answer without reloading the card`() =
+        runTest {
+            val repository = FakeUserSettingsRepository(UserSettings(showRomanization = false))
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 1).copy(answerRevealed = true) },
+                    userSettingsRepository = repository,
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            assertFalse(assertActive(viewModel.uiState.value).answer.showRomanization)
+
+            repository.updateSettings { it.copy(showRomanization = true) }
+            advanceUntilIdle()
+
+            assertTrue(assertActive(viewModel.uiState.value).answer.showRomanization)
         }
 
     @Test

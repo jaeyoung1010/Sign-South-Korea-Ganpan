@@ -41,7 +41,9 @@ private fun UserSettingsProto.toDomain(systemReduceMotion: Boolean): UserSetting
         showRomanization = showRomanization,
         autoPlayAudio = autoPlayAudio,
         audioVoice = voice.toDomain(),
-        reduceMotion = if (hasExplicitReduceMotion) reduceMotion else systemReduceMotion,
+        // Accessibility is monotonic: either the app or the operating system can request
+        // reduced motion, and neither source may silently override the other.
+        reduceMotion = reduceMotion || systemReduceMotion,
         followSystemReduceMotion = !hasExplicitReduceMotion,
         reminderEnabled = reminderEnabled,
         reminderLocalTime = if (hasExplicitReminderLocalTime) reminderLocalTimeOrDefault() else LocalTime.of(19, 0),
@@ -60,7 +62,9 @@ private fun UserSettings.toProto(): UserSettingsProto =
         .setShowRomanization(showRomanization)
         .setAutoPlayAudio(autoPlayAudio)
         .setVoice(audioVoice.toProto())
-        .setReduceMotion(reduceMotion)
+        // When following the system, persist only the app preference (off). The effective value
+        // may be true because the current device has animations disabled.
+        .setReduceMotion(if (followSystemReduceMotion) false else reduceMotion)
         .setHasExplicitReduceMotion(!followSystemReduceMotion)
         .setReminderEnabled(reminderEnabled)
         .setReminderLocalHour(reminderLocalTime.hour)

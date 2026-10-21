@@ -19,8 +19,11 @@ data class CardPreviewVisuals(
 fun cardPreviewVisuals(
     role: LearnCardLayerRole,
     dragOffsetDp: Float,
+    reduceMotion: Boolean = false,
 ): CardPreviewVisuals {
-    val progress = (kotlin.math.abs(dragOffsetDp) / 90f).coerceIn(0f, 1f)
+    // Keep the depth cue, but do not continuously interpolate scale/alpha while a reduced-motion
+    // user drags the active card.
+    val progress = if (reduceMotion) 0f else (kotlin.math.abs(dragOffsetDp) / 90f).coerceIn(0f, 1f)
     return when (role) {
         LearnCardLayerRole.Next -> CardPreviewVisuals(scale = 0.96f + 0.04f * progress, alpha = 0.9f + 0.1f * progress)
         LearnCardLayerRole.NextNext -> CardPreviewVisuals(scale = 0.92f + 0.03f * progress, alpha = 0.72f + 0.13f * progress)

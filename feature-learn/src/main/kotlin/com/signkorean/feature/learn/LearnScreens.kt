@@ -398,6 +398,7 @@ fun LearnSessionScreen(
     modifier: Modifier = Modifier,
     feedback: LearnFeedbackUiState? = null,
     audioState: AudioPlaybackState = AudioPlaybackState.Idle,
+    reduceMotion: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxSize().testTag("screen-learn"),
@@ -406,7 +407,7 @@ fun LearnSessionScreen(
         LearnTopBar(onAction)
         when (state) {
             LearnSessionUiState.Loading -> LearnLoadingState()
-            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction, feedback, audioState)
+            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction, feedback, audioState, reduceMotion)
             LearnSessionUiState.Completed -> LearnCompletedState(onAction)
             is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
         }
@@ -440,6 +441,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     onAction: (LearnUiAction) -> Unit,
     feedback: LearnFeedbackUiState?,
     audioState: AudioPlaybackState,
+    reduceMotion: Boolean,
 ) {
     Text(
         text = "${state.position} of ${state.totalCount}",
@@ -455,6 +457,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
         state = state,
         onAction = onAction,
         audioState = audioState,
+        reduceMotion = reduceMotion,
         modifier = Modifier.fillMaxWidth().weight(1f),
     )
     feedback?.let { LearnFeedbackHost(it, onAction) }

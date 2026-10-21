@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -132,6 +133,20 @@ class ProtoUserSettingsRepositoryTest {
             assertEquals(false, settings.reduceMotion)
             assertTrue(settings.followSystemReduceMotion)
             assertTrue(settings.autoPlayAudio)
+        }
+
+    @Test
+    fun `system reduce motion remains enabled when app preference is explicitly off`() =
+        runTest {
+            val fixture = createFixture(systemReduceMotion = true)
+
+            fixture.repository.updateSettings {
+                it.copy(reduceMotion = false, followSystemReduceMotion = false)
+            }
+
+            val whileSystemEnabled = fixture.repository.settings.first()
+            assertTrue(whileSystemEnabled.reduceMotion)
+            assertFalse(whileSystemEnabled.followSystemReduceMotion)
         }
 
     @Test

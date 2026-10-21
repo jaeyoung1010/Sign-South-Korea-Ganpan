@@ -105,7 +105,17 @@ class LearnViewModel
             viewModelScope.launch {
                 try {
                     userSettingsRepository.settings.collect { settings ->
+                        val previousShowRomanization = userSettings.showRomanization
                         userSettings = settings
+                        if (previousShowRomanization != settings.showRomanization) {
+                            val active = mutableUiState.value as? LearnSessionUiState.Active
+                            if (active != null) {
+                                mutableUiState.value =
+                                    active.copy(
+                                        answer = active.answer.copy(showRomanization = settings.showRomanization),
+                                    )
+                            }
+                        }
                         settingsReady.complete(Unit)
                     }
                 } catch (cancellation: CancellationException) {

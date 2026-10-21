@@ -3,6 +3,7 @@ package com.signkorean.app.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.model.AudioVoice
+import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.model.VoiceChangedEvent
 import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
@@ -31,13 +32,22 @@ class SettingsViewModel
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow(SettingsUiState())
         private val effectChannel = Channel<SettingsEffect>(Channel.BUFFERED)
-        private val selectionMutex = Mutex()
+        private val settingsMutex = Mutex()
         private var selectionJob: Job? = null
+        private var sessionLengthJob: Job? = null
 
         init {
             viewModelScope.launch {
                 userSettingsRepository.settings.collect { settings ->
-                    mutableUiState.value = SettingsUiState(selectedVoice = settings.audioVoice)
+                    mutableUiState.value =
+                        SettingsUiState(
+                            selectedVoice = settings.audioVoice,
+                            sessionLength = settings.sessionLength,
+                            showRomanization = settings.showRomanization,
+                            autoPlayAudio = settings.autoPlayAudio,
+                            reduceMotion = settings.reduceMotion,
+                            followSystemReduceMotion = settings.followSystemReduceMotion,
+                        )
                 }
             }
         }
@@ -52,7 +62,7 @@ class SettingsViewModel
             val previousVoice = mutableUiState.value.selectedVoice
             selectionJob = viewModelScope.launch {
                 try {
-                    selectionMutex.withLock {
+                    settingsMutex.withLock {
                         userSettingsRepository.updateSettings { settings -> settings.copy(audioVoice = voice) }
                     }
                     try {
@@ -68,6 +78,56 @@ class SettingsViewModel
                 }
             }
         }
+
+        fun selectSessionLength(length: Int) {
+            if (length !in UserSettings.SESSION_LENGTH_OPTIONS || sessionLengthJob?.isActive == true) return
+            sessionLengthJob =
+                viewModelScope.launch {
+                    try {
+                        settingsMutex.withLock {
+                            userSettingsRepository.updateSettings { settings -> settings.copy(sessionLength = length) }
+                        }
+                        effectChannel.trySend(SettingsEffect.SessionLengthChanged(length))
+                    } catch (cancellation: CancellationException) {
+                        throw cancellation
+                    } catch (_: Exception) {
+                        effectChannel.trySend(SettingsEffect.SettingsChangeFailed)
+                    }
+                }
+        }
+
+        fun toggleRomanization() {
+            persistSettings { settings -> settings.copy(showRomanization = !settings.showRomanization) }
+        }
+
+        fun toggleAutoPlay() {
+            persistSettings { settings -> settings.copy(autoPlayAudio = !settings.autoPlayAudio) }
+        }
+
+        fun toggleReduceMotion() {
+            persistSettings { settings ->
+                settings.copy(
+                    reduceMotion = !settings.reduceMotion,
+                    // A second tap returns to following the system setting. The repository still
+                    // applies the system preference with OR semantics when it is enabled.
+                    followSystemReduceMotion = !settings.followSystemReduceMotion,
+                )
+            }
+        }
+
+        private fun persistSettings(transform: (UserSettings) -> UserSettings) {
+            viewModelScope.launch {
+                try {
+                    settingsMutex.withLock {
+                        userSettingsRepository.updateSettings(transform)
+                    }
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    effectChannel.trySend(SettingsEffect.SettingsChangeFailed)
+                }
+            }
+        }
     }
 
 sealed interface SettingsEffect {
@@ -76,4 +136,10 @@ sealed interface SettingsEffect {
     ) : SettingsEffect
 
     data object VoiceChangeFailed : SettingsEffect
+
+    data class SessionLengthChanged(
+        val length: Int,
+    ) : SettingsEffect
+
+    data object SettingsChangeFailed : SettingsEffect
 }

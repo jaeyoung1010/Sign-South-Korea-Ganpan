@@ -71,11 +71,18 @@ class LoadLearnHomeUseCaseTest {
                             now.minusSeconds(3 * 86_400),
                         ),
                 )
-            val home = load(activity = activity, activeSession = ActiveSession(completedCount = 4, totalCount = 10))()
+            val home =
+                load(
+                    settings = UserSettings(sessionLength = 5),
+                    activity = activity,
+                    activeSession = ActiveSession(completedCount = 4, totalCount = 10),
+                )()
 
             assertEquals(2, home.streakDays)
             assertEquals(listOf(0, 0, 0, 1, 0, 2, 1), home.weeklyActivity.map { it.count })
             assertEquals(ActiveSession(completedCount = 4, totalCount = 10), home.session.activeSession)
+            assertEquals(10, home.session.length)
+            assertEquals(4, home.session.estimatedMinutes)
         }
 
     private fun load(

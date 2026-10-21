@@ -26,6 +26,10 @@ object SignKoreanTestTags {
     const val LEARN_KEEP_LEARNING = "learn.session.keep-learning"
     const val LEARN_LEAVE_FOR_NOW = "learn.session.leave-for-now"
     const val SETTINGS_VOICE = "settings.voice"
+    const val SETTINGS_SESSION_LENGTH = "settings.session-length"
+    const val SETTINGS_ROMANIZATION = "settings.romanization"
+    const val SETTINGS_AUTO_PLAY = "settings.auto-play"
+    const val SETTINGS_REDUCE_MOTION = "settings.reduce-motion"
     const val DONE_REVIEW_CARDS = "done.review-cards"
     const val DONE_BACK_HOME = "done.back-home"
 

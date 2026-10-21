@@ -40,4 +40,25 @@ class CardStackLayoutTest {
         assertTrue(thirdDragged.scale > cardPreviewVisuals(LearnCardLayerRole.NextNext, 0f).scale)
         assertEquals(1f, (nextDragged.alpha * 1000f).roundToInt() / 1000f, 0.001f)
     }
+
+    @Test
+    fun `reduced motion keeps preview cards at their resting visual state`() {
+        assertEquals(
+            cardPreviewVisuals(LearnCardLayerRole.Next, 0f),
+            cardPreviewVisuals(LearnCardLayerRole.Next, 90f, reduceMotion = true),
+        )
+        assertEquals(
+            cardPreviewVisuals(LearnCardLayerRole.NextNext, 0f),
+            cardPreviewVisuals(LearnCardLayerRole.NextNext, -90f, reduceMotion = true),
+        )
+    }
+
+    @Test
+    fun `reduced motion uses a short fade without exit rotation or translation`() {
+        val policy = MotionPolicy(reduceMotion = true)
+
+        assertTrue(policy.ratingAnimationDurationMillis <= 20L)
+        assertEquals(0f, policy.cardExitTranslationFactor)
+        assertEquals(0f, policy.cardExitRotationDegrees)
+    }
 }

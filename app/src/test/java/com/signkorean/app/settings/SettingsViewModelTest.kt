@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -67,6 +68,39 @@ class SettingsViewModelTest {
 
             assertEquals(AudioVoice.GEMINI_KORE, repository.settings.first().audioVoice)
             assertEquals(1, audioPlayer.stopCount)
+        }
+
+    @Test
+    fun `learning settings are persisted immediately`() =
+        runTest {
+            val repository = FakeUserSettingsRepository()
+            val viewModel = SettingsViewModel(repository, RecordingAudioPlayer(), RecordingAnalyticsSink())
+
+            viewModel.selectSessionLength(10)
+            viewModel.toggleRomanization()
+            viewModel.toggleAutoPlay()
+            viewModel.toggleReduceMotion()
+            advanceUntilIdle()
+
+            val settings = repository.settings.first()
+            assertEquals(10, settings.sessionLength)
+            assertTrue(settings.showRomanization)
+            assertTrue(settings.autoPlayAudio)
+            assertTrue(settings.reduceMotion)
+            assertFalse(settings.followSystemReduceMotion)
+            assertEquals(10, viewModel.uiState.value.sessionLength)
+        }
+
+    @Test
+    fun `unsupported session lengths are ignored`() =
+        runTest {
+            val repository = FakeUserSettingsRepository()
+            val viewModel = SettingsViewModel(repository, RecordingAudioPlayer(), RecordingAnalyticsSink())
+
+            viewModel.selectSessionLength(15)
+            advanceUntilIdle()
+
+            assertEquals(20, repository.settings.first().sessionLength)
         }
 
     private class RecordingAudioPlayer : AudioPlayerPort {
