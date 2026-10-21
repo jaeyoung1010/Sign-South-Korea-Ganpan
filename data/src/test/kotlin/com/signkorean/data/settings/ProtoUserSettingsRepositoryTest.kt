@@ -69,6 +69,18 @@ class ProtoUserSettingsRepositoryTest {
         }
 
     @Test
+    fun `persists the safe fallback when the locale adapter reports an unsupported device language`() =
+        runTest {
+            val fixture = createFixture(deviceLanguageTag = "fr")
+
+            fixture.repository.updateSettings { it.copy(autoPlayAudio = true) }
+
+            val persisted = fixture.dataStore.data.first()
+            assertEquals("en", persisted.appLanguageTag)
+            assertEquals("en", persisted.learningExplanationLanguageTag)
+        }
+
+    @Test
     fun `falls back from a corrupted Japanese setting when only English is available`() =
         runTest {
             val fixture = createFixture(supportedLanguageTags = setOf("en"))

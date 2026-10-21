@@ -138,7 +138,8 @@ class SettingsViewModel
             if (languageTag !in changeAppLanguage.supportedLanguageTags) return
             viewModelScope.launch {
                 try {
-                    when (val result = changeAppLanguage(languageTag)) {
+                    val result = settingsMutex.withLock { changeAppLanguage(languageTag) }
+                    when (result) {
                         is ChangeAppLanguageResult.Changed -> effectChannel.trySend(SettingsEffect.LanguageChanged(result.languageTag))
                         ChangeAppLanguageResult.InvalidTag,
                         is ChangeAppLanguageResult.Unsupported,

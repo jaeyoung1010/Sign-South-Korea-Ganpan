@@ -68,12 +68,18 @@ class BundleContentAdapter(
         requireValidation(manifest.factReviewStatus.values.all { it == KOREAN_FACT_REVIEW_STATUS }) {
             "Korean fact review status must be approved for every language"
         }
+        requireValidation(manifest.localizedContent.keys.all { it in manifest.languages }) {
+            "localized content must only reference manifest languages"
+        }
         val localizedPaths =
             manifest.languages.associateWith { languageTag ->
                 manifest.localizedContent[languageTag] ?: localizedPath(languageTag)
             }
         requireValidation(localizedPaths.values.all { it.startsWith("content/") && it.endsWith(".json") }) {
             "manifest contains an invalid localized content path"
+        }
+        requireValidation(localizedPaths.values.distinct().size == localizedPaths.size) {
+            "manifest must use a unique content path for every language"
         }
         requireValidation(manifest.checksums.keys == (setOf(BASE_CARDS_PATH) + localizedPaths.values)) {
             "manifest must checksum every content file"

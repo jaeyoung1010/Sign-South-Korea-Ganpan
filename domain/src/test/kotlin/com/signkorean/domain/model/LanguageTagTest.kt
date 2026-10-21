@@ -11,11 +11,13 @@ class LanguageTagTest {
         assertEquals("en", LanguageTag("en").value)
         assertEquals("ja-JP", LanguageTag("ja-JP").value)
         assertEquals("zh-Hant-TW", LanguageTag("zh-Hant-TW").value)
+        assertEquals("en-u-ca-gregory", LanguageTag("en-u-ca-gregory").value)
+        assertEquals("x-private", LanguageTag("x-private").value)
     }
 
     @Test
     fun `rejects blank malformed and underscore separated tags`() {
-        listOf("", " ", "e", "en_US", "en-", "-US").forEach { value ->
+        listOf("", " ", "e", "en_US", "en-", "-US", "en-1", "en-u").forEach { value ->
             assertThrows(IllegalArgumentException::class.java) { LanguageTag(value) }
         }
     }
