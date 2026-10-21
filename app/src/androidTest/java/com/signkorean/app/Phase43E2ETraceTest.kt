@@ -6,9 +6,9 @@ import com.signkorean.domain.port.input.ResolveLaunchDestination
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
-import org.junit.Rule
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
@@ -57,7 +57,7 @@ internal object Phase43E2ETrace {
             Phase43E2EScenario("E2E-07", listOf("BundleContentAdapterTest", "RoomLearningRepositoryTest")),
             Phase43E2EScenario("E2E-08", listOf("SettingsViewModelTest", "LearnViewModelTest")),
             Phase43E2EScenario("E2E-09", listOf("LearnSessionScreenTest")),
-            Phase43E2EScenario("E2E-10", listOf("GesturePolicyTest", "LearnSessionScreenTest")),
+            Phase43E2EScenario("E2E-10", listOf("PointerBoundaryAdapterTest", "LearnSessionScreenTest")),
             Phase43E2EScenario("E2E-11", listOf("SettingsViewModelTest")),
             Phase43E2EScenario("E2E-12", listOf("BundleContentAdapterTest", "ProtoUserSettingsRepositoryTest")),
         )
