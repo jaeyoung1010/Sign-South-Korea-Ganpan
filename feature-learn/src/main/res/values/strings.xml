@@ -28,6 +28,7 @@
     <string name="learn_show_answer">Show answer</string>
     <string name="learn_view_sign_photo">View sign photo</string>
     <string name="learn_undo">Undo</string>
+    <string name="learn_retry">Retry</string>
     <string name="learn_loading_session">Loading session…</string>
     <string name="learn_session_complete">Session complete</string>
     <string name="learn_completion_summary">You finished this sign deck.</string>
@@ -57,6 +58,7 @@
     <string name="learn_feedback_last_choice_undone">Last choice undone</string>
     <string name="learn_feedback_nothing_to_undo">Nothing to undo</string>
     <string name="learn_feedback_undo_failed">Couldn’t undo rating. Try again.</string>
+    <string name="learn_feedback_save_failed">Couldn’t save this rating. Try again.</string>
     <string name="learn_question">What does this sign mean?</string>
     <string name="learn_question_hint">Take a moment to read the sign before you reveal it.</string>
     <string name="learn_answer">Answer</string>

@@ -597,6 +597,36 @@ class LearnViewModelTest {
         }
 
     @Test
+    fun `failed rating exposes a retry action that repeats the same transaction`() =
+        runTest {
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase =
+                        RateCard {
+                            calls += 1
+                            if (calls == 1) RateCardResult.Unavailable else RateCardResult.Rated(nextPosition = 1, completed = false)
+                        },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Gesture)
+            runCurrent()
+
+            assertEquals(
+                LearnFeedbackUiState(LearnFeedbackMessage.SaveFailed, canUndo = false, canRetry = true),
+                viewModel.feedbackState.value,
+            )
+            viewModel.retryRating()
+            advanceUntilIdle()
+
+            assertEquals(2, calls)
+            assertTrue(assertActive(viewModel.uiState.value).isRating)
+        }
+
+    @Test
     fun `rating feedback expires after four seconds and a new rating replaces the undo target`() =
         runTest {
             var calls = 0

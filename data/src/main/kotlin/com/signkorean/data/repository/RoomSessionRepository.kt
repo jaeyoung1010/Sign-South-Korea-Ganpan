@@ -3,6 +3,7 @@ package com.signkorean.data.repository
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.data.db.isConsistent
+import com.signkorean.data.db.isStructurallyConsistent
 import com.signkorean.data.db.toSessionCompletion
 import com.signkorean.data.time.SystemClockAdapter
 import com.signkorean.domain.model.ActiveLearnSession
@@ -24,19 +25,19 @@ class RoomSessionRepository(
 ) : SessionRepository {
     override suspend fun hasActiveSession(): Boolean =
         withContext(dispatcher) {
-            database.sessionDao().resumable()?.takeIf { database.isConsistent(it) } != null
+            database.validResumableSession() != null
         }
 
     override suspend fun getActiveSession(): ActiveSession? =
         withContext(dispatcher) {
-            database.sessionDao().resumable()?.takeIf { database.isConsistent(it) }?.let { session ->
+            database.validResumableSession()?.let { session ->
                 session.toActiveSession()
             }
         }
 
     override suspend fun getActiveLearnSession(): ActiveLearnSession? =
         withContext(dispatcher) {
-            database.sessionDao().active()?.let { session ->
+            database.validActiveSession()?.let { session ->
                 ActiveLearnSession(
                     sessionId = session.sessionId,
                     currentIndex = session.currentIndex,
@@ -52,6 +53,20 @@ class RoomSessionRepository(
                 )
             }
         }
+
+    private fun SignKoreanDatabase.validResumableSession(): SessionEntity? {
+        val session = sessionDao().resumable() ?: return null
+        if (isConsistent(session)) return session
+        sessionDao().update(session.copy(status = ABANDONED_STATUS, updatedAt = clock.now()))
+        return null
+    }
+
+    private fun SignKoreanDatabase.validActiveSession(): SessionEntity? {
+        val session = sessionDao().active() ?: return null
+        if (isStructurallyConsistent(session)) return session
+        sessionDao().update(session.copy(status = ABANDONED_STATUS, updatedAt = clock.now()))
+        return null
+    }
 
     override suspend fun getSessionCompletion(sessionId: String): SessionCompletion? =
         withContext(dispatcher) {
@@ -142,5 +157,6 @@ class RoomSessionRepository(
     private companion object {
         const val ACTIVE_STATUS = "ACTIVE"
         const val PAUSED_STATUS = "PAUSED"
+        const val ABANDONED_STATUS = "ABANDONED"
     }
 }

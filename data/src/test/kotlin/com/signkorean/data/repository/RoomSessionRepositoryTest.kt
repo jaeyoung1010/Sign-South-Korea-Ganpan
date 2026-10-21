@@ -121,6 +121,16 @@ class RoomSessionRepositoryTest {
         }
 
     @Test
+    fun `session card mismatch is quarantined before learning reads it`() =
+        runTest {
+            database.sessionDao().insert(SessionEntity.active(id = "mismatch", requestedLength = 2))
+            database.sessionCardDao().insertAll(listOf(sessionCard(0, "card-1", sessionId = "mismatch")))
+
+            assertEquals(null, repository.getActiveLearnSession())
+            assertEquals("ABANDONED", database.sessionDao().get("mismatch")?.status)
+        }
+
+    @Test
     fun `negative session index is treated as unavailable without throwing`() =
         runTest {
             database.sessionDao().insert(SessionEntity.active(id = "negative", requestedLength = 2).copy(currentIndex = -1))

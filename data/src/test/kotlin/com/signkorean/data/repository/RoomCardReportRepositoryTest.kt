@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.signkorean.data.db.SignKoreanDatabase
+import com.signkorean.data.db.CardReportEntity
 import com.signkorean.domain.model.CardReport
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.CardReportSyncState
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,6 +66,27 @@ class RoomCardReportRepositoryTest {
             )
 
             assertEquals(CardReportEnqueueResult.Unavailable, repository.enqueue(report("report-failed")))
+        }
+
+    @Test
+    fun `pending flow skips a quarantined row with an unknown reason or sync state`() =
+        runTest {
+            database.cardReportDao().insert(
+                CardReportEntity(
+                    reportId = "corrupt-report",
+                    cardId = "card-1",
+                    reason = "UNKNOWN_REASON",
+                    details = "not exposed",
+                    createdAt = Instant.parse("2026-10-21T00:00:00Z"),
+                    syncState = "UNKNOWN_STATE",
+                ),
+            )
+            repository.enqueue(report("valid-report"))
+
+            val pending = repository.observePending().first()
+
+            assertEquals(listOf("valid-report"), pending.map { it.reportId })
+            assertTrue(pending.all { it.cardId == "card-1" })
         }
 
     private fun report(reportId: String = "report-1") =

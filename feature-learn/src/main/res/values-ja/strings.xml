@@ -28,6 +28,7 @@
     <string name="learn_show_answer">答えを見る</string>
     <string name="learn_view_sign_photo">看板の写真を見る</string>
     <string name="learn_undo">元に戻す</string>
+    <string name="learn_retry">再試行</string>
     <string name="learn_loading_session">セッションを読み込み中…</string>
     <string name="learn_session_complete">セッション完了</string>
     <string name="learn_completion_summary">この看板セットを終えました。</string>
@@ -57,6 +58,7 @@
     <string name="learn_feedback_last_choice_undone">直前の選択を元に戻しました</string>
     <string name="learn_feedback_nothing_to_undo">元に戻す選択はありません</string>
     <string name="learn_feedback_undo_failed">元に戻せませんでした。もう一度お試しください。</string>
+    <string name="learn_feedback_save_failed">記録できませんでした。もう一度お試しください。</string>
     <string name="learn_question">この看板はどういう意味ですか？</string>
     <string name="learn_question_hint">答えを見る前に、看板を少し読んでみましょう。</string>
     <string name="learn_answer">答え</string>

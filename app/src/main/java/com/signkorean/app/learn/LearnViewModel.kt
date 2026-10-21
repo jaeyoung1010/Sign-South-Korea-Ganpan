@@ -95,6 +95,7 @@ class LearnViewModel
         private val effectChannel = Channel<LearnSessionEffect>(Channel.BUFFERED)
         private var isPausing = false
         private var pendingCompletion: SessionCompletion? = null
+        private var pendingRating: PendingRating? = null
         private val mutableCompletionState = MutableStateFlow<SessionCompletion?>(null)
         private val mutableReportState = MutableStateFlow(ReportUiState())
         private val mutableAudioState = MutableStateFlow<AudioPlaybackState>(audioPlayer.observePlayback().value)
@@ -167,6 +168,7 @@ class LearnViewModel
                 clearFeedback()
                 pendingCompletion = null
                 mutableCompletionState.value = null
+                pendingRating = null
             }
             isRevealing = false
             isRating = false
@@ -297,11 +299,26 @@ class LearnViewModel
             }
         }
 
+        fun retryRating() {
+            val pending = pendingRating ?: return
+            val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
+            if (
+                active.sessionId != pending.sessionId ||
+                active.position != pending.position ||
+                active.cardId != pending.cardId ||
+                active.stage != LearnCardStage.Answer
+            ) {
+                return
+            }
+            beginRating(active, pending.decision, pending.source)
+        }
+
         private fun beginRating(
             active: LearnSessionUiState.Active,
             decision: RatingDecision,
             source: RatingInputSource,
         ) {
+            pendingRating = PendingRating(active.sessionId, active.position, active.cardId, decision, source)
             stopAudio()
             isRating = true
             lastRatedSessionId = active.sessionId
@@ -327,6 +344,7 @@ class LearnViewModel
                         }
                     when (result) {
                         is RateCardResult.Rated -> {
+                            pendingRating = null
                             pendingCompletion = result.completion
                             val current = mutableUiState.value as? LearnSessionUiState.Active
                             if (current?.cardId == active.cardId) {
@@ -348,7 +366,15 @@ class LearnViewModel
                             }
                         }
 
-                        RateCardResult.AlreadyRated,
+                        RateCardResult.AlreadyRated -> {
+                            isRating = false
+                            val current = mutableUiState.value as? LearnSessionUiState.Active
+                            if (current?.cardId == active.cardId) {
+                                mutableUiState.value = current.copy(isRating = false, ratingError = true)
+                            }
+                            showFeedback(LearnFeedbackMessage.SaveFailed, canUndo = false, canRetry = false)
+                        }
+
                         RateCardResult.Unavailable,
                         RateCardResult.Failed,
                         -> {
@@ -357,6 +383,7 @@ class LearnViewModel
                             if (current?.cardId == active.cardId) {
                                 mutableUiState.value = current.copy(isRating = false, ratingError = true)
                             }
+                            showFeedback(LearnFeedbackMessage.SaveFailed, canUndo = false, canRetry = true)
                         }
                     }
                 }
@@ -396,6 +423,7 @@ class LearnViewModel
                             isUndoing = false
                             lastRatedSessionId = null
                             pendingCompletion = null
+                            pendingRating = null
                             mutableCompletionState.value = null
                             showFeedback(LearnFeedbackMessage.LastChoiceUndone, canUndo = false)
                             load(preserveFeedback = true)
@@ -530,9 +558,15 @@ class LearnViewModel
         private fun showFeedback(
             message: LearnFeedbackMessage,
             canUndo: Boolean,
+            canRetry: Boolean = false,
         ) {
             feedbackJob?.cancel()
-            mutableFeedbackState.value = LearnFeedbackUiState(message = message, canUndo = canUndo)
+            mutableFeedbackState.value =
+                LearnFeedbackUiState(
+                    message = message,
+                    canUndo = canUndo,
+                    canRetry = canRetry,
+                )
             feedbackJob =
                 viewModelScope.launch {
                     delay(FEEDBACK_DURATION_MILLIS)
@@ -550,6 +584,14 @@ class LearnViewModel
             const val SESSION_ID_KEY = "learn-session-id"
             const val ANSWER_REVEALED_KEY = "learn-answer-revealed"
         }
+
+        private data class PendingRating(
+            val sessionId: String,
+            val position: Int,
+            val cardId: String,
+            val decision: RatingDecision,
+            val source: RatingInputSource,
+        )
     }
 
 sealed interface LearnSessionEffect {

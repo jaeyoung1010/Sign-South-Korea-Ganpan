@@ -57,7 +57,7 @@ object DataAdapterModule {
     @Singleton
     fun provideCardCatalog(
         @ApplicationContext context: Context,
-    ): CardCatalog = BundleContentAdapter(AndroidAssetSource(context.assets))
+    ): CardCatalog = BundleContentAdapter(AndroidAssetSource(context.assets), allowMissingAssets = true)
 
     @Provides
     @Singleton

@@ -15,6 +15,7 @@ import java.security.MessageDigest
 class BundleContentAdapter(
     private val assetSource: AssetSource,
     private val json: Json = Json { ignoreUnknownKeys = false },
+    private val allowMissingAssets: Boolean = false,
 ) : CardCatalog {
     private val validatedBundle: ValidatedBundle by lazy { validateAndLoad() }
 
@@ -211,7 +212,9 @@ class BundleContentAdapter(
         requireValidation(path.substringAfterLast('/').startsWith(cardId)) { "asset prefix must match card id for $cardId" }
         requireValidation(path.endsWith(extension)) { "invalid asset extension for $cardId" }
         val androidPath = path.removePrefix("assets/")
-        requireValidation(assetSource.exists(androidPath)) { "missing asset: $androidPath" }
+        if (!allowMissingAssets) {
+            requireValidation(assetSource.exists(androidPath)) { "missing asset: $androidPath" }
+        }
     }
 
     private inline fun <reified T> decode(

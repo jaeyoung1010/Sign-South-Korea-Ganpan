@@ -172,6 +172,7 @@ data class LearnAnswerUiModel(
 data class LearnFeedbackUiState(
     val message: LearnFeedbackMessage,
     val canUndo: Boolean,
+    val canRetry: Boolean = false,
 )
 
 enum class LearnFeedbackMessage {
@@ -180,6 +181,7 @@ enum class LearnFeedbackMessage {
     LastChoiceUndone,
     NothingToUndo,
     UndoFailed,
+    SaveFailed,
 }
 
 enum class LearnCardStage {
@@ -227,6 +229,8 @@ sealed interface LearnUiAction {
     ) : LearnUiAction
 
     data object UndoRating : LearnUiAction
+
+    data object RetryRating : LearnUiAction
 
     data object RatingAnimationFinished : LearnUiAction
 
@@ -553,6 +557,14 @@ private fun LearnFeedbackHost(
                     style = GameButtonStyle.Secondary,
                 )
             }
+            if (feedback.canRetry) {
+                GameButton(
+                    text = stringResource(R.string.learn_retry),
+                    onClick = { onAction(LearnUiAction.RetryRating) },
+                    modifier = Modifier.testTag(SignKoreanTestTags.LEARN_RETRY_RATING),
+                    style = GameButtonStyle.Secondary,
+                )
+            }
         }
     }
 }
@@ -564,6 +576,7 @@ private fun LearnFeedbackMessage.toStringResource(): Int =
         LearnFeedbackMessage.LastChoiceUndone -> R.string.learn_feedback_last_choice_undone
         LearnFeedbackMessage.NothingToUndo -> R.string.learn_feedback_nothing_to_undo
         LearnFeedbackMessage.UndoFailed -> R.string.learn_feedback_undo_failed
+        LearnFeedbackMessage.SaveFailed -> R.string.learn_feedback_save_failed
     }
 
 private val COMPACT_HEIGHT = 600.dp

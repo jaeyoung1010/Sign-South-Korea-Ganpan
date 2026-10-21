@@ -38,7 +38,7 @@ class RoomCardReportRepository(
         }
 
     override fun observePending(): Flow<List<CardReport>> =
-        database.cardReportDao().observePending().map { reports -> reports.map(CardReportEntity::toDomain) }
+        database.cardReportDao().observePending().map { reports -> reports.mapNotNull(CardReportEntity::toDomainOrNull) }
 }
 
 private fun CardReport.toEntity(): CardReportEntity =
@@ -51,12 +51,17 @@ private fun CardReport.toEntity(): CardReportEntity =
         syncState = syncState.storageValue,
     )
 
-private fun CardReportEntity.toDomain(): CardReport =
-    CardReport(
-        reportId = reportId,
-        cardId = cardId,
-        reason = CardReportReason.entries.first { it.storageValue == reason },
-        details = ReportDetails(details),
-        createdAt = createdAt,
-        syncState = CardReportSyncState.entries.first { it.storageValue == syncState },
-    )
+private fun CardReportEntity.toDomainOrNull(): CardReport? {
+    val parsedReason = CardReportReason.entries.firstOrNull { it.storageValue == reason } ?: return null
+    val parsedSyncState = CardReportSyncState.entries.firstOrNull { it.storageValue == syncState } ?: return null
+    return runCatching {
+        CardReport(
+            reportId = reportId,
+            cardId = cardId,
+            reason = parsedReason,
+            details = ReportDetails(details),
+            createdAt = createdAt,
+            syncState = parsedSyncState,
+        )
+    }.getOrNull()
+}

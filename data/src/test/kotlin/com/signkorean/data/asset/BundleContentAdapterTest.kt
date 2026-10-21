@@ -206,6 +206,20 @@ class BundleContentAdapterTest {
     }
 
     @Test
+    fun `offline mode keeps cards loadable when one photo and one audio asset are missing`() {
+        val assets = validAssets().toMutableMap()
+        assets.remove("signs/generated/20-seoul-station.jpg")
+        assets.remove("audio/gemini/20-seoul-station.wav")
+
+        val adapter = BundleContentAdapter(FakeAssetSource(assets), allowMissingAssets = true)
+
+        assertEquals(20, adapter.getCards().size)
+        val card = adapter.getCard("20-seoul-station")
+        assertTrue(card?.imageAssetUri?.contains("20-seoul-station.jpg") == true)
+        assertTrue(card?.audioAssetUris?.get(VoiceId.GEMINI_KORE)?.contains("20-seoul-station.wav") == true)
+    }
+
+    @Test
     fun `rejects a manifest checksum mismatch`() {
         val assets = validAssets().toMutableMap()
         assets[MANIFEST_PATH] =

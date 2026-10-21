@@ -324,6 +324,7 @@ private fun SignKoreanApp(
         onRateCard = learnViewModel::rateCard,
         onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
         onUndoRating = learnViewModel::undoRating,
+        onRetryRating = learnViewModel::retryRating,
         onPauseSession = learnViewModel::pauseSession,
         onPlayAudio = learnViewModel::playAudio,
         settingsState = settingsState,
@@ -379,6 +380,7 @@ internal fun SignKoreanAppContent(
     onRateCard: (RatingDecision, RatingInputSource) -> Unit = { _, _ -> },
     onRatingAnimationFinished: () -> Unit = {},
     onUndoRating: () -> Unit = {},
+    onRetryRating: () -> Unit = {},
     onPauseSession: () -> Unit = {},
     onPlayAudio: () -> Unit = {},
     settingsState: SettingsUiState = SettingsUiState(),
@@ -426,6 +428,7 @@ internal fun SignKoreanAppContent(
             onRateCard,
             onRatingAnimationFinished,
             onUndoRating,
+            onRetryRating,
             onPauseSession,
             onPlayAudio,
             settingsState,
@@ -479,6 +482,7 @@ internal fun SignKoreanAppContent(
                         onRateCard = onRateCard,
                         onRatingAnimationFinished = onRatingAnimationFinished,
                         onUndoRating = onUndoRating,
+                        onRetryRating = onRetryRating,
                         onPlayAudio = onPlayAudio,
                         reduceMotion = settingsState.reduceMotion,
                         onShowReport = onShowReport,
@@ -712,6 +716,7 @@ private fun LearnDestination(
     onRateCard: (RatingDecision, RatingInputSource) -> Unit,
     onRatingAnimationFinished: () -> Unit,
     onUndoRating: () -> Unit,
+    onRetryRating: () -> Unit,
     onPlayAudio: () -> Unit,
     onShowReport: () -> Unit,
 ) {
@@ -753,6 +758,10 @@ private fun LearnDestination(
 
                 LearnUiAction.UndoRating -> {
                     onUndoRating()
+                }
+
+                LearnUiAction.RetryRating -> {
+                    onRetryRating()
                 }
 
                 LearnUiAction.CheckAnswerFirst -> {
