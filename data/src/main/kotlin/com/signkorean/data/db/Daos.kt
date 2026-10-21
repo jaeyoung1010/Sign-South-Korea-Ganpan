@@ -92,10 +92,30 @@ interface SessionCardDao {
 
     @Query(
         """
-        SELECT card_id, MAX(rated_at) AS rated_at
-        FROM session_cards
-        WHERE rating = 'REVIEW' AND rated_at IS NOT NULL
-        GROUP BY card_id
+        SELECT current_card.card_id, current_card.rated_at
+        FROM session_cards AS current_card
+        WHERE current_card.rating = 'REVIEW'
+          AND current_card.rated_at IS NOT NULL
+          AND NOT EXISTS (
+              SELECT 1
+              FROM session_cards AS later_card
+              WHERE later_card.card_id = current_card.card_id
+                AND later_card.rating IN ('GOT_IT', 'REVIEW')
+                AND later_card.rated_at IS NOT NULL
+                AND (
+                    later_card.rated_at > current_card.rated_at
+                    OR (
+                        later_card.rated_at = current_card.rated_at
+                        AND (
+                            later_card.session_id > current_card.session_id
+                            OR (
+                                later_card.session_id = current_card.session_id
+                                AND later_card.position > current_card.position
+                            )
+                        )
+                    )
+                )
+          )
         ORDER BY rated_at DESC
         LIMIT :limit OFFSET :offset
         """,

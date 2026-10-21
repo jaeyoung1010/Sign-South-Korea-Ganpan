@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -73,6 +74,19 @@ class RoomProgressRepositoryTest {
             val reviews = repository.observeReviewCards(limit = 3, offset = 0).first()
 
             assertEquals(listOf("card-1"), reviews.map { it.cardId })
+        }
+
+    @Test
+    fun `a later got it removes a card from the review paging query`() =
+        runTest {
+            database.sessionDao().update(database.sessionDao().get("session-1")!!.copy(requestedLength = 5))
+            database.sessionCardDao().insertAll(
+                listOf(SessionCardEntity("session-1", 4, "card-1", "REVIEW", rating = "GOT_IT", ratedAt = now.plusSeconds(1))),
+            )
+
+            val reviews = repository.observeReviewCards(limit = 3, offset = 0).first()
+
+            assertTrue(reviews.isEmpty())
         }
 
     private fun progress(
