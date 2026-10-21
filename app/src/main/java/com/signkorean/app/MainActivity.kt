@@ -55,6 +55,8 @@ import com.signkorean.designsystem.layout.SignKoreanScreen
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanTheme
+import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.feature.learn.CompletionScreen
 import com.signkorean.feature.learn.CompletionUiState
 import com.signkorean.feature.learn.LearnHomeScreen
@@ -146,6 +148,8 @@ private fun SignKoreanApp(
         onCancelCategoryReplacement = learnHomeViewModel::cancelCategoryReplacement,
         learnSessionState = learnSessionState,
         onRevealAnswer = learnViewModel::revealAnswer,
+        onRateCard = learnViewModel::rateCard,
+        onRatingAnimationFinished = learnViewModel::finishRatingAnimation,
     )
 }
 
@@ -168,6 +172,8 @@ internal fun SignKoreanAppContent(
     onCancelCategoryReplacement: () -> Unit = {},
     learnSessionState: LearnSessionUiState = LearnSessionUiState.Loading,
     onRevealAnswer: () -> Unit = {},
+    onRateCard: (RatingDecision, RatingInputSource) -> Unit = { _, _ -> },
+    onRatingAnimationFinished: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
     val entries =
@@ -188,6 +194,8 @@ internal fun SignKoreanAppContent(
             onCancelCategoryReplacement,
             learnSessionState,
             onRevealAnswer,
+            onRateCard,
+            onRatingAnimationFinished,
         ) {
             entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
@@ -223,6 +231,8 @@ internal fun SignKoreanAppContent(
                         state = learnSessionState,
                         onAction = onAction,
                         onRevealAnswer = onRevealAnswer,
+                        onRateCard = onRateCard,
+                        onRatingAnimationFinished = onRatingAnimationFinished,
                     )
                 }
                 entry<AppRoute.Done> { DoneDestination(onAction) }
@@ -384,6 +394,8 @@ private fun LearnDestination(
     state: LearnSessionUiState,
     onAction: (AppNavigationAction) -> Unit,
     onRevealAnswer: () -> Unit,
+    onRateCard: (RatingDecision, RatingInputSource) -> Unit,
+    onRatingAnimationFinished: () -> Unit,
 ) {
     LearnSessionScreen(
         state = state,
@@ -399,6 +411,18 @@ private fun LearnDestination(
 
                 LearnUiAction.CloseSession -> {
                     onAction(AppNavigationAction.Back)
+                }
+
+                is LearnUiAction.RateCard -> {
+                    onRateCard(action.decision, action.source)
+                }
+
+                LearnUiAction.RatingAnimationFinished -> {
+                    onRatingAnimationFinished()
+                }
+
+                LearnUiAction.CheckAnswerFirst -> {
+                    onAction(AppNavigationAction.ShowToast("Reveal the answer first."))
                 }
 
                 LearnUiAction.ShowSessionMenu -> {

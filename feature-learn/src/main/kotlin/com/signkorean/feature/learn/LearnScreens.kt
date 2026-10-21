@@ -28,6 +28,7 @@ import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
+import com.signkorean.domain.model.RatingInputSource
 
 data class LearnHomeUiState(
     val streakDays: Int = 0,
@@ -78,6 +79,7 @@ sealed interface LearnSessionUiState {
     data object Loading : LearnSessionUiState
 
     data class Active(
+        val sessionId: String = "",
         val cardId: String,
         val sign: String,
         val position: Int,
@@ -86,6 +88,9 @@ sealed interface LearnSessionUiState {
         val answer: LearnAnswerUiModel = LearnAnswerUiModel.placeholder(),
         val upcomingCards: List<LearnCardPreviewUiModel> = emptyList(),
         val stage: LearnCardStage = LearnCardStage.Question,
+        val isRating: Boolean = false,
+        val ratingDecision: RatingDecision? = null,
+        val ratingError: Boolean = false,
     ) : LearnSessionUiState {
         init {
             require(position in 1..totalCount) { "Position must be within the active session" }
@@ -181,7 +186,10 @@ sealed interface LearnUiAction {
 
     data class RateCard(
         val decision: RatingDecision,
+        val source: RatingInputSource = RatingInputSource.Gesture,
     ) : LearnUiAction
+
+    data object RatingAnimationFinished : LearnUiAction
 
     data object ShowImageViewer : LearnUiAction
 

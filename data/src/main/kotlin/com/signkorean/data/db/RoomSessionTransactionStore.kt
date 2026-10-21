@@ -12,6 +12,17 @@ data class RatingCommand(
     val updatedProgress: CardProgressEntity,
 )
 
+sealed interface RatingTransactionResult {
+    data class Applied(
+        val nextPosition: Int,
+        val completed: Boolean,
+    ) : RatingTransactionResult
+
+    data object AlreadyRated : RatingTransactionResult
+
+    data object Unavailable : RatingTransactionResult
+}
+
 data class SessionCreationCommand(
     val session: SessionEntity,
     val cards: List<SessionCardEntity>,
@@ -56,16 +67,20 @@ class RoomSessionTransactionStore(
     }
 
     fun rate(command: RatingCommand) {
-        database.runInTransaction {
-            val session = requireNotNull(database.sessionDao().get(command.sessionId)) { "Unknown session: ${command.sessionId}" }
-            require(session.status == "ACTIVE") { "Session is not active: ${command.sessionId}" }
-            require(session.currentIndex == command.position) { "Stale card position: ${command.position}" }
+        require(tryRate(command) is RatingTransactionResult.Applied) { "Rating transaction was not applied" }
+    }
+
+    fun tryRate(command: RatingCommand): RatingTransactionResult =
+        database.runInTransaction<RatingTransactionResult> {
+            val session = database.sessionDao().get(command.sessionId) ?: return@runInTransaction RatingTransactionResult.Unavailable
             val card =
-                requireNotNull(
-                    database.sessionCardDao().get(command.sessionId, command.position),
-                ) { "Unknown session card position: ${command.position}" }
-            require(card.cardId == command.cardId) { "Stale card id: ${command.cardId}" }
-            require(card.rating == null) { "Card has already been rated: ${command.cardId}" }
+                database.sessionCardDao().get(command.sessionId, command.position)
+                    ?: return@runInTransaction RatingTransactionResult.Unavailable
+            if (card.cardId != command.cardId) return@runInTransaction RatingTransactionResult.Unavailable
+            if (card.rating != null) return@runInTransaction RatingTransactionResult.AlreadyRated
+            if (session.status != "ACTIVE" || session.currentIndex != command.position) {
+                return@runInTransaction RatingTransactionResult.Unavailable
+            }
             require(command.rating in RATINGS) { "Unsupported rating: ${command.rating}" }
             require(command.updatedProgress.cardId == command.cardId) { "Progress card id does not match rating command" }
 
@@ -82,8 +97,8 @@ class RoomSessionTransactionStore(
                     completedAt = if (isComplete) command.ratedAt else null,
                 ),
             )
+            RatingTransactionResult.Applied(nextPosition = nextIndex, completed = isComplete)
         }
-    }
 
     fun undoLastRating(sessionId: String) {
         database.runInTransaction {

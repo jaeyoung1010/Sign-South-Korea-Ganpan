@@ -1,13 +1,17 @@
 package com.signkorean.app.learn
 
+import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionAnswer
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LearnSessionPreview
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.LocalizedWordPart
+import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.RateCard
+import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.RevealAnswerResult
 import com.signkorean.feature.learn.LearnCardStage
@@ -187,6 +191,62 @@ class LearnViewModelTest {
             advanceUntilIdle()
 
             assertEquals(listOf(listOf("asset://card-2", "asset://card-3")), prefetched)
+        }
+
+    @Test
+    fun `successful rating enters exit state and blocks duplicate input until animation finishes`() =
+        runTest {
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase =
+                        RateCard {
+                            calls += 1
+                            RateCardResult.Rated(nextPosition = 1, completed = false)
+                        },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.GotIt, RatingInputSource.Gesture)
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
+            advanceUntilIdle()
+
+            val state = assertActive(viewModel.uiState.value)
+            assertTrue(state.isRating)
+            assertEquals(RatingDecision.GotIt, state.ratingDecision)
+            assertEquals(1, calls)
+
+            viewModel.finishRatingAnimation()
+            advanceUntilIdle()
+            assertEquals(1, assertActive(viewModel.uiState.value).position)
+        }
+
+    @Test
+    fun `failed rating stays on the card and a later input retries`() =
+        runTest {
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = true) },
+                    rateCardUseCase =
+                        RateCard {
+                            calls += 1
+                            if (calls == 1) RateCardResult.Failed else RateCardResult.Rated(nextPosition = 1, completed = false)
+                        },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
+            advanceUntilIdle()
+            assertTrue(assertActive(viewModel.uiState.value).ratingError)
+
+            viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
+            advanceUntilIdle()
+            assertTrue(assertActive(viewModel.uiState.value).isRating)
+            assertEquals(2, calls)
         }
 
     private fun active(

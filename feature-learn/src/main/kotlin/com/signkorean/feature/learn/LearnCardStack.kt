@@ -25,12 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +48,9 @@ import com.signkorean.domain.gesture.DragOverlay
 import com.signkorean.domain.gesture.GesturePolicy
 import com.signkorean.domain.gesture.QuestionGestureInput
 import com.signkorean.domain.gesture.QuestionRelease
+import com.signkorean.domain.gesture.RatingDecision
+import com.signkorean.domain.model.RatingInputSource
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun LearnCardStack(
@@ -56,6 +62,14 @@ internal fun LearnCardStack(
     var dragOffsetDp by remember(state.cardId, state.stage) { mutableFloatStateOf(0f) }
     var dragAxis by remember(state.cardId, state.stage) { mutableStateOf(DragAxis.Undecided) }
     var dragOverlay by remember(state.cardId, state.stage) { mutableStateOf<DragOverlay?>(null) }
+    val hapticFeedback = LocalHapticFeedback.current
+    LaunchedEffect(state.isRating) {
+        if (state.isRating) {
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+            delay(RATING_ANIMATION_MILLIS)
+            onAction(LearnUiAction.RatingAnimationFinished)
+        }
+    }
     val layers = cardStackLayers(state.cardId, state.upcomingCards.map(LearnCardPreviewUiModel::cardId))
     val previewsById = state.upcomingCards.associateBy(LearnCardPreviewUiModel::cardId)
     val previewCount = layers.count { it.role != LearnCardLayerRole.Active }
@@ -77,6 +91,8 @@ internal fun LearnCardStack(
             state = state,
             dragOffsetDp = dragOffsetDp,
             dragOverlay = dragOverlay,
+            ratingDecision = state.ratingDecision,
+            isRating = state.isRating,
             onAction = onAction,
             modifier =
                 Modifier
@@ -85,7 +101,9 @@ internal fun LearnCardStack(
                     .cardPointerInput(
                         density = androidx.compose.ui.platform.LocalDensity.current,
                         onMove = { offsetXDp, offsetYDp ->
-                            if (state.stage == LearnCardStage.Question) {
+                            if (state.isRating) {
+                                false
+                            } else if (state.stage == LearnCardStage.Question) {
                                 val feedback =
                                     policy.drag(
                                         QuestionGestureInput(
@@ -141,11 +159,17 @@ internal fun LearnCardStack(
                                             ),
                                         )
                                     when (release) {
-                                        is AnswerRelease.Commit -> onAction(LearnUiAction.RateCard(release.decision))
+                                        is AnswerRelease.Commit -> {
+                                            onAction(
+                                                LearnUiAction.RateCard(release.decision, RatingInputSource.Gesture),
+                                            )
+                                        }
 
                                         AnswerRelease.Ignored,
                                         AnswerRelease.SnapBack,
-                                        -> Unit
+                                        -> {
+                                            Unit
+                                        }
                                     }
                                 }
                             }
@@ -187,22 +211,26 @@ private fun ActiveCard(
     state: LearnSessionUiState.Active,
     dragOffsetDp: Float,
     dragOverlay: DragOverlay?,
+    ratingDecision: RatingDecision?,
+    isRating: Boolean,
     onAction: (LearnUiAction) -> Unit,
     modifier: Modifier,
 ) {
     val density = LocalDensity.current.density
     val focusRequester = remember { FocusRequester() }
+    var widthPx by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(state.cardId) {
         focusRequester.requestFocus()
     }
     Box(
         modifier =
             modifier
+                .onSizeChanged { widthPx = it.width.toFloat() }
                 .testTag(SignKoreanTestTags.LEARN_KEYBOARD_STAGE)
                 .focusRequester(focusRequester)
                 .focusable()
                 .onPreviewKeyEvent { event ->
-                    if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                    if (isRating || event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
                     val key =
                         when (event.key) {
                             Key.DirectionLeft -> CardKeyboardKey.ArrowLeft
@@ -211,21 +239,28 @@ private fun ActiveCard(
                             else -> CardKeyboardKey.Other
                         }
                     when (val action = cardKeyboardAction(key, state.stage)) {
-                        is CardKeyboardAction.Rate -> onAction(LearnUiAction.RateCard(action.decision))
+                        is CardKeyboardAction.Rate -> onAction(LearnUiAction.RateCard(action.decision, RatingInputSource.Keyboard))
                         CardKeyboardAction.CheckAnswerFirst -> onAction(LearnUiAction.CheckAnswerFirst)
                         CardKeyboardAction.Close -> onAction(LearnUiAction.CloseSession)
                         CardKeyboardAction.Ignored -> return@onPreviewKeyEvent false
                     }
                     true
                 }.graphicsLayer {
-                    translationX = dragOffsetDp * density
-                    rotationZ = (dragOffsetDp / 12f).coerceIn(-8f, 8f)
+                    val exitDirection =
+                        when (ratingDecision) {
+                            RatingDecision.GotIt -> -1f
+                            RatingDecision.Review -> 1f
+                            null -> 0f
+                        }
+                    translationX = if (isRating) exitDirection * widthPx * 1.25f else dragOffsetDp * density
+                    rotationZ = if (isRating) exitDirection * 8f else (dragOffsetDp / 12f).coerceIn(-8f, 8f)
                 },
     ) {
         GameCard(modifier = Modifier.fillMaxSize().testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)) {
             ActiveCardContent(state)
         }
-        dragOverlay?.let { overlay ->
+        (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
+            if (overlay == null) return@let
             Text(
                 text = if (overlay == DragOverlay.GotIt) "Got it" else "Review",
                 modifier =
@@ -337,3 +372,10 @@ private fun LearnCardLayer.previewOffset() =
 private val PREVIEW_OFFSET = 14.dp
 private const val PHOTO_PORTION = .62f
 private const val INFO_PORTION = .38f
+private const val RATING_ANIMATION_MILLIS = 220L
+
+private fun RatingDecision.toOverlay(): DragOverlay =
+    when (this) {
+        RatingDecision.GotIt -> DragOverlay.GotIt
+        RatingDecision.Review -> DragOverlay.Review
+    }

@@ -2,9 +2,14 @@ package com.signkorean.app.learn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
+import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.port.input.LoadLearnSession
+import com.signkorean.domain.port.input.RateCard
+import com.signkorean.domain.port.input.RateCardRequest
+import com.signkorean.domain.port.input.RateCardResult
 import com.signkorean.domain.port.input.RevealAnswer
 import com.signkorean.domain.port.input.RevealAnswerResult
 import com.signkorean.feature.learn.LearnAnswerUiModel
@@ -28,19 +33,24 @@ class LearnViewModel
     constructor(
         private val loadLearnSession: LoadLearnSession,
         private val revealAnswerUseCase: RevealAnswer = RevealAnswer { RevealAnswerResult.Revealed },
+        private val rateCardUseCase: RateCard = RateCard { RateCardResult.Unavailable },
         private val photoPrefetcher: LearnPhotoPrefetcher = LearnPhotoPrefetcher { },
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow<LearnSessionUiState>(LearnSessionUiState.Loading)
         private var loadJob: Job? = null
         private var revealJob: Job? = null
+        private var ratingJob: Job? = null
         private var isRevealing = false
+        private var isRating = false
 
         val uiState = mutableUiState.asStateFlow()
 
         fun load() {
             loadJob?.cancel()
             revealJob?.cancel()
+            ratingJob?.cancel()
             isRevealing = false
+            isRating = false
             mutableUiState.value = LearnSessionUiState.Loading
             loadJob =
                 viewModelScope.launch {
@@ -86,6 +96,59 @@ class LearnViewModel
                     }
                 }
         }
+
+        fun rateCard(
+            decision: RatingDecision,
+            source: RatingInputSource,
+        ) {
+            val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
+            if (active.stage != LearnCardStage.Answer || active.isRating || isRating || active.sessionId.isBlank()) return
+            isRating = true
+            ratingJob?.cancel()
+            ratingJob =
+                viewModelScope.launch {
+                    val result =
+                        try {
+                            rateCardUseCase(
+                                RateCardRequest(
+                                    sessionId = active.sessionId,
+                                    position = active.position - 1,
+                                    cardId = active.cardId,
+                                    decision = decision,
+                                    source = source,
+                                ),
+                            )
+                        } catch (_: Exception) {
+                            RateCardResult.Failed
+                        }
+                    when (result) {
+                        is RateCardResult.Rated -> {
+                            val current = mutableUiState.value as? LearnSessionUiState.Active
+                            if (current?.cardId == active.cardId) {
+                                mutableUiState.value = current.copy(isRating = true, ratingDecision = decision, ratingError = false)
+                            }
+                        }
+
+                        RateCardResult.AlreadyRated,
+                        RateCardResult.Unavailable,
+                        RateCardResult.Failed,
+                        -> {
+                            isRating = false
+                            val current = mutableUiState.value as? LearnSessionUiState.Active
+                            if (current?.cardId == active.cardId) {
+                                mutableUiState.value = current.copy(isRating = false, ratingError = true)
+                            }
+                        }
+                    }
+                }
+        }
+
+        fun finishRatingAnimation() {
+            val active = mutableUiState.value as? LearnSessionUiState.Active ?: return
+            if (!active.isRating) return
+            isRating = false
+            load()
+        }
     }
 
 private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
@@ -95,6 +158,7 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
                 cardId = card.id,
                 sign = card.korean,
                 position = position,
+                sessionId = sessionId,
                 totalCount = totalCount,
                 photo =
                     LearnPhotoUiModel(
