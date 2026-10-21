@@ -122,6 +122,7 @@ val qualityToolTests =
             "--test",
             "scripts/quality/quality-rules.test.mjs",
             "scripts/quality/phase43-traceability.test.mjs",
+            "scripts/quality/phase44-qa.test.mjs",
         )
     }
 
@@ -130,6 +131,13 @@ val validatePhase43Traceability =
         group = "verification"
         description = "Verifies that every documented requirement and E2E scenario has code and test evidence."
         commandLine("node", "scripts/quality/phase43-traceability.mjs")
+    }
+
+val validatePhase44Qa =
+    tasks.register<Exec>("validatePhase44Qa") {
+        group = "verification"
+        description = "Verifies the Phase 44 device QA matrix and release blocker record."
+        commandLine("node", "scripts/quality/phase44-qa.mjs")
     }
 
 val validateDependencyVersions =
@@ -152,6 +160,7 @@ tasks.register("qualityGate") {
     dependsOn(
         qualityToolTests,
         validatePhase43Traceability,
+        validatePhase44Qa,
         validateDependencyVersions,
         secretScan,
         tasks.named("spotlessCheck"),
@@ -183,6 +192,7 @@ tasks.named("check") {
     dependsOn(
         qualityToolTests,
         validatePhase43Traceability,
+        validatePhase44Qa,
         validateDependencyVersions,
         secretScan,
         tasks.named("spotlessCheck"),
