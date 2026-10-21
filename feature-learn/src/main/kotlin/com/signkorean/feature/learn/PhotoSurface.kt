@@ -114,6 +114,6 @@ internal fun PhotoSurface(
     }
 }
 
-private val MIN_PHOTO_HEIGHT = 180.dp
+private val MIN_PHOTO_HEIGHT = 200.dp
 private val BLUR_RADIUS = 18.dp
 private val FOCUS_STROKE_WIDTH = 3.dp

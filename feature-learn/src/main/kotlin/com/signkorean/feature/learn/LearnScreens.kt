@@ -3,11 +3,13 @@
 package com.signkorean.feature.learn
 
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -17,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -416,19 +419,37 @@ fun LearnSessionScreen(
     audioState: AudioPlaybackState = AudioPlaybackState.Idle,
     reduceMotion: Boolean = false,
 ) {
-    Column(
-        modifier = modifier.fillMaxSize().testTag("screen-learn"),
-        verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
+    BoxWithConstraints(
+        modifier = modifier.fillMaxSize(),
     ) {
-        LearnTopBar(onAction)
-        when (state) {
-            LearnSessionUiState.Loading -> LearnLoadingState()
-            is LearnSessionUiState.Active -> ActiveLearnSession(state, onAction, feedback, audioState, reduceMotion)
-            LearnSessionUiState.Completed -> LearnCompletedState(onAction)
-            is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
-        }
-        if (state !is LearnSessionUiState.Active) {
-            feedback?.let { LearnFeedbackHost(it, onAction) }
+        val isCompact = maxHeight <= COMPACT_HEIGHT || LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .testTag("screen-learn")
+                    .then(if (isCompact) Modifier.verticalScroll(rememberScrollState()) else Modifier.fillMaxSize()),
+            verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
+        ) {
+            LearnTopBar(onAction)
+            when (state) {
+                LearnSessionUiState.Loading -> LearnLoadingState()
+                is LearnSessionUiState.Active ->
+                    ActiveLearnSession(
+                        state,
+                        onAction,
+                        feedback,
+                        audioState,
+                        reduceMotion,
+                        isCompact,
+                    )
+
+                LearnSessionUiState.Completed -> LearnCompletedState(onAction)
+                is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
+            }
+            if (state !is LearnSessionUiState.Active) {
+                feedback?.let { LearnFeedbackHost(it, onAction) }
+            }
         }
     }
 }
@@ -458,6 +479,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     feedback: LearnFeedbackUiState?,
     audioState: AudioPlaybackState,
     reduceMotion: Boolean,
+    isCompact: Boolean,
 ) {
     Text(
         text = stringResource(R.string.learn_position, state.position, state.totalCount),
@@ -479,7 +501,10 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
         onAction = onAction,
         audioState = audioState,
         reduceMotion = reduceMotion,
-        modifier = Modifier.fillMaxWidth().weight(1f),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .then(if (isCompact) Modifier.height(COMPACT_CARD_HEIGHT) else Modifier.weight(1f)),
     )
     feedback?.let { LearnFeedbackHost(it, onAction) }
     if (state.stage == LearnCardStage.Question) {
@@ -540,6 +565,10 @@ private fun LearnFeedbackMessage.toStringResource(): Int =
         LearnFeedbackMessage.NothingToUndo -> R.string.learn_feedback_nothing_to_undo
         LearnFeedbackMessage.UndoFailed -> R.string.learn_feedback_undo_failed
     }
+
+private val COMPACT_HEIGHT = 600.dp
+private val COMPACT_CARD_HEIGHT = 360.dp
+private const val LARGE_FONT_SCALE = 1.5f
 
 @Composable
 private fun LearnLoadingState() {

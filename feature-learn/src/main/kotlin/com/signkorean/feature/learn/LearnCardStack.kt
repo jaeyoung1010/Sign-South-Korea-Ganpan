@@ -3,6 +3,7 @@
 package com.signkorean.feature.learn
 
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
@@ -49,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
+import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.AnswerGestureInput
 import com.signkorean.domain.gesture.AnswerRelease
@@ -235,6 +239,7 @@ private fun ActiveCard(
 ) {
     val density = LocalDensity.current.density
     val focusRequester = remember { FocusRequester() }
+    var isFocused by remember { mutableStateOf(false) }
     var widthPx by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(state.cardId, state.stage) {
         focusRequester.requestFocus()
@@ -255,7 +260,12 @@ private fun ActiveCard(
                 .testTag(SignKoreanTestTags.LEARN_KEYBOARD_STAGE)
                 .semantics { stateDescription = stageDescription }
                 .focusRequester(focusRequester)
+                .onFocusChanged { isFocused = it.isFocused }
                 .focusable()
+                .border(
+                    width = if (isFocused) FOCUS_INDICATOR_WIDTH else 0.dp,
+                    color = if (isFocused) Color(SignKoreanPalette.Y2K_YELLOW) else Color.Transparent,
+                )
                 .onPreviewKeyEvent { event ->
                     if (isRating || event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
                     val key =
@@ -370,7 +380,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = 180.dp)
+                .heightIn(min = MIN_PHOTO_HEIGHT)
                 .weight(PHOTO_PORTION)
                 .padding(bottom = SignKoreanSpacing.small),
     )
@@ -481,6 +491,8 @@ private fun LearnCardLayer.previewOffset() =
     }
 
 private val PREVIEW_OFFSET = 14.dp
+private val MIN_PHOTO_HEIGHT = 200.dp
+private val FOCUS_INDICATOR_WIDTH = 4.dp
 private const val PHOTO_PORTION = .62f
 private const val INFO_PORTION = .38f
 private fun RatingDecision.toOverlay(): DragOverlay =

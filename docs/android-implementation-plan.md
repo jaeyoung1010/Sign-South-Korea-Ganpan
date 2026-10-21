@@ -1057,6 +1057,8 @@ SRS의 모든 분석 이벤트를 포트 뒤에 구현하고 민감 정보 유�
 - contrast, focus indicator, 긴 일본어 wrap과 최소 사진 높이를 조정한다.
 - 프로토타입 기준 screenshot diff 허용 영역을 문서화한다.
 
+스크린샷 회귀 매트릭스는 `LearnSessionScreenTest`의 `learn-answer-{locale}-{width}-{fontScale}` 케이스로 고정한다. API 26과 최신 API에서 같은 케이스를 실행하며, 시스템 상태바·내비게이션 바·cutout inset 영역(최대 4dp)과 비동기 사진 디코드 전 placeholder 영역은 diff 허용 영역으로 제외한다. 그 외 카드, 정보 패널, 포커스 테두리와 주요 버튼 영역은 픽셀 diff 승인을 요구한다.
+
 **종료 조건**
 
 - 200% 글자에서도 Show answer, audio, swipe, Undo, 완료가 가능하다.

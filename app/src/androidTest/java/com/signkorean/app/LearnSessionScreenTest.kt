@@ -3,9 +3,11 @@ package com.signkorean.app
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsDisplayed
@@ -14,7 +16,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.designsystem.testing.SignKoreanTestTags
@@ -247,6 +252,113 @@ class LearnSessionScreenTest {
     }
 
     @Test
+    fun answer_screenshot_matrix_supports_width_locale_and_large_font_scale() {
+        val widths = listOf(360, 390, 480)
+        val locales = listOf("en", "ja")
+        val fontScales = listOf(1f, 1.3f, 2f)
+
+        widths.forEach { width ->
+            locales.forEach { locale ->
+                fontScales.forEach { fontScale ->
+                    val case = ScreenshotCase("learn-answer-$locale-$width-${fontScale.toString().replace('.', '-')}", width, locale, fontScale)
+                    composeRule.setContent {
+                        CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = fontScale)) {
+                            SignKoreanTheme {
+                                Box(
+                                    modifier =
+                                        androidx.compose.ui.Modifier
+                                            .width(width.dp)
+                                            .height(720.dp),
+                                ) {
+                                    LearnSessionScreen(
+                                        state = localizedAnswerState(locale),
+                                        onAction = {},
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
+                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
+                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).assertIsDisplayed()
+                    val image = composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_CARD_STACK).captureToImage()
+                    val artifact =
+                        ScreenshotTestHarness.capture(case) { screenshotCase ->
+                            ScreenshotArtifact(
+                                screenshotCase.id,
+                                byteArrayOf(
+                                    (image.width shr 8).toByte(),
+                                    image.width.toByte(),
+                                    (image.height shr 8).toByte(),
+                                    image.height.toByte(),
+                                ),
+                            )
+                        }
+                    assertTrue(artifact.bytes.size >= 4)
+                    composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE))
+                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE).assertIsDisplayed()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun landscape_compact_layout_keeps_answer_controls_available_at_200_percent_font() {
+        val actions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = 2f)) {
+                SignKoreanTheme {
+                    Box(
+                        modifier =
+                            androidx.compose.ui.Modifier
+                                .width(720.dp)
+                                .height(390.dp),
+                    ) {
+                        LearnSessionScreen(state = localizedAnswerState("ja"), onAction = actions::add)
+                    }
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performClick()
+        composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE))
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE).assertIsDisplayed()
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(LearnUiAction.PlayAudio), actions)
+        }
+    }
+
+    @Test
+    fun large_font_question_keeps_show_answer_action_visible() {
+        val actions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = 2f)) {
+                SignKoreanTheme {
+                    Box(
+                        modifier =
+                            androidx.compose.ui.Modifier
+                                .width(360.dp)
+                                .height(390.dp),
+                    ) {
+                        LearnSessionScreen(
+                            state = localizedAnswerState("ja").copy(stage = LearnCardStage.Question),
+                            onAction = actions::add,
+                        )
+                    }
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER))
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertIsDisplayed().performClick()
+        composeRule.runOnIdle { assertEquals(listOf(LearnUiAction.RevealAnswer), actions) }
+    }
+
+    @Test
     fun long_english_and_japanese_answer_content_keeps_the_photo_above_the_scrollable_information_panel() {
         listOf(
             "en" to
@@ -327,4 +439,24 @@ class LearnSessionScreenTest {
                     showRomanization = true,
                 ),
         )
+
+    private fun localizedAnswerState(locale: String) =
+        if (locale == "ja") {
+            answerState().copy(
+                sign = "弘大入口",
+                answer =
+                    answerState().answer.copy(
+                        displayMeaning = "弘大エリアの入口",
+                        pronunciationGuide = "ホンデ イック",
+                        streetNote = "ライブハウスやカフェ、買い物でにぎわう弘大エリアの玄関口です。週末は特に混雑します。",
+                        wordParts =
+                            listOf(
+                                LearnWordPartUiModel("弘大", "ホンデ"),
+                                LearnWordPartUiModel("入口", "入り口"),
+                            ),
+                    ),
+            )
+        } else {
+            answerState()
+        }
 }
