@@ -26,6 +26,10 @@
     <string name="learn_tab">学習</string>
     <string name="progress_tab">進捗</string>
     <string name="settings_tab">設定</string>
+    <string name="voice_typecast">Typecast · Eunkyung</string>
+    <string name="voice_gemini">Gemini Flash · Kore</string>
+    <string name="legal_privacy_policy">プライバシーポリシー</string>
+    <string name="legal_terms_of_use">利用規約</string>
     <string name="sheet_all_categories">すべてのカテゴリー</string>
     <string name="sheet_choose_voice">音声を選択</string>
     <string name="sheet_session_length">セッションの長さ</string>

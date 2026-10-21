@@ -30,6 +30,7 @@
     <string name="learn_undo">元に戻す</string>
     <string name="learn_loading_session">セッションを読み込み中…</string>
     <string name="learn_session_complete">セッション完了</string>
+    <string name="learn_completion_summary">この看板セットを終えました。</string>
     <string name="learn_no_cards">復習する看板は残っていません。</string>
     <string name="learn_back_to_learn">学習に戻る</string>
     <string name="learn_card_unavailable">このセッションの看板は利用できません。</string>
@@ -44,6 +45,7 @@
     <string name="learn_see_review_cards">復習カードを見る</string>
     <string name="learn_back_home">ホームに戻る</string>
     <string name="learn_see_progress">進捗を見る</string>
+    <string name="learn_next_review">次の復習：%1$s</string>
     <string name="learn_no_further_review">次の復習予定はありません</string>
     <string name="learn_upcoming_card">次のカード</string>
     <string name="learn_got_it">わかった</string>

@@ -42,7 +42,7 @@ class BundledPolicyDocumentRepository
                 PolicyDocumentId.PRIVACY ->
                     PolicyMetadata(
                         assetPath = "legal/privacy-policy.md",
-                        title = "Privacy policy",
+                        title = context.getString(R.string.legal_privacy_policy),
                         versionRes = R.string.policy_privacy_version,
                         urlRes = R.string.policy_privacy_url,
                         expectedChecksum = context.getString(R.string.policy_privacy_checksum),
@@ -51,7 +51,7 @@ class BundledPolicyDocumentRepository
                 PolicyDocumentId.TERMS ->
                     PolicyMetadata(
                         assetPath = "legal/terms-of-use.md",
-                        title = "Terms of use",
+                        title = context.getString(R.string.legal_terms_of_use),
                         versionRes = R.string.policy_terms_version,
                         urlRes = R.string.policy_terms_url,
                         expectedChecksum = context.getString(R.string.policy_terms_checksum),

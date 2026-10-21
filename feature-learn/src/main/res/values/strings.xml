@@ -30,6 +30,7 @@
     <string name="learn_undo">Undo</string>
     <string name="learn_loading_session">Loading session…</string>
     <string name="learn_session_complete">Session complete</string>
+    <string name="learn_completion_summary">You finished this sign deck.</string>
     <string name="learn_no_cards">This session has no cards left to review.</string>
     <string name="learn_back_to_learn">Back to learn</string>
     <string name="learn_card_unavailable">This session card is unavailable</string>
@@ -44,6 +45,7 @@
     <string name="learn_see_review_cards">See review cards</string>
     <string name="learn_back_home">Back home</string>
     <string name="learn_see_progress">See progress</string>
+    <string name="learn_next_review">Next review: %1$s</string>
     <string name="learn_no_further_review">No further review scheduled</string>
     <string name="learn_upcoming_card">Upcoming card</string>
     <string name="learn_got_it">Got it</string>

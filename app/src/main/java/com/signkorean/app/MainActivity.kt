@@ -249,7 +249,7 @@ private fun SignKoreanApp(
                 is SettingsEffect.VoiceChanged -> {
                     navigationViewModel.dispatch(AppNavigationAction.Back)
                     navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_voice_saved, effect.voice.displayName())),
+                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_voice_saved, resources.getString(effect.voice.appLabelResource))),
                     )
                 }
 
@@ -788,10 +788,7 @@ private fun SessionCompletion.toCompletionUiState(): CompletionUiState =
         totalCount = totalCount,
         gotItCount = gotItCount,
         reviewCount = reviewCount,
-        nextReviewLabel =
-            nextReviewAt?.let {
-                "Next review: ${DateTimeFormatter.ISO_LOCAL_DATE.format(it.atZone(ZoneId.systemDefault()))}"
-            } ?: "No further review scheduled",
+        nextReviewDate = nextReviewAt?.let { DateTimeFormatter.ISO_LOCAL_DATE.format(it.atZone(ZoneId.systemDefault())) },
         reviewCardIds = reviewCardIds,
     )
 
@@ -802,6 +799,13 @@ private fun Int.estimatedMinutes(): Int =
         20 -> 8
         else -> 1
     }
+
+private val AudioVoice.appLabelResource: Int
+    get() =
+        when (this) {
+            AudioVoice.TYPECAST_EUNKYUNG -> R.string.voice_typecast
+            AudioVoice.GEMINI_KORE -> R.string.voice_gemini
+        }
 
 @Composable
 private fun SettingsDestination(
@@ -935,9 +939,9 @@ private fun BoxScope.AppOverlayHost(
                             GameButton(
                                 text =
                                     if (voice == settingsState.selectedVoice) {
-                                        "✓ ${voice.displayName()}"
+                                        "✓ ${resources.getString(voice.appLabelResource)}"
                                     } else {
-                                        voice.displayName()
+                                        resources.getString(voice.appLabelResource)
                                     },
                                 onClick = { onSelectVoice(voice) },
                                 modifier = Modifier.fillMaxWidth().testTag("settings.voice.${voice.name.lowercase()}"),

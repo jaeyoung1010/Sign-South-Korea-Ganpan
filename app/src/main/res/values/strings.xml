@@ -27,6 +27,10 @@
     <string name="learn_tab">Learn</string>
     <string name="progress_tab">Progress</string>
     <string name="settings_tab">Settings</string>
+    <string name="voice_typecast">Typecast · Eunkyung</string>
+    <string name="voice_gemini">Gemini Flash · Kore</string>
+    <string name="legal_privacy_policy">Privacy policy</string>
+    <string name="legal_terms_of_use">Terms of use</string>
     <string name="sheet_all_categories">All categories</string>
     <string name="sheet_choose_voice">Choose a voice</string>
     <string name="sheet_session_length">Session length</string>

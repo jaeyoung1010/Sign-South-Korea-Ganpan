@@ -184,6 +184,7 @@ data class CompletionUiState(
     val gotItCount: Int = 0,
     val reviewCount: Int = 0,
     val nextReviewLabel: String = "",
+    val nextReviewDate: String? = null,
     val reviewCardIds: List<String> = emptyList(),
 )
 
@@ -559,11 +560,18 @@ fun CompletionScreen(
 ) {
     GameCard(modifier = modifier.testTag("screen-done")) {
         Text(text = state.title.ifBlank { stringResource(R.string.learn_session_complete) }, style = MaterialTheme.typography.headlineMedium)
-        Text(text = state.summary.ifBlank { stringResource(R.string.learn_no_cards) }, style = MaterialTheme.typography.bodyLarge)
+        Text(text = state.summary.ifBlank { stringResource(R.string.learn_completion_summary) }, style = MaterialTheme.typography.bodyLarge)
         Text(text = pluralStringResource(R.plurals.learn_signs_practiced, state.totalCount, state.totalCount), style = MaterialTheme.typography.bodyLarge)
         Text(text = stringResource(R.string.learn_got_it_count, state.gotItCount), style = MaterialTheme.typography.bodyLarge)
         Text(text = stringResource(R.string.learn_review_count_label, state.reviewCount), style = MaterialTheme.typography.bodyLarge)
-        Text(text = state.nextReviewLabel.ifBlank { stringResource(R.string.learn_no_further_review) }, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text =
+                state.nextReviewLabel.ifBlank {
+                    state.nextReviewDate?.let { stringResource(R.string.learn_next_review, it) }
+                        ?: stringResource(R.string.learn_no_further_review)
+                },
+            style = MaterialTheme.typography.bodyLarge,
+        )
         if (state.reviewCount > 0) {
             GameButton(
                 text = stringResource(R.string.learn_see_review_cards),
