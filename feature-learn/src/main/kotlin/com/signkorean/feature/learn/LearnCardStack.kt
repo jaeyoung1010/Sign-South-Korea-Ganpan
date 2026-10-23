@@ -3,7 +3,6 @@
 package com.signkorean.feature.learn
 
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
@@ -53,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
-import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.AnswerGestureInput
 import com.signkorean.domain.gesture.AnswerRelease
@@ -247,7 +243,6 @@ private fun PreviewCard(
             imageAssetUri = preview.imageAssetUri,
             contentDescription = stringResource(R.string.learn_upcoming_card),
             focus = null,
-            reduceEffects = reduceEffects,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -267,7 +262,6 @@ private fun ActiveCard(
 ) {
     val density = LocalDensity.current.density
     val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
     var widthPx by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(state.cardId, state.stage) {
         focusRequester.requestFocus()
@@ -288,12 +282,7 @@ private fun ActiveCard(
                 .testTag(SignKoreanTestTags.LEARN_KEYBOARD_STAGE)
                 .semantics { stateDescription = stageDescription }
                 .focusRequester(focusRequester)
-                .onFocusChanged { isFocused = it.isFocused }
                 .focusable()
-                .border(
-                    width = if (isFocused) FOCUS_INDICATOR_WIDTH else 0.dp,
-                    color = if (isFocused) Color(SignKoreanPalette.OUTLINE) else Color.Transparent,
-                )
                 .onPreviewKeyEvent { event ->
                     if (isRating || event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
                     val key =
@@ -361,7 +350,7 @@ private fun ActiveCard(
                             )
                     },
         ) {
-            ActiveCardContent(state, onAction, audioState, reduceEffects = motionPolicy.reduceMotion)
+            ActiveCardContent(state, onAction, audioState)
         }
         (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
             if (overlay == null) return@let
@@ -395,7 +384,6 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
     state: LearnSessionUiState.Active,
     onAction: (LearnUiAction) -> Unit,
     audioState: AudioPlaybackState,
-    reduceEffects: Boolean,
 ) {
     PhotoSurface(
         imageAssetUri = state.photo.imageAssetUri,
@@ -406,7 +394,6 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
                 state.photo.answerContentDescription
             },
         focus = state.photo.focus,
-        reduceEffects = reduceEffects,
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -522,7 +509,6 @@ private fun LearnCardLayer.previewOffset() =
 
 private val PREVIEW_OFFSET = 14.dp
 private val MIN_PHOTO_HEIGHT = 200.dp
-private val FOCUS_INDICATOR_WIDTH = 4.dp
 private const val PHOTO_PORTION = .62f
 private const val INFO_PORTION = .38f
 private fun RatingDecision.toOverlay(): DragOverlay =

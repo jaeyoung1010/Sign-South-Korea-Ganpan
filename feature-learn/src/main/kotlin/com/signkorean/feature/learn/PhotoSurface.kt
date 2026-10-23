@@ -2,9 +2,8 @@
 
 package com.signkorean.feature.learn
 
-import android.os.Build
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
@@ -18,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -39,16 +37,9 @@ internal fun PhotoSurface(
     contentDescription: String?,
     focus: FocusRect?,
     modifier: Modifier = Modifier,
-    reduceEffects: Boolean = false,
 ) {
     var imageSize by remember(imageAssetUri) { mutableStateOf<PhotoSize?>(null) }
     var hasLoadError by remember(imageAssetUri) { mutableStateOf(imageAssetUri.isBlank()) }
-    val backgroundModifier =
-        if (!reduceEffects && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            Modifier.blur(BLUR_RADIUS)
-        } else {
-            Modifier
-        }
 
     Box(
         modifier =
@@ -59,12 +50,6 @@ internal fun PhotoSurface(
         contentAlignment = Alignment.Center,
     ) {
         if (imageAssetUri.isNotBlank()) {
-            AsyncImage(
-                model = imageAssetUri,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = backgroundModifier.fillMaxSize().clearAndSetSemantics {},
-            )
             AsyncImage(
                 model = imageAssetUri,
                 contentDescription = contentDescription?.takeIf { it.isNotBlank() } ?: stringResource(R.string.learn_photo_alt),
@@ -116,5 +101,4 @@ internal fun PhotoSurface(
 }
 
 private val MIN_PHOTO_HEIGHT = 200.dp
-private val BLUR_RADIUS = 18.dp
 private val FOCUS_STROKE_WIDTH = 3.dp
