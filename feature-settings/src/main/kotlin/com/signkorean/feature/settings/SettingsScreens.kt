@@ -56,7 +56,6 @@ data class LegalUiState(
 }
 
 data class AccountUiState(
-    val title: String = "Account & sync",
     val account: GuestAccount = GuestAccount.local(),
     val connectEnabled: Boolean = false,
 )

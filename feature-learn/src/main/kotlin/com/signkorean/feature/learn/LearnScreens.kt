@@ -349,9 +349,10 @@ private fun CategoryReplacementCard(
     isStarting: Boolean,
     onAction: (LearnUiAction) -> Unit,
 ) {
+    val categoryDisplayName = stringResource(category.labelResource())
     GameCard(modifier = Modifier.fillMaxWidth()) {
         Text(stringResource(R.string.learn_replace_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-        Text(stringResource(R.string.learn_replace_body, category), style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(R.string.learn_replace_body, categoryDisplayName), style = MaterialTheme.typography.bodyLarge)
         GameButton(
             text = if (isStarting) stringResource(R.string.learn_starting_session) else stringResource(R.string.learn_replace_session),
             onClick = { onAction(LearnUiAction.ConfirmCategoryReplacement) },
@@ -367,6 +368,15 @@ private fun CategoryReplacementCard(
         )
     }
 }
+
+private fun String.labelResource(): Int =
+    when (this) {
+        "LANDMARK" -> R.string.learn_category_landmarks
+        "NEIGHBORHOOD" -> R.string.learn_category_neighborhoods
+        "MARKET" -> R.string.learn_category_markets
+        "TRANSPORT" -> R.string.learn_category_transport
+        else -> R.string.learn_category_landmarks
+    }
 
 @Composable
 private fun CategorySection(

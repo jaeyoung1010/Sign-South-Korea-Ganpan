@@ -19,6 +19,7 @@ import com.signkorean.domain.port.input.PracticeCardRequest
 import com.signkorean.domain.port.input.ReviewCardDetailRequest
 import com.signkorean.domain.port.input.ReviewPageRequest
 import com.signkorean.domain.port.input.StartSessionResult
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.feature.progress.ProgressUiAction
 import com.signkorean.feature.progress.ProgressUiEffect
 import com.signkorean.testsupport.MainDispatcherRule
@@ -54,6 +55,16 @@ class ProgressViewModelTest {
         }
 
     @Test
+    fun `uses the selected app language for weekday labels`() =
+        runTest {
+            val viewModel = viewModel(languageTag = "ja")
+
+            advanceUntilIdle()
+
+            assertEquals(listOf("火"), viewModel.uiState.value.week.map { it.label })
+        }
+
+    @Test
     fun `see all and detail preserve review list while practice navigates to learn`() =
         runTest {
             val viewModel = viewModel()
@@ -72,7 +83,7 @@ class ProgressViewModelTest {
             assertFalse(viewModel.uiState.value.isPracticing)
         }
 
-    private fun viewModel(): ProgressViewModel =
+    private fun viewModel(languageTag: String = "en"): ProgressViewModel =
         ProgressViewModel(
             observeProgress = ObserveProgress { flowOf(snapshot) },
             observeReviewCards = ObserveReviewCards { _: ReviewPageRequest -> flowOf(listOf(review)) },
@@ -85,7 +96,18 @@ class ProgressViewModelTest {
                     assertEquals("card-1", request.cardId)
                     StartSessionResult.Started("practice-session")
                 },
+            appLocalePort = FakeAppLocalePort(languageTag),
         )
+
+    private class FakeAppLocalePort(
+        private val currentLanguageTag: String = "en",
+    ) : AppLocalePort {
+        override fun getSupported(): Set<String> = setOf("en", "ja")
+
+        override fun getCurrent(): String = currentLanguageTag
+
+        override fun setCurrent(languageTag: String) = Unit
+    }
 
     private val review = ProgressReview("card-1", Instant.parse("2026-10-20T03:00:00Z"))
     private val snapshot =

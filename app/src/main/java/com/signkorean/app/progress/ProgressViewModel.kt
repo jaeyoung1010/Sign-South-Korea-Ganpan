@@ -11,6 +11,7 @@ import com.signkorean.domain.port.input.PracticeCardRequest
 import com.signkorean.domain.port.input.ReviewCardDetailRequest
 import com.signkorean.domain.port.input.ReviewPageRequest
 import com.signkorean.domain.port.input.StartSessionResult
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.feature.progress.ProgressCardUiModel
 import com.signkorean.feature.progress.ProgressCategoryUiModel
 import com.signkorean.feature.progress.ProgressDayUiModel
@@ -40,6 +41,7 @@ class ProgressViewModel
         private val observeReviewCards: ObserveReviewCards,
         private val loadReviewCardDetail: LoadReviewCardDetail,
         private val practiceCard: PracticeCard,
+        private val appLocalePort: AppLocalePort,
     ) : ViewModel() {
         private val mutableUiState = MutableStateFlow(ProgressUiState())
         private val effectChannel = Channel<ProgressUiEffect>(Channel.BUFFERED)
@@ -58,7 +60,7 @@ class ProgressViewModel
             progressJob = viewModelScope.launch {
                 try {
                     observeProgress().collect { snapshot ->
-                        val baseState = snapshot.toUiState(mutableUiState.value)
+                        val baseState = snapshot.toUiState(mutableUiState.value, appLocalePort.getCurrent())
                         mutableUiState.value = baseState.copy(recentReviews = snapshot.recentReviews.mapNotNull(::toCardUiModel))
                     }
                 } catch (cancellation: CancellationException) {
@@ -170,14 +172,24 @@ class ProgressViewModel
             if (Locale.getDefault().language.equals("ja", ignoreCase = true)) "ja" else "en"
     }
 
-private fun ProgressSnapshot.toUiState(previous: ProgressUiState): ProgressUiState =
+private fun ProgressSnapshot.toUiState(
+    previous: ProgressUiState,
+    languageTag: String,
+): ProgressUiState =
     previous.copy(
         isLoading = false,
         errorMessage = null,
         learnedCount = learnedCount,
         masteredCount = masteredCount,
         dueCount = dueCount,
-        week = weeklyActivity.map { ProgressDayUiModel(it.date.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.ENGLISH), it.count) },
+        week =
+            weeklyActivity.map {
+                ProgressDayUiModel(
+                    label = it.date.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.forLanguageTag(languageTag)),
+                    count = it.count,
+                    dayOfWeek = it.date.dayOfWeek,
+                )
+            },
         categories = categoryProgress.map { ProgressCategoryUiModel(it.key, it.key.toCategoryLabel(), it.learnedCount, it.totalCount, it.ratio) },
     )
 

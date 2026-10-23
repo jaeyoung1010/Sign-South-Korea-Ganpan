@@ -899,7 +899,7 @@ private fun BoxScope.AppOverlayHost(
                         AppSheet.SessionLength -> stringResource(R.string.sheet_session_length)
                         AppSheet.SessionLeave -> stringResource(R.string.sheet_leave_session)
                         AppSheet.Report -> stringResource(R.string.sheet_report_card)
-                        AppSheet.Account -> accountState.title
+                        AppSheet.Account -> stringResource(com.signkorean.feature.settings.R.string.settings_account_sync)
                         AppSheet.Language -> stringResource(com.signkorean.feature.settings.R.string.sheet_choose_language)
                     },
             ) {

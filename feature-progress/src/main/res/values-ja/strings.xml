@@ -10,6 +10,10 @@
     <string name="progress_stat_due">復習するカード</string>
     <string name="progress_week_title">今週</string>
     <string name="progress_category_title">カテゴリー別</string>
+    <string name="progress_category_landmarks">名所</string>
+    <string name="progress_category_neighborhoods">街並み</string>
+    <string name="progress_category_markets">市場</string>
+    <string name="progress_category_transport">交通</string>
     <string name="progress_recent_title">要復習</string>
     <string name="progress_see_all">すべて見る</string>
     <string name="progress_close">閉じる</string>

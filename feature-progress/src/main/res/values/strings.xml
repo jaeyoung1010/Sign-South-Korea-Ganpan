@@ -10,6 +10,10 @@
     <string name="progress_stat_due">Due now</string>
     <string name="progress_week_title">Your week</string>
     <string name="progress_category_title">By category</string>
+    <string name="progress_category_landmarks">Landmarks</string>
+    <string name="progress_category_neighborhoods">Neighborhoods</string>
+    <string name="progress_category_markets">Markets</string>
+    <string name="progress_category_transport">Transport</string>
     <string name="progress_recent_title">Needs review</string>
     <string name="progress_see_all">See all</string>
     <string name="progress_close">Close</string>

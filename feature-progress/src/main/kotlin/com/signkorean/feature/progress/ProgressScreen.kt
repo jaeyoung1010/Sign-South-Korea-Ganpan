@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +46,9 @@ import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.components.GameSheet
 import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
 
 data class ProgressUiState(
     val title: String = "Your progress",
@@ -66,6 +70,7 @@ data class ProgressUiState(
 data class ProgressDayUiModel(
     val label: String,
     val count: Int,
+    val dayOfWeek: DayOfWeek? = null,
 )
 
 data class ProgressCategoryUiModel(
@@ -262,12 +267,18 @@ private fun WeekChart(week: List<ProgressDayUiModel>) {
                                         .background(Color(SignKoreanPalette.PRIMARY)),
                             )
                         }
-                        Text(text = day.label, style = MaterialTheme.typography.labelSmall)
+                        Text(text = day.localizedLabel(), style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ProgressDayUiModel.localizedLabel(): String {
+    val locale = Locale.forLanguageTag(LocalConfiguration.current.locales[0].toLanguageTag())
+    return dayOfWeek?.getDisplayName(TextStyle.NARROW, locale) ?: label
 }
 
 @Composable
@@ -280,7 +291,7 @@ private fun CategoryProgress(categories: List<ProgressCategoryUiModel>) {
         categories.forEach { category ->
             GameCard(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = category.label, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Black)
+                    Text(text = category.localizedLabel(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Black)
                     Text(text = "${category.learnedCount}/${category.totalCount}", style = MaterialTheme.typography.labelLarge)
                 }
                 LinearProgressIndicator(progress = { category.ratio }, modifier = Modifier.fillMaxWidth())
@@ -288,6 +299,16 @@ private fun CategoryProgress(categories: List<ProgressCategoryUiModel>) {
         }
     }
 }
+
+@Composable
+private fun ProgressCategoryUiModel.localizedLabel(): String =
+    when (key) {
+        "LANDMARK" -> stringResource(R.string.progress_category_landmarks)
+        "NEIGHBORHOOD" -> stringResource(R.string.progress_category_neighborhoods)
+        "MARKET" -> stringResource(R.string.progress_category_markets)
+        "TRANSPORT" -> stringResource(R.string.progress_category_transport)
+        else -> label
+    }
 
 @Composable
 private fun RecentReviews(
