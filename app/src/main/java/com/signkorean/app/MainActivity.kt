@@ -13,15 +13,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,10 +38,20 @@ import androidx.compose.runtime.remember
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -64,6 +81,7 @@ import com.signkorean.designsystem.components.GameToast
 import com.signkorean.designsystem.layout.SignKoreanScreen
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
+import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlaybackFailure
@@ -506,7 +524,15 @@ internal fun SignKoreanAppContent(
     }
 
     SignKoreanTheme {
-        SignKoreanScreen(applySafeDrawingInsets = !state.isViewerVisible) {
+        SignKoreanScreen(
+            applySafeDrawingInsets = !state.isViewerVisible,
+            bottomInsetColor =
+                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Settings)) {
+                    Color(SignKoreanPalette.SURFACE)
+                } else {
+                    null
+                },
+        ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 NavDisplay(
                     backStack = backStack,
@@ -517,7 +543,7 @@ internal fun SignKoreanAppContent(
                     TopLevelTabs(
                         selectedTab = state.currentRoute.topLevelTab,
                         onAction = onAction,
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(SignKoreanSpacing.medium),
+                        modifier = Modifier.align(Alignment.BottomCenter),
                     )
                 }
                 AppOverlayHost(
@@ -823,36 +849,121 @@ private fun TopLevelTabs(
     onAction: (AppNavigationAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GameCard(modifier = modifier.fillMaxWidth()) {
-        Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-            GameButton(
-                text = stringResource(R.string.learn_tab),
-                onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn)) },
-                modifier = Modifier.weight(1f),
-                style = if (selectedTab == AppTopLevelTab.Learn) GameButtonStyle.Primary else GameButtonStyle.Secondary,
+    Surface(
+        modifier = modifier.fillMaxWidth().height(84.dp),
+        color = Color(SignKoreanPalette.SURFACE),
+        contentColor = Color(SignKoreanPalette.INK),
+        shape = RectangleShape,
+        shadowElevation = 0.dp,
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier.fillMaxSize().padding(horizontal = SignKoreanSpacing.large),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TopLevelTabItem(
+                    label = stringResource(R.string.learn_tab),
+                    tab = AppTopLevelTab.Learn,
+                    selected = selectedTab == AppTopLevelTab.Learn,
+                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn)) },
+                )
+                TopLevelTabItem(
+                    label = stringResource(R.string.progress_tab),
+                    tab = AppTopLevelTab.Progress,
+                    selected = selectedTab == AppTopLevelTab.Progress,
+                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress)) },
+                )
+                TopLevelTabItem(
+                    label = stringResource(R.string.settings_tab),
+                    tab = AppTopLevelTab.Settings,
+                    selected = selectedTab == AppTopLevelTab.Settings,
+                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings)) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.TopLevelTabItem(
+    label: String,
+    tab: AppTopLevelTab,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val iconColor = Color(if (selected) SignKoreanPalette.PRIMARY_DARK else SignKoreanPalette.MUTED)
+    Box(
+        modifier =
+            Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .clickable(role = Role.Tab, onClick = onClick)
+                .semantics { this.selected = selected }
+    ) {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            BottomTabIcon(tab = tab, color = iconColor, modifier = Modifier.size(20.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = if (selected) FontWeight.Black else FontWeight.Bold,
+                color = iconColor,
             )
-            GameButton(
-                text = stringResource(R.string.progress_tab),
-                onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress)) },
-                modifier = Modifier.weight(1f),
-                style =
-                    if (selectedTab == AppTopLevelTab.Progress) {
-                        GameButtonStyle.Primary
-                    } else {
-                        GameButtonStyle.Secondary
-                    },
-            )
-            GameButton(
-                text = stringResource(R.string.settings_tab),
-                onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings)) },
-                modifier = Modifier.weight(1f),
-                style =
-                    if (selectedTab == AppTopLevelTab.Settings) {
-                        GameButtonStyle.Primary
-                    } else {
-                        GameButtonStyle.Secondary
-                    },
-            )
+        }
+    }
+}
+
+@Composable
+private fun BottomTabIcon(
+    tab: AppTopLevelTab,
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier) {
+        val stroke = Stroke(width = 1.8.dp.toPx())
+        val center = Offset(size.width / 2f, size.height / 2f)
+        when (tab) {
+            AppTopLevelTab.Learn -> {
+                val left = size.width * 0.21f
+                val right = size.width * 0.79f
+                val top = size.height * 0.33f
+                val bottom = size.height * 0.78f
+                drawLine(color, Offset(left, top), Offset(center.x, size.height * 0.15f), strokeWidth = stroke.width)
+                drawLine(color, Offset(center.x, size.height * 0.15f), Offset(right, top), strokeWidth = stroke.width)
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(left, top),
+                    size = Size(right - left, bottom - top),
+                    cornerRadius = CornerRadius(3.dp.toPx()),
+                    style = stroke,
+                )
+                drawLine(color, Offset(center.x, bottom), Offset(center.x, size.height * 0.55f), strokeWidth = stroke.width)
+            }
+            AppTopLevelTab.Progress -> {
+                listOf(0.28f to 0.58f, 0.5f to 0.28f, 0.72f to 0.42f).forEach { (x, top) ->
+                    drawLine(color, Offset(size.width * x, size.height * 0.8f), Offset(size.width * x, size.height * top), strokeWidth = stroke.width)
+                }
+            }
+            AppTopLevelTab.Settings -> {
+                drawCircle(color, radius = size.width * 0.28f, center = center, style = stroke)
+                drawCircle(color, radius = size.width * 0.08f, center = center, style = stroke)
+                repeat(8) { index ->
+                    val angle = Math.toRadians((index * 45.0) - 90.0)
+                    val start = Offset(
+                        center.x + kotlin.math.cos(angle).toFloat() * size.width * 0.31f,
+                        center.y + kotlin.math.sin(angle).toFloat() * size.width * 0.31f,
+                    )
+                    val end = Offset(
+                        center.x + kotlin.math.cos(angle).toFloat() * size.width * 0.43f,
+                        center.y + kotlin.math.sin(angle).toFloat() * size.width * 0.43f,
+                    )
+                    drawLine(color, start, end, strokeWidth = stroke.width)
+                }
+            }
         }
     }
 }

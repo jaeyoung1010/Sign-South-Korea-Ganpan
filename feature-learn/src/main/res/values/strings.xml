@@ -25,6 +25,7 @@
     <string name="learn_category_markets">Markets</string>
     <string name="learn_category_transport">Transport</string>
     <plurals name="learn_category_signs"><item quantity="one">%1$s · %2$d sign</item><item quantity="other">%1$s · %2$d signs</item></plurals>
+    <plurals name="learn_category_count"><item quantity="one">%d sign</item><item quantity="other">%d signs</item></plurals>
     <string name="learn_your_week">Your week</string>
     <string name="learn_close">Close</string>
     <string name="learn_more">More</string>

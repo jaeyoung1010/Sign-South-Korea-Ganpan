@@ -54,7 +54,8 @@ class LearnHomeScreenTest {
         composeRule.onNodeWithText("About 8 minutes").assertIsDisplayed()
         composeRule.onNodeWithText("3 review").assertIsDisplayed()
         composeRule.onNodeWithText("17 new").assertIsDisplayed()
-        composeRule.onNodeWithText("Landmarks · 7 signs").assertIsDisplayed()
+        composeRule.onNodeWithText("Landmarks").assertIsDisplayed()
+        composeRule.onNodeWithText("7 signs").assertIsDisplayed()
         composeRule.onNodeWithTag(HomeTestTags.SEE_ALL).performClick()
 
         composeRule.runOnIdle { assertEquals(LearnUiAction.ShowDeckSheet, action) }

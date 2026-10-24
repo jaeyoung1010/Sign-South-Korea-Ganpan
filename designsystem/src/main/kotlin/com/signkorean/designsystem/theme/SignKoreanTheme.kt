@@ -7,8 +7,11 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.signkorean.designsystem.R
 
 object SignKoreanPalette {
     const val INK: Long = 0xFF201A24
@@ -52,17 +55,31 @@ private val LightColors =
         outline = Color(SignKoreanPalette.OUTLINE),
     )
 
+private val Pretendard =
+    FontFamily(
+        Font(R.font.pretendard_regular, FontWeight.Normal),
+        Font(R.font.pretendard_bold, FontWeight.Bold),
+        Font(R.font.pretendard_black, FontWeight.Black),
+    )
+
 private val SignKoreanTypography =
     Typography().run {
         copy(
-            displaySmall = displaySmall.copy(fontFamily = FontFamily.SansSerif),
-            headlineLarge = headlineLarge.copy(fontFamily = FontFamily.SansSerif),
-            headlineMedium = headlineMedium.copy(fontFamily = FontFamily.SansSerif),
-            titleLarge = titleLarge.copy(fontFamily = FontFamily.SansSerif),
-            titleMedium = titleMedium.copy(fontFamily = FontFamily.SansSerif),
-            bodyLarge = bodyLarge.copy(fontFamily = FontFamily.SansSerif),
-            bodyMedium = bodyMedium.copy(fontFamily = FontFamily.SansSerif),
-            labelLarge = labelLarge.copy(fontFamily = FontFamily.SansSerif),
+            displayLarge = displayLarge.copy(fontFamily = Pretendard),
+            displayMedium = displayMedium.copy(fontFamily = Pretendard),
+            displaySmall = displaySmall.copy(fontFamily = Pretendard),
+            headlineLarge = headlineLarge.copy(fontFamily = Pretendard),
+            headlineMedium = headlineMedium.copy(fontFamily = Pretendard),
+            headlineSmall = headlineSmall.copy(fontFamily = Pretendard),
+            titleLarge = titleLarge.copy(fontFamily = Pretendard),
+            titleMedium = titleMedium.copy(fontFamily = Pretendard),
+            titleSmall = titleSmall.copy(fontFamily = Pretendard),
+            bodyLarge = bodyLarge.copy(fontFamily = Pretendard),
+            bodyMedium = bodyMedium.copy(fontFamily = Pretendard),
+            bodySmall = bodySmall.copy(fontFamily = Pretendard),
+            labelLarge = labelLarge.copy(fontFamily = Pretendard),
+            labelMedium = labelMedium.copy(fontFamily = Pretendard),
+            labelSmall = labelSmall.copy(fontFamily = Pretendard),
         )
     }
 

@@ -2,9 +2,15 @@
 
 package com.signkorean.feature.learn
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
@@ -50,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
+import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.AnswerGestureInput
 import com.signkorean.domain.gesture.AnswerRelease
@@ -261,6 +270,12 @@ private fun ActiveCard(
     modifier: Modifier,
 ) {
     val density = LocalDensity.current.density
+    val ratingProgress by
+        animateFloatAsState(
+            targetValue = if (isRating) 1f else 0f,
+            animationSpec = tween(durationMillis = motionPolicy.ratingAnimationDurationMillis.toInt()),
+            label = "rating-card-exit",
+        )
     val focusRequester = remember { FocusRequester() }
     var widthPx by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(state.cardId, state.stage) {
@@ -299,7 +314,13 @@ private fun ActiveCard(
                         CardKeyboardAction.Ignored -> return@onPreviewKeyEvent false
                     }
                     true
-                }.graphicsLayer {
+                },
+    ) {
+        GameCard(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
                     val exitDirection =
                         when (ratingDecision) {
                             RatingDecision.GotIt -> -1f
@@ -308,25 +329,20 @@ private fun ActiveCard(
                         }
                     translationX =
                         if (isRating) {
-                            exitDirection * widthPx * motionPolicy.cardExitTranslationFactor
+                            exitDirection * widthPx * motionPolicy.cardExitTranslationFactor * ratingProgress
                         } else {
                             dragOffsetDp * density
                         }
                     rotationZ =
                         if (isRating) {
-                            exitDirection * motionPolicy.cardExitRotationDegrees
+                            exitDirection * motionPolicy.cardExitRotationDegrees * ratingProgress
                         } else if (motionPolicy.reduceMotion) {
                             0f
                         } else {
                             (dragOffsetDp / 12f).coerceIn(-8f, 8f)
                         }
-                    alpha = if (isRating && motionPolicy.reduceMotion) 0f else 1f
-                },
-    ) {
-        GameCard(
-            modifier =
-                Modifier
-                    .fillMaxSize()
+                    alpha = if (isRating && motionPolicy.reduceMotion) 1f - ratingProgress else 1f
+                    }
                     .testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)
                     .semantics {
                         customActions =
@@ -354,15 +370,70 @@ private fun ActiveCard(
         }
         (dragOverlay ?: ratingDecision?.toOverlay()).let { overlay ->
             if (overlay == null) return@let
-            Text(
-                text = if (overlay == DragOverlay.GotIt) stringResource(R.string.learn_got_it) else stringResource(R.string.learn_review),
-                modifier =
-                    Modifier
-                        .align(if (overlay == DragOverlay.GotIt) Alignment.CenterStart else Alignment.CenterEnd)
-                        .testTag(SignKoreanTestTags.LEARN_DRAG_OVERLAY),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Black,
-            )
+            SwipeActionOverlay(overlay = overlay)
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.SwipeActionOverlay(overlay: DragOverlay) {
+    val isGotIt = overlay == DragOverlay.GotIt
+    val accent = Color(if (isGotIt) SignKoreanPalette.GOT_IT else SignKoreanPalette.REVIEW)
+    val darkAccent = Color(if (isGotIt) SignKoreanPalette.GOT_IT_DARK else SignKoreanPalette.REVIEW_DARK)
+    val label = stringResource(if (isGotIt) R.string.learn_got_it else R.string.learn_review)
+    val actionIcon = if (isGotIt) "✓" else "↻"
+    var isVisible by remember(overlay) { mutableStateOf(false) }
+    LaunchedEffect(overlay) { isVisible = true }
+    val scale by
+        animateFloatAsState(
+            targetValue = if (isVisible) 1f else 0.78f,
+            animationSpec = spring(dampingRatio = 0.58f, stiffness = 460f),
+            label = "swipe-action-scale",
+        )
+    val alpha by
+        animateFloatAsState(
+            targetValue = if (isVisible) 1f else 0f,
+            animationSpec = spring(dampingRatio = 0.8f, stiffness = 420f),
+            label = "swipe-action-alpha",
+        )
+
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(accent.copy(alpha = 0.16f))
+                .clearAndSetSemantics {},
+    )
+    Surface(
+        modifier =
+            Modifier
+                .align(if (isGotIt) Alignment.CenterStart else Alignment.CenterEnd)
+                .padding(SignKoreanSpacing.large)
+                .graphicsLayer {
+                    this.alpha = alpha
+                    scaleX = scale
+                    scaleY = scale
+                }.testTag(SignKoreanTestTags.LEARN_DRAG_OVERLAY),
+        color = accent,
+        contentColor = Color(SignKoreanPalette.INK),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(3.dp, darkAccent),
+        shadowElevation = 8.dp,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = SignKoreanSpacing.medium, vertical = SignKoreanSpacing.small),
+            horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = actionIcon, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+            Column {
+                Text(text = label, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(
+                    text = if (isGotIt) "←" else "→",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Black,
+                )
+            }
         }
     }
 }

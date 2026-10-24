@@ -2,7 +2,12 @@
 
 package com.signkorean.feature.learn
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,28 +19,41 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
+import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlaybackState
@@ -399,16 +417,150 @@ private fun CategorySection(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
         ) {
             categories.forEach { category ->
-                GameButton(
-                    text = pluralStringResource(R.plurals.learn_category_signs, category.cardCount, category.localizedLabel(), category.cardCount),
-                    onClick = { onAction(LearnUiAction.StartCategorySession(category.key)) },
-                    modifier = Modifier.width(176.dp),
+                CategoryCard(
+                    category = category,
                     enabled = !isStarting,
-                    style = GameButtonStyle.Secondary,
+                    onClick = { onAction(LearnUiAction.StartCategorySession(category.key)) },
                 )
             }
         }
     }
+}
+
+@Composable
+private fun CategoryCard(
+    category: HomeCategoryUiModel,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val style = category.visualStyle()
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.width(156.dp),
+        shape = RoundedCornerShape(20.dp),
+        color = style.background,
+        contentColor = Color(SignKoreanPalette.INK),
+        border = BorderStroke(2.dp, Color(SignKoreanPalette.OUTLINE)),
+        shadowElevation = 2.dp,
+    ) {
+        Column(
+            modifier = Modifier.padding(SignKoreanSpacing.small),
+            verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xxSmall),
+        ) {
+            CategoryIcon(
+                category = category.key,
+                contentDescription = category.localizedLabel(),
+                modifier = Modifier.width(36.dp).aspectRatio(1f),
+            )
+            Text(
+                text = category.localizedLabel(),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Black,
+                maxLines = 1,
+            )
+            Text(
+                text = pluralStringResource(R.plurals.learn_category_count, category.cardCount, category.cardCount),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(SignKoreanPalette.MUTED),
+            )
+        }
+    }
+}
+
+private data class CategoryVisualStyle(val background: Color)
+
+private fun HomeCategoryUiModel.visualStyle(): CategoryVisualStyle =
+    CategoryVisualStyle(
+        background =
+            when (key) {
+                "LANDMARK" -> Color(0xFFF7F0FF)
+                "NEIGHBORHOOD" -> Color(0xFFE8FBF7)
+                "MARKET" -> Color(0xFFFFF8D8)
+                "TRANSPORT" -> Color(0xFFEAF1FF)
+                "FOOD" -> Color(0xFFFFEEE5)
+                "SHOPPING" -> Color(0xFFFFEAF1)
+                "EVERYDAY" -> Color(0xFFF1F4F8)
+                "NOTICE" -> Color(0xFFFFF0E5)
+                else -> Color(SignKoreanPalette.SURFACE)
+            },
+    )
+
+@Composable
+private fun CategoryIcon(
+    category: String,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    val stroke = Color(SignKoreanPalette.OUTLINE)
+    Box(
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.White.copy(alpha = 0.5f))
+                .drawBehind {
+                    val line = Stroke(width = 1.8.dp.toPx())
+                    val left = size.width * 0.22f
+                    val right = size.width * 0.78f
+                    val top = size.height * 0.19f
+                    val bottom = size.height * 0.81f
+                    fun line(fromX: Float, fromY: Float, toX: Float, toY: Float) =
+                        drawLine(stroke, Offset(fromX, fromY), Offset(toX, toY), strokeWidth = line.width)
+
+                    when (category) {
+                        "LANDMARK" -> {
+                            drawRect(stroke, Offset(left, top + size.height * 0.18f), Size(right - left, bottom - top - size.height * 0.18f), style = line)
+                            line(left, top + size.height * 0.18f, size.width / 2f, top)
+                            line(size.width / 2f, top, right, top + size.height * 0.18f)
+                            line(size.width * 0.43f, bottom, size.width * 0.43f, size.height * 0.61f)
+                            line(size.width * 0.57f, bottom, size.width * 0.57f, size.height * 0.61f)
+                            line(left + size.width * 0.1f, size.height * 0.49f, right - size.width * 0.1f, size.height * 0.49f)
+                        }
+                        "NEIGHBORHOOD" -> {
+                            line(size.width / 2f, top, size.width / 2f, bottom)
+                            line(left, top + size.height * 0.06f, right, top + size.height * 0.06f)
+                            line(left, size.height * 0.54f, right, size.height * 0.54f)
+                            line(left + size.width * 0.11f, top + size.height * 0.06f, left + size.width * 0.11f, size.height * 0.54f)
+                            line(right - size.width * 0.11f, top + size.height * 0.06f, right - size.width * 0.11f, size.height * 0.54f)
+                        }
+                        "MARKET" -> {
+                            drawRect(stroke, Offset(left, size.height * 0.48f), Size(right - left, size.height * 0.29f), style = line)
+                            line(left, size.height * 0.48f, left + size.width * 0.08f, size.height * 0.3f)
+                            line(left + size.width * 0.08f, size.height * 0.3f, right - size.width * 0.08f, size.height * 0.3f)
+                            line(right - size.width * 0.08f, size.height * 0.3f, right, size.height * 0.48f)
+                            line(left, size.height * 0.48f, right, size.height * 0.48f)
+                        }
+                        "TRANSPORT" -> {
+                            drawRoundRect(stroke, Offset(left, top), Size(right - left, bottom - top), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5.dp.toPx()), style = line)
+                            line(left, size.height * 0.53f, right, size.height * 0.53f)
+                            drawCircle(stroke, radius = size.width * 0.07f, center = Offset(size.width * 0.36f, bottom), style = line)
+                            drawCircle(stroke, radius = size.width * 0.07f, center = Offset(size.width * 0.64f, bottom), style = line)
+                        }
+                        "FOOD" -> {
+                            drawArc(stroke, 180f, 180f, false, Offset(left, size.height * 0.4f), Size(right - left, size.height * 0.3f), style = line)
+                            line(left, size.height * 0.55f, right, size.height * 0.55f)
+                            line(size.width * 0.32f, size.height * 0.31f, size.width * 0.27f, size.height * 0.18f)
+                            line(size.width * 0.5f, size.height * 0.29f, size.width * 0.5f, size.height * 0.15f)
+                            line(size.width * 0.68f, size.height * 0.31f, size.width * 0.73f, size.height * 0.18f)
+                        }
+                        "SHOPPING" -> {
+                            drawRoundRect(stroke, Offset(left, size.height * 0.34f), Size(right - left, size.height * 0.43f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()), style = line)
+                            drawArc(stroke, 180f, 180f, false, Offset(size.width * 0.36f, size.height * 0.18f), Size(size.width * 0.28f, size.height * 0.28f), style = line)
+                        }
+                        "EVERYDAY" -> {
+                            drawCircle(stroke, radius = size.width * 0.23f, center = Offset(size.width / 2f, size.height / 2f), style = line)
+                            line(size.width / 2f, size.height * 0.38f, size.width / 2f, size.height * 0.62f)
+                            line(size.width * 0.38f, size.height / 2f, size.width * 0.62f, size.height / 2f)
+                        }
+                        else -> {
+                            drawRoundRect(stroke, Offset(left, top), Size(right - left, bottom - top), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5.dp.toPx()), style = line)
+                            line(size.width / 2f, size.height * 0.34f, size.width / 2f, size.height * 0.57f)
+                            drawCircle(stroke, radius = 1.8.dp.toPx(), center = Offset(size.width / 2f, size.height * 0.68f))
+                        }
+                    }
+                }
+                .semantics { this.contentDescription = contentDescription },
+    )
 }
 
 @Composable
@@ -426,16 +578,67 @@ private fun HomeCategoryUiModel.localizedLabel(): String =
 @Composable
 private fun WeekSection(week: List<WeekActivityUiModel>) {
     val locale = LocalConfiguration.current.locales[0]
+    val maxCount = week.maxOfOrNull { it.count }?.coerceAtLeast(1) ?: 1
+    val totalCount = week.sumOf { it.count }
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-        Text(text = stringResource(R.string.learn_your_week), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(text = stringResource(R.string.learn_your_week), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text(
+                text = pluralStringResource(R.plurals.learn_signs_practiced, totalCount, totalCount),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Black,
+                color = Color(SignKoreanPalette.GOT_IT_DARK),
+            )
+        }
         GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth().height(132.dp),
+                horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xSmall),
+                verticalAlignment = Alignment.Bottom,
+            ) {
                 week.forEach { day ->
-                    Column {
-                        Text(text = day.count.toString(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    val targetProgress = day.count.toFloat() / maxCount
+                    val barProgress by
+                        animateFloatAsState(
+                            targetValue = targetProgress,
+                            animationSpec = spring(dampingRatio = 0.72f, stiffness = 280f),
+                            label = "week-activity-${day.label}",
+                        )
+                    Column(
+                        modifier = Modifier.width(36.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xxSmall),
+                    ) {
+                        Text(
+                            text = day.count.toString(),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Black,
+                            color = if (day.count > 0) Color(SignKoreanPalette.GOT_IT_DARK) else Color(SignKoreanPalette.MUTED),
+                        )
+                        Box(
+                            modifier =
+                                Modifier
+                                    .width(30.dp)
+                                    .height(76.dp)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .background(Color(SignKoreanPalette.LILAC)),
+                            contentAlignment = Alignment.BottomCenter,
+                        ) {
+                            if (day.count > 0) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height((76f * barProgress).coerceAtLeast(6f).dp)
+                                            .clip(MaterialTheme.shapes.small)
+                                            .background(Color(SignKoreanPalette.GOT_IT)),
+                                )
+                            }
+                        }
                         Text(
                             text = day.date?.dayOfWeek?.getDisplayName(TextStyle.NARROW, locale) ?: day.label,
                             style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Black,
                         )
                     }
                 }

@@ -17,7 +17,7 @@ data class MotionPolicy(
         get() = if (reduceMotion) 0f else 8f
 
     companion object {
-        const val DEFAULT_RATING_DURATION_MILLIS = 220L
+        const val DEFAULT_RATING_DURATION_MILLIS = 420L
         const val REDUCED_RATING_DURATION_MILLIS = 20L
     }
 }
