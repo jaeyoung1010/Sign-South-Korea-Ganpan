@@ -178,7 +178,7 @@ private fun ProgressDashboard(
         modifier = Modifier.fillMaxSize().verticalScroll(scrollState).padding(bottom = 88.dp),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
-        Text(text = stringResource(R.string.progress_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.progress_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Normal)
         Text(text = stringResource(R.string.progress_summary), style = MaterialTheme.typography.bodyLarge)
         if (state.isLoading) {
             GameCard(modifier = Modifier.fillMaxWidth()) {
@@ -258,14 +258,16 @@ private fun WeekChart(week: List<ProgressDayUiModel>) {
                             modifier = Modifier.width(24.dp).height(72.dp),
                             contentAlignment = Alignment.BottomCenter,
                         ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .width(24.dp)
-                                        .height((72f * day.count / maxCount).coerceAtLeast(4f).dp)
-                                        .clip(MaterialTheme.shapes.small)
-                                        .background(Color(SignKoreanPalette.PRIMARY)),
-                            )
+                            if (day.count > 0) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .width(24.dp)
+                                            .height((72f * day.count / maxCount).coerceAtLeast(4f).dp)
+                                            .clip(MaterialTheme.shapes.small)
+                                            .background(Color(SignKoreanPalette.PRIMARY)),
+                                )
+                            }
                         }
                         Text(text = day.localizedLabel(), style = MaterialTheme.typography.labelSmall)
                     }
@@ -294,7 +296,12 @@ private fun CategoryProgress(categories: List<ProgressCategoryUiModel>) {
                     Text(text = category.localizedLabel(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Black)
                     Text(text = "${category.learnedCount}/${category.totalCount}", style = MaterialTheme.typography.labelLarge)
                 }
-                LinearProgressIndicator(progress = { category.ratio }, modifier = Modifier.fillMaxWidth())
+                LinearProgressIndicator(
+                    progress = { category.ratio },
+                    color = Color(SignKoreanPalette.PRIMARY),
+                    trackColor = Color(SignKoreanPalette.SURFACE_STRONG),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }

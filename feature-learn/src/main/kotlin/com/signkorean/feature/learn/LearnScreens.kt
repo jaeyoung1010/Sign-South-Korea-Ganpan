@@ -47,7 +47,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.shape.RoundedCornerShape
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
@@ -301,7 +300,7 @@ fun LearnHomeScreen(
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
         HomeBrandBar(state.streakDays)
-        Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Normal)
         Text(text = stringResource(R.string.learn_ready_description), style = MaterialTheme.typography.bodyLarge)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
         state.pendingCategoryReplacement?.let { category -> CategoryReplacementCard(category, state.isStarting, onAction) }
@@ -313,8 +312,18 @@ fun LearnHomeScreen(
 @Composable
 private fun HomeBrandBar(streakDays: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = stringResource(R.string.learn_brand_name), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-        Text(text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+        Text(
+            text = stringResource(R.string.learn_brand_name),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color(SignKoreanPalette.PRIMARY),
+        )
+        Text(
+            text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color(SignKoreanPalette.BODY),
+        )
     }
 }
 
@@ -438,11 +447,11 @@ private fun CategoryCard(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier.width(156.dp),
-        shape = RoundedCornerShape(20.dp),
+        shape = MaterialTheme.shapes.large,
         color = style.background,
         contentColor = Color(SignKoreanPalette.INK),
-        border = BorderStroke(2.dp, Color(SignKoreanPalette.OUTLINE)),
-        shadowElevation = 2.dp,
+        border = BorderStroke(1.dp, Color(SignKoreanPalette.OUTLINE)),
+        shadowElevation = 0.dp,
     ) {
         Column(
             modifier = Modifier.padding(SignKoreanSpacing.small),
@@ -474,14 +483,7 @@ private fun HomeCategoryUiModel.visualStyle(): CategoryVisualStyle =
     CategoryVisualStyle(
         background =
             when (key) {
-                "LANDMARK" -> Color(0xFFF7F0FF)
-                "NEIGHBORHOOD" -> Color(0xFFE8FBF7)
-                "MARKET" -> Color(0xFFFFF8D8)
-                "TRANSPORT" -> Color(0xFFEAF1FF)
-                "FOOD" -> Color(0xFFFFEEE5)
-                "SHOPPING" -> Color(0xFFFFEAF1)
-                "EVERYDAY" -> Color(0xFFF1F4F8)
-                "NOTICE" -> Color(0xFFFFF0E5)
+                "LANDMARK", "NEIGHBORHOOD", "MARKET", "TRANSPORT", "FOOD", "SHOPPING", "EVERYDAY", "NOTICE" -> Color(SignKoreanPalette.SURFACE_SOFT)
                 else -> Color(SignKoreanPalette.SURFACE)
             },
     )
@@ -492,12 +494,12 @@ private fun CategoryIcon(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val stroke = Color(SignKoreanPalette.OUTLINE)
+    val stroke = Color(SignKoreanPalette.PRIMARY)
     Box(
         modifier =
             modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.White.copy(alpha = 0.5f))
+                .clip(MaterialTheme.shapes.medium)
+                .background(Color(SignKoreanPalette.SURFACE_STRONG))
                 .drawBehind {
                     val line = Stroke(width = 1.8.dp.toPx())
                     val left = size.width * 0.22f
@@ -587,7 +589,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                 text = pluralStringResource(R.plurals.learn_signs_practiced, totalCount, totalCount),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Black,
-                color = Color(SignKoreanPalette.GOT_IT_DARK),
+                color = Color(SignKoreanPalette.PRIMARY),
             )
         }
         GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
@@ -613,7 +615,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                             text = day.count.toString(),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Black,
-                            color = if (day.count > 0) Color(SignKoreanPalette.GOT_IT_DARK) else Color(SignKoreanPalette.MUTED),
+                            color = if (day.count > 0) Color(SignKoreanPalette.PRIMARY) else Color(SignKoreanPalette.MUTED),
                         )
                         Box(
                             modifier =
@@ -621,7 +623,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                                     .width(30.dp)
                                     .height(76.dp)
                                     .clip(MaterialTheme.shapes.small)
-                                    .background(Color(SignKoreanPalette.LILAC)),
+                                    .background(Color(SignKoreanPalette.SURFACE_STRONG)),
                             contentAlignment = Alignment.BottomCenter,
                         ) {
                             if (day.count > 0) {
@@ -631,7 +633,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                                             .fillMaxWidth()
                                             .height((76f * barProgress).coerceAtLeast(6f).dp)
                                             .clip(MaterialTheme.shapes.small)
-                                            .background(Color(SignKoreanPalette.GOT_IT)),
+                                            .background(Color(SignKoreanPalette.PRIMARY)),
                                 )
                             }
                         }
@@ -727,6 +729,8 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     val progressDescription = stringResource(R.string.learn_position, state.position, state.totalCount)
     LinearProgressIndicator(
         progress = { state.progressFraction },
+        color = Color(SignKoreanPalette.PRIMARY),
+        trackColor = Color(SignKoreanPalette.SURFACE_STRONG),
         modifier =
             Modifier
                 .fillMaxWidth()

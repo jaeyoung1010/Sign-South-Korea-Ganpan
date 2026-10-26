@@ -11,23 +11,29 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.signkorean.designsystem.R
 
 object SignKoreanPalette {
-    const val INK: Long = 0xFF201A24
-    const val OUTLINE: Long = 0xFF3B2C43
-    const val BACKGROUND: Long = 0xFFFFF7FD
-    const val SURFACE: Long = 0xFFFFFAFD
-    const val PRIMARY: Long = 0xFFFF5E8E
-    const val PRIMARY_DARK: Long = 0xFFD92C6C
-    const val GOT_IT: Long = 0xFF2DD4BF
-    const val GOT_IT_DARK: Long = 0xFF087F72
-    const val REVIEW: Long = 0xFFFF5E8E
-    const val REVIEW_DARK: Long = 0xFFA91D56
-    const val Y2K_YELLOW: Long = 0xFFFFED85
-    const val LILAC: Long = 0xFFEADCFF
-    const val MUTED: Long = 0xFF62566B
-    const val BORDER: Long = 0xFFD7C5DF
+    const val INK: Long = 0xFF0A0B0D
+    const val OUTLINE: Long = 0xFFDEE1E6
+    const val BACKGROUND: Long = 0xFFFFFFFF
+    const val SURFACE: Long = 0xFFFFFFFF
+    const val SURFACE_SOFT: Long = 0xFFF7F7F7
+    const val SURFACE_STRONG: Long = 0xFFEEF0F3
+    const val SURFACE_DARK: Long = 0xFF0A0B0D
+    const val SURFACE_DARK_ELEVATED: Long = 0xFF16181C
+    const val PRIMARY: Long = 0xFF0052FF
+    const val PRIMARY_DARK: Long = 0xFF003ECC
+    const val GOT_IT: Long = 0xFF05B169
+    const val GOT_IT_DARK: Long = 0xFF038B53
+    const val REVIEW: Long = 0xFFCF202F
+    const val REVIEW_DARK: Long = 0xFFA51724
+    const val Y2K_YELLOW: Long = 0xFFF4B000
+    const val LILAC: Long = 0xFFEEF0F3
+    const val MUTED: Long = 0xFF7C828A
+    const val BODY: Long = 0xFF5B616E
+    const val BORDER: Long = 0xFFDEE1E6
 }
 
 object SignKoreanSpacing {
@@ -43,8 +49,8 @@ object SignKoreanSpacing {
 private val LightColors =
     lightColorScheme(
         primary = Color(SignKoreanPalette.PRIMARY),
-        onPrimary = Color(SignKoreanPalette.INK),
-        secondary = Color(SignKoreanPalette.GOT_IT),
+        onPrimary = Color.White,
+        secondary = Color(SignKoreanPalette.SURFACE_STRONG),
         onSecondary = Color(SignKoreanPalette.INK),
         tertiary = Color(SignKoreanPalette.Y2K_YELLOW),
         onTertiary = Color(SignKoreanPalette.INK),
@@ -53,6 +59,9 @@ private val LightColors =
         surface = Color(SignKoreanPalette.SURFACE),
         onSurface = Color(SignKoreanPalette.INK),
         outline = Color(SignKoreanPalette.OUTLINE),
+        surfaceVariant = Color(SignKoreanPalette.SURFACE_STRONG),
+        onSurfaceVariant = Color(SignKoreanPalette.BODY),
+        outlineVariant = Color(SignKoreanPalette.OUTLINE),
     )
 
 private val Pretendard =
@@ -65,12 +74,12 @@ private val Pretendard =
 private val SignKoreanTypography =
     Typography().run {
         copy(
-            displayLarge = displayLarge.copy(fontFamily = Pretendard),
-            displayMedium = displayMedium.copy(fontFamily = Pretendard),
-            displaySmall = displaySmall.copy(fontFamily = Pretendard),
-            headlineLarge = headlineLarge.copy(fontFamily = Pretendard),
-            headlineMedium = headlineMedium.copy(fontFamily = Pretendard),
-            headlineSmall = headlineSmall.copy(fontFamily = Pretendard),
+            displayLarge = displayLarge.copy(fontFamily = Pretendard, fontWeight = FontWeight.Normal, letterSpacing = (-1.5).sp),
+            displayMedium = displayMedium.copy(fontFamily = Pretendard, fontWeight = FontWeight.Normal, letterSpacing = (-1).sp),
+            displaySmall = displaySmall.copy(fontFamily = Pretendard, fontWeight = FontWeight.Normal, letterSpacing = (-0.5).sp),
+            headlineLarge = headlineLarge.copy(fontFamily = Pretendard, fontWeight = FontWeight.Normal, letterSpacing = (-0.8).sp),
+            headlineMedium = headlineMedium.copy(fontFamily = Pretendard, fontWeight = FontWeight.Normal, letterSpacing = (-0.5).sp),
+            headlineSmall = headlineSmall.copy(fontFamily = Pretendard, fontWeight = FontWeight.Normal),
             titleLarge = titleLarge.copy(fontFamily = Pretendard),
             titleMedium = titleMedium.copy(fontFamily = Pretendard),
             titleSmall = titleSmall.copy(fontFamily = Pretendard),

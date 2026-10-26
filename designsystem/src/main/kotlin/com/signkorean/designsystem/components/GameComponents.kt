@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -52,10 +51,12 @@ fun GameButton(
 ) {
     val (container, content) =
         when (style) {
-            GameButtonStyle.Primary -> Color(SignKoreanPalette.PRIMARY) to Color(SignKoreanPalette.INK)
-            GameButtonStyle.GotIt -> Color(SignKoreanPalette.GOT_IT) to Color(SignKoreanPalette.INK)
-            GameButtonStyle.Review -> Color(SignKoreanPalette.REVIEW) to Color(SignKoreanPalette.INK)
-            GameButtonStyle.Secondary -> Color.White to Color(SignKoreanPalette.INK)
+            GameButtonStyle.Primary,
+            GameButtonStyle.GotIt,
+            -> Color(SignKoreanPalette.PRIMARY) to Color.White
+            GameButtonStyle.Review,
+            GameButtonStyle.Secondary,
+            -> Color(SignKoreanPalette.SURFACE_STRONG) to Color(SignKoreanPalette.INK)
         }
 
     Button(
@@ -64,11 +65,10 @@ fun GameButton(
         modifier =
             modifier
                 .defaultMinSize(minHeight = 48.dp)
-                .heightIn(min = 52.dp)
-                .shadow(3.dp, SignKoreanShapes.medium, clip = false)
+                .heightIn(min = 44.dp)
                 .semantics { role = Role.Button },
-        shape = SignKoreanShapes.medium,
-        border = BorderStroke(2.dp, Color(SignKoreanPalette.OUTLINE)),
+        shape = RoundedCornerShape(100.dp),
+        border = null,
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = container,
@@ -82,7 +82,7 @@ fun GameButton(
                 vertical = SignKoreanSpacing.small,
             ),
     ) {
-        Text(text = text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+        Text(text = text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -90,21 +90,21 @@ fun GameButton(
 fun GameChip(
     text: String,
     modifier: Modifier = Modifier,
-    accent: Color = Color(SignKoreanPalette.Y2K_YELLOW),
+    accent: Color = Color(SignKoreanPalette.SURFACE_STRONG),
 ) {
     Surface(
         modifier = modifier,
         color = accent,
         contentColor = Color(SignKoreanPalette.INK),
         shape = RoundedCornerShape(999.dp),
-        border = BorderStroke(2.dp, Color(SignKoreanPalette.OUTLINE)),
-        shadowElevation = 2.dp,
+        border = null,
+        shadowElevation = 0.dp,
     ) {
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = SignKoreanSpacing.small, vertical = SignKoreanSpacing.xSmall),
             style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Black,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
@@ -115,14 +115,14 @@ fun GameCard(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
-        modifier = modifier.shadow(4.dp, SignKoreanShapes.large, clip = false),
+        modifier = modifier,
         color = Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
         shape = SignKoreanShapes.large,
-        border = BorderStroke(2.dp, Color(SignKoreanPalette.OUTLINE)),
+        border = BorderStroke(1.dp, Color(SignKoreanPalette.OUTLINE)),
     ) {
         Column(
-            modifier = Modifier.padding(SignKoreanSpacing.large),
+            modifier = Modifier.padding(SignKoreanSpacing.xLarge),
             verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
             content = content,
         )
@@ -136,17 +136,17 @@ fun GameSheet(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth().shadow(4.dp, SignKoreanShapes.extraLarge, clip = false),
+        modifier = modifier.fillMaxWidth(),
         color = Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
         shape = SignKoreanShapes.extraLarge,
-        border = BorderStroke(2.dp, Color(SignKoreanPalette.OUTLINE)),
+        border = BorderStroke(1.dp, Color(SignKoreanPalette.OUTLINE)),
     ) {
         Column(
             modifier = Modifier.padding(SignKoreanSpacing.large),
             verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
         ) {
-            Text(text = title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text(text = title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             content()
         }
     }
@@ -161,7 +161,7 @@ fun GameToast(
         modifier = modifier.widthIn(max = 360.dp),
         color = Color(SignKoreanPalette.INK),
         contentColor = Color.White,
-        shape = SignKoreanShapes.medium,
+        shape = RoundedCornerShape(100.dp),
         shadowElevation = 6.dp,
     ) {
         Text(

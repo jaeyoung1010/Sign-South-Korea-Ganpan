@@ -378,8 +378,8 @@ private fun ActiveCard(
 @Composable
 private fun BoxScope.SwipeActionOverlay(overlay: DragOverlay) {
     val isGotIt = overlay == DragOverlay.GotIt
-    val accent = Color(if (isGotIt) SignKoreanPalette.GOT_IT else SignKoreanPalette.REVIEW)
-    val darkAccent = Color(if (isGotIt) SignKoreanPalette.GOT_IT_DARK else SignKoreanPalette.REVIEW_DARK)
+    val accent = Color(if (isGotIt) SignKoreanPalette.PRIMARY else SignKoreanPalette.SURFACE_STRONG)
+    val darkAccent = Color(if (isGotIt) SignKoreanPalette.PRIMARY_DARK else SignKoreanPalette.OUTLINE)
     val label = stringResource(if (isGotIt) R.string.learn_got_it else R.string.learn_review)
     val actionIcon = if (isGotIt) "✓" else "↻"
     var isVisible by remember(overlay) { mutableStateOf(false) }
@@ -415,10 +415,10 @@ private fun BoxScope.SwipeActionOverlay(overlay: DragOverlay) {
                     scaleY = scale
                 }.testTag(SignKoreanTestTags.LEARN_DRAG_OVERLAY),
         color = accent,
-        contentColor = Color(SignKoreanPalette.INK),
+        contentColor = if (isGotIt) Color.White else Color(SignKoreanPalette.INK),
         shape = MaterialTheme.shapes.large,
-        border = BorderStroke(3.dp, darkAccent),
-        shadowElevation = 8.dp,
+        border = BorderStroke(1.dp, darkAccent),
+        shadowElevation = 0.dp,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = SignKoreanSpacing.medium, vertical = SignKoreanSpacing.small),

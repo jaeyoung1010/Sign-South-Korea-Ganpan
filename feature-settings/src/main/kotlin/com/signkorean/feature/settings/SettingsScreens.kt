@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
+import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.GuestAccount
 import com.signkorean.domain.model.PolicyDocument
@@ -176,7 +179,17 @@ private fun SettingsSwitchRow(
             Text(text = label, style = MaterialTheme.typography.bodyLarge)
             Text(text = description, style = MaterialTheme.typography.bodySmall)
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors =
+                SwitchDefaults.colors(
+                    checkedTrackColor = Color(SignKoreanPalette.PRIMARY),
+                    checkedThumbColor = Color.White,
+                    uncheckedTrackColor = Color(SignKoreanPalette.SURFACE_STRONG),
+                    uncheckedThumbColor = Color(SignKoreanPalette.MUTED),
+                ),
+        )
     }
 }
 
