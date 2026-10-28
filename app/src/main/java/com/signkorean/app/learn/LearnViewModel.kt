@@ -354,15 +354,12 @@ class LearnViewModel
                                         ratingDecision = decision,
                                         ratingError = false,
                                     )
-                                showFeedback(
-                                    message =
-                                        if (decision == RatingDecision.GotIt) {
-                                            LearnFeedbackMessage.MarkedGotIt
-                                        } else {
-                                            LearnFeedbackMessage.MarkedReview
-                                        },
-                                    canUndo = true,
-                                )
+                                if (decision == RatingDecision.Review) {
+                                    showFeedback(
+                                        message = LearnFeedbackMessage.MarkedReview,
+                                        canUndo = true,
+                                    )
+                                }
                             }
                         }
 
@@ -407,7 +404,8 @@ class LearnViewModel
 
         fun undoRating() {
             val sessionId = lastRatedSessionId ?: return
-            if (isUndoing || feedbackState.value?.canUndo != true) return
+            val feedback = feedbackState.value
+            if (isUndoing || (feedback != null && !feedback.canUndo)) return
             isUndoing = true
             undoJob =
                 viewModelScope.launch {

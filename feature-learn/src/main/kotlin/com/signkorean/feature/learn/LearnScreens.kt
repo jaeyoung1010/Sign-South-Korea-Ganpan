@@ -195,7 +195,6 @@ data class LearnFeedbackUiState(
 )
 
 enum class LearnFeedbackMessage {
-    MarkedGotIt,
     MarkedReview,
     LastChoiceUndone,
     NothingToUndo,
@@ -315,7 +314,7 @@ private fun HomeBrandBar(
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
             text = stringResource(R.string.learn_brand_name),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Black,
             color = Color(SignKoreanPalette.INK),
         )
@@ -826,7 +825,6 @@ private fun LearnFeedbackHost(
 
 private fun LearnFeedbackMessage.toStringResource(): Int =
     when (this) {
-        LearnFeedbackMessage.MarkedGotIt -> R.string.learn_feedback_marked_got_it
         LearnFeedbackMessage.MarkedReview -> R.string.learn_feedback_marked_review
         LearnFeedbackMessage.LastChoiceUndone -> R.string.learn_feedback_last_choice_undone
         LearnFeedbackMessage.NothingToUndo -> R.string.learn_feedback_nothing_to_undo

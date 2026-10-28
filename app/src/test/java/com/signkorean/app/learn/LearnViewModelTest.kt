@@ -617,7 +617,7 @@ class LearnViewModelTest {
             viewModel.rateCard(RatingDecision.GotIt, RatingInputSource.Gesture)
             runCurrent()
 
-            assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.MarkedGotIt, canUndo = true), viewModel.feedbackState.value)
+            assertNull(viewModel.feedbackState.value)
             viewModel.finishRatingAnimation()
             runCurrent()
             viewModel.rateCard(RatingDecision.Review, RatingInputSource.Keyboard)
