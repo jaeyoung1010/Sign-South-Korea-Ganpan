@@ -78,6 +78,20 @@ class LearnHomeScreenTest {
     }
 
     @Test
+    fun single_day_streak_uses_singular_copy() {
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnHomeScreen(
+                    state = regularHomeState().copy(streakDays = 1),
+                    onAction = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("1 day").assertIsDisplayed()
+    }
+
+    @Test
     fun see_all_opens_the_complete_repository_backed_category_sheet() {
         val reducer = AppNavigationReducer()
         composeRule.setContent {

@@ -1,8 +1,9 @@
 <resources>
-    <string name="learn_ready_title">韓国の街を読んでみましょう</string>
+    <string name="learn_ready_title">韓国の街を読もう</string>
     <string name="learn_ready_description">短い街歩きリーディングを始められます。</string>
     <string name="learn_brand_name">Sign South Korea Ganpan</string>
-    <plurals name="learn_streak_days"><item quantity="other">%1$d日</item></plurals>
+    <string name="learn_streak_day_one">%1$d日</string>
+    <string name="learn_streak_days_other">%1$d日</string>
     <string name="learn_today_session">今日のセッション</string>
     <string name="learn_pick_up">続きから始める</string>
     <plurals name="learn_street_signs"><item quantity="other">%1$d枚の看板</item></plurals>

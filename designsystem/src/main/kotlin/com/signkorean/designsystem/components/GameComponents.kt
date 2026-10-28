@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanShapes
@@ -111,6 +112,7 @@ fun GameChip(
 @Composable
 fun GameCard(
     modifier: Modifier = Modifier,
+    contentPadding: Dp = SignKoreanSpacing.xLarge,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -121,7 +123,7 @@ fun GameCard(
         border = null,
     ) {
         Column(
-            modifier = Modifier.padding(SignKoreanSpacing.xLarge),
+            modifier = Modifier.padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
             content = content,
         )

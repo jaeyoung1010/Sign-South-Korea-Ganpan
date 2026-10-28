@@ -31,7 +31,11 @@ internal fun Modifier.cardPointerInput(
             var releaseSent = false
             try {
                 while (!finished) {
-                    val event = awaitPointerEvent(PointerEventPass.Main)
+                    // Observe the gesture before the card's nested vertical
+                    // scrollable content can consume it. Horizontal swipes
+                    // must remain available even when they start over the
+                    // answer text or photo viewer content.
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
                     val change = event.changes.firstOrNull { it.id == down.id }
                     if (change == null) {
                         onRelease(true, false)

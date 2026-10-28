@@ -232,9 +232,13 @@ private fun ProgressStatCard(
     value: Int,
     modifier: Modifier,
 ) {
-    GameCard(modifier = modifier) {
+    GameCard(modifier = modifier, contentPadding = SignKoreanSpacing.medium) {
         Text(text = value.toString(), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-        Text(text = label, style = MaterialTheme.typography.labelMedium)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 2,
+        )
     }
 }
 

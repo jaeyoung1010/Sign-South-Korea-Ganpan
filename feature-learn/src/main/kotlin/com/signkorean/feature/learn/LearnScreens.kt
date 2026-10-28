@@ -323,7 +323,12 @@ private fun HomeBrandBar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays),
+                text =
+                    if (streakDays == 1) {
+                        stringResource(R.string.learn_streak_day_one, streakDays)
+                    } else {
+                        stringResource(R.string.learn_streak_days_other, streakDays)
+                    },
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
                 color = Color(SignKoreanPalette.BODY),

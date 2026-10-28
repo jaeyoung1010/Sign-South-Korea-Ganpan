@@ -405,6 +405,11 @@ internal fun SignKoreanAppContent(
     onCancelReport: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(AppRoute.Launch)
+    // NavDisplay is synchronized from the ViewModel in an effect. During the
+    // one-frame handoff after a hardware back, the local stack is the source
+    // of truth for what is actually being drawn, so derive the chrome from it
+    // as well. This keeps the bottom tabs attached to the visible destination.
+    val renderedRoute = backStack.lastOrNull() as? AppRoute ?: state.currentRoute
     val entries = entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
                 entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
@@ -512,7 +517,7 @@ internal fun SignKoreanAppContent(
         SignKoreanScreen(
             applySafeDrawingInsets = !state.isViewerVisible,
             bottomInsetColor =
-                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
+                if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     Color(SignKoreanPalette.SURFACE)
                 } else {
                     null
@@ -524,9 +529,9 @@ internal fun SignKoreanAppContent(
                     entryProvider = entries,
                     modifier = Modifier.fillMaxSize().padding(SignKoreanSpacing.large),
                 )
-                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
+                if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     TopLevelTabs(
-                        selectedTab = state.currentRoute.topLevelTab,
+                        selectedTab = renderedRoute.topLevelTab,
                         onAction = onAction,
                         modifier = Modifier.align(Alignment.BottomCenter),
                     )
@@ -948,6 +953,10 @@ private fun BoxScope.AppOverlayHost(
             if (sheet == AppSheet.Report) onCancelReport()
             onAction(AppNavigationAction.Back)
         }
+        // Keep modal dismissal above the activity-level route handler. Text
+        // fields inside a sheet can otherwise consume the first hardware-back
+        // event and leave the user stuck in the modal.
+        BackHandler { dismissSheet() }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             Box(
                 modifier =
