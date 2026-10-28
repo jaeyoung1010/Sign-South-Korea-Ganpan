@@ -178,7 +178,7 @@ private fun ProgressDashboard(
         modifier = Modifier.fillMaxSize().verticalScroll(scrollState).padding(bottom = 88.dp),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
-        Text(text = stringResource(R.string.progress_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Normal)
+        Text(text = stringResource(R.string.progress_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(text = stringResource(R.string.progress_summary), style = MaterialTheme.typography.bodyLarge)
         if (state.isLoading) {
             GameCard(modifier = Modifier.fillMaxWidth()) {
@@ -265,7 +265,7 @@ private fun WeekChart(week: List<ProgressDayUiModel>) {
                                             .width(24.dp)
                                             .height((72f * day.count / maxCount).coerceAtLeast(4f).dp)
                                             .clip(MaterialTheme.shapes.small)
-                                            .background(Color(SignKoreanPalette.PRIMARY)),
+                                            .background(Color(SignKoreanPalette.GOT_IT)),
                                 )
                             }
                         }
@@ -298,8 +298,8 @@ private fun CategoryProgress(categories: List<ProgressCategoryUiModel>) {
                 }
                 LinearProgressIndicator(
                     progress = { category.ratio },
-                    color = Color(SignKoreanPalette.PRIMARY),
-                    trackColor = Color(SignKoreanPalette.SURFACE_STRONG),
+                    color = Color(SignKoreanPalette.GOT_IT),
+                    trackColor = Color(SignKoreanPalette.SURFACE_SOFT),
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

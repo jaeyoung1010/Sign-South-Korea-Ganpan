@@ -415,7 +415,7 @@ private fun BoxScope.SwipeActionOverlay(overlay: DragOverlay) {
                     scaleY = scale
                 }.testTag(SignKoreanTestTags.LEARN_DRAG_OVERLAY),
         color = accent,
-        contentColor = if (isGotIt) Color.White else Color(SignKoreanPalette.INK),
+        contentColor = Color(SignKoreanPalette.INK),
         shape = MaterialTheme.shapes.large,
         border = BorderStroke(1.dp, darkAccent),
         shadowElevation = 0.dp,

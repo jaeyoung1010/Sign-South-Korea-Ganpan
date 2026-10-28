@@ -300,7 +300,7 @@ fun LearnHomeScreen(
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
         HomeBrandBar(state.streakDays)
-        Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Normal)
+        Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(text = stringResource(R.string.learn_ready_description), style = MaterialTheme.typography.bodyLarge)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
         state.pendingCategoryReplacement?.let { category -> CategoryReplacementCard(category, state.isStarting, onAction) }
@@ -315,8 +315,8 @@ private fun HomeBrandBar(streakDays: Int) {
         Text(
             text = stringResource(R.string.learn_brand_name),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color(SignKoreanPalette.PRIMARY),
+            fontWeight = FontWeight.Black,
+            color = Color(SignKoreanPalette.INK),
         )
         Text(
             text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays),
@@ -442,15 +442,14 @@ private fun CategoryCard(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    val style = category.visualStyle()
     Surface(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier.width(156.dp),
         shape = MaterialTheme.shapes.large,
-        color = style.background,
+        color = Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
-        border = BorderStroke(1.dp, Color(SignKoreanPalette.OUTLINE)),
+        border = null,
         shadowElevation = 0.dp,
     ) {
         Column(
@@ -494,7 +493,7 @@ private fun CategoryIcon(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val stroke = Color(SignKoreanPalette.PRIMARY)
+    val stroke = Color(SignKoreanPalette.INK)
     Box(
         modifier =
             modifier
@@ -589,7 +588,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                 text = pluralStringResource(R.plurals.learn_signs_practiced, totalCount, totalCount),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Black,
-                color = Color(SignKoreanPalette.PRIMARY),
+                color = Color(SignKoreanPalette.GOT_IT_DARK),
             )
         }
         GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
@@ -615,7 +614,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                             text = day.count.toString(),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Black,
-                            color = if (day.count > 0) Color(SignKoreanPalette.PRIMARY) else Color(SignKoreanPalette.MUTED),
+                            color = if (day.count > 0) Color(SignKoreanPalette.GOT_IT_DARK) else Color(SignKoreanPalette.MUTED),
                         )
                         Box(
                             modifier =
@@ -633,7 +632,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                                             .fillMaxWidth()
                                             .height((76f * barProgress).coerceAtLeast(6f).dp)
                                             .clip(MaterialTheme.shapes.small)
-                                            .background(Color(SignKoreanPalette.PRIMARY)),
+                                            .background(Color(SignKoreanPalette.GOT_IT)),
                                 )
                             }
                         }
@@ -729,8 +728,8 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     val progressDescription = stringResource(R.string.learn_position, state.position, state.totalCount)
     LinearProgressIndicator(
         progress = { state.progressFraction },
-        color = Color(SignKoreanPalette.PRIMARY),
-        trackColor = Color(SignKoreanPalette.SURFACE_STRONG),
+        color = Color(SignKoreanPalette.GOT_IT),
+        trackColor = Color(SignKoreanPalette.SURFACE_SOFT),
         modifier =
             Modifier
                 .fillMaxWidth()

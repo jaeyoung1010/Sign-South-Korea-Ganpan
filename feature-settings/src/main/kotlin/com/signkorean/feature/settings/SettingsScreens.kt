@@ -185,8 +185,8 @@ private fun SettingsSwitchRow(
             colors =
                 SwitchDefaults.colors(
                     checkedTrackColor = Color(SignKoreanPalette.PRIMARY),
-                    checkedThumbColor = Color.White,
-                    uncheckedTrackColor = Color(SignKoreanPalette.SURFACE_STRONG),
+                    checkedThumbColor = Color(SignKoreanPalette.INK),
+                    uncheckedTrackColor = Color(SignKoreanPalette.SURFACE),
                     uncheckedThumbColor = Color(SignKoreanPalette.MUTED),
                 ),
         )

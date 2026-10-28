@@ -39,14 +39,14 @@ fun GameIconButton(
                 .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
                 .widthIn(min = 48.dp)
                 .heightIn(min = 48.dp)
-                .border(1.dp, Color(SignKoreanPalette.OUTLINE), CircleShape)
+                .border(1.dp, Color(SignKoreanPalette.INK), CircleShape)
                 .semantics {
                     this.contentDescription = contentDescription
                     role = Role.Button
                 },
         colors =
             IconButtonDefaults.iconButtonColors(
-                containerColor = Color(SignKoreanPalette.SURFACE_STRONG),
+                containerColor = Color(SignKoreanPalette.SURFACE),
                 contentColor = Color(SignKoreanPalette.INK),
             ),
         shape = CircleShape,

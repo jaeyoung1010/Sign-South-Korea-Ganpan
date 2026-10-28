@@ -2,7 +2,6 @@
 
 package com.signkorean.designsystem.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -53,10 +52,10 @@ fun GameButton(
         when (style) {
             GameButtonStyle.Primary,
             GameButtonStyle.GotIt,
-            -> Color(SignKoreanPalette.PRIMARY) to Color.White
+            -> Color(SignKoreanPalette.PRIMARY) to Color(SignKoreanPalette.INK)
             GameButtonStyle.Review,
             GameButtonStyle.Secondary,
-            -> Color(SignKoreanPalette.SURFACE_STRONG) to Color(SignKoreanPalette.INK)
+            -> Color(SignKoreanPalette.SURFACE_SOFT) to Color(SignKoreanPalette.INK)
         }
 
     Button(
@@ -67,7 +66,7 @@ fun GameButton(
                 .defaultMinSize(minHeight = 48.dp)
                 .heightIn(min = 44.dp)
                 .semantics { role = Role.Button },
-        shape = RoundedCornerShape(100.dp),
+        shape = SignKoreanShapes.large,
         border = null,
         colors =
             ButtonDefaults.buttonColors(
@@ -119,7 +118,7 @@ fun GameCard(
         color = Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
         shape = SignKoreanShapes.large,
-        border = BorderStroke(1.dp, Color(SignKoreanPalette.OUTLINE)),
+        border = null,
     ) {
         Column(
             modifier = Modifier.padding(SignKoreanSpacing.xLarge),
@@ -140,7 +139,7 @@ fun GameSheet(
         color = Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
         shape = SignKoreanShapes.extraLarge,
-        border = BorderStroke(1.dp, Color(SignKoreanPalette.OUTLINE)),
+        border = null,
     ) {
         Column(
             modifier = Modifier.padding(SignKoreanSpacing.large),
@@ -161,7 +160,7 @@ fun GameToast(
         modifier = modifier.widthIn(max = 360.dp),
         color = Color(SignKoreanPalette.INK),
         contentColor = Color.White,
-        shape = RoundedCornerShape(100.dp),
+        shape = SignKoreanShapes.large,
         shadowElevation = 6.dp,
     ) {
         Text(
