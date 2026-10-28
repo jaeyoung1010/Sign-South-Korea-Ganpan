@@ -47,7 +47,7 @@ class BundleContentAdapter(
         val manifestText = assetSource.readText(MANIFEST_PATH)
         val manifest = decode<ContentManifest>(manifestText, MANIFEST_PATH)
         requireValidation(manifest.contentVersion > 0) { "contentVersion must be positive" }
-        requireValidation(manifest.cardCount == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT cards" }
+        requireValidation(manifest.cardCount > 0) { "cardCount must be positive" }
         requireValidation(manifest.languages.containsAll(REQUIRED_LANGUAGE_TAGS)) { "supported languages must include en and ja" }
         requireValidation(manifest.languages.distinct().size == manifest.languages.size) { "duplicate language in manifest" }
         requireValidation(manifest.languages.all { LanguageTag.parseOrNull(it) != null }) { "manifest contains an invalid BCP-47 language tag" }
@@ -87,7 +87,7 @@ class BundleContentAdapter(
         }
 
         val baseCards = decode<List<BaseCardJson>>(contentTexts.getValue(BASE_CARDS_PATH), BASE_CARDS_PATH)
-        validateBaseCards(baseCards, manifest.contentVersion)
+        validateBaseCards(baseCards, manifest.contentVersion, manifest.cardCount)
         val cardsById = baseCards.associateBy(BaseCardJson::id)
         val localizedJson =
             manifest.languages.associateWith { languageTag ->
@@ -103,6 +103,7 @@ class BundleContentAdapter(
                     cardsById = cardsById,
                     englishCopies = englishCopies,
                     contentVersion = manifest.contentVersion,
+                    cardCount = manifest.cardCount,
                 )
                 copies.map(LocalizedCardCopyJson::toDomain)
             }
@@ -112,19 +113,20 @@ class BundleContentAdapter(
     private fun validateBaseCards(
         cards: List<BaseCardJson>,
         contentVersion: Int,
+        cardCount: Int,
     ) {
-        requireValidation(cards.size == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT base cards" }
+        requireValidation(cards.size == cardCount) { "expected $cardCount base cards" }
         requireValidation(cards.map(BaseCardJson::id).all(String::isNotBlank)) { "card id must not be blank" }
         requireValidation(cards.map(BaseCardJson::id).distinct().size == cards.size) { "duplicate card id" }
-        requireValidation(cards.map(BaseCardJson::order) == (1..REQUIRED_CARD_COUNT).toList()) {
-            "card order must be 1 through $REQUIRED_CARD_COUNT"
+        requireValidation(cards.map(BaseCardJson::order) == (1..cardCount).toList()) {
+            "card order must be 1 through $cardCount"
         }
         cards.forEach { card ->
             requireValidation(card.contentVersion == contentVersion) { "content version mismatch for ${card.id}" }
             requireValidation(card.korean.isNotBlank() && card.category.isNotBlank()) { "missing card text for ${card.id}" }
             validateFocus(card.id, card.focus)
             requireValidation(card.image.reviewStatus in IMAGE_REVIEW_STATUSES) { "invalid image review status for ${card.id}" }
-            validateAsset(card.imageAsset, card.id, ".jpg")
+            validateImageAsset(card.imageAsset, card.id)
             card.typecastAudioAsset?.let { validateAsset(it, card.id, ".mp3") }
         }
         requireValidation(cards.map(BaseCardJson::imageAsset).distinct().size == cards.size) { "duplicate image asset" }
@@ -139,8 +141,9 @@ class BundleContentAdapter(
         cardsById: Map<String, BaseCardJson>,
         englishCopies: Map<String, LocalizedCardCopyJson>,
         contentVersion: Int,
+        cardCount: Int,
     ) {
-        requireValidation(copies.size == REQUIRED_CARD_COUNT) { "expected $REQUIRED_CARD_COUNT $languageTag localized cards" }
+        requireValidation(copies.size == cardCount) { "expected $cardCount $languageTag localized cards" }
         requireValidation(copies.map(LocalizedCardCopyJson::cardId).toSet() == cardsById.keys) {
             "$languageTag localized card IDs do not match base cards"
         }
@@ -212,6 +215,21 @@ class BundleContentAdapter(
         }
     }
 
+    private fun validateImageAsset(
+        path: String,
+        cardId: String,
+    ) {
+        requireValidation(path.startsWith("assets/")) { "invalid asset URI for $cardId" }
+        requireValidation(path.substringAfterLast('/').startsWith(cardId)) { "asset prefix must match card id for $cardId" }
+        requireValidation(path.substringAfterLast('.').lowercase() in IMAGE_EXTENSIONS) {
+            "invalid image asset extension for $cardId"
+        }
+        val androidPath = path.removePrefix("assets/")
+        if (!allowMissingAssets) {
+            requireValidation(assetSource.exists(androidPath)) { "missing asset: $androidPath" }
+        }
+    }
+
     private inline fun <reified T> decode(
         text: String,
         path: String,
@@ -228,7 +246,6 @@ class BundleContentAdapter(
     )
 
     private companion object {
-        const val REQUIRED_CARD_COUNT = 30
         const val MANIFEST_PATH = "content/manifest.json"
         const val BASE_CARDS_PATH = "content/cards.base.json"
         const val ENGLISH_LANGUAGE_TAG = "en"
@@ -242,6 +259,7 @@ class BundleContentAdapter(
         val REQUIRED_LANGUAGE_TAGS = setOf(ENGLISH_LANGUAGE_TAG, JAPANESE_LANGUAGE_TAG)
         val PERCENT_RANGE = 0f..100f
         val IMAGE_REVIEW_STATUSES = setOf("approved", "pending")
+        val IMAGE_EXTENSIONS = setOf("jpg", "jpeg", "png")
         val REVIEW_DATE_PATTERN = Regex("\\d{4}-\\d{2}-\\d{2}")
         val JAPANESE_PRONUNCIATION_PATTERN = Regex("^[\\u30A0-\\u30FFー・\\s]+$")
     }

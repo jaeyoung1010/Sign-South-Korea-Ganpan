@@ -7,18 +7,18 @@ import org.junit.Test
 
 class BundleContentAdapterTest {
     @Test
-    fun `release bundle validates 30 cards 30 images and 20 Typecast files`() {
+    fun `release bundle validates 68 cards 68 images and 20 Typecast files`() {
         val adapter = BundleContentAdapter(ClasspathAssetSource())
 
         val cards = adapter.getCards()
         val report = adapter.validateBundle()
 
-        assertEquals(30, report.cardCount)
-        assertEquals(30, report.imageCount)
+        assertEquals(68, report.cardCount)
+        assertEquals(68, report.imageCount)
         assertEquals(20, report.typecastAudioCount)
         assertEquals(setOf("en", "ja"), report.languages)
         assertEquals(report.cardCount, cards.size)
-        assertEquals((1..30).toList(), cards.map { it.order })
+        assertEquals((1..68).toList(), cards.map { it.order })
         assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
         assertEquals(20, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
         assertTrue(cards.all { it.audioAssetUris.values.all { uri -> uri.startsWith("file:///android_asset/") } })
@@ -184,14 +184,14 @@ class BundleContentAdapterTest {
                     "\"languages\": [\"en\", \"ja\", \"fr\"],\n  \"localizedContent\": {\"en\": \"content/en/cards.json\", \"ja\": \"content/ja/cards.json\", \"fr\": \"content/fr/cards.json\"},",
                 )
                 .replace(
-                    "\"content/ja/cards.json\": \"56552d3d893a34b110333d2cd8d4e2232aa1e48e56317ad30dbbd4439a0c1cc7\"",
+                    "\"content/ja/cards.json\": \"47432ec9343a5da8f5a88f084ebbcfe7b92037f6d66727855b20dff4c681d259\"",
                     "\"content/ja/cards.json\": \"7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
                 )
 
         refreshManifestChecksums(assets)
         val adapter = BundleContentAdapter(FakeAssetSource(assets))
 
-        assertEquals(30, adapter.getLocalizedCopy("fr").size)
+        assertEquals(68, adapter.getLocalizedCopy("fr").size)
         assertEquals(setOf("en", "ja", "fr"), adapter.validateBundle().languages)
     }
 
@@ -211,7 +211,7 @@ class BundleContentAdapterTest {
 
         val adapter = BundleContentAdapter(FakeAssetSource(assets), allowMissingAssets = true)
 
-        assertEquals(30, adapter.getCards().size)
+        assertEquals(68, adapter.getCards().size)
         val card = adapter.getCard("20-seoul-station")
         assertTrue(card?.imageAssetUri?.contains("20-seoul-station.jpg") == true)
         assertTrue(card?.audioAssetUris?.get(VoiceId.TYPECAST_EUNKYUNG)?.contains("20-seoul-station.mp3") == true)

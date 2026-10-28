@@ -29,11 +29,16 @@ internal class ClasspathAssetSource(
 internal fun validAssets(): Map<String, String> {
     val classLoader = checkNotNull(BundleContentAdapterTest::class.java.classLoader)
     val contentPaths = listOf(MANIFEST_PATH, BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH)
+    val baseCardImagePaths =
+        Regex("\\\"imageAsset\\\":\\\"assets/([^\\\"]+)\\\"")
+            .findAll(classLoader.getResource(BASE_CARDS_PATH)?.readText().orEmpty())
+            .map { it.groupValues[1] }
+            .toList()
     val binaryPaths =
         (1..20).flatMap { order ->
             val slug = cardSlugs.getValue(order)
             listOf("signs/generated/$slug.jpg", "audio/eunkyung/$slug.mp3")
-        } + legacySignImagePaths
+        } + baseCardImagePaths + legacySignImagePaths
     return buildMap {
         contentPaths.forEach { path ->
             put(path, classLoader.getResource(path)?.readText() ?: error("Missing test resource: $path"))
