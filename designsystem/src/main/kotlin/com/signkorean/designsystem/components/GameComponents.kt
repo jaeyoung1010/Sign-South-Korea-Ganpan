@@ -113,6 +113,7 @@ fun GameChip(
 fun GameCard(
     modifier: Modifier = Modifier,
     contentPadding: Dp = SignKoreanSpacing.xLarge,
+    contentModifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -123,7 +124,7 @@ fun GameCard(
         border = null,
     ) {
         Column(
-            modifier = Modifier.padding(contentPadding),
+            modifier = contentModifier.padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
             content = content,
         )

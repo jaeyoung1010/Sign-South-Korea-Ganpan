@@ -365,6 +365,7 @@ private fun ActiveCard(
                                 },
                             )
                     },
+            contentModifier = Modifier.fillMaxSize(),
         ) {
             ActiveCardContent(state, onAction, audioState)
         }

@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.BorderStroke
 import com.signkorean.designsystem.components.GameButton
@@ -684,6 +685,7 @@ fun LearnSessionScreen(
         modifier = modifier.fillMaxSize(),
     ) {
         val isCompact = maxHeight <= COMPACT_HEIGHT || LocalDensity.current.fontScale >= LARGE_FONT_SCALE
+        val compactCardHeight = (maxHeight - COMPACT_CARD_RESERVED_HEIGHT).coerceAtLeast(COMPACT_CARD_HEIGHT)
         Column(
             modifier =
                 Modifier
@@ -703,6 +705,7 @@ fun LearnSessionScreen(
                         audioState,
                         reduceMotion,
                         isCompact,
+                        compactCardHeight,
                     )
 
                 LearnSessionUiState.Completed -> LearnCompletedState(onAction)
@@ -741,6 +744,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
     audioState: AudioPlaybackState,
     reduceMotion: Boolean,
     isCompact: Boolean,
+    compactCardHeight: Dp,
 ) {
     Text(
         text = stringResource(R.string.learn_position, state.position, state.totalCount),
@@ -767,7 +771,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .then(if (isCompact) Modifier.height(COMPACT_CARD_HEIGHT) else Modifier.weight(1f)),
+                .then(if (isCompact) Modifier.height(compactCardHeight) else Modifier.weight(1f)),
     )
     feedback?.let { LearnFeedbackHost(it, onAction) }
     if (state.stage == LearnCardStage.Question) {
@@ -833,6 +837,7 @@ private fun LearnFeedbackMessage.toStringResource(): Int =
 
 private val COMPACT_HEIGHT = 600.dp
 private val COMPACT_CARD_HEIGHT = 360.dp
+private val COMPACT_CARD_RESERVED_HEIGHT = 160.dp
 private const val LARGE_FONT_SCALE = 1.5f
 
 @Composable
