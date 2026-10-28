@@ -4,10 +4,10 @@ package com.signkorean.feature.learn
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.signkorean.designsystem.testing.SignKoreanTestTags
@@ -37,6 +36,8 @@ internal fun PhotoSurface(
     contentDescription: String?,
     focus: FocusRect?,
     modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    onClick: (() -> Unit)? = null,
 ) {
     var imageSize by remember(imageAssetUri) { mutableStateOf<PhotoSize?>(null) }
     var hasLoadError by remember(imageAssetUri) { mutableStateOf(imageAssetUri.isBlank()) }
@@ -46,6 +47,7 @@ internal fun PhotoSurface(
             modifier
                 .heightIn(min = MIN_PHOTO_HEIGHT)
                 .background(Color(SignKoreanPalette.INK))
+                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
                 .testTag(SignKoreanTestTags.LEARN_PHOTO),
         contentAlignment = Alignment.Center,
     ) {
@@ -53,7 +55,7 @@ internal fun PhotoSurface(
             AsyncImage(
                 model = imageAssetUri,
                 contentDescription = contentDescription?.takeIf { it.isNotBlank() } ?: stringResource(R.string.learn_photo_alt),
-                contentScale = ContentScale.Fit,
+                contentScale = contentScale,
                 modifier = Modifier.fillMaxSize(),
                 onSuccess = { success ->
                     val image = success.result.image
@@ -66,12 +68,14 @@ internal fun PhotoSurface(
         }
         if (imageSize != null && focus != null) {
             Canvas(modifier = Modifier.fillMaxSize().testTag(SignKoreanTestTags.LEARN_FOCUS_FRAME)) {
+                val container = PhotoSize(size.width, size.height)
+                val image = checkNotNull(imageSize)
                 val frame =
-                    focusFrameInFitForeground(
-                        focus = focus,
-                        container = PhotoSize(size.width, size.height),
-                        image = checkNotNull(imageSize),
-                    )
+                    if (contentScale == ContentScale.Crop) {
+                        focusFrameInCropForeground(focus, container, image)
+                    } else {
+                        focusFrameInFitForeground(focus, container, image)
+                    }
                 drawRect(
                     color = Color(SignKoreanPalette.Y2K_YELLOW),
                     topLeft = Offset(frame.left, frame.top),
@@ -87,16 +91,6 @@ internal fun PhotoSurface(
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
-        Text(
-            text = "↗",
-            modifier =
-                Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(12.dp)
-                    .clearAndSetSemantics {},
-            color = Color.White,
-            style = MaterialTheme.typography.titleLarge,
-        )
     }
 }
 

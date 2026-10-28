@@ -471,6 +471,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
                 .heightIn(min = MIN_PHOTO_HEIGHT)
                 .weight(PHOTO_PORTION)
                 .padding(bottom = SignKoreanSpacing.small),
+            onClick = { onAction(LearnUiAction.ShowImageViewer) },
     )
     val informationScroll = rememberScrollState()
     LaunchedEffect(state.cardId, state.stage) {

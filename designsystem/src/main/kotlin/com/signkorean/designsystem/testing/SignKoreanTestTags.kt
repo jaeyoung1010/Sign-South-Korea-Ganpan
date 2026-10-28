@@ -12,7 +12,6 @@ object SignKoreanTestTags {
     const val LEARN_DRAG_OVERLAY = "learn.card.drag-overlay"
     const val LEARN_KEYBOARD_STAGE = "learn.card.keyboard-stage"
     const val LEARN_PLAY_AUDIO = "learn.audio.play"
-    const val LEARN_ZOOM_IMAGE = "learn.image.zoom"
     const val LEARN_IMAGE_VIEWER = "learn.image.viewer"
     const val LEARN_IMAGE_VIEWER_CLOSE = "learn.image.viewer.close"
     const val LEARN_REPORT_DETAILS = "learn.report.details"

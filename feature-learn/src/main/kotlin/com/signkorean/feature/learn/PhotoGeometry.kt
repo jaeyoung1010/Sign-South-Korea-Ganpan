@@ -1,6 +1,7 @@
 package com.signkorean.feature.learn
 
 import com.signkorean.domain.model.FocusRect
+import kotlin.math.max
 import kotlin.math.min
 
 data class PhotoSize(
@@ -41,6 +42,22 @@ fun fitForegroundBounds(
     )
 }
 
+/** Finds the image bounds for a [androidx.compose.ui.layout.ContentScale.Crop] foreground. */
+fun cropForegroundBounds(
+    container: PhotoSize,
+    image: PhotoSize,
+): PhotoBounds {
+    val scale = max(container.width / image.width, container.height / image.height)
+    val width = image.width * scale
+    val height = image.height * scale
+    return PhotoBounds(
+        left = (container.width - width) / 2f,
+        top = (container.height - height) / 2f,
+        width = width,
+        height = height,
+    )
+}
+
 /** Converts bundle percentage coordinates to the fitted foreground's on-screen pixels. */
 fun focusFrameInFitForeground(
     focus: FocusRect,
@@ -48,6 +65,21 @@ fun focusFrameInFitForeground(
     image: PhotoSize,
 ): PhotoBounds {
     val imageBounds = fitForegroundBounds(container, image)
+    return PhotoBounds(
+        left = imageBounds.left + (focus.x / PERCENT_BASE) * imageBounds.width,
+        top = imageBounds.top + (focus.y / PERCENT_BASE) * imageBounds.height,
+        width = (focus.width / PERCENT_BASE) * imageBounds.width,
+        height = (focus.height / PERCENT_BASE) * imageBounds.height,
+    )
+}
+
+/** Converts bundle percentage coordinates to a cropped foreground's on-screen pixels. */
+fun focusFrameInCropForeground(
+    focus: FocusRect,
+    container: PhotoSize,
+    image: PhotoSize,
+): PhotoBounds {
+    val imageBounds = cropForegroundBounds(container, image)
     return PhotoBounds(
         left = imageBounds.left + (focus.x / PERCENT_BASE) * imageBounds.width,
         top = imageBounds.top + (focus.y / PERCENT_BASE) * imageBounds.height,

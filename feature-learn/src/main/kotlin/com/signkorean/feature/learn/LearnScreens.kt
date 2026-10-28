@@ -777,12 +777,6 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
         )
     }
-    GameButton(
-        text = stringResource(R.string.learn_view_sign_photo),
-        onClick = { onAction(LearnUiAction.ShowImageViewer) },
-        modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE),
-        style = GameButtonStyle.Secondary,
-    )
 }
 
 @Composable

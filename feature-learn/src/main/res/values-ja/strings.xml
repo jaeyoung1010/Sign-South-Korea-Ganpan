@@ -37,7 +37,6 @@
     <string name="learn_more">その他</string>
     <string name="learn_position">%1$d / %2$d</string>
     <string name="learn_show_answer">答えを見る</string>
-    <string name="learn_view_sign_photo">看板の写真を見る</string>
     <string name="learn_undo">元に戻す</string>
     <string name="learn_retry">再試行</string>
     <string name="learn_loading_session">セッションを読み込み中…</string>

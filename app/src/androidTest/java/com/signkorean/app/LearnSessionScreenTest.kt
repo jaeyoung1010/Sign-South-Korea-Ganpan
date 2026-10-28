@@ -296,10 +296,6 @@ class LearnSessionScreenTest {
                             )
                         }
                     assertTrue(artifact.bytes.size >= 4)
-                    if (fontScale >= 1.5f) {
-                        composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE))
-                    }
-                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE).assertIsDisplayed()
                 }
             }
         }
@@ -326,11 +322,25 @@ class LearnSessionScreenTest {
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performClick()
-        composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE))
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ZOOM_IMAGE).assertIsDisplayed()
 
         composeRule.runOnIdle {
             assertEquals(listOf(LearnUiAction.PlayAudio), actions)
+        }
+    }
+
+    @Test
+    fun tapping_the_card_photo_opens_the_full_screen_viewer_action() {
+        val actions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(state = localizedAnswerState("en"), onAction = actions::add)
+            }
+        }
+
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(LearnUiAction.ShowImageViewer), actions)
         }
     }
 
