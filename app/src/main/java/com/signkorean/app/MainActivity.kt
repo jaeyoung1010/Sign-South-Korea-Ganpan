@@ -275,9 +275,6 @@ private fun SignKoreanApp(
                 is SettingsEffect.LanguageChanged -> {
                     legalViewModel.load(force = true)
                     navigationViewModel.dispatch(AppNavigationAction.Back)
-                    navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_language_saved)),
-                    )
                 }
 
                 SettingsEffect.LanguageChangeFailed -> {
@@ -527,6 +524,7 @@ internal fun SignKoreanAppContent(
                 NavDisplay(
                     backStack = backStack,
                     entryProvider = entries,
+                    onBack = { onAction(AppNavigationAction.Back) },
                     modifier = Modifier.fillMaxSize().padding(SignKoreanSpacing.large),
                 )
                 if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
