@@ -427,6 +427,37 @@ class LearnViewModelTest {
         }
 
     @Test
+    fun `keeps the current card visible while the next card is loading`() =
+        runTest {
+            val nextCard = CompletableDeferred<LoadLearnSessionResult>()
+            var calls = 0
+            val viewModel =
+                LearnViewModel(
+                    loadLearnSession =
+                        LoadLearnSession {
+                            calls += 1
+                            if (calls == 1) active(position = 1, total = 2).copy(answerRevealed = true) else nextCard.await()
+                        },
+                    rateCardUseCase = RateCard { RateCardResult.Rated(nextPosition = 1, completed = false) },
+                )
+
+            viewModel.load()
+            advanceUntilIdle()
+            viewModel.rateCard(RatingDecision.GotIt, RatingInputSource.Gesture)
+            advanceUntilIdle()
+
+            viewModel.finishRatingAnimation()
+            runCurrent()
+
+            val loadingNext = assertActive(viewModel.uiState.value)
+            assertTrue(loadingNext.isLoadingNext)
+            assertFalse(loadingNext.isRating)
+            nextCard.complete(active(position = 2, total = 2).copy(answerRevealed = true))
+            advanceUntilIdle()
+            assertFalse(assertActive(viewModel.uiState.value).isLoadingNext)
+        }
+
+    @Test
     fun `accessibility rating uses the same toast and undo transaction as gesture rating`() =
         runTest {
             var receivedSource: RatingInputSource? = null

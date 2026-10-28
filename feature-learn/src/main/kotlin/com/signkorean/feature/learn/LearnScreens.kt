@@ -125,6 +125,7 @@ sealed interface LearnSessionUiState {
         val upcomingCards: List<LearnCardPreviewUiModel> = emptyList(),
         val stage: LearnCardStage = LearnCardStage.Question,
         val isRating: Boolean = false,
+        val isLoadingNext: Boolean = false,
         val ratingDecision: RatingDecision? = null,
         val ratingError: Boolean = false,
     ) : LearnSessionUiState {

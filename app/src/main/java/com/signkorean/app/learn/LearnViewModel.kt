@@ -152,7 +152,10 @@ class LearnViewModel
         val audioState = mutableAudioState.asStateFlow()
         val effects = effectChannel.receiveAsFlow()
 
-        fun load(preserveFeedback: Boolean = false) {
+        fun load(
+            preserveFeedback: Boolean = false,
+            showLoading: Boolean = true,
+        ) {
             stopAudio()
             loadJob?.cancel()
             revealJob?.cancel()
@@ -171,7 +174,20 @@ class LearnViewModel
             }
             isRevealing = false
             isRating = false
-            mutableUiState.value = LearnSessionUiState.Loading
+            if (showLoading) {
+                mutableUiState.value = LearnSessionUiState.Loading
+            } else {
+                val active = mutableUiState.value as? LearnSessionUiState.Active
+                if (active != null) {
+                    mutableUiState.value =
+                        active.copy(
+                            isRating = false,
+                            isLoadingNext = true,
+                            ratingDecision = null,
+                            ratingError = false,
+                        )
+                }
+            }
             loadJob =
                 viewModelScope.launch {
                     try {
@@ -413,7 +429,7 @@ class LearnViewModel
                 effectChannel.trySend(LearnSessionEffect.SessionCompleted(completion))
                 return
             }
-            load(preserveFeedback = true)
+            load(preserveFeedback = true, showLoading = false)
         }
 
         fun undoRating() {

@@ -101,6 +101,7 @@ internal fun LearnCardStack(
     val previewsById = remember(state.cardId, state.upcomingCards) { state.upcomingCards.associateBy(LearnCardPreviewUiModel::cardId) }
     val dragOffsetState = rememberUpdatedState(dragOffsetDp)
     val previewCount = layers.count { it.role != LearnCardLayerRole.Active }
+    val interactionLocked = state.isRating || state.isLoadingNext
     Box(modifier = modifier.testTag(SignKoreanTestTags.LEARN_CARD_STACK)) {
         layers
             .filter { it.role != LearnCardLayerRole.Active }
@@ -123,6 +124,7 @@ internal fun LearnCardStack(
             dragOverlay = dragOverlay,
             ratingDecision = state.ratingDecision,
             isRating = state.isRating,
+            interactionLocked = interactionLocked,
             onAction = onAction,
             audioState = audioState,
             motionPolicy = motionPolicy,
@@ -133,7 +135,7 @@ internal fun LearnCardStack(
                     .cardPointerInput(
                         density = androidx.compose.ui.platform.LocalDensity.current,
                         onMove = { offsetXDp, offsetYDp ->
-                            if (state.isRating) {
+                            if (interactionLocked) {
                                 false
                             } else if (state.stage == LearnCardStage.Question) {
                                 val feedback =
@@ -265,6 +267,7 @@ private fun ActiveCard(
     dragOverlay: DragOverlay?,
     ratingDecision: RatingDecision?,
     isRating: Boolean,
+    interactionLocked: Boolean,
     onAction: (LearnUiAction) -> Unit,
     audioState: AudioPlaybackState,
     motionPolicy: MotionPolicy,
@@ -300,7 +303,7 @@ private fun ActiveCard(
                 .focusRequester(focusRequester)
                 .focusable()
                 .onPreviewKeyEvent { event ->
-                    if (isRating || event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                    if (interactionLocked || event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
                     val key =
                         when (event.key) {
                             Key.DirectionLeft -> CardKeyboardKey.ArrowLeft
@@ -446,7 +449,7 @@ private fun dispatchRatingAction(
     onAction: (LearnUiAction) -> Unit,
     hapticFeedback: androidx.compose.ui.hapticfeedback.HapticFeedback,
 ): Boolean {
-    if (state.stage != LearnCardStage.Answer || state.isRating) return false
+    if (state.stage != LearnCardStage.Answer || state.isRating || state.isLoadingNext) return false
     hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
     onAction(LearnUiAction.RateCard(decision, RatingInputSource.Accessibility))
     return true
