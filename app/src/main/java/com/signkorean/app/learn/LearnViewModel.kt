@@ -189,6 +189,20 @@ class LearnViewModel
                                 }
                             }
                         }
+                        if (result is LoadLearnSessionResult.Active && !result.answerRevealed) {
+                            // Answers are now shown immediately. Persist the reveal
+                            // in the background so rating keeps the same session
+                            // semantics without making the learner tap through an
+                            // extra question screen.
+                            try {
+                                revealAnswerUseCase()
+                            } catch (cancellation: CancellationException) {
+                                throw cancellation
+                            } catch (_: Exception) {
+                                // The answer remains useful even if persistence is
+                                // temporarily unavailable; the next load can retry.
+                            }
+                        }
                         val nextUiState = result.toUiState()
                         mutableUiState.value = nextUiState
                         if (nextUiState is LearnSessionUiState.Active && nextUiState.stage == LearnCardStage.Answer) {
@@ -635,7 +649,10 @@ private fun LoadLearnSessionResult.toUiState(): LearnSessionUiState =
                     ),
                 audioAssetUris = card.audioAssetUris,
                 upcomingCards = upcomingCards.map { LearnCardPreviewUiModel(it.cardId, it.imageAssetUri) },
-                stage = if (answerRevealed) LearnCardStage.Answer else LearnCardStage.Question,
+                // The answer is intentionally visible as soon as a card loads;
+                // the former question/reveal step added friction without helping
+                // the reading flow.
+                stage = LearnCardStage.Answer,
             )
         }
 

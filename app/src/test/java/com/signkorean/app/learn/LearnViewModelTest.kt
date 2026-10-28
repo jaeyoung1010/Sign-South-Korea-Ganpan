@@ -73,11 +73,11 @@ class LearnViewModelTest {
             assertEquals(3, state.position)
             assertEquals(10, state.totalCount)
             assertEquals(.3f, state.progressFraction)
-            assertEquals(LearnCardStage.Question, state.stage)
+            assertEquals(LearnCardStage.Answer, state.stage)
         }
 
     @Test
-    fun `plays the default bundled voice only after answer is visible`() =
+    fun `plays the default bundled voice as soon as the card loads`() =
         runTest {
             val audioPlayer = RecordingAudioPlayer()
             val viewModel =
@@ -87,11 +87,6 @@ class LearnViewModelTest {
                 )
 
             viewModel.load()
-            advanceUntilIdle()
-            viewModel.playAudio()
-            assertTrue(audioPlayer.requests.isEmpty())
-
-            viewModel.revealAnswer()
             advanceUntilIdle()
             viewModel.playAudio()
 
@@ -313,7 +308,7 @@ class LearnViewModelTest {
         }
 
     @Test
-    fun `keeps the question visible when answer persistence rejects a stale card`() =
+    fun `shows the answer even when automatic reveal persistence is unavailable`() =
         runTest {
             val viewModel =
                 LearnViewModel(
@@ -323,10 +318,7 @@ class LearnViewModelTest {
             viewModel.load()
             advanceUntilIdle()
 
-            viewModel.revealAnswer()
-            advanceUntilIdle()
-
-            assertEquals(LearnCardStage.Question, assertActive(viewModel.uiState.value).stage)
+            assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
         }
 
     @Test
