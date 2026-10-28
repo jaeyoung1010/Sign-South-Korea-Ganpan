@@ -692,7 +692,7 @@ fun LearnSessionScreen(
                     .fillMaxWidth()
                     .then(if (isCompact) Modifier.verticalScroll(rememberScrollState()) else Modifier.fillMaxSize())
                     .testTag("screen-learn"),
-            verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
+            verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
         ) {
             LearnTopBar(onAction)
             when (state) {
@@ -837,7 +837,7 @@ private fun LearnFeedbackMessage.toStringResource(): Int =
 
 private val COMPACT_HEIGHT = 600.dp
 private val COMPACT_CARD_HEIGHT = 360.dp
-private val COMPACT_CARD_RESERVED_HEIGHT = 160.dp
+private val COMPACT_CARD_RESERVED_HEIGHT = 96.dp
 private const val LARGE_FONT_SCALE = 1.5f
 
 @Composable

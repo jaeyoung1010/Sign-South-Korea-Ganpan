@@ -26,6 +26,11 @@ data class PhotoBounds(
         get() = top + height
 }
 
+enum class CropVerticalAlignment {
+    Center,
+    Top,
+}
+
 /** Finds the full-image bounds for a [androidx.compose.ui.layout.ContentScale.Fit] foreground. */
 fun fitForegroundBounds(
     container: PhotoSize,
@@ -46,13 +51,19 @@ fun fitForegroundBounds(
 fun cropForegroundBounds(
     container: PhotoSize,
     image: PhotoSize,
+    verticalAlignment: CropVerticalAlignment = CropVerticalAlignment.Center,
 ): PhotoBounds {
     val scale = max(container.width / image.width, container.height / image.height)
     val width = image.width * scale
     val height = image.height * scale
+    val top =
+        when (verticalAlignment) {
+            CropVerticalAlignment.Center -> (container.height - height) / 2f
+            CropVerticalAlignment.Top -> 0f
+        }
     return PhotoBounds(
         left = (container.width - width) / 2f,
-        top = (container.height - height) / 2f,
+        top = top,
         width = width,
         height = height,
     )
@@ -78,8 +89,9 @@ fun focusFrameInCropForeground(
     focus: FocusRect,
     container: PhotoSize,
     image: PhotoSize,
+    verticalAlignment: CropVerticalAlignment = CropVerticalAlignment.Center,
 ): PhotoBounds {
-    val imageBounds = cropForegroundBounds(container, image)
+    val imageBounds = cropForegroundBounds(container, image, verticalAlignment)
     return PhotoBounds(
         left = imageBounds.left + (focus.x / PERCENT_BASE) * imageBounds.width,
         top = imageBounds.top + (focus.y / PERCENT_BASE) * imageBounds.height,

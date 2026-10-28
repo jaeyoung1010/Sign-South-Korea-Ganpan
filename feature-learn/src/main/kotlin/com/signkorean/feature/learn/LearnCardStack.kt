@@ -42,6 +42,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -472,7 +473,9 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
                 .heightIn(min = MIN_PHOTO_HEIGHT)
                 .weight(PHOTO_PORTION)
                 .padding(bottom = SignKoreanSpacing.small),
-            onClick = { onAction(LearnUiAction.ShowImageViewer) },
+        contentScale = ContentScale.Crop,
+        cropVerticalAlignment = CropVerticalAlignment.Top,
+        onClick = { onAction(LearnUiAction.ShowImageViewer) },
     )
     val informationScroll = rememberScrollState()
     LaunchedEffect(state.cardId, state.stage) {
@@ -586,8 +589,8 @@ private fun LearnCardLayer.previewOffset() =
 
 private val PREVIEW_OFFSET = 14.dp
 private val MIN_PHOTO_HEIGHT = 200.dp
-private const val PHOTO_PORTION = .62f
-private const val INFO_PORTION = .38f
+private const val PHOTO_PORTION = .68f
+private const val INFO_PORTION = .32f
 private fun RatingDecision.toOverlay(): DragOverlay =
     when (this) {
         RatingDecision.GotIt -> DragOverlay.GotIt

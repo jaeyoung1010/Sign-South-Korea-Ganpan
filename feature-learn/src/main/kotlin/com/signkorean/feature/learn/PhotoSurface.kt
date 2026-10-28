@@ -37,6 +37,7 @@ internal fun PhotoSurface(
     focus: FocusRect?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
+    cropVerticalAlignment: CropVerticalAlignment = CropVerticalAlignment.Center,
     onClick: (() -> Unit)? = null,
 ) {
     var imageSize by remember(imageAssetUri) { mutableStateOf<PhotoSize?>(null) }
@@ -56,6 +57,12 @@ internal fun PhotoSurface(
                 model = imageAssetUri,
                 contentDescription = contentDescription?.takeIf { it.isNotBlank() } ?: stringResource(R.string.learn_photo_alt),
                 contentScale = contentScale,
+                alignment =
+                    if (cropVerticalAlignment == CropVerticalAlignment.Top) {
+                        Alignment.TopCenter
+                    } else {
+                        Alignment.Center
+                    },
                 modifier = Modifier.fillMaxSize(),
                 onSuccess = { success ->
                     val image = success.result.image
@@ -72,16 +79,22 @@ internal fun PhotoSurface(
                 val image = checkNotNull(imageSize)
                 val frame =
                     if (contentScale == ContentScale.Crop) {
-                        focusFrameInCropForeground(focus, container, image)
+                        focusFrameInCropForeground(focus, container, image, cropVerticalAlignment)
                     } else {
                         focusFrameInFitForeground(focus, container, image)
                     }
-                drawRect(
-                    color = Color(SignKoreanPalette.Y2K_YELLOW),
-                    topLeft = Offset(frame.left, frame.top),
-                    size = Size(frame.width, frame.height),
-                    style = Stroke(width = FOCUS_STROKE_WIDTH.toPx()),
-                )
+                val left = frame.left.coerceIn(0f, container.width)
+                val top = frame.top.coerceIn(0f, container.height)
+                val right = frame.right.coerceIn(0f, container.width)
+                val bottom = frame.bottom.coerceIn(0f, container.height)
+                if (right > left && bottom > top) {
+                    drawRect(
+                        color = Color(SignKoreanPalette.Y2K_YELLOW),
+                        topLeft = Offset(left, top),
+                        size = Size(right - left, bottom - top),
+                        style = Stroke(width = FOCUS_STROKE_WIDTH.toPx()),
+                    )
+                }
             }
         }
         if (hasLoadError) {

@@ -48,4 +48,21 @@ class PhotoGeometryTest {
         assertEquals(bounds.width, frame.width, .001f)
         assertEquals(bounds.height, frame.height, .001f)
     }
+
+    @Test
+    fun `top aligned crop keeps an upper sign focus in the visible photo area`() {
+        val container = PhotoSize(width = 816f, height = 731f)
+        val image = PhotoSize(width = 1122f, height = 1402f)
+        val frame =
+            focusFrameInCropForeground(
+                focus = FocusRect(x = 10f, y = 10f, width = 80f, height = 80f),
+                container = container,
+                image = image,
+                verticalAlignment = CropVerticalAlignment.Top,
+            )
+
+        assertEquals(0f, cropForegroundBounds(container, image, CropVerticalAlignment.Top).top, .001f)
+        assertTrue(frame.top >= 0f)
+        assertTrue(frame.top < container.height)
+    }
 }
