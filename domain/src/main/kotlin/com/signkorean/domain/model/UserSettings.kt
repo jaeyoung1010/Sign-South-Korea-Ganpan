@@ -19,7 +19,6 @@ enum class Interest {
 
 enum class AudioVoice {
     TYPECAST_EUNKYUNG,
-    GEMINI_KORE,
 }
 
 data class UserSettings(
@@ -46,6 +45,6 @@ data class UserSettings(
     companion object {
         const val DEFAULT_SESSION_LENGTH = 20
         const val DEFAULT_LANGUAGE_TAG = "en"
-        val SESSION_LENGTH_OPTIONS = setOf(5, 10, 20)
+        val SESSION_LENGTH_OPTIONS = setOf(5, 10, 20, 30)
     }
 }

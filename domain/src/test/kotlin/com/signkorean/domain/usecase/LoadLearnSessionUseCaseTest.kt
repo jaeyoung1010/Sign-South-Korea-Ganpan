@@ -180,7 +180,7 @@ class LoadLearnSessionUseCaseTest {
                 )
             }
 
-        override fun validateBundle(): BundleValidationReport = BundleValidationReport(20, 20, 0, 0, emptySet())
+        override fun validateBundle(): BundleValidationReport = BundleValidationReport(20, 20, 0, emptySet())
 
         private fun card(index: Int) =
             SignCard(

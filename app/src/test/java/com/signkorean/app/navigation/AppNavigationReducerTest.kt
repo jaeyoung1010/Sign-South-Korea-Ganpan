@@ -48,7 +48,7 @@ class AppNavigationReducerTest {
                     AppNavigationAction.Navigate(AppRoute.Learn),
                     AppNavigationAction.Navigate(AppRoute.Done),
                     AppNavigationAction.SelectTab(AppTopLevelTab.Progress),
-                    AppNavigationAction.SelectTab(AppTopLevelTab.Settings),
+                    AppNavigationAction.Navigate(AppRoute.Settings),
                     AppNavigationAction.Navigate(AppRoute.Legal),
                 ),
             )
@@ -95,7 +95,7 @@ class AppNavigationReducerTest {
         )
         assertEquals(
             AppRoute.Settings,
-            reducer.reduce(state, AppNavigationAction.SelectTab(AppTopLevelTab.Settings)).currentRoute,
+            reducer.reduce(state, AppNavigationAction.Navigate(AppRoute.Settings)).currentRoute,
         )
     }
 
@@ -135,7 +135,7 @@ class AppNavigationReducerTest {
     fun switching_top_level_tabs_keeps_prior_tab_routes_for_back_navigation() {
         val home = AppNavigationUiState(backStack = listOf(AppRoute.Home))
         val progress = reducer.reduce(home, AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
-        val settings = reducer.reduce(progress, AppNavigationAction.SelectTab(AppTopLevelTab.Settings))
+        val settings = reducer.reduce(progress, AppNavigationAction.Navigate(AppRoute.Settings))
 
         assertEquals(AppRoute.Progress, reducer.reduce(settings, AppNavigationAction.Back).currentRoute)
         assertEquals(AppRoute.Home, reducer.reduce(progress, AppNavigationAction.Back).currentRoute)

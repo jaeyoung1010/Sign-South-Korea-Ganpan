@@ -1,9 +1,9 @@
-# Sign Korean 0.1.0
+# Sign South Korea Ganpan 0.1.0
 
 ## Release candidate
 
 - 20 bundled Korean sign cards with English and Japanese localized explanations.
-- 20 Typecast MP3 files and 20 Gemini WAV files are bundled for offline playback.
+- 20 Typecast MP3 files are bundled for offline playback.
 - Learning progress, settings, and policy copies remain in app-private storage.
 - Release builds use R8 and keep signing credentials outside the repository.
 

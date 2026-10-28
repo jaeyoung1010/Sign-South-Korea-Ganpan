@@ -2,7 +2,7 @@
 
 Version 1.0 · Effective 2026-10-21
 
-Sign Korean is a learning prototype for reading Korean signs. Use the examples as educational
+Sign South Korea Ganpan is a learning prototype for reading Korean signs. Use the examples as educational
 material and verify important translations with a trusted source.
 
 The app is provided as-is. You may use the bundled lessons for personal learning, but do not treat

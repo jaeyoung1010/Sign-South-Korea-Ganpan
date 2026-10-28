@@ -1,4 +1,4 @@
-# Sign Korean Android 구현 설계서
+# Sign South Korea Ganpan Android 구현 설계서
 
 | 항목 | 내용 |
 |---|---|
@@ -16,7 +16,7 @@
 
 ## 1. 목적
 
-이 문서는 Sign Korean의 Android 앱을 실제로 구현하기 위한 기술 설계서다. 제품 요구사항과 프로토타입을 Kotlin 코드, 모듈, 포트, 어댑터, 저장 구조, 상태 전이, 다국어 콘텐츠, 테스트와 CI 규칙으로 변환한다.
+이 문서는 Sign South Korea Ganpan의 Android 앱을 실제로 구현하기 위한 기술 설계서다. 제품 요구사항과 프로토타입을 Kotlin 코드, 모듈, 포트, 어댑터, 저장 구조, 상태 전이, 다국어 콘텐츠, 테스트와 CI 규칙으로 변환한다.
 
 핵심 목표는 다음과 같다.
 
@@ -50,7 +50,7 @@
 - 활성 카드 뒤에 다음 두 카드가 보인다.
 - 사진은 핵심 간판을 자르지 않는다.
 - 정답과 토스트는 사진을 덮지 않는다.
-- Typecast 은경과 Gemini Flash Kore 중 하나를 선택한다.
+- Typecast 은경 발음을 재생한다.
 - 20개 카드와 두 음성 세트는 오프라인에서 동작한다.
 
 ## 3. 설계 원칙
@@ -303,7 +303,7 @@ Context처럼 실제로 같은 타입의 의미가 다른 경우에만 qualifier
 - DefaultDispatcher
 - BundledContentJson
 
-Typecast와 Gemini는 동일 인터페이스 구현 두 개로 만들지 않는다. 하나의 BundledAudioCatalog가 VoiceId와 CardId로 자산을 찾는다.
+BundledAudioCatalog가 CardId로 Typecast 발음 자산을 찾는다.
 
 ### 7.4 테스트 binding
 
@@ -322,7 +322,7 @@ Typecast와 Gemini는 동일 인터페이스 구현 두 개로 만들지 않는�
 | CardId | 빈 문자열 금지, 번들 전체에서 고유 |
 | SessionId | 고유 UUID |
 | LanguageTag | BCP 47 형식 |
-| VoiceId | TYPECAST_EUNKYUNG 또는 GEMINI_KORE |
+| VoiceId | TYPECAST_EUNKYUNG |
 | SessionLength | 5, 10, 20 중 하나 |
 | FocusRect | x, y, width, height가 0~100이며 우하단이 100 이하 |
 | ReviewStage | 0~5 또는 Mastered |
@@ -485,7 +485,6 @@ DataStore는 작은 설정에, Room은 관계와 부분 업데이트가 필요�
     assets/content/ja/cards.json
     assets/images/signs/01-hongdae-entrance.webp
     assets/audio/typecast/01-hongdae-entrance.mp3
-    assets/audio/gemini/01-hongdae-entrance.wav
 
 cards.base.json은 언어와 무관한 데이터를 가진다.
 
@@ -676,7 +675,6 @@ AudioAssetKey는 CardId와 VoiceId의 조합이다. BundledAudioCatalog는 manif
 | VoiceId | 자산 |
 |---|---|
 | TYPECAST_EUNKYUNG | MP3 20개 |
-| GEMINI_KORE | WAV 20개 |
 
 앱은 TTS 제공자 API를 호출하지 않는다. 생성 API key, voice API response, 생성 스크립트는 Android app module과 배포 산출물에 포함하지 않는다.
 
@@ -1057,7 +1055,6 @@ Room database 자체는 Android 기기의 in-memory database로 검증하고 mig
 - 카드 20개
 - 이미지 20개 존재·최소 크기
 - Typecast MP3 20개
-- Gemini WAV 20개
 - 파일 prefix와 CardId 일치
 - 중복 경로 0개
 - FocusRect 범위
@@ -1199,7 +1196,7 @@ Review → Undo → 동일 카드 Answer → Got it → DB와 완료 합계 확�
 
 ### E2E-06 음성
 
-Typecast 재생 → Gemini 선택 → 같은 카드 재생 → 앱 재실행 → Gemini 유지.
+Typecast 발음을 재생하고 앱 재실행 후에도 학습 설정이 유지된다.
 
 ### E2E-07 오프라인
 
@@ -1287,7 +1284,7 @@ Due 0, Due 1, Due 복수, permission deny, timezone 변경에서 알림을 확�
 ## 25. 보안과 개인정보 테스트
 
 - git secret scan
-- APK/AAB strings에서 Typecast·Gemini API key pattern scan
+- APK/AAB strings에서 Typecast API key pattern scan
 - BuildConfig와 resources에 key 없음
 - 불필요한 INTERNET permission 검토
 - camera, microphone, location, contacts permission 없음

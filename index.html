@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fff7fd">
-  <title>Sign Korean — Interactive prototype</title>
+  <title>Sign South Korea Ganpan — Interactive prototype</title>
   <style>
     :root {
       --primary: #ff5e8e;
@@ -462,6 +462,7 @@
     .answer-meta span:last-child { color: var(--got); letter-spacing: 0; text-transform: none; }
     .answer-head { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; }
     .answer-head .icon-btn { color: var(--primary); background: var(--primary-soft); }
+    .answer-head .icon-btn:disabled { cursor: not-allowed; opacity: .45; }
     .answer-ko { margin: 0; font-size: 32px; line-height: 1.15; letter-spacing: -.035em; }
     .answer-en { margin: 4px 0 17px; color: var(--muted); font-size: 17px; }
     .learn-card.answer-open .card-hint { color: var(--muted); }
@@ -1002,7 +1003,7 @@
   <main class="prototype-shell">
     <aside class="prototype-panel" aria-label="Prototype navigation">
       <p class="eyebrow">Interactive design file</p>
-      <h1>Sign Korean</h1>
+      <h1>Sign South Korea Ganpan</h1>
       <p class="intro">A tap-and-swipe prototype for learning the Korean found on real streets. Use the shortcuts or follow the full onboarding flow.</p>
       <div class="panel-card">
         <h2>Jump to a screen</h2>
@@ -1107,7 +1108,7 @@
         <section class="screen main-screen" id="screen-home" data-screen="home">
           <div class="status-space"></div>
           <div class="brandbar">
-            <div class="wordmark"><span class="logo-mark"><svg class="icon"><use href="#i-sign"/></svg></span>Sign Korean</div>
+            <div class="wordmark"><span class="logo-mark"><svg class="icon"><use href="#i-sign"/></svg></span>Sign South Korea Ganpan</div>
             <div class="streak"><svg class="icon"><use href="#i-flame"/></svg><span>3 days</span></div>
           </div>
           <div class="content-scroll home-content">
@@ -1115,8 +1116,8 @@
             <p>A short street-reading session is waiting.</p>
             <article class="session-card">
               <p class="session-label">TODAY'S SESSION</p>
-              <h2 id="homeSessionTitle">10 street signs</h2>
-              <p class="meta" id="homeSessionMeta">About 4 minutes</p>
+              <h2 id="homeSessionTitle">30 street signs</h2>
+              <p class="meta" id="homeSessionMeta">About 12 minutes</p>
               <div class="mix-row"><span class="mix-chip">3 review</span><span class="mix-chip">7 new</span></div>
               <button class="primary-btn" id="startSession">Start session</button>
             </article>
@@ -1143,7 +1144,7 @@
         <section class="screen learn-screen" id="screen-learn" data-screen="learn">
           <div class="status-space"></div>
           <div class="learn-top">
-            <div class="appbar"><button class="icon-btn" id="leaveSession" aria-label="Leave session"><svg class="icon"><use href="#i-close"/></svg></button><div class="appbar-title" id="learnCounter">1 of 20</div><button class="icon-btn" id="moreCard" aria-label="More options"><svg class="icon"><use href="#i-more"/></svg></button></div>
+            <div class="appbar"><button class="icon-btn" id="leaveSession" aria-label="Leave session"><svg class="icon"><use href="#i-close"/></svg></button><div class="appbar-title" id="learnCounter">1 of 30</div><button class="icon-btn" id="moreCard" aria-label="More options"><svg class="icon"><use href="#i-more"/></svg></button></div>
             <div class="learn-progress" aria-hidden="true"><span id="learnProgress"></span></div>
           </div>
           <div class="learn-stage" id="learnStage">
@@ -1188,7 +1189,7 @@
           <div class="done-wrap">
             <div class="done-mark"><svg class="icon"><use href="#i-check"/></svg></div>
             <h1>Session complete</h1>
-            <p class="done-number" id="doneTotal">20</p>
+            <p class="done-number" id="doneTotal">30</p>
             <p class="done-label">signs practiced</p>
             <div class="score-grid">
               <div class="score-box got"><small>✓ Got it</small><strong id="doneGot">7</strong></div>
@@ -1218,10 +1219,9 @@
           <div class="content-scroll page-body">
             <p class="settings-section-label">Learning</p>
             <div class="settings-list">
-              <button class="setting-row" id="sessionLength"><span><strong>Session length</strong><small>Choose 5, 10, or 20 signs</small></span><span class="setting-value"><span id="lengthValue">20 signs</span><svg class="icon"><use href="#i-next"/></svg></span></button>
+              <button class="setting-row" id="sessionLength"><span><strong>Session length</strong><small>Choose 5, 10, 20, or 30 signs</small></span><span class="setting-value"><span id="lengthValue">30 signs</span><svg class="icon"><use href="#i-next"/></svg></span></button>
               <div class="setting-row"><span><strong>Show romanization</strong><small>Display pronunciation in Latin letters</small></span><button class="switch" id="romanizationSwitch" role="switch" aria-checked="false" aria-label="Show romanization"></button></div>
               <div class="setting-row"><span><strong>Auto-play audio</strong><small>Play after showing the answer</small></span><button class="switch" id="audioSwitch" role="switch" aria-checked="false" aria-label="Auto-play audio"></button></div>
-              <button class="setting-row" id="voiceSetting"><span><strong>Pronunciation voice</strong><small>Choose a downloaded voice set</small></span><span class="setting-value"><span id="voiceValue">Typecast · 은경</span><svg class="icon"><use href="#i-next"/></svg></span></button>
             </div>
             <p class="settings-section-label">Reminders</p>
             <div class="settings-list"><button class="setting-row" id="reminderSetting"><span><strong>Review reminder</strong><small>Only when signs are ready</small></span><span class="setting-value"><span id="reminderValue">Off</span><svg class="icon"><use href="#i-next"/></svg></span></button></div>
@@ -1276,7 +1276,17 @@
       { word:'제주올레길', roman:'jeju olle-gil', meaning:'Jeju Olle Trail', category:'LANDMARK', image:'assets/signs/generated/17-jeju-olle-trail.jpg', audio:'assets/audio/eunkyung/17-jeju-olle-trail.mp3', focus:[47,13,40,13], words:[['제주','Jeju'],['올레길','Olle walking trail']], note:'제주올레길 is a network of walking routes through coastal scenery, villages, and volcanic landscapes.' },
       { word:'불국사', roman:'bulguksa', meaning:'Bulguksa Temple', category:'LANDMARK', image:'assets/signs/generated/18-bulguksa.jpg', audio:'assets/audio/eunkyung/18-bulguksa.mp3', focus:[51,28,17,11], words:[['불국','Buddha land'],['사','temple']], note:'불국사 in Gyeongju is a celebrated historic temple and UNESCO World Heritage site.' },
       { word:'부산역', roman:'busan-yeok', meaning:'Busan Station', category:'TRANSPORT', image:'assets/signs/generated/19-busan-station.jpg', audio:'assets/audio/eunkyung/19-busan-station.mp3', focus:[51,27,18,12], words:[['부산','Busan'],['역','station']], note:'부산역 is the city’s main KTX rail gateway and a common starting point for a Busan trip.' },
-      { word:'서울역', roman:'seoul-yeok', meaning:'Seoul Station', category:'TRANSPORT', image:'assets/signs/generated/20-seoul-station.jpg', audio:'assets/audio/eunkyung/20-seoul-station.mp3', focus:[38,16,23,12], words:[['서울','Seoul'],['역','station']], note:'서울역 connects KTX, airport rail, subway lines, buses, and central-city neighborhoods.' }
+      { word:'서울역', roman:'seoul-yeok', meaning:'Seoul Station', category:'TRANSPORT', image:'assets/signs/generated/20-seoul-station.jpg', audio:'assets/audio/eunkyung/20-seoul-station.mp3', focus:[38,16,23,12], words:[['서울','Seoul'],['역','station']], note:'서울역 connects KTX, airport rail, subway lines, buses, and central-city neighborhoods.' },
+      { word:'분식', roman:'bunsik', meaning:'Snack bar', category:'FOOD', image:'assets/signs/bunsik.jpg', focus:[31,12,48,20], words:[['분식','casual Korean snack food']], note:'분식 signs commonly mark casual spots for tteokbokki, gimbap, and other quick Korean comfort food.' },
+      { word:'출구', roman:'chulgu', meaning:'Exit', category:'TRANSPORT', image:'assets/signs/exit.jpg', focus:[49,25,28,15], words:[['출','go out'],['구','entrance / opening']], note:'Look for 출구 in stations, malls, and public buildings when you need the way out.' },
+      { word:'약국', roman:'yakguk', meaning:'Pharmacy', category:'EVERYDAY', image:'assets/signs/pharmacy.jpg', focus:[29,15,57,15], words:[['약','medicine'],['국','bureau / office']], note:'약국 is a pharmacy, where you can buy over-the-counter medicine and ask a pharmacist for help.' },
+      { word:'주차 금지', roman:'jucha geumji', meaning:'No parking', category:'NOTICE', image:'assets/signs/no-parking.jpg', focus:[25,22,49,31], words:[['주차','parking'],['금지','prohibited']], note:'주차 금지 means parking is prohibited; it is often posted near entrances and driveways.' },
+      { word:'화장실', roman:'hwajangsil', meaning:'Restroom', category:'EVERYDAY', image:'assets/signs/restroom.jpg', focus:[36,33,35,20], words:[['화장실','restroom']], note:'화장실 is the standard word for a restroom or toilet in public places.' },
+      { word:'편의점', roman:'pyeonuijeom', meaning:'Convenience store', category:'SHOPPING', image:'assets/signs/convenience-store.jpg', focus:[31,14,38,14], words:[['편의','convenience'],['점','shop']], note:'편의점 signs mark convenience stores, usually open late and stocked with snacks, drinks, and everyday items.' },
+      { word:'입구', roman:'ipgu', meaning:'Entrance', category:'EVERYDAY', image:'assets/signs/entrance.jpg', focus:[26,22,32,31], words:[['입','enter'],['구','entrance / opening']], note:'입구 marks the entrance. It is the counterpart to 출구, the exit.' },
+      { word:'영업중', roman:'yeongeop jung', meaning:'Open', category:'SHOPPING', image:'assets/signs/open.jpg', focus:[27,38,47,33], words:[['영업','business'],['중','in progress']], note:'영업중 means a shop is currently open for business.' },
+      { word:'금연', roman:'geumyeon', meaning:'No smoking', category:'NOTICE', image:'assets/signs/no-smoking.jpg', focus:[35,18,35,54], words:[['금','prohibit'],['연','smoking']], note:'금연 marks a smoke-free area. The crossed-out cigarette symbol usually appears with it.' },
+      { word:'세일', roman:'seil', meaning:'Sale', category:'SHOPPING', image:'assets/signs/sale.jpg', focus:[31,25,39,42], words:[['세일','sale']], note:'세일 is a loanword from English and is widely used in Korean shops for a sale or discount event.' }
     ];
 
     const state = {
@@ -1287,13 +1297,9 @@
       answerOpen: false,
       ratings: [],
       history: [],
-      sessionLength: 20,
+      sessionLength: 30,
       romanization: false,
       autoAudio: false,
-      audioVoice: (() => {
-        try { return localStorage.getItem('signKoreanAudioVoice') === 'gemini' ? 'gemini' : 'typecast'; }
-        catch (error) { return 'typecast'; }
-      })(),
       reduceMotion: false,
       reminder: false,
       audioPlayer: null,
@@ -1329,10 +1335,14 @@
 
     function closeToast() { $('#toast').classList.remove('show'); clearTimeout(state.toastTimer); }
 
+    function sessionMinutes(length) {
+      return length === 5 ? 2 : length === 10 ? 4 : length === 20 ? 8 : 12;
+    }
+
     function renderHome() {
       const paused = state.resume && state.index > 0 && state.index < state.sessionLength;
       $('#homeSessionTitle').textContent = paused ? 'Pick up where you left off' : `${state.sessionLength} street signs`;
-      $('#homeSessionMeta').textContent = paused ? `${state.index} of ${state.sessionLength} signs complete` : `About ${state.sessionLength === 5 ? 2 : state.sessionLength === 10 ? 4 : 8} minutes`;
+      $('#homeSessionMeta').textContent = paused ? `${state.index} of ${state.sessionLength} signs complete` : `About ${sessionMinutes(state.sessionLength)} minutes`;
       $('#startSession').textContent = paused ? 'Resume session' : 'Start session';
     }
 
@@ -1373,6 +1383,11 @@
       $('#cardRomanization').classList.toggle('hidden', !state.romanization);
       $('#cardNote').textContent = card.note;
       $('#wordRows').innerHTML = card.words.map(([ko,en]) => `<div class="word-row"><strong lang="ko">${ko}</strong><span>${en}</span></div>`).join('');
+      const playAudio = $('#playAudio');
+      const hasAudio = Boolean(card.audio);
+      playAudio.disabled = !hasAudio;
+      playAudio.setAttribute('aria-label', hasAudio ? 'Play Korean pronunciation' : 'Pronunciation not available for this card');
+      playAudio.title = hasAudio ? 'Play Korean pronunciation' : 'Pronunciation coming soon';
       positionFocusFrame(card);
       $('#questionPanel').classList.toggle('hidden', state.answerOpen);
       $('#answerPanel').classList.toggle('hidden', !state.answerOpen);
@@ -1468,16 +1483,15 @@
         state.audioPlayer.currentTime = 0;
       }
       const card = currentCard();
-      const isGemini = state.audioVoice === 'gemini';
-      const audioSource = isGemini
-        ? card.audio.replace('assets/audio/eunkyung/', 'assets/audio/gemini/').replace(/\.mp3$/, '.wav')
-        : card.audio;
-      const providerName = isGemini ? 'Gemini Flash TTS' : 'Typecast';
-      const audio = new Audio(audioSource);
+      if (!card.audio) {
+        showToast('Pronunciation is coming soon for this card.');
+        return;
+      }
+      const audio = new Audio(card.audio);
       state.audioPlayer = audio;
       audio.addEventListener('error', () => {
         if (state.audioPlayer === audio) state.audioPlayer = null;
-        showToast(`${providerName} audio has not been generated yet.`);
+        showToast('Pronunciation audio has not been generated yet.');
       }, { once: true });
       audio.addEventListener('ended', () => {
         if (state.audioPlayer === audio) state.audioPlayer = null;
@@ -1533,7 +1547,6 @@
     function renderSettings() {
       $('#lengthValue').textContent = `${state.sessionLength} signs`;
       $('#reminderValue').textContent = state.reminder ? '7:00 PM' : 'Off';
-      $('#voiceValue').textContent = state.audioVoice === 'gemini' ? 'Gemini Flash · Kore' : 'Typecast · 은경';
       setSwitch($('#romanizationSwitch'), state.romanization);
       setSwitch($('#audioSwitch'), state.autoAudio);
       setSwitch($('#motionSwitch'), state.reduceMotion);
@@ -1541,26 +1554,9 @@
     function setSwitch(el, value) { el.classList.toggle('on', value); el.setAttribute('aria-checked', String(value)); }
 
     function openSessionLength() {
-      const options = [5,10,20].map(length => `<button class="radio-option ${length === state.sessionLength ? 'selected' : ''}" data-length="${length}"><span><strong>${length} signs</strong><small>About ${length === 5 ? 2 : length === 10 ? 4 : 8} minutes</small></span><span class="dot"></span></button>`).join('');
+      const options = [5,10,20,30].map(length => `<button class="radio-option ${length === state.sessionLength ? 'selected' : ''}" data-length="${length}"><span><strong>${length} signs</strong><small>About ${sessionMinutes(length)} minutes</small></span><span class="dot"></span></button>`).join('');
       openGenericSheet({ title:'Session length', body:'Choose a default. You can change this anytime.', dynamic:`<div class="radio-list">${options}</div>`, actions:[{ label:'Done', type:'primary', onClick:closeGenericSheet }] });
       $$('[data-length]', $('#sheetDynamic')).forEach(option => option.addEventListener('click', () => { state.sessionLength = Number(option.dataset.length); openSessionLength(); renderSettings(); }));
-    }
-
-    function openVoiceSetting() {
-      const voices = [
-        { id:'typecast', name:'Typecast · 은경', note:'Existing downloaded MP3 pronunciation set' },
-        { id:'gemini', name:'Gemini Flash · Kore', note:'Downloaded WAV files generated with Gemini TTS' }
-      ];
-      const options = voices.map(voice => `<button class="radio-option ${voice.id === state.audioVoice ? 'selected' : ''}" data-voice="${voice.id}"><span><strong>${voice.name}</strong><small>${voice.note}</small></span><span class="dot"></span></button>`).join('');
-      openGenericSheet({ title:'Pronunciation voice', body:'Audio is generated in advance and stored in the app. No live streaming is used.', dynamic:`<div class="radio-list">${options}</div>`, actions:[{ label:'Done', type:'primary', onClick:closeGenericSheet }] });
-      $$('[data-voice]', $('#sheetDynamic')).forEach(option => option.addEventListener('click', () => {
-        state.audioVoice = option.dataset.voice;
-        if (state.audioPlayer) { state.audioPlayer.pause(); state.audioPlayer = null; }
-        try { localStorage.setItem('signKoreanAudioVoice', state.audioVoice); } catch (error) {}
-        closeGenericSheet();
-        renderSettings();
-        showToast(state.audioVoice === 'gemini' ? 'Gemini Flash voice selected' : 'Typecast voice selected');
-      }));
     }
 
     function openReminder() {
@@ -1675,7 +1671,6 @@
 
     // Settings
     $('#sessionLength').addEventListener('click', openSessionLength);
-    $('#voiceSetting').addEventListener('click', openVoiceSetting);
     $('#reminderSetting').addEventListener('click', openReminder);
     $('#accountSetting').addEventListener('click', openAccount);
     $('#romanizationSwitch').addEventListener('click', () => { state.romanization = !state.romanization; renderSettings(); showToast(state.romanization ? 'Romanization turned on' : 'Romanization turned off'); });
@@ -1691,13 +1686,13 @@
     $('#reportForm').addEventListener('submit', event => { event.preventDefault(); $('#reportSheet').classList.remove('open'); event.currentTarget.reset(); $('#sendReport').disabled = true; showToast("Thanks. We'll review this card."); });
 
     $('#resetPrototype').addEventListener('click', () => {
-      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:20, romanization:false, autoAudio:false, audioVoice:'typecast', reduceMotion:false, reminder:false, resume:false });
+      Object.assign(state, { level:null, index:0, answerOpen:false, ratings:[], history:[], sessionLength:30, romanization:false, autoAudio:false, reduceMotion:false, reminder:false, resume:false });
       state.interests = new Set();
       $$('.selected').forEach(el => el.classList.remove('selected'));
       $('#levelContinue').disabled = true;
       $('#tutorialContinue').disabled = true;
       $('#tutorialPrompt').classList.remove('hidden'); $('#tutorialAnswer').classList.add('hidden');
-      try { localStorage.removeItem('signKoreanOnboarded'); localStorage.removeItem('signKoreanAudioVoice'); } catch(e) {}
+      try { localStorage.removeItem('signKoreanOnboarded'); } catch(e) {}
       showScreen('welcome');
     });
 

@@ -1,6 +1,6 @@
-# Sign Korean
+# Sign South Korea Ganpan
 
-Sign Korean is an Android app for learning Korean from real-world signs. Product and implementation documents live in [`docs`](docs).
+Sign South Korea Ganpan is an Android app for learning Korean from real-world signs. Product and implementation documents live in [`docs`](docs).
 
 ## Local setup
 

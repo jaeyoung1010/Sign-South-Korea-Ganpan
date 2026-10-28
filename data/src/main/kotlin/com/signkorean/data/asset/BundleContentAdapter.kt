@@ -37,12 +37,7 @@ class BundleContentAdapter(
                     .size,
             typecastAudioCount =
                 validatedBundle.cards
-                    .map { it.audioAssetUris.getValue(VoiceId.TYPECAST_EUNKYUNG) }
-                    .distinct()
-                    .size,
-            geminiAudioCount =
-                validatedBundle.cards
-                    .map { it.audioAssetUris.getValue(VoiceId.GEMINI_KORE) }
+                    .mapNotNull { it.audioAssetUris[VoiceId.TYPECAST_EUNKYUNG] }
                     .distinct()
                     .size,
             languages = validatedBundle.localizedCards.keys,
@@ -130,12 +125,12 @@ class BundleContentAdapter(
             validateFocus(card.id, card.focus)
             requireValidation(card.image.reviewStatus in IMAGE_REVIEW_STATUSES) { "invalid image review status for ${card.id}" }
             validateAsset(card.imageAsset, card.id, ".jpg")
-            validateAsset(card.typecastAudioAsset, card.id, ".mp3")
-            validateAsset(card.geminiAudioAsset, card.id, ".wav")
+            card.typecastAudioAsset?.let { validateAsset(it, card.id, ".mp3") }
         }
         requireValidation(cards.map(BaseCardJson::imageAsset).distinct().size == cards.size) { "duplicate image asset" }
-        requireValidation(cards.map(BaseCardJson::typecastAudioAsset).distinct().size == cards.size) { "duplicate Typecast asset" }
-        requireValidation(cards.map(BaseCardJson::geminiAudioAsset).distinct().size == cards.size) { "duplicate Gemini asset" }
+        requireValidation(cards.mapNotNull(BaseCardJson::typecastAudioAsset).distinct().size == cards.count { it.typecastAudioAsset != null }) {
+            "duplicate Typecast asset"
+        }
     }
 
     private fun validateLocalizedCards(
@@ -233,7 +228,7 @@ class BundleContentAdapter(
     )
 
     private companion object {
-        const val REQUIRED_CARD_COUNT = 20
+        const val REQUIRED_CARD_COUNT = 30
         const val MANIFEST_PATH = "content/manifest.json"
         const val BASE_CARDS_PATH = "content/cards.base.json"
         const val ENGLISH_LANGUAGE_TAG = "en"
@@ -294,8 +289,7 @@ private data class BaseCardJson(
     val imageAsset: String,
     val image: ImageMetadataJson,
     val focus: FocusRectJson,
-    val typecastAudioAsset: String,
-    val geminiAudioAsset: String,
+    val typecastAudioAsset: String? = null,
     val contentVersion: Int,
 ) {
     fun toDomain() =
@@ -307,10 +301,7 @@ private data class BaseCardJson(
             imageAssetUri = androidAssetUri(imageAsset),
             focus = FocusRect(focus.x, focus.y, focus.width, focus.height),
             audioAssetUris =
-                mapOf(
-                    VoiceId.TYPECAST_EUNKYUNG to androidAssetUri(typecastAudioAsset),
-                    VoiceId.GEMINI_KORE to androidAssetUri(geminiAudioAsset),
-                ),
+                buildMap { typecastAudioAsset?.let { put(VoiceId.TYPECAST_EUNKYUNG, androidAssetUri(it)) } },
             contentVersion = contentVersion,
         )
 }

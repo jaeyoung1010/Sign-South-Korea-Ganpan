@@ -20,11 +20,11 @@ class Media3AudioPlayerTest {
         assertEquals("file:///android_asset/audio/eunkyung/01.mp3", factory.current.mediaUri)
         assertEquals(AudioPlaybackState.Playing("card-1", VoiceId.TYPECAST_EUNKYUNG), player.observePlayback().value)
 
-        player.play(request("card-2", VoiceId.GEMINI_KORE, "file:///android_asset/audio/gemini/02.wav"))
+        player.play(request("card-2", VoiceId.TYPECAST_EUNKYUNG, "file:///android_asset/audio/eunkyung/02.mp3"))
         factory.current.emitReady()
 
-        assertEquals("file:///android_asset/audio/gemini/02.wav", factory.current.mediaUri)
-        assertEquals(AudioPlaybackState.Playing("card-2", VoiceId.GEMINI_KORE), player.observePlayback().value)
+        assertEquals("file:///android_asset/audio/eunkyung/02.mp3", factory.current.mediaUri)
+        assertEquals(AudioPlaybackState.Playing("card-2", VoiceId.TYPECAST_EUNKYUNG), player.observePlayback().value)
     }
 
     @Test
@@ -73,17 +73,17 @@ class Media3AudioPlayerTest {
     fun `maps decode and audio focus failures and stop returns to idle`() {
         val factory = RecordingFactory()
         val player = Media3AudioPlayer(factory)
-        player.play(request("card-1", VoiceId.GEMINI_KORE, "file:///android_asset/audio/gemini/01.wav"))
+        player.play(request("card-1", VoiceId.TYPECAST_EUNKYUNG, "file:///android_asset/audio/eunkyung/01.mp3"))
         factory.current.emitDecodeError()
         assertEquals(
-            AudioPlaybackState.Failed("card-1", VoiceId.GEMINI_KORE, AudioPlaybackFailure.Decode),
+            AudioPlaybackState.Failed("card-1", VoiceId.TYPECAST_EUNKYUNG, AudioPlaybackFailure.Decode),
             player.observePlayback().value,
         )
 
-        player.play(request("card-2", VoiceId.GEMINI_KORE, "file:///android_asset/audio/gemini/02.wav"))
+        player.play(request("card-2", VoiceId.TYPECAST_EUNKYUNG, "file:///android_asset/audio/eunkyung/02.mp3"))
         factory.current.emitAudioFocusDenied()
         assertEquals(
-            AudioPlaybackState.Failed("card-2", VoiceId.GEMINI_KORE, AudioPlaybackFailure.AudioFocusDenied),
+            AudioPlaybackState.Failed("card-2", VoiceId.TYPECAST_EUNKYUNG, AudioPlaybackFailure.AudioFocusDenied),
             player.observePlayback().value,
         )
         player.stop()

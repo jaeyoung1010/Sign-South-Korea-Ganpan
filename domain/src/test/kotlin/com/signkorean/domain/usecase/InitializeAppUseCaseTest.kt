@@ -234,7 +234,7 @@ class InitializeAppUseCaseTest {
 
         override fun validateBundle() =
             com.signkorean.domain.model
-                .BundleValidationReport(1, 1, 1, 1, setOf("en"))
+                .BundleValidationReport(1, 1, 1, setOf("en"))
     }
 
     private class MigrationRepository(

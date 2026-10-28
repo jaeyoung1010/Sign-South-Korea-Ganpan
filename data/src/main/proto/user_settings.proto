@@ -26,7 +26,7 @@ enum InterestProto {
 enum AudioVoiceProto {
   AUDIO_VOICE_PROTO_UNSPECIFIED = 0;
   AUDIO_VOICE_PROTO_TYPECAST_EUNKYUNG = 1;
-  AUDIO_VOICE_PROTO_GEMINI_KORE = 2;
+  reserved 2;
 }
 
 message UserSettingsProto {

@@ -12,8 +12,8 @@ const imagePaths = [...cardBlock.matchAll(/image:'([^']+)'/g)].map(match => matc
 const audioPaths = [...cardBlock.matchAll(/audio:'([^']+)'/g)].map(match => match[1]);
 const words = [...cardBlock.matchAll(/\{ word:'([^']+)'/g)].map(match => match[1]);
 
-if (words.length !== 20) failures.push(`- expected 20 learning cards, found ${words.length}`);
-if (new Set(imagePaths).size !== 20) failures.push('- each learning card must use a unique generated image');
+if (words.length !== 30) failures.push(`- expected 30 learning cards, found ${words.length}`);
+if (new Set(imagePaths).size !== 30) failures.push('- each learning card must use a unique image');
 if (new Set(audioPaths).size !== 20) failures.push('- each learning card must use a unique Typecast audio file');
 
 for (const assetPath of [...imagePaths, ...audioPaths]) {
@@ -45,4 +45,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('Card-stack validation passed: 20 generated photo cards, two-card preview stack, non-covering answer region, and 20 Typecast 은경 clips.');
+console.log('Card-stack validation passed: 30 photo cards, two-card preview stack, non-covering answer region, and 20 Typecast 은경 clips.');

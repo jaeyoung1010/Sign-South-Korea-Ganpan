@@ -1,6 +1,5 @@
 <resources>
     <string name="settings_title">設定</string>
-    <string name="settings_voice">音声：%1$s</string>
     <string name="settings_language">言語：%1$s</string>
     <string name="settings_session_length">セッションの長さ：%1$d · 約%2$d分</string>
     <string name="settings_show_romanization">ローマ字を表示</string>
@@ -15,8 +14,6 @@
     <string name="settings_legal">法的情報</string>
     <string name="settings_account_sync">アカウントと同期</string>
     <string name="settings_version">バージョン %1$s</string>
-    <string name="settings_voice_typecast">Typecast · Eunkyung</string>
-    <string name="settings_voice_gemini">Gemini Flash · Kore</string>
     <string name="language_english">English</string>
     <string name="language_japanese">日本語</string>
     <string name="sheet_choose_language">アプリの言語を選択</string>

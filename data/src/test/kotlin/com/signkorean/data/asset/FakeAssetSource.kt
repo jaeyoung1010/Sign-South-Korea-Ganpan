@@ -32,8 +32,8 @@ internal fun validAssets(): Map<String, String> {
     val binaryPaths =
         (1..20).flatMap { order ->
             val slug = cardSlugs.getValue(order)
-            listOf("signs/generated/$slug.jpg", "audio/eunkyung/$slug.mp3", "audio/gemini/$slug.wav")
-        }
+            listOf("signs/generated/$slug.jpg", "audio/eunkyung/$slug.mp3")
+        } + legacySignImagePaths
     return buildMap {
         contentPaths.forEach { path ->
             put(path, classLoader.getResource(path)?.readText() ?: error("Missing test resource: $path"))
@@ -85,4 +85,18 @@ private val cardSlugs =
         18 to "18-bulguksa",
         19 to "19-busan-station",
         20 to "20-seoul-station",
+    )
+
+private val legacySignImagePaths =
+    listOf(
+        "signs/bunsik.jpg",
+        "signs/exit.jpg",
+        "signs/pharmacy.jpg",
+        "signs/no-parking.jpg",
+        "signs/restroom.jpg",
+        "signs/convenience-store.jpg",
+        "signs/entrance.jpg",
+        "signs/open.jpg",
+        "signs/no-smoking.jpg",
+        "signs/sale.jpg",
     )

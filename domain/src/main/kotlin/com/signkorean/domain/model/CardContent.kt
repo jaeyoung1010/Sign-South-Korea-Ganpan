@@ -9,7 +9,6 @@ data class FocusRect(
 
 enum class VoiceId {
     TYPECAST_EUNKYUNG,
-    GEMINI_KORE,
 }
 
 data class SignCard(
@@ -49,6 +48,5 @@ data class BundleValidationReport(
     val cardCount: Int,
     val imageCount: Int,
     val typecastAudioCount: Int,
-    val geminiAudioCount: Int,
     val languages: Set<String>,
 )

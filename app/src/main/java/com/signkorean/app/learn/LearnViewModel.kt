@@ -9,7 +9,6 @@ import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.AudioPlayedEvent
-import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.LearnSessionError
@@ -258,12 +257,13 @@ class LearnViewModel
             active: LearnSessionUiState.Active,
             autoPlay: Boolean,
         ) {
-            val voiceId = userSettings.audioVoice.toVoiceId()
+            val voiceId = VoiceId.TYPECAST_EUNKYUNG
+            val assetUri = active.audioAssetUris[voiceId] ?: return
             val request =
                 AudioPlayRequest(
                     cardId = active.cardId,
                     voiceId = voiceId,
-                    assetUri = active.audioAssetUris[voiceId].orEmpty(),
+                    assetUri = assetUri,
                 )
             var playbackRequested = false
             try {
@@ -676,9 +676,3 @@ private object NoopUserSettingsRepository : UserSettingsRepository {
         return updated
     }
 }
-
-private fun AudioVoice.toVoiceId(): VoiceId =
-    when (this) {
-        AudioVoice.TYPECAST_EUNKYUNG -> VoiceId.TYPECAST_EUNKYUNG
-        AudioVoice.GEMINI_KORE -> VoiceId.GEMINI_KORE
-    }

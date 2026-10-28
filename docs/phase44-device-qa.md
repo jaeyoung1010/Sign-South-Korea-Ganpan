@@ -12,7 +12,7 @@
 | 접근성 | TalkBack, 200% font scale, bold text, high contrast, Reduce motion |
 | 주변기기 | mouse/trackpad, wired/Bluetooth headset |
 | 상태 | offline, background/foreground, process recreation, timezone change |
-| 콘텐츠 | 이미지 20개, Typecast 음성 20개, Gemini 음성 20개, en/ja |
+| 콘텐츠 | 이미지 20개, Typecast 음성 20개, en/ja |
 
 `P0/P1 blockers: 0`
 
@@ -82,7 +82,7 @@
 
 ### QA-11
 
-- Typecast MP3 20개와 Gemini WAV 20개를 각각 재생해 카드 ID 매핑을 확인한다.
+- Typecast MP3 20개를 재생해 카드 ID 매핑을 확인한다.
 - 상태: automated
 - 기대: 40개 파일이 모두 존재하고 provider 선택과 실제 URI가 일치한다.
 

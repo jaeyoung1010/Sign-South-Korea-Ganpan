@@ -2,7 +2,7 @@
 
 Version 1.0 · Effective 2026-10-21
 
-Sign Korean keeps learning progress and preferences in the app's private storage on this device.
+Sign South Korea Ganpan keeps learning progress and preferences in the app's private storage on this device.
 
 The guest experience does not ask for, collect, or retain an email address. The app does not upload
 learning history to a cloud account in this version. Audio playback and bundled sign content are

@@ -120,7 +120,7 @@ export function validateContentGate({ rootDirectory, readText = (filePath) => fs
   }
 
   for (const card of baseCards) {
-    const assetPaths = [card.imageAsset, card.typecastAudioAsset, card.geminiAudioAsset];
+    const assetPaths = [card.imageAsset, card.typecastAudioAsset].filter(Boolean);
     for (const assetPath of assetPaths) {
       const absolutePath = path.join(rootDirectory, assetPath);
       if (!fileExists(absolutePath)) errors.push(`Missing release asset: ${assetPath}`);
@@ -129,7 +129,7 @@ export function validateContentGate({ rootDirectory, readText = (filePath) => fs
     if (card.image?.reviewStatus !== 'approved') warnings.push(`Image review is not approved: ${card.id}`);
   }
 
-  for (const [provider, expectedExtension] of [['eunkyung', '.mp3'], ['gemini', '.wav']]) {
+  for (const [provider, expectedExtension] of [['eunkyung', '.mp3']]) {
     const audioManifest = JSON.parse(readText(path.join(rootDirectory, 'assets', 'audio', provider, 'manifest.json')));
     if (audioManifest.files?.length !== 20) errors.push(`Release ${provider} audio manifest must contain 20 files`);
     for (const file of audioManifest.files ?? []) {

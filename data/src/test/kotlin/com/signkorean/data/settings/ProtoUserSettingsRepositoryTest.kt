@@ -112,7 +112,7 @@ class ProtoUserSettingsRepositoryTest {
                     learningExplanationLanguageTag = "ja",
                     showRomanization = true,
                     autoPlayAudio = true,
-                    audioVoice = AudioVoice.GEMINI_KORE,
+                    audioVoice = AudioVoice.TYPECAST_EUNKYUNG,
                     reduceMotion = true,
                     followSystemReduceMotion = false,
                     reminderEnabled = true,

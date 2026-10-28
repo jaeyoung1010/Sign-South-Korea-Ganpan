@@ -7,22 +7,20 @@ import org.junit.Test
 
 class BundleContentAdapterTest {
     @Test
-    fun `release bundle validates 20 cards 20 images 20 Typecast files and 20 Gemini files`() {
+    fun `release bundle validates 30 cards 30 images and 20 Typecast files`() {
         val adapter = BundleContentAdapter(ClasspathAssetSource())
 
         val cards = adapter.getCards()
         val report = adapter.validateBundle()
 
-        assertEquals(20, report.cardCount)
-        assertEquals(20, report.imageCount)
+        assertEquals(30, report.cardCount)
+        assertEquals(30, report.imageCount)
         assertEquals(20, report.typecastAudioCount)
-        assertEquals(20, report.geminiAudioCount)
         assertEquals(setOf("en", "ja"), report.languages)
         assertEquals(report.cardCount, cards.size)
-        assertEquals((1..20).toList(), cards.map { it.order })
+        assertEquals((1..30).toList(), cards.map { it.order })
         assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
         assertEquals(20, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
-        assertEquals(20, cards.count { VoiceId.GEMINI_KORE in it.audioAssetUris })
         assertTrue(cards.all { it.audioAssetUris.values.all { uri -> uri.startsWith("file:///android_asset/") } })
     }
 
@@ -37,15 +35,15 @@ class BundleContentAdapterTest {
         assertTrue(adapter.getLocalizedCopy("ja").all { it.wordParts.isNotEmpty() })
         assertTrue(adapter.getLocalizedCopy("en").all { it.pronunciationGuide.isNotBlank() })
         assertTrue(adapter.getLocalizedCopy("en").all { it.imageAltTextQuestion.isNotBlank() && it.imageAltTextAnswer.isNotBlank() })
-        assertTrue(adapter.getLocalizedCopy("en").all { !it.reviewer.isNullOrBlank() && it.reviewedAt == "2026-10-21" })
+        assertTrue(adapter.getLocalizedCopy("en").all { it.reviewer == "native-english-review" && !it.reviewedAt.isNullOrBlank() })
         assertTrue(adapter.getLocalizedCopy("ja").all { it.pronunciationGuide.matches(JAPANESE_PRONUNCIATION_PATTERN) })
         assertTrue(adapter.getLocalizedCopy("ja").all { it.imageAltTextQuestion.isNotBlank() && it.imageAltTextAnswer.isNotBlank() })
         assertTrue(
             adapter.getLocalizedCopy("ja").all {
                 it.reviewer == "native-japanese-review" &&
-                    it.reviewedAt == "2026-10-21" &&
+                    !it.reviewedAt.isNullOrBlank() &&
                     it.factReviewer == "korean-fact-review" &&
-                    it.factReviewedAt == "2026-10-21"
+                    !it.factReviewedAt.isNullOrBlank()
             },
         )
         assertTrue(adapter.getLocalizedCopy("ja").all { it.contentVersion == 2 })
@@ -186,21 +184,21 @@ class BundleContentAdapterTest {
                     "\"languages\": [\"en\", \"ja\", \"fr\"],\n  \"localizedContent\": {\"en\": \"content/en/cards.json\", \"ja\": \"content/ja/cards.json\", \"fr\": \"content/fr/cards.json\"},",
                 )
                 .replace(
-                    "\"content/ja/cards.json\": \"7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b\"",
+                    "\"content/ja/cards.json\": \"56552d3d893a34b110333d2cd8d4e2232aa1e48e56317ad30dbbd4439a0c1cc7\"",
                     "\"content/ja/cards.json\": \"7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
                 )
 
         refreshManifestChecksums(assets)
         val adapter = BundleContentAdapter(FakeAssetSource(assets))
 
-        assertEquals(20, adapter.getLocalizedCopy("fr").size)
+        assertEquals(30, adapter.getLocalizedCopy("fr").size)
         assertEquals(setOf("en", "ja", "fr"), adapter.validateBundle().languages)
     }
 
     @Test
-    fun `rejects a missing audio asset`() {
+    fun `rejects a missing Typecast audio asset`() {
         val assets = validAssets().toMutableMap()
-        assets.remove("audio/gemini/20-seoul-station.wav")
+        assets.remove("audio/eunkyung/20-seoul-station.mp3")
 
         assertFailsValidation(assets, "missing asset")
     }
@@ -209,14 +207,14 @@ class BundleContentAdapterTest {
     fun `offline mode keeps cards loadable when one photo and one audio asset are missing`() {
         val assets = validAssets().toMutableMap()
         assets.remove("signs/generated/20-seoul-station.jpg")
-        assets.remove("audio/gemini/20-seoul-station.wav")
+        assets.remove("audio/eunkyung/20-seoul-station.mp3")
 
         val adapter = BundleContentAdapter(FakeAssetSource(assets), allowMissingAssets = true)
 
-        assertEquals(20, adapter.getCards().size)
+        assertEquals(30, adapter.getCards().size)
         val card = adapter.getCard("20-seoul-station")
         assertTrue(card?.imageAssetUri?.contains("20-seoul-station.jpg") == true)
-        assertTrue(card?.audioAssetUris?.get(VoiceId.GEMINI_KORE)?.contains("20-seoul-station.wav") == true)
+        assertTrue(card?.audioAssetUris?.get(VoiceId.TYPECAST_EUNKYUNG)?.contains("20-seoul-station.mp3") == true)
     }
 
     @Test

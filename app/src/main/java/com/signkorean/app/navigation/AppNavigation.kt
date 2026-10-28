@@ -67,12 +67,10 @@ sealed interface AppRoute : NavKey {
 enum class AppTopLevelTab {
     Learn,
     Progress,
-    Settings,
 }
 
 enum class AppSheet {
     Category,
-    Voice,
     SessionLength,
     SessionLeave,
     Report,
@@ -196,7 +194,6 @@ class AppNavigationReducer {
             when (this) {
                 AppTopLevelTab.Learn -> AppRoute.Home
                 AppTopLevelTab.Progress -> AppRoute.Progress
-                AppTopLevelTab.Settings -> AppRoute.Settings
             }
 
     private val LaunchDestination.route: AppRoute

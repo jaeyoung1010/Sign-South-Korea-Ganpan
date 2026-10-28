@@ -86,7 +86,6 @@ import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackState
-import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCompletion
@@ -117,7 +116,6 @@ import com.signkorean.feature.settings.AccountUiState
 import com.signkorean.feature.settings.SettingsScreen
 import com.signkorean.feature.settings.SettingsUiAction
 import com.signkorean.feature.settings.SettingsUiState
-import com.signkorean.feature.settings.displayName
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.time.ZoneId
@@ -264,17 +262,6 @@ private fun SignKoreanApp(
     LaunchedEffect(settingsViewModel) {
         settingsViewModel.effects.collect { effect ->
             when (effect) {
-                is SettingsEffect.VoiceChanged -> {
-                    navigationViewModel.dispatch(AppNavigationAction.Back)
-                    navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast(resources.getString(R.string.toast_voice_saved, resources.getString(effect.voice.appLabelResource))),
-                    )
-                }
-
-                SettingsEffect.VoiceChangeFailed -> {
-                    navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_voice_save_failed)))
-                }
-
                 is SettingsEffect.SessionLengthChanged -> {
                     navigationViewModel.dispatch(
                         AppNavigationAction.ShowToast(resources.getQuantityString(R.plurals.toast_cards_selected, effect.length, effect.length)),
@@ -348,7 +335,6 @@ private fun SignKoreanApp(
         onPlayAudio = learnViewModel::playAudio,
         settingsState = settingsState,
         onSelectLanguage = settingsViewModel::selectLanguage,
-        onSelectVoice = settingsViewModel::selectVoice,
         onSelectSessionLength = settingsViewModel::selectSessionLength,
         onToggleRomanization = settingsViewModel::toggleRomanization,
         onToggleAutoPlay = settingsViewModel::toggleAutoPlay,
@@ -404,7 +390,6 @@ internal fun SignKoreanAppContent(
     onPlayAudio: () -> Unit = {},
     settingsState: SettingsUiState = SettingsUiState(),
     onSelectLanguage: (String) -> Unit = {},
-    onSelectVoice: (AudioVoice) -> Unit = {},
     onSelectSessionLength: (Int) -> Unit = {},
     onToggleRomanization: () -> Unit = {},
     onToggleAutoPlay: () -> Unit = {},
@@ -527,7 +512,7 @@ internal fun SignKoreanAppContent(
         SignKoreanScreen(
             applySafeDrawingInsets = !state.isViewerVisible,
             bottomInsetColor =
-                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Settings)) {
+                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     Color(SignKoreanPalette.SURFACE)
                 } else {
                     null
@@ -539,7 +524,7 @@ internal fun SignKoreanAppContent(
                     entryProvider = entries,
                     modifier = Modifier.fillMaxSize().padding(SignKoreanSpacing.large),
                 )
-                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Settings)) {
+                if (state.currentRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     TopLevelTabs(
                         selectedTab = state.currentRoute.topLevelTab,
                         onAction = onAction,
@@ -560,7 +545,6 @@ internal fun SignKoreanAppContent(
                     onCancelReport = onCancelReport,
                     settingsState = settingsState,
                     onSelectLanguage = onSelectLanguage,
-                    onSelectVoice = onSelectVoice,
                     onSelectSessionLength = onSelectSessionLength,
                     accountState = AccountUiState(),
                 )
@@ -682,7 +666,7 @@ private fun LearnHomeDestination(
                 LearnUiAction.CancelCategoryReplacement -> onCancelCategoryReplacement()
                 LearnUiAction.ShowDeckSheet -> onAction(AppNavigationAction.ShowSheet(AppSheet.Category))
                 LearnUiAction.OpenProgress -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
-                LearnUiAction.OpenSettings -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings))
+                LearnUiAction.OpenSettings -> onAction(AppNavigationAction.Navigate(AppRoute.Settings))
                 else -> Unit
             }
         },
@@ -749,7 +733,7 @@ private fun LearnDestination(
                 }
 
                 LearnUiAction.CheckAnswerFirst -> {
-                    onAction(AppNavigationAction.ShowToast(resources.getString(R.string.toast_reveal_first)))
+                    onRevealAnswer()
                 }
 
                 LearnUiAction.ShowSessionMenu -> {
@@ -805,15 +789,9 @@ private fun Int.estimatedMinutes(): Int =
         5 -> 2
         10 -> 4
         20 -> 8
+        30 -> 12
         else -> 1
     }
-
-private val AudioVoice.appLabelResource: Int
-    get() =
-        when (this) {
-            AudioVoice.TYPECAST_EUNKYUNG -> R.string.voice_typecast
-            AudioVoice.GEMINI_KORE -> R.string.voice_gemini
-        }
 
 @Composable
 private fun SettingsDestination(
@@ -830,7 +808,6 @@ private fun SettingsDestination(
         onAction = { action ->
             when (action) {
                 SettingsUiAction.SelectLanguage -> onAction(AppNavigationAction.ShowSheet(AppSheet.Language))
-                SettingsUiAction.SelectVoice -> onAction(AppNavigationAction.ShowSheet(AppSheet.Voice))
                 SettingsUiAction.SelectSessionLength -> onAction(AppNavigationAction.ShowSheet(AppSheet.SessionLength))
                 SettingsUiAction.ToggleRomanization -> onToggleRomanization()
                 SettingsUiAction.ToggleAutoPlay -> onToggleAutoPlay()
@@ -873,12 +850,6 @@ private fun TopLevelTabs(
                     tab = AppTopLevelTab.Progress,
                     selected = selectedTab == AppTopLevelTab.Progress,
                     onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress)) },
-                )
-                TopLevelTabItem(
-                    label = stringResource(R.string.settings_tab),
-                    tab = AppTopLevelTab.Settings,
-                    selected = selectedTab == AppTopLevelTab.Settings,
-                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Settings)) },
                 )
             }
         }
@@ -948,22 +919,6 @@ private fun BottomTabIcon(
                     drawLine(color, Offset(size.width * x, size.height * 0.8f), Offset(size.width * x, size.height * top), strokeWidth = stroke.width)
                 }
             }
-            AppTopLevelTab.Settings -> {
-                drawCircle(color, radius = size.width * 0.28f, center = center, style = stroke)
-                drawCircle(color, radius = size.width * 0.08f, center = center, style = stroke)
-                repeat(8) { index ->
-                    val angle = Math.toRadians((index * 45.0) - 90.0)
-                    val start = Offset(
-                        center.x + kotlin.math.cos(angle).toFloat() * size.width * 0.31f,
-                        center.y + kotlin.math.sin(angle).toFloat() * size.width * 0.31f,
-                    )
-                    val end = Offset(
-                        center.x + kotlin.math.cos(angle).toFloat() * size.width * 0.43f,
-                        center.y + kotlin.math.sin(angle).toFloat() * size.width * 0.43f,
-                    )
-                    drawLine(color, start, end, strokeWidth = stroke.width)
-                }
-            }
         }
     }
 }
@@ -984,7 +939,6 @@ private fun BoxScope.AppOverlayHost(
     onCancelReport: () -> Unit,
     settingsState: SettingsUiState,
     onSelectLanguage: (String) -> Unit,
-    onSelectVoice: (AudioVoice) -> Unit,
     onSelectSessionLength: (Int) -> Unit,
     accountState: AccountUiState,
 ) {
@@ -1006,7 +960,6 @@ private fun BoxScope.AppOverlayHost(
                 title =
                     when (sheet) {
                         AppSheet.Category -> stringResource(R.string.sheet_all_categories)
-                        AppSheet.Voice -> stringResource(R.string.sheet_choose_voice)
                         AppSheet.SessionLength -> stringResource(R.string.sheet_session_length)
                         AppSheet.SessionLeave -> stringResource(R.string.sheet_leave_session)
                         AppSheet.Report -> stringResource(R.string.sheet_report_card)
@@ -1035,31 +988,10 @@ private fun BoxScope.AppOverlayHost(
                         }
                     }
 
-                    AppSheet.Voice -> {
-                        Text(stringResource(R.string.sheet_choose_pronunciation_voice), style = MaterialTheme.typography.bodyLarge)
-                        AudioVoice.entries.forEach { voice ->
-                            GameButton(
-                                text =
-                                    if (voice == settingsState.selectedVoice) {
-                                        "✓ ${resources.getString(voice.appLabelResource)}"
-                                    } else {
-                                        resources.getString(voice.appLabelResource)
-                                    },
-                                onClick = { onSelectVoice(voice) },
-                                modifier = Modifier.fillMaxWidth().testTag("settings.voice.${voice.name.lowercase()}"),
-                                style =
-                                    if (voice == settingsState.selectedVoice) {
-                                        GameButtonStyle.Primary
-                                    } else {
-                                        GameButtonStyle.Secondary
-                                    },
-                            )
-                        }
-                    }
 
                     AppSheet.SessionLength -> {
                         Text(stringResource(R.string.sheet_session_length_question), style = MaterialTheme.typography.bodyLarge)
-                        listOf(5, 10, 20).forEach { length ->
+                        listOf(5, 10, 20, 30).forEach { length ->
                             GameButton(
                                 text =
                                     if (length == settingsState.sessionLength) {
@@ -1171,6 +1103,10 @@ private fun com.signkorean.feature.learn.HomeCategoryUiModel.labelResource(): In
         "NEIGHBORHOOD" -> com.signkorean.feature.learn.R.string.learn_category_neighborhoods
         "MARKET" -> com.signkorean.feature.learn.R.string.learn_category_markets
         "TRANSPORT" -> com.signkorean.feature.learn.R.string.learn_category_transport
+        "FOOD" -> com.signkorean.feature.learn.R.string.learn_category_food
+        "SHOPPING" -> com.signkorean.feature.learn.R.string.learn_category_shopping
+        "EVERYDAY" -> com.signkorean.feature.learn.R.string.learn_category_everyday
+        "NOTICE" -> com.signkorean.feature.learn.R.string.learn_category_notices
         else -> com.signkorean.feature.learn.R.string.learn_category_landmarks
     }
 
@@ -1233,6 +1169,6 @@ private val AppRoute.topLevelTab: AppTopLevelTab
         when (this) {
             AppRoute.Home -> AppTopLevelTab.Learn
             AppRoute.Progress -> AppTopLevelTab.Progress
-            AppRoute.Settings -> AppTopLevelTab.Settings
+            AppRoute.Settings -> AppTopLevelTab.Learn
             else -> AppTopLevelTab.Learn
         }

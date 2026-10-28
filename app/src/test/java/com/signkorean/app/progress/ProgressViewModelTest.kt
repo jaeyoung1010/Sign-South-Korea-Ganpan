@@ -129,7 +129,7 @@ class ProgressViewModelTest {
                     category = "NEIGHBORHOOD",
                     imageAssetUri = "file:///android_asset/card-1.jpg",
                     focus = FocusRect(0f, 0f, 50f, 50f),
-                    audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "typecast.mp3", VoiceId.GEMINI_KORE to "gemini.wav"),
+                    audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "typecast.mp3"),
                     contentVersion = 1,
                 ),
             copy =

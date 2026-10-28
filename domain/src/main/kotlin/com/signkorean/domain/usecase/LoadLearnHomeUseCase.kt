@@ -56,7 +56,7 @@ class LoadLearnHomeUseCase(
                 label = label,
                 cardCount = count { it.category == key },
             )
-        }
+        }.filter { it.cardCount > 0 }
 
     private fun Int.estimatedMinutes(): Int =
         when (this) {
@@ -74,6 +74,10 @@ class LoadLearnHomeUseCase(
                 "NEIGHBORHOOD" to "Neighborhoods",
                 "MARKET" to "Markets",
                 "TRANSPORT" to "Transport",
+                "FOOD" to "Food",
+                "SHOPPING" to "Shopping",
+                "EVERYDAY" to "Everyday places",
+                "NOTICE" to "Notices",
             )
     }
 }

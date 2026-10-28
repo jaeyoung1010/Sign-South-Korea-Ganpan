@@ -495,6 +495,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
                     sign = state.sign,
                     answer = state.answer,
                     audioState = audioState,
+                    hasAudio = state.audioAssetUris.isNotEmpty(),
                     onPlayAudio = { onAction(LearnUiAction.PlayAudio) },
                 )
             }
@@ -523,6 +524,7 @@ internal fun CardAnswer(
     cardId: String = "",
     sign: String,
     answer: LearnAnswerUiModel,
+    hasAudio: Boolean,
     onPlayAudio: () -> Unit,
     audioState: AudioPlaybackState = AudioPlaybackState.Idle,
 ) {
@@ -539,12 +541,14 @@ internal fun CardAnswer(
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Black,
             )
-            GameIconButton(
-                symbol = if (isPlaying) "■" else "♪",
-                contentDescription = if (isPlaying) stringResource(R.string.learn_playing_pronunciation) else stringResource(R.string.learn_play_pronunciation),
-                onClick = onPlayAudio,
-                modifier = Modifier.testTag(SignKoreanTestTags.LEARN_PLAY_AUDIO),
-            )
+            if (hasAudio) {
+                GameIconButton(
+                    symbol = if (isPlaying) "■" else "♪",
+                    contentDescription = if (isPlaying) stringResource(R.string.learn_playing_pronunciation) else stringResource(R.string.learn_play_pronunciation),
+                    onClick = onPlayAudio,
+                    modifier = Modifier.testTag(SignKoreanTestTags.LEARN_PLAY_AUDIO),
+                )
+            }
         }
         Text(text = sign, style = MaterialTheme.typography.displayMedium)
         Text(text = answer.displayMeaning, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)

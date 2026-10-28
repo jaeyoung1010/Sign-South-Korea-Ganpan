@@ -175,7 +175,7 @@ class ObserveProgressUseCaseTest {
 
         override fun getLocalizedCopy(languageTag: String): List<LocalizedCardCopy> = emptyList()
 
-        override fun validateBundle() = BundleValidationReport(3, 3, 3, 3, setOf("en"))
+        override fun validateBundle() = BundleValidationReport(3, 3, 3, setOf("en"))
 
         private fun card(id: String, category: String) =
             SignCard(id, 0, id, category, "asset://$id", FocusRect(0f, 0f, 1f, 1f), emptyMap(), 1)

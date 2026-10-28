@@ -32,7 +32,6 @@ const requiredRules = [
   'UI string key 100% 존재',
   '20개 카드 LocalizedCardCopy 100% 존재',
   'Typecast MP3 20개',
-  'Gemini WAV 20개'
 ];
 
 for (const rule of requiredRules) requireText('missing implementation rule: ' + rule, rule);
@@ -60,10 +59,10 @@ if (e2eTests < 12) failures.push('- expected at least 12 end-to-end scenarios, f
 const unresolved = design.match(/\b(?:TBD|TODO|FIXME)\b|미정|추후 결정/gi) ?? [];
 if (unresolved.length) failures.push('- unresolved terms: ' + unresolved.join(', '));
 
-const defaultSessionPattern = /sessionLength:\s*20/;
-const resetSessionPattern = /Object\.assign\(state,[\s\S]*?sessionLength:20/;
-if (!defaultSessionPattern.test(prototype)) failures.push('- prototype initial session length is not 20');
-if (!resetSessionPattern.test(prototype)) failures.push('- prototype reset session length is not 20');
+const defaultSessionPattern = /sessionLength:\s*30/;
+const resetSessionPattern = /Object\.assign\(state,[\s\S]*?sessionLength:30/;
+if (!defaultSessionPattern.test(prototype)) failures.push('- prototype initial session length is not 30');
+if (!resetSessionPattern.test(prototype)) failures.push('- prototype reset session length is not 30');
 
 if (failures.length) {
   console.error('Implementation design validation failed:\n' + failures.join('\n'));

@@ -21,7 +21,7 @@ class LoadReviewCardDetailUseCaseTest {
             category = "NEIGHBORHOOD",
             imageAssetUri = "file:///android_asset/card-7.jpg",
             focus = FocusRect(10f, 10f, 50f, 30f),
-            audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "typecast.mp3", VoiceId.GEMINI_KORE to "gemini.wav"),
+            audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "typecast.mp3"),
             contentVersion = 1,
         )
     private val copy =

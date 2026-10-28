@@ -146,17 +146,9 @@ private fun Interest.toProto(): InterestProto =
         Interest.SHOPPING -> InterestProto.INTEREST_PROTO_SHOPPING
     }
 
-private fun AudioVoiceProto.toDomain(): AudioVoice =
-    when (this) {
-        AudioVoiceProto.AUDIO_VOICE_PROTO_GEMINI_KORE -> AudioVoice.GEMINI_KORE
-        else -> AudioVoice.TYPECAST_EUNKYUNG
-    }
+private fun AudioVoiceProto.toDomain(): AudioVoice = AudioVoice.TYPECAST_EUNKYUNG
 
-private fun AudioVoice.toProto(): AudioVoiceProto =
-    when (this) {
-        AudioVoice.TYPECAST_EUNKYUNG -> AudioVoiceProto.AUDIO_VOICE_PROTO_TYPECAST_EUNKYUNG
-        AudioVoice.GEMINI_KORE -> AudioVoiceProto.AUDIO_VOICE_PROTO_GEMINI_KORE
-    }
+private fun AudioVoice.toProto(): AudioVoiceProto = AudioVoiceProto.AUDIO_VOICE_PROTO_TYPECAST_EUNKYUNG
 
 private fun UserSettingsProto.reminderLocalTimeOrDefault(): LocalTime =
     try {

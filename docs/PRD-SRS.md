@@ -1,4 +1,4 @@
-# Sign Korean 통합 PRD·SRS
+# Sign South Korea Ganpan 통합 PRD·SRS
 
 | 항목 | 내용 |
 |---|---|
@@ -15,7 +15,7 @@
 
 ## 1. 문서 목적과 기준 우선순위
 
-이 문서는 Sign Korean의 제품 요구사항 문서(PRD)와 소프트웨어 요구사항 명세서(SRS)를 통합한 Android 앱 개발 기준이다. 제품 목표, 출시 범위, 화면 구조, 기능, 상태, 데이터, Android 구현 방향, 품질 및 인수 조건을 한 문서에 정의한다.
+이 문서는 Sign South Korea Ganpan의 제품 요구사항 문서(PRD)와 소프트웨어 요구사항 명세서(SRS)를 통합한 Android 앱 개발 기준이다. 제품 목표, 출시 범위, 화면 구조, 기능, 상태, 데이터, Android 구현 방향, 품질 및 인수 조건을 한 문서에 정의한다.
 
 기획·디자인·개발·콘텐츠·QA가 해석을 달리할 경우 다음 순서로 판단한다.
 
@@ -30,7 +30,7 @@
 
 ### 2.1 한 문장 정의
 
-Sign Korean은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 간판 사진을 카드로 학습하고, 정답 확인 후 좌우 스와이프로 기억 여부를 분류하는 Android 앱이다.
+Sign South Korea Ganpan은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 간판 사진을 카드로 학습하고, 정답 확인 후 좌우 스와이프로 기억 여부를 분류하는 Android 앱이다.
 
 ### 2.2 해결할 문제
 
@@ -82,7 +82,7 @@ Sign Korean은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 
 1. 첫 사용자가 설명 없이 온보딩을 마치고 첫 세션을 완료한다.
 2. 사용자가 사진 속 한글을 보고 정답과 단어 구성을 이해한다.
 3. 정답 확인 후 왼쪽 `Got it`, 오른쪽 `Review`로 카드를 분류한다.
-4. Typecast 은경과 Gemini Flash Kore 중 발음 음성을 선택한다.
+4. Typecast 은경 발음 음성을 재생한다.
 5. 20개 기본 카드는 이미지와 두 음성 세트를 포함해 오프라인에서 동작한다.
 6. 세션 중단, 프로세스 종료, 기기 회전 후에도 학습 위치를 복구한다.
 7. 진행 화면에서 학습·숙련·복습 상태를 확인한다.
@@ -117,7 +117,7 @@ Sign Korean은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 
 
 | 항목 | 확정값 |
 |---|---|
-| 제품명 | Sign Korean |
+| 제품명 | Sign South Korea Ganpan |
 | 플랫폼 | Android 전용 |
 | UI 언어 | 영어 |
 | 학습 언어 | 한국어 |
@@ -132,7 +132,7 @@ Sign Korean은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 
 | 로마자 표기 | 기본 꺼짐 |
 | 자동 음성 재생 | 기본 꺼짐 |
 | 기본 음성 | Typecast · 은경 |
-| 선택 음성 | Typecast · 은경 / Gemini Flash · Kore |
+| 발음 음성 | Typecast · 은경 |
 | 음성 제공 방식 | 앱에 내려받아 둔 파일 재생, 런타임 TTS API 호출 없음 |
 | 알림 | 기본 꺼짐, 복습 카드가 있을 때만 지정 시간 알림 |
 | 핵심 사용 모드 | 오프라인 우선 |
@@ -222,7 +222,7 @@ Sign Korean은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 
 ### 8.4 음성 변경
 
 1. Settings에서 `Pronunciation voice`를 연다.
-2. `Typecast · 은경` 또는 `Gemini Flash · Kore`를 선택한다.
+2. `Typecast · 은경` 발음을 재생한다.
 3. 선택 시 시트가 닫히고 선택 확인 토스트가 표시된다.
 4. 이후 수동 재생과 자동 재생은 선택한 음성 세트를 사용한다.
 5. 앱을 다시 실행해도 선택값을 유지한다.
@@ -352,7 +352,6 @@ Sign Korean은 한국의 인기 여행지와 거리에서 볼 수 있는 한글 
 | ID | 표시명 | 제공자·음성 | 형식 | 파일 수 |
 |---|---|---|---|---|
 | typecast | Typecast · 은경 | Typecast `은경`, `ssfm-v30` | MP3 | 20 |
-| gemini | Gemini Flash · Kore | Google Gemini Flash TTS `Kore` | WAV 24kHz mono 16-bit | 20 |
 
 두 세트는 각 카드 ID와 일대일로 대응한다. 런타임에 외부 TTS API를 호출하지 않으며 생성용 API 키를 APK, 리소스, BuildConfig, 로그에 포함하지 않는다.
 
@@ -401,7 +400,6 @@ Progress는 다음 정보를 표시한다.
 | Session length | 5 / 10 / 20 | 20 | DataStore |
 | Show romanization | On / Off | Off | DataStore |
 | Auto-play audio | On / Off | Off | DataStore |
-| Pronunciation voice | typecast / gemini | typecast | DataStore |
 | Review reminder | Off / 7:00 PM | Off | DataStore + WorkManager |
 | Reduce in-app motion | On / Off | 시스템 설정을 초기값으로 사용 | DataStore |
 
@@ -464,7 +462,6 @@ Progress는 다음 정보를 표시한다.
 | wordParts | List | 한국어 조각과 영어 풀이의 순서 목록 |
 | streetNoteEn | String | 여행자 관점의 짧은 맥락 |
 | typecastAudio | Resource URI | MP3 파일 |
-| geminiAudio | Resource URI | WAV 파일 |
 | contentVersion | Int | 콘텐츠 마이그레이션용 버전 |
 
 ### 15.3 이미지 정책
@@ -584,7 +581,6 @@ data class Card(
     val wordParts: List<WordPart>,
     val streetNoteEn: String,
     val typecastAudioAsset: String,
-    val geminiAudioAsset: String,
     val contentVersion: Int
 )
 ```
@@ -737,7 +733,6 @@ data class UserSettings(
 | AC-013 | 20번째 카드 판정 | 완료 화면에 정확한 Got it과 Review 합계를 표시한다. |
 | AC-014 | 세션 중 나가기 | 완료 위치를 저장하고 홈에 Resume을 표시한다. |
 | AC-015 | Typecast 선택 후 재생 | 대응 MP3를 재생한다. |
-| AC-016 | Gemini 선택 후 재생 | 대응 WAV를 재생한다. |
 | AC-017 | 음성 선택 후 앱 재실행 | 선택한 음성을 유지한다. |
 | AC-018 | 자동 재생 On에서 정답 열기 | 선택 음성을 한 번 재생한다. |
 | AC-019 | 로마자 표기 On | 정답 상태에만 로마자를 표시한다. |
@@ -806,7 +801,7 @@ Android 1차 출시는 다음 조건을 모두 만족할 때 완료로 본다.
 
 - 이 문서와 기능 명세의 Must 요구사항을 구현했다.
 - 프로토타입과 같은 핵심 시각·인터랙션을 360~480dp에서 재현했다.
-- 20개 카드, 20개 사진, Typecast 20개, Gemini 20개 파일이 검수됐다.
+- 20개 카드, 20개 사진, Typecast 20개 파일이 검수됐다.
 - 자동·수동 QA에서 출시 차단 결함이 없다.
 - 비행기 모드에서 온보딩 이후 전체 학습 흐름을 완료한다.
 - TalkBack만으로 정답 확인, 음성 재생, 판정, 완료가 가능하다.

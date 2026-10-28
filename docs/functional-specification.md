@@ -1,4 +1,4 @@
-# Sign Korean Android 기능 명세서
+# Sign South Korea Ganpan Android 기능 명세서
 
 | 항목 | 내용 |
 |---|---|
@@ -31,7 +31,7 @@
 10. 카드는 기기 프레임 밖의 포인터를 계속 따라가지 않는다.
 11. 보이는 판정 버튼 대신 TalkBack 사용자 지정 액션과 물리 키보드 화살표를 접근성 대체 조작으로 제공한다.
 12. 기본 세션 길이는 20장이며 5·10·20장을 선택할 수 있다.
-13. Typecast 은경과 Gemini Flash Kore를 설정에서 선택한다.
+13. Typecast 은경 발음을 재생한다.
 14. 두 음성 세트는 앱에 저장된 파일을 재생하며 런타임 TTS API를 호출하지 않는다.
 15. 앱은 핵심 학습 흐름을 오프라인에서 완료할 수 있다.
 
@@ -51,7 +51,7 @@
 - 정답 전 판정 차단
 - Undo
 - 이미지 확대
-- Typecast·Gemini 음성 선택과 재생
+- Typecast 음성 재생
 - 자동 음성 재생과 로마자 표기
 - 완료 결과
 - 진행 현황과 복습 카드 상세
@@ -160,7 +160,6 @@ Bottom sheet와 전체 화면 이미지 뷰어는 상위 라우트의 상태로 
 | PROG-02 | Card detail | default |
 | SET-01 | Settings | default |
 | SET-02 | Session length | 5, 10, 20 |
-| SET-03 | Voice | typecast, gemini |
 | SET-04 | Reminder | off, permission-needed, on, denied |
 | ACC-01 | Guest info | local-only |
 | LEGAL-01 | Policy | loading, content, offline, error |
@@ -439,9 +438,6 @@ Settings의 Pronunciation voice는 두 항목을 표시한다.
 | 값 | 표시명 | 파일 |
 |---|---|---|
 | typecast | Typecast · 은경 | assets/audio/eunkyung의 MP3 |
-| gemini | Gemini Flash · Kore | assets/audio/gemini의 WAV |
-
-선택 시 진행 중인 오디오를 중단하고 DataStore에 즉시 저장한다. 시트를 닫고 Typecast voice selected 또는 Gemini Flash voice selected를 표시한다.
 
 각 세트에는 20개 파일이 있어야 하며 카드 ID와 파일 prefix가 일치해야 한다. 파일이 없으면 제공자 이름이 포함된 오류를 표시한다. 음성 생성용 API 키는 앱에서 사용하지 않는다.
 
@@ -583,7 +579,6 @@ Privacy policy와 Terms of use는 각각 실제 문서를 연다.
 | wordParts | 홍대 / 입구 | 한 개 이상 |
 | streetNoteEn | Hongdae 설명 | 영어 |
 | typecastAudio | 01-hongdae-entrance.mp3 | 카드 prefix 일치 |
-| geminiAudio | 01-hongdae-entrance.wav | 카드 prefix 일치 |
 | contentVersion | 1 | 양의 정수 |
 
 카드 수는 20개다. id, order, 이미지, 두 음성 경로는 중복할 수 없다. focus 사각형은 원본 범위를 넘지 않는다. 모든 카드는 두 음성 파일을 가진다.
@@ -623,10 +618,8 @@ Privacy policy와 Terms of use는 각각 실제 문서를 연다.
 | Review 판정 | Marked as Review + Undo |
 | Undo | Last choice undone |
 | Typecast 선택 | Typecast voice selected |
-| Gemini 선택 | Gemini Flash voice selected |
 | 재생 시작 차단 | Tap the audio button again to play. |
 | Typecast 파일 없음 | Typecast audio is unavailable for this sign. |
-| Gemini 파일 없음 | Gemini Flash TTS audio is unavailable for this sign. |
 | 이미지 없음 | Photo unavailable + 정답 학습 유지 |
 | 저장 실패 | We couldn't save that choice. Try again. + Retry |
 | 신고 저장 | Thanks. We'll review this card. |
@@ -683,7 +676,7 @@ Question과 Answer에서 사진을 비교한다. Answer의 정보와 판정 토�
 
 ### P-08 두 음성 선택
 
-Typecast를 선택해 카드 1을 재생한 뒤 Gemini로 바꾸고 같은 카드를 재생한다. 서로 다른 대응 파일이 재생되고 앱 재실행 후 Gemini 선택이 유지된다.
+카드 1의 Typecast 발음을 재생하고 앱 재실행 후에도 학습 설정이 유지되는지 확인한다.
 
 ### P-09 TalkBack 세션
 
@@ -718,7 +711,6 @@ Typecast를 선택해 카드 1을 재생한 뒤 Gemini로 바꾸고 같은 카�
 | AC-19 | 완료 화면의 Got it + Review가 전체 수와 같다. |
 | AC-20 | 로마자 표기는 Answer에서만 보인다. |
 | AC-21 | Typecast 선택 시 20개 MP3 중 현재 카드 파일을 재생한다. |
-| AC-22 | Gemini 선택 시 20개 WAV 중 현재 카드 파일을 재생한다. |
 | AC-23 | 음성 선택은 앱 재실행 후 유지된다. |
 | AC-24 | 자동 재생은 Answer 진입당 한 번만 발생한다. |
 | AC-25 | 재생 실패가 카드 판정과 다음 카드 진행을 막지 않는다. |
@@ -740,7 +732,7 @@ Typecast를 선택해 카드 1을 재생한 뒤 Gemini로 바꾸고 같은 카�
 - [ ] 판정 버튼 없이도 제스처 의미를 이해할 수 있다.
 - [ ] 사진을 가리지 않는 토스트 위치를 정의했다.
 - [ ] bottom sheet, 키보드, 큰 글자, TalkBack 포커스 상태를 정의했다.
-- [ ] Typecast와 Gemini의 선택·선택됨·오류 상태를 정의했다.
+- [ ] Typecast 발음 재생·오류 상태를 정의했다.
 - [ ] Reduce motion 버전을 정의했다.
 
 ### 17.2 Android 개발자

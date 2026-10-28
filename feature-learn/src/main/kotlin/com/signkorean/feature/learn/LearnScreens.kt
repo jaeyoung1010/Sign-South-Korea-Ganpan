@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -60,7 +59,6 @@ import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.RatingInputSource
 import java.time.LocalDate
-import java.time.format.TextStyle
 import com.signkorean.domain.model.VoiceId
 
 data class LearnHomeUiState(
@@ -299,7 +297,7 @@ fun LearnHomeScreen(
                 .testTag("screen-home"),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
-        HomeBrandBar(state.streakDays)
+        HomeBrandBar(state.streakDays, onOpenSettings = { onAction(LearnUiAction.OpenSettings) })
         Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(text = stringResource(R.string.learn_ready_description), style = MaterialTheme.typography.bodyLarge)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
@@ -310,7 +308,10 @@ fun LearnHomeScreen(
 }
 
 @Composable
-private fun HomeBrandBar(streakDays: Int) {
+private fun HomeBrandBar(
+    streakDays: Int,
+    onOpenSettings: () -> Unit,
+) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
             text = stringResource(R.string.learn_brand_name),
@@ -318,12 +319,23 @@ private fun HomeBrandBar(streakDays: Int) {
             fontWeight = FontWeight.Black,
             color = Color(SignKoreanPalette.INK),
         )
-        Text(
-            text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays),
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color(SignKoreanPalette.BODY),
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = pluralStringResource(R.plurals.learn_streak_days, streakDays, streakDays),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color(SignKoreanPalette.BODY),
+            )
+            GameIconButton(
+                symbol = "⚙",
+                contentDescription = stringResource(R.string.learn_open_settings),
+                onClick = onOpenSettings,
+                modifier = Modifier.testTag("home-open-settings"),
+            )
+        }
     }
 }
 
@@ -402,6 +414,10 @@ private fun String.labelResource(): Int =
         "NEIGHBORHOOD" -> R.string.learn_category_neighborhoods
         "MARKET" -> R.string.learn_category_markets
         "TRANSPORT" -> R.string.learn_category_transport
+        "FOOD" -> R.string.learn_category_food
+        "SHOPPING" -> R.string.learn_category_shopping
+        "EVERYDAY" -> R.string.learn_category_everyday
+        "NOTICE" -> R.string.learn_category_notices
         else -> R.string.learn_category_landmarks
     }
 
@@ -572,13 +588,16 @@ private fun HomeCategoryUiModel.localizedLabel(): String =
             "NEIGHBORHOOD" -> R.string.learn_category_neighborhoods
             "MARKET" -> R.string.learn_category_markets
             "TRANSPORT" -> R.string.learn_category_transport
+            "FOOD" -> R.string.learn_category_food
+            "SHOPPING" -> R.string.learn_category_shopping
+            "EVERYDAY" -> R.string.learn_category_everyday
+            "NOTICE" -> R.string.learn_category_notices
             else -> R.string.learn_category_landmarks
         },
     )
 
 @Composable
 private fun WeekSection(week: List<WeekActivityUiModel>) {
-    val locale = LocalConfiguration.current.locales[0]
     val maxCount = week.maxOfOrNull { it.count }?.coerceAtLeast(1) ?: 1
     val totalCount = week.sumOf { it.count }
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
@@ -637,7 +656,7 @@ private fun WeekSection(week: List<WeekActivityUiModel>) {
                             }
                         }
                         Text(
-                            text = day.date?.dayOfWeek?.getDisplayName(TextStyle.NARROW, locale) ?: day.label,
+                            text = day.label,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Black,
                         )

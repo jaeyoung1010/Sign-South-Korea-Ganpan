@@ -1,6 +1,6 @@
 {
   "contentVersion": 2,
-  "cardCount": 20,
+  "cardCount": 30,
   "languages": ["en", "ja"],
   "localizedContent": {
     "en": "content/en/cards.json",
@@ -15,8 +15,8 @@
     "ja": "korean-fact-reviewed"
   },
   "checksums": {
-    "content/cards.base.json": "8045b6e7016f8d5458978e17d757cbd4551f4f9747152a2b27ef2cadcfa86ffa",
-    "content/en/cards.json": "26951151329bdd54442a75b50a092c40b6bd7e424306407161bb5a868878ccb4",
-    "content/ja/cards.json": "7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b"
+    "content/cards.base.json": "f4cd419784584b094542a74c1dd12abaa216b4404c11217b93f9fef20b232bd9",
+    "content/en/cards.json": "9f7a0a98e2a5021293cf480d14d69303e05b774cb7ea88c8fa8e2646367b4872",
+    "content/ja/cards.json": "56552d3d893a34b110333d2cd8d4e2232aa1e48e56317ad30dbbd4439a0c1cc7"
   }
 }

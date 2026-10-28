@@ -44,7 +44,7 @@ const requiredStatements = [
   'Hilt 의존성 주입',
   'Red→Green',
   '영어 직역이 아닌 일본인 여행자 관점',
-  '20개 사진, Typecast MP3 20개, Gemini WAV 20개',
+  '20개 사진과 Typecast MP3 20개',
   '45 Phase, 약 45 man-day',
 ];
 

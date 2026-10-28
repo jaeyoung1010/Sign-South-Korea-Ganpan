@@ -40,13 +40,13 @@ class PrivacySafeAnalyticsAdapterTest {
         adapter.recordOnboardingCompleted(OnboardingCompletedEvent(com.signkorean.domain.model.LearningLevel.BEGINNER, 2))
         adapter.recordSessionStarted(SessionStartedEvent(SessionType.DAILY, 2, 3, null))
         adapter.recordAnswerRevealed(AnswerRevealedEvent("card-1", 1))
-        adapter.recordAudioPlayed(AudioPlayedEvent("card-1", VoiceId.GEMINI_KORE, false))
+        adapter.recordAudioPlayed(AudioPlayedEvent("card-1", VoiceId.TYPECAST_EUNKYUNG, false))
         adapter.recordCardRated(CardRatedEvent("card-1", 1, RatingDecision.GotIt, RatingInputSource.Gesture))
         adapter.recordRatingUndone(CardRatingUndoneEvent("card-1", RatingDecision.GotIt))
         adapter.recordSessionPaused(SessionPausedEvent(1, 5))
         adapter.recordSessionResumed(SessionResumedEvent(1, 5))
         adapter.recordSessionCompleted(SessionCompletedEvent(3, 2, 1_000))
-        adapter.recordVoiceChanged(VoiceChangedEvent(AudioVoice.TYPECAST_EUNKYUNG, AudioVoice.GEMINI_KORE))
+        adapter.recordVoiceChanged(VoiceChangedEvent(AudioVoice.TYPECAST_EUNKYUNG, AudioVoice.TYPECAST_EUNKYUNG))
         adapter.recordReminderChanged(ReminderChangedEvent(true))
         adapter.recordCardReportSaved(CardReportSavedEvent("card-1", CardReportReason.WRONG_MEANING))
 
@@ -74,7 +74,7 @@ class PrivacySafeAnalyticsAdapterTest {
         val logger = RecordingLogger()
         val adapter = PrivacySafeAnalyticsAdapter(logger)
 
-        adapter.recordAudioPlaybackFailed(AudioPlaybackFailedEvent("card-1", VoiceId.GEMINI_KORE, AudioPlaybackFailure.Decode))
+        adapter.recordAudioPlaybackFailed(AudioPlaybackFailedEvent("card-1", VoiceId.TYPECAST_EUNKYUNG, AudioPlaybackFailure.Decode))
 
         assertEquals(1, logger.entries.size)
         assertEquals(DiagnosticLogLevel.ERROR, logger.entries.single().level)

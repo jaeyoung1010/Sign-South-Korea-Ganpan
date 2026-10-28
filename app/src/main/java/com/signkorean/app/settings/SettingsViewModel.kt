@@ -3,12 +3,10 @@ package com.signkorean.app.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.app.di.AppVersionName
-import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
 import com.signkorean.domain.model.UserSettings
-import com.signkorean.domain.model.VoiceChangedEvent
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ChangeAppLanguage
@@ -41,7 +39,7 @@ class SettingsViewModel
     @Inject
     constructor(
         private val userSettingsRepository: UserSettingsRepository,
-        private val audioPlayer: AudioPlayerPort,
+        @Suppress("UnusedPrivateProperty") private val audioPlayer: AudioPlayerPort,
         private val analyticsSink: AnalyticsSink,
         private val configureReminder: ConfigureReminder = ConfigureReminder { _, _ -> ConfigureReminderResult.Disabled },
         private val observeProgress: ObserveProgress = ObserveProgress { flowOf(emptyProgressSnapshot()) },
@@ -52,7 +50,6 @@ class SettingsViewModel
         private val mutableUiState = MutableStateFlow(SettingsUiState(appVersion = appVersion))
         private val effectChannel = Channel<SettingsEffect>(Channel.BUFFERED)
         private val settingsMutex = Mutex()
-        private var selectionJob: Job? = null
         private var sessionLengthJob: Job? = null
         private var latestDueCount: Int = 0
 
@@ -61,7 +58,6 @@ class SettingsViewModel
                 userSettingsRepository.settings.collect { settings ->
                     mutableUiState.value =
                         SettingsUiState(
-                            selectedVoice = settings.audioVoice,
                             sessionLength = settings.sessionLength,
                             showRomanization = settings.showRomanization,
                             autoPlayAudio = settings.autoPlayAudio,
@@ -93,31 +89,6 @@ class SettingsViewModel
 
         val uiState = mutableUiState.asStateFlow()
         val effects = effectChannel.receiveAsFlow()
-
-        fun selectVoice(voice: AudioVoice) {
-            if (selectionJob?.isActive == true) return
-            // A voice change must never leave the previous provider playing while persistence runs.
-            audioPlayer.stop()
-            val previousVoice = mutableUiState.value.selectedVoice
-            selectionJob = viewModelScope.launch {
-                try {
-                    val updatedSettings = settingsMutex.withLock {
-                        userSettingsRepository.updateSettings { settings -> settings.copy(audioVoice = voice) }
-                    }
-                    mutableUiState.update { it.copy(selectedVoice = updatedSettings.audioVoice) }
-                    try {
-                        analyticsSink.recordVoiceChanged(VoiceChangedEvent(previousVoice, voice))
-                    } catch (_: Exception) {
-                        // Analytics must not make a successful setting change look like a failure.
-                    }
-                    effectChannel.trySend(SettingsEffect.VoiceChanged(voice))
-                } catch (cancellation: CancellationException) {
-                    throw cancellation
-                } catch (_: Exception) {
-                    effectChannel.trySend(SettingsEffect.VoiceChangeFailed)
-                }
-            }
-        }
 
         fun selectSessionLength(length: Int) {
             if (length !in UserSettings.SESSION_LENGTH_OPTIONS || sessionLengthJob?.isActive == true) return
@@ -257,12 +228,6 @@ class SettingsViewModel
     }
 
 sealed interface SettingsEffect {
-    data class VoiceChanged(
-        val voice: AudioVoice,
-    ) : SettingsEffect
-
-    data object VoiceChangeFailed : SettingsEffect
-
     data class SessionLengthChanged(
         val length: Int,
     ) : SettingsEffect

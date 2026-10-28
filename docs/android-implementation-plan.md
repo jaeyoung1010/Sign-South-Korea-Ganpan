@@ -1,4 +1,4 @@
-# Sign Korean Android 구현 계획서
+# Sign South Korea Ganpan Android 구현 계획서
 
 | 항목 | 내용 |
 |---|---|
@@ -46,7 +46,7 @@
 - 1 man-day는 한 개발자의 약 8시간이며 코드, 테스트, 리뷰, 문서와 커밋을 포함한다.
 - 한 명이 Phase 1부터 순서대로 작업하며 병렬 개발은 가정하지 않는다.
 - 각 Phase 시작 시 이전 Phase의 모든 품질 게이트가 통과해 있어야 한다.
-- 현재 저장소의 20개 사진, Typecast MP3 20개, Gemini WAV 20개를 사용한다. manifest 파일은 음성 파일 수에 포함하지 않는다.
+- 현재 저장소의 20개 사진과 Typecast MP3 20개를 사용한다. manifest 파일은 음성 파일 수에 포함하지 않는다.
 - 영어·일본어 콘텐츠의 네이티브 검수는 출시 승인 조건이다. 외부 검수 대기 시간은 man-day에 포함하지 않지만, 반영과 재검증 작업은 Phase 37에 포함한다.
 - 개인정보 처리방침과 이용약관의 법률 문안 및 공개 URL은 제품 소유자가 제공한다고 가정한다. 개발자는 번들 문서와 연결·오프라인 전환을 구현한다.
 - Play Console 등록, 스토어 심사 대기와 정책 검토의 외부 소요 시간은 45 man-day 밖이다.
@@ -229,7 +229,7 @@ Kotlin Android 앱을 빌드하고 모든 이후 Phase에 동일하게 적용할
 
 **테스트 먼저**
 
-- 카드 20개, 이미지 20개, Typecast MP3 20개, Gemini WAV 20개의 일대일 매핑 테스트를 작성한다.
+- 카드 20개, 이미지 20개, Typecast MP3 20개의 일대일 매핑 테스트를 작성한다.
 - 중복 ID, 잘못된 순서, 0~100 밖의 포커스 좌표, 누락 word part와 손상 URI를 실패시킨다.
 
 **구현**
@@ -756,7 +756,7 @@ Show answer 전후를 프로토타입처럼 한 카드 안에서 전환하고 �
 
 **목표**
 
-Settings에서 Typecast 은경과 Gemini Kore를 선택하고 Answer당 한 번 자동 재생한다.
+Answer당 Typecast 은경 발음을 한 번 자동 재생한다.
 
 **테스트 먼저**
 
@@ -1212,7 +1212,7 @@ SRS의 시작, 입력 반응, 프레임, 이미지 메모리와 오디오 목표
 | 닫기와 Leave 확인 | 저장·Home Resume | 23 |
 | 더보기·Report this card | 로컬 신고 큐 | 26 |
 | 이미지 확대·라벨 | pinch·double tap·상태 보존 | 25 |
-| 두 음성 재생·선택 | Typecast·Gemini 오프라인 | 27~28 |
+| 발음 재생 | Typecast 오프라인 | 27~28 |
 | Session complete | 실제 집계·다음 복습 | 24 |
 | Progress 통계·그래프·review 목록 | 실제 Room 집계 | 31~32 |
 | Review 카드 상세·Practice | 1장 세션 | 32 |

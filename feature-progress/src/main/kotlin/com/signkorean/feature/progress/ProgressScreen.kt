@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +46,6 @@ import com.signkorean.designsystem.components.GameSheet
 import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import java.time.DayOfWeek
-import java.time.format.TextStyle
 import java.util.Locale
 
 data class ProgressUiState(
@@ -269,18 +267,12 @@ private fun WeekChart(week: List<ProgressDayUiModel>) {
                                 )
                             }
                         }
-                        Text(text = day.localizedLabel(), style = MaterialTheme.typography.labelSmall)
+                        Text(text = day.label, style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun ProgressDayUiModel.localizedLabel(): String {
-    val locale = Locale.forLanguageTag(LocalConfiguration.current.locales[0].toLanguageTag())
-    return dayOfWeek?.getDisplayName(TextStyle.NARROW, locale) ?: label
 }
 
 @Composable

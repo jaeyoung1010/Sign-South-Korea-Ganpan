@@ -2,8 +2,6 @@ package com.signkorean.app.settings
 
 import com.signkorean.domain.model.AudioPlayRequest
 import com.signkorean.domain.model.AudioPlaybackState
-import com.signkorean.domain.model.AudioVoice
-import com.signkorean.domain.model.VoiceChangedEvent
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
 import com.signkorean.domain.model.ReminderChangedEvent
@@ -30,54 +28,6 @@ import org.junit.Test
 class SettingsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
-
-    @Test
-    fun `selecting a voice stops playback and persists it`() =
-        runTest {
-            val repository = FakeUserSettingsRepository()
-            val audioPlayer = RecordingAudioPlayer()
-            val analytics = RecordingAnalyticsSink()
-            val viewModel = SettingsViewModel(repository, audioPlayer, analytics)
-
-            advanceUntilIdle()
-            viewModel.selectVoice(AudioVoice.GEMINI_KORE)
-            advanceUntilIdle()
-
-            assertEquals(AudioVoice.GEMINI_KORE, repository.settings.first().audioVoice)
-            assertEquals(1, audioPlayer.stopCount)
-            assertEquals(
-                listOf(VoiceChangedEvent(AudioVoice.TYPECAST_EUNKYUNG, AudioVoice.GEMINI_KORE)),
-                analytics.voiceChanges,
-            )
-            assertTrue(viewModel.uiState.value.selectedVoice == AudioVoice.GEMINI_KORE)
-        }
-
-    @Test
-    fun `settings flow restores the selected voice for a recreated view model`() =
-        runTest {
-            val repository = FakeUserSettingsRepository()
-            repository.updateSettings { it.copy(audioVoice = AudioVoice.GEMINI_KORE) }
-
-            val viewModel = SettingsViewModel(repository, RecordingAudioPlayer(), RecordingAnalyticsSink())
-            advanceUntilIdle()
-
-            assertEquals(AudioVoice.GEMINI_KORE, viewModel.uiState.value.selectedVoice)
-        }
-
-    @Test
-    fun `ignores a second voice tap while the first save is in flight`() =
-        runTest {
-            val repository = FakeUserSettingsRepository()
-            val audioPlayer = RecordingAudioPlayer()
-            val viewModel = SettingsViewModel(repository, audioPlayer, RecordingAnalyticsSink())
-
-            viewModel.selectVoice(AudioVoice.GEMINI_KORE)
-            viewModel.selectVoice(AudioVoice.TYPECAST_EUNKYUNG)
-            advanceUntilIdle()
-
-            assertEquals(AudioVoice.GEMINI_KORE, repository.settings.first().audioVoice)
-            assertEquals(1, audioPlayer.stopCount)
-        }
 
     @Test
     fun `learning settings are persisted immediately`() =
@@ -223,14 +173,9 @@ class SettingsViewModelTest {
     }
 
     private class RecordingAnalyticsSink : AnalyticsSink {
-        val voiceChanges = mutableListOf<VoiceChangedEvent>()
         val reminderChanges = mutableListOf<ReminderChangedEvent>()
 
         override fun recordAppStarted(event: com.signkorean.domain.model.AppStartupEvent) = Unit
-
-        override fun recordVoiceChanged(event: VoiceChangedEvent) {
-            voiceChanges += event
-        }
 
         override fun recordReminderChanged(event: ReminderChangedEvent) {
             reminderChanges += event

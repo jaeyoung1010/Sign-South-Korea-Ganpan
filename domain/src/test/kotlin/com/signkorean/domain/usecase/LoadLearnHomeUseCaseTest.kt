@@ -125,7 +125,7 @@ class LoadLearnHomeUseCaseTest {
 
         override fun getLocalizedCopy(languageTag: String) = emptyList<com.signkorean.domain.model.LocalizedCardCopy>()
 
-        override fun validateBundle() = BundleValidationReport(5, 5, 5, 5, setOf("en"))
+        override fun validateBundle() = BundleValidationReport(5, 5, 5, setOf("en"))
 
         private fun card(
             id: String,

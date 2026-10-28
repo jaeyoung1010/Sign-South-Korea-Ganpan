@@ -23,7 +23,7 @@ const requiredStatements = [
   '카드는 기기 프레임 밖의 포인터를 계속 따라가지 않는다.',
   '정답 상태에 Got it·Review 화면 버튼을 제공하지 않는다.',
   '보이는 판정 버튼 대신 TalkBack 사용자 지정 액션과 물리 키보드 화살표를 접근성 대체 조작으로 제공한다.',
-  'Typecast 은경과 Gemini Flash Kore를 설정에서 선택한다.'
+  'Typecast 은경 발음을 재생한다.'
 ];
 
 for (const statement of requiredStatements) {

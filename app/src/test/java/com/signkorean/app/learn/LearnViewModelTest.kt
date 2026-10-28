@@ -6,7 +6,6 @@ import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.AudioPlayedEvent
-import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionAnswer
@@ -102,33 +101,6 @@ class LearnViewModelTest {
                         cardId = "card-1",
                         voiceId = VoiceId.TYPECAST_EUNKYUNG,
                         assetUri = "file:///android_asset/audio/eunkyung/card-1.mp3",
-                    ),
-                ),
-                audioPlayer.requests,
-            )
-        }
-
-    @Test
-    fun `plays the persisted Gemini voice for the current answer`() =
-        runTest {
-            val audioPlayer = RecordingAudioPlayer()
-            val viewModel =
-                LearnViewModel(
-                    loadLearnSession = LoadLearnSession { active(position = 1, total = 1).copy(answerRevealed = true) },
-                    audioPlayer = audioPlayer,
-                    userSettingsRepository = FakeUserSettingsRepository(UserSettings(audioVoice = AudioVoice.GEMINI_KORE)),
-                )
-
-            viewModel.load()
-            advanceUntilIdle()
-            viewModel.playAudio()
-
-            assertEquals(
-                listOf(
-                    AudioPlayRequest(
-                        cardId = "card-1",
-                        voiceId = VoiceId.GEMINI_KORE,
-                        assetUri = "file:///android_asset/audio/gemini/card-1.wav",
                     ),
                 ),
                 audioPlayer.requests,
@@ -836,7 +808,6 @@ class LearnViewModelTest {
                 audioAssetUris =
                     mapOf(
                         VoiceId.TYPECAST_EUNKYUNG to "file:///android_asset/audio/eunkyung/card-$position.mp3",
-                        VoiceId.GEMINI_KORE to "file:///android_asset/audio/gemini/card-$position.wav",
                     ),
                 contentVersion = 1,
             ),

@@ -1,7 +1,7 @@
 <resources>
     <string name="learn_ready_title">Ready to read Korea?</string>
     <string name="learn_ready_description">A short street-reading session is waiting.</string>
-    <string name="learn_brand_name">Sign Korean</string>
+    <string name="learn_brand_name">Sign South Korea Ganpan</string>
     <plurals name="learn_streak_days"><item quantity="one">%1$d day</item><item quantity="other">%1$d days</item></plurals>
     <string name="learn_today_session">TODAY\'S SESSION</string>
     <string name="learn_pick_up">Pick up where you left off</string>
@@ -24,9 +24,14 @@
     <string name="learn_category_neighborhoods">Neighborhoods</string>
     <string name="learn_category_markets">Markets</string>
     <string name="learn_category_transport">Transport</string>
+    <string name="learn_category_food">Food</string>
+    <string name="learn_category_shopping">Shopping</string>
+    <string name="learn_category_everyday">Everyday places</string>
+    <string name="learn_category_notices">Notices</string>
     <plurals name="learn_category_signs"><item quantity="one">%1$s · %2$d sign</item><item quantity="other">%1$s · %2$d signs</item></plurals>
     <plurals name="learn_category_count"><item quantity="one">%d sign</item><item quantity="other">%d signs</item></plurals>
     <string name="learn_your_week">Your week</string>
+    <string name="learn_open_settings">Open settings</string>
     <string name="learn_close">Close</string>
     <string name="learn_more">More</string>
     <string name="learn_position">%1$d of %2$d</string>

@@ -28,8 +28,8 @@ class CandidateScorer {
             Interest.NEIGHBORHOOD -> setOf("NEIGHBORHOOD")
             Interest.MARKET -> setOf("MARKET")
             Interest.TRANSPORT -> setOf("TRANSPORT")
-            Interest.FOOD -> setOf("MARKET")
-            Interest.SHOPPING -> setOf("MARKET", "NEIGHBORHOOD")
+            Interest.FOOD -> setOf("FOOD", "MARKET")
+            Interest.SHOPPING -> setOf("SHOPPING", "MARKET", "NEIGHBORHOOD")
         }
 
     private fun levelOrder(

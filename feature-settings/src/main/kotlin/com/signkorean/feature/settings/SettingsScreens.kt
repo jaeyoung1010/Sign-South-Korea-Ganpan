@@ -26,14 +26,12 @@ import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanPalette
-import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.GuestAccount
 import com.signkorean.domain.model.PolicyDocument
 import com.signkorean.domain.model.PolicyDocumentId
 
 data class SettingsUiState(
     val title: String = "Settings",
-    val selectedVoice: AudioVoice = AudioVoice.TYPECAST_EUNKYUNG,
     val sessionLength: Int = 20,
     val showRomanization: Boolean = false,
     val autoPlayAudio: Boolean = false,
@@ -66,8 +64,6 @@ data class AccountUiState(
 sealed interface SettingsUiAction {
     data object SelectLanguage : SettingsUiAction
 
-    data object SelectVoice : SettingsUiAction
-
     data object SelectSessionLength : SettingsUiAction
 
     data object ToggleRomanization : SettingsUiAction
@@ -83,12 +79,6 @@ sealed interface SettingsUiAction {
     data object OpenAccount : SettingsUiAction
 }
 
-sealed interface SettingsUiEffect {
-    data object OpenVoiceChooser : SettingsUiEffect
-
-    data object NavigateToLegal : SettingsUiEffect
-}
-
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
@@ -97,12 +87,6 @@ fun SettingsScreen(
 ) {
     GameCard(modifier = modifier.testTag("screen-settings")) {
         Text(text = stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
-        GameButton(
-            text = stringResource(R.string.settings_voice, stringResource(state.selectedVoice.resourceId)),
-            onClick = { onAction(SettingsUiAction.SelectVoice) },
-            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.SETTINGS_VOICE),
-            style = GameButtonStyle.Secondary,
-        )
         GameButton(
             text = stringResource(R.string.settings_language, state.appLanguageTag.languageDisplayName()),
             onClick = { onAction(SettingsUiAction.SelectLanguage) },
@@ -193,24 +177,12 @@ private fun SettingsSwitchRow(
     }
 }
 
-internal val AudioVoice.resourceId: Int
-    get() =
-        when (this) {
-            AudioVoice.TYPECAST_EUNKYUNG -> R.string.settings_voice_typecast
-            AudioVoice.GEMINI_KORE -> R.string.settings_voice_gemini
-        }
-
-fun AudioVoice.displayName(): String =
-    when (this) {
-        AudioVoice.TYPECAST_EUNKYUNG -> "Typecast · Eunkyung"
-        AudioVoice.GEMINI_KORE -> "Gemini Flash · Kore"
-    }
-
 private fun Int.estimatedMinutes(): Int =
     when (this) {
         5 -> 2
         10 -> 4
         20 -> 8
+        30 -> 12
         else -> 1
     }
 

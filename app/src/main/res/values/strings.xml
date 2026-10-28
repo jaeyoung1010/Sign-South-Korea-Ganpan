@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sign Korean</string>
+    <string name="app_name">Sign South Korea Ganpan</string>
+    <string name="app_icon_label">SSKG</string>
     <string name="launch_loading">Preparing your signs…</string>
     <string name="launch_database_error">Your saved learning data could not be opened.</string>
     <string name="launch_content_error">The bundled sign content could not be loaded.</string>
@@ -17,28 +18,20 @@
     <string name="toast_report_thanks">Thanks. We\'ll review this card.</string>
     <string name="toast_audio_focus_unavailable">Audio focus is unavailable. Try again.</string>
     <string name="toast_audio_unavailable">Audio is unavailable for this card.</string>
-    <string name="toast_voice_saved">%1$s selected.</string>
-    <string name="toast_voice_save_failed">Could not save the voice. Try again.</string>
     <plurals name="toast_cards_selected"><item quantity="one">%1$d card selected.</item><item quantity="other">%1$d cards selected.</item></plurals>
     <string name="toast_setting_save_failed">Could not save that setting. Try again.</string>
     <string name="toast_language_saved">Language updated.</string>
     <string name="toast_language_save_failed">Could not change the language. Try again.</string>
     <string name="toast_reminders_off">Review reminders are off.</string>
-    <string name="toast_reveal_first">Reveal the answer first.</string>
     <string name="toast_card_unavailable">This card is not available.</string>
     <string name="learn_tab">Learn</string>
     <string name="progress_tab">Progress</string>
-    <string name="settings_tab">Settings</string>
-    <string name="voice_typecast">Typecast · Eunkyung</string>
-    <string name="voice_gemini">Gemini Flash · Kore</string>
     <string name="legal_privacy_policy">Privacy policy</string>
     <string name="legal_terms_of_use">Terms of use</string>
     <string name="sheet_all_categories">All categories</string>
-    <string name="sheet_choose_voice">Choose a voice</string>
     <string name="sheet_session_length">Session length</string>
     <string name="sheet_leave_session">Leave this session?</string>
     <string name="sheet_report_card">Report this card</string>
-    <string name="sheet_choose_pronunciation_voice">Choose pronunciation voice</string>
     <string name="sheet_session_length_question">How many signs should a new session include?</string>
     <plurals name="sheet_cards_length"><item quantity="one">%1$d card · ~%2$d min</item><item quantity="other">%1$d cards · ~%2$d min</item></plurals>
     <string name="close">Close</string>

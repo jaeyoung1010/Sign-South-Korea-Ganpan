@@ -207,7 +207,7 @@ class StartSessionUseCaseTest {
 
         override fun getLocalizedCopy(languageTag: String): List<LocalizedCardCopy> = emptyList()
 
-        override fun validateBundle(): BundleValidationReport = BundleValidationReport(6, 6, 6, 6, setOf("en"))
+        override fun validateBundle(): BundleValidationReport = BundleValidationReport(6, 6, 6, setOf("en"))
 
         private fun card(index: Int) =
             SignCard(

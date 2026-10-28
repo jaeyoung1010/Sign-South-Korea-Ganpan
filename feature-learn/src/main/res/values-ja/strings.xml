@@ -1,7 +1,7 @@
 <resources>
     <string name="learn_ready_title">韓国の街を読んでみましょう</string>
     <string name="learn_ready_description">短い街歩きリーディングを始められます。</string>
-    <string name="learn_brand_name">Sign Korean</string>
+    <string name="learn_brand_name">Sign South Korea Ganpan</string>
     <plurals name="learn_streak_days"><item quantity="other">%1$d日</item></plurals>
     <string name="learn_today_session">今日のセッション</string>
     <string name="learn_pick_up">続きから始める</string>
@@ -24,9 +24,14 @@
     <string name="learn_category_neighborhoods">街並み</string>
     <string name="learn_category_markets">市場</string>
     <string name="learn_category_transport">交通</string>
+    <string name="learn_category_food">食べ物</string>
+    <string name="learn_category_shopping">買い物</string>
+    <string name="learn_category_everyday">日常の場所</string>
+    <string name="learn_category_notices">案内・注意</string>
     <plurals name="learn_category_signs"><item quantity="other">%1$s · %2$d枚</item></plurals>
     <plurals name="learn_category_count"><item quantity="other">%d枚</item></plurals>
     <string name="learn_your_week">今週</string>
+    <string name="learn_open_settings">設定を開く</string>
     <string name="learn_close">閉じる</string>
     <string name="learn_more">その他</string>
     <string name="learn_position">%1$d / %2$d</string>
