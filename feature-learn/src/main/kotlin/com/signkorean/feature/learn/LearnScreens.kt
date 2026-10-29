@@ -316,9 +316,13 @@ fun LearnHomeScreen(
             completedDays = state.week.count { it.count > 0 }.coerceAtMost(3),
             onClick = { onAction(LearnUiAction.OpenProgress) },
         )
+        // A category tap can require confirmation before replacing an in-progress session.
+        // Keep that decision next to the tapped category area so the tap never appears ignored.
+        state.pendingCategoryReplacement?.let { category ->
+            CategoryReplacementCard(category, state.isStarting, onAction)
+        }
         CategorySection(state.categories, state.isStarting, onAction)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
-        state.pendingCategoryReplacement?.let { category -> CategoryReplacementCard(category, state.isStarting, onAction) }
         WeekSection(state.week)
     }
 }
