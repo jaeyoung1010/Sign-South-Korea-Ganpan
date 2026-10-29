@@ -260,7 +260,7 @@ private object NoopReminderScheduler : ReminderSchedulerPort {
 }
 
 private object NoopChangeAppLanguage : ChangeAppLanguage {
-    override val supportedLanguageTags: Set<String> = setOf("en", "ja")
+    override val supportedLanguageTags: Set<String> = setOf("en", "ja", "zh")
 
     override suspend fun invoke(languageTag: String): ChangeAppLanguageResult = ChangeAppLanguageResult.Failed
 }

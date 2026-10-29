@@ -1,0 +1,1738 @@
+[
+  {
+    "cardId": "01-hongdae-entrance",
+    "languageTag": "zh",
+    "displayMeaning": "弘大入口",
+    "pronunciationGuide": "hongdae ipgu",
+    "wordParts": [
+      {
+        "korean": "홍대",
+        "meaning": "弘大"
+      },
+      {
+        "korean": "입구",
+        "meaning": "入口"
+      }
+    ],
+    "streetNote": "“弘大入口”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "弘大入口",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "02-gyeongbokgung",
+    "languageTag": "zh",
+    "displayMeaning": "景福宫",
+    "pronunciationGuide": "gyeongbokgung",
+    "wordParts": [
+      {
+        "korean": "경복",
+        "meaning": "福泽"
+      },
+      {
+        "korean": "궁",
+        "meaning": "宫殿"
+      }
+    ],
+    "streetNote": "“景福宫”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "景福宫",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "03-bukchon-hanok-village",
+    "languageTag": "zh",
+    "displayMeaning": "北村韩屋村",
+    "pronunciationGuide": "bukchon hanok maeul",
+    "wordParts": [
+      {
+        "korean": "북촌",
+        "meaning": "北村"
+      },
+      {
+        "korean": "한옥마을",
+        "meaning": "韩屋村"
+      }
+    ],
+    "streetNote": "“北村韩屋村”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "北村韩屋村",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "04-namsan-seoul-tower",
+    "languageTag": "zh",
+    "displayMeaning": "N首尔塔",
+    "pronunciationGuide": "namsan seoul tawo",
+    "wordParts": [
+      {
+        "korean": "남산",
+        "meaning": "南山"
+      },
+      {
+        "korean": "서울타워",
+        "meaning": "首尔塔"
+      }
+    ],
+    "streetNote": "“N首尔塔”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "N首尔塔",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "05-myeongdong",
+    "languageTag": "zh",
+    "displayMeaning": "明洞",
+    "pronunciationGuide": "myeongdong",
+    "wordParts": [
+      {
+        "korean": "명동",
+        "meaning": "明洞地区"
+      }
+    ],
+    "streetNote": "“明洞”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "明洞",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "06-gwangjang-market",
+    "languageTag": "zh",
+    "displayMeaning": "广藏市场",
+    "pronunciationGuide": "gwangjang sijang",
+    "wordParts": [
+      {
+        "korean": "광장",
+        "meaning": "广藏"
+      },
+      {
+        "korean": "시장",
+        "meaning": "市场"
+      }
+    ],
+    "streetNote": "“广藏市场”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "广藏市场",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "07-namdaemun-market",
+    "languageTag": "zh",
+    "displayMeaning": "南大门市场",
+    "pronunciationGuide": "namdaemun sijang",
+    "wordParts": [
+      {
+        "korean": "남대문",
+        "meaning": "南大门"
+      },
+      {
+        "korean": "시장",
+        "meaning": "市场"
+      }
+    ],
+    "streetNote": "“南大门市场”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "南大门市场",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "08-itaewon",
+    "languageTag": "zh",
+    "displayMeaning": "梨泰院",
+    "pronunciationGuide": "itaewon",
+    "wordParts": [
+      {
+        "korean": "이태원",
+        "meaning": "梨泰院地区"
+      }
+    ],
+    "streetNote": "“梨泰院”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "梨泰院",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "09-hangang-park",
+    "languageTag": "zh",
+    "displayMeaning": "汉江公园",
+    "pronunciationGuide": "hangang gongwon",
+    "wordParts": [
+      {
+        "korean": "한강",
+        "meaning": "汉江"
+      },
+      {
+        "korean": "공원",
+        "meaning": "公园"
+      }
+    ],
+    "streetNote": "“汉江公园”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "汉江公园",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "10-seongsu-dong",
+    "languageTag": "zh",
+    "displayMeaning": "圣水洞",
+    "pronunciationGuide": "seongsu-dong",
+    "wordParts": [
+      {
+        "korean": "성수",
+        "meaning": "圣水"
+      },
+      {
+        "korean": "동",
+        "meaning": "街区"
+      }
+    ],
+    "streetNote": "“圣水洞”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "圣水洞",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "11-insadong",
+    "languageTag": "zh",
+    "displayMeaning": "仁寺洞",
+    "pronunciationGuide": "insa-dong",
+    "wordParts": [
+      {
+        "korean": "인사",
+        "meaning": "仁寺"
+      },
+      {
+        "korean": "동",
+        "meaning": "街区"
+      }
+    ],
+    "streetNote": "“仁寺洞”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "仁寺洞",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "12-ikseon-dong",
+    "languageTag": "zh",
+    "displayMeaning": "益善洞",
+    "pronunciationGuide": "ikseon-dong",
+    "wordParts": [
+      {
+        "korean": "익선",
+        "meaning": "益善"
+      },
+      {
+        "korean": "동",
+        "meaning": "街区"
+      }
+    ],
+    "streetNote": "“益善洞”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "益善洞",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "13-dongdaemun-design-plaza",
+    "languageTag": "zh",
+    "displayMeaning": "东大门设计广场",
+    "pronunciationGuide": "dongdaemun dijain peullaja",
+    "wordParts": [
+      {
+        "korean": "동대문",
+        "meaning": "东大门"
+      },
+      {
+        "korean": "디자인플라자",
+        "meaning": "设计广场"
+      }
+    ],
+    "streetNote": "“东大门设计广场”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "东大门设计广场",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "14-haeundae",
+    "languageTag": "zh",
+    "displayMeaning": "海云台",
+    "pronunciationGuide": "haeundae",
+    "wordParts": [
+      {
+        "korean": "해운대",
+        "meaning": "海云台地区和海滩"
+      }
+    ],
+    "streetNote": "“海云台”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "海云台",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "15-gamcheon-culture-village",
+    "languageTag": "zh",
+    "displayMeaning": "甘川文化村",
+    "pronunciationGuide": "gamcheon munhwa maeul",
+    "wordParts": [
+      {
+        "korean": "감천",
+        "meaning": "甘川"
+      },
+      {
+        "korean": "문화마을",
+        "meaning": "文化村"
+      }
+    ],
+    "streetNote": "“甘川文化村”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "甘川文化村",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "16-jeonju-hanok-village",
+    "languageTag": "zh",
+    "displayMeaning": "全州韩屋村",
+    "pronunciationGuide": "jeonju hanok maeul",
+    "wordParts": [
+      {
+        "korean": "전주",
+        "meaning": "全州"
+      },
+      {
+        "korean": "한옥마을",
+        "meaning": "韩屋村"
+      }
+    ],
+    "streetNote": "“全州韩屋村”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "全州韩屋村",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "17-jeju-olle-trail",
+    "languageTag": "zh",
+    "displayMeaning": "济州偶来小路",
+    "pronunciationGuide": "jeju olle-gil",
+    "wordParts": [
+      {
+        "korean": "제주",
+        "meaning": "济州"
+      },
+      {
+        "korean": "올레길",
+        "meaning": "偶来步道"
+      }
+    ],
+    "streetNote": "“济州偶来小路”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "济州偶来小路",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "18-bulguksa",
+    "languageTag": "zh",
+    "displayMeaning": "佛国寺",
+    "pronunciationGuide": "bulguksa",
+    "wordParts": [
+      {
+        "korean": "불국",
+        "meaning": "佛国"
+      },
+      {
+        "korean": "사",
+        "meaning": "寺庙"
+      }
+    ],
+    "streetNote": "“佛国寺”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "佛国寺",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "19-busan-station",
+    "languageTag": "zh",
+    "displayMeaning": "釜山站",
+    "pronunciationGuide": "busan-yeok",
+    "wordParts": [
+      {
+        "korean": "부산",
+        "meaning": "釜山"
+      },
+      {
+        "korean": "역",
+        "meaning": "车站"
+      }
+    ],
+    "streetNote": "“釜山站”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "釜山站",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "20-seoul-station",
+    "languageTag": "zh",
+    "displayMeaning": "首尔站",
+    "pronunciationGuide": "seoul-yeok",
+    "wordParts": [
+      {
+        "korean": "서울",
+        "meaning": "Seoul"
+      },
+      {
+        "korean": "역",
+        "meaning": "车站"
+      }
+    ],
+    "streetNote": "“首尔站”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "首尔站",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-21",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-21"
+  },
+  {
+    "cardId": "bunsik",
+    "languageTag": "zh",
+    "displayMeaning": "韩国小吃店",
+    "pronunciationGuide": "bunsik",
+    "wordParts": [
+      {
+        "korean": "분식",
+        "meaning": "韩国小吃"
+      }
+    ],
+    "streetNote": "“韩国小吃店”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "韩国小吃店",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "exit",
+    "languageTag": "zh",
+    "displayMeaning": "出口",
+    "pronunciationGuide": "chulgu",
+    "wordParts": [
+      {
+        "korean": "출",
+        "meaning": "出去"
+      },
+      {
+        "korean": "구",
+        "meaning": "出入口"
+      }
+    ],
+    "streetNote": "“出口”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "出口",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "pharmacy",
+    "languageTag": "zh",
+    "displayMeaning": "药店",
+    "pronunciationGuide": "yakguk",
+    "wordParts": [
+      {
+        "korean": "약",
+        "meaning": "药"
+      },
+      {
+        "korean": "국",
+        "meaning": "局"
+      }
+    ],
+    "streetNote": "“药店”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "药店",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "no-parking",
+    "languageTag": "zh",
+    "displayMeaning": "禁止停车",
+    "pronunciationGuide": "jucha geumji",
+    "wordParts": [
+      {
+        "korean": "주차",
+        "meaning": "停车"
+      },
+      {
+        "korean": "금지",
+        "meaning": "禁止"
+      }
+    ],
+    "streetNote": "“禁止停车”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "禁止停车",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "restroom",
+    "languageTag": "zh",
+    "displayMeaning": "洗手间",
+    "pronunciationGuide": "hwajangsil",
+    "wordParts": [
+      {
+        "korean": "화장실",
+        "meaning": "洗手间"
+      }
+    ],
+    "streetNote": "“洗手间”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "洗手间",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "convenience-store",
+    "languageTag": "zh",
+    "displayMeaning": "便利店",
+    "pronunciationGuide": "pyeonuijeom",
+    "wordParts": [
+      {
+        "korean": "편의",
+        "meaning": "便利"
+      },
+      {
+        "korean": "점",
+        "meaning": "店"
+      }
+    ],
+    "streetNote": "“便利店”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "便利店",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "entrance",
+    "languageTag": "zh",
+    "displayMeaning": "入口",
+    "pronunciationGuide": "ipgu",
+    "wordParts": [
+      {
+        "korean": "입",
+        "meaning": "enter"
+      },
+      {
+        "korean": "구",
+        "meaning": "出入口"
+      }
+    ],
+    "streetNote": "“入口”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "入口",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "open",
+    "languageTag": "zh",
+    "displayMeaning": "营业中",
+    "pronunciationGuide": "yeongeop jung",
+    "wordParts": [
+      {
+        "korean": "영업",
+        "meaning": "营业"
+      },
+      {
+        "korean": "중",
+        "meaning": "进行中"
+      }
+    ],
+    "streetNote": "“营业中”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "营业中",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "no-smoking",
+    "languageTag": "zh",
+    "displayMeaning": "禁止吸烟",
+    "pronunciationGuide": "geumyeon",
+    "wordParts": [
+      {
+        "korean": "금",
+        "meaning": "prohibit"
+      },
+      {
+        "korean": "연",
+        "meaning": "smoking"
+      }
+    ],
+    "streetNote": "“禁止吸烟”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "禁止吸烟",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "sale",
+    "languageTag": "zh",
+    "displayMeaning": "打折",
+    "pronunciationGuide": "seil",
+    "wordParts": [
+      {
+        "korean": "세일",
+        "meaning": "打折"
+      }
+    ],
+    "streetNote": "“打折”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "打折",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-24",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-24"
+  },
+  {
+    "cardId": "01-yeongupjung",
+    "languageTag": "zh",
+    "displayMeaning": "现在营业",
+    "pronunciationGuide": "yeongeop jung",
+    "wordParts": [
+      {
+        "korean": "영업",
+        "meaning": "营业"
+      },
+      {
+        "korean": "중",
+        "meaning": "进行中"
+      }
+    ],
+    "streetNote": "“现在营业”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "现在营业",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "02-hyumu",
+    "languageTag": "zh",
+    "displayMeaning": "今日休息",
+    "pronunciationGuide": "hyumu",
+    "wordParts": [
+      {
+        "korean": "휴무",
+        "meaning": "休息日"
+      }
+    ],
+    "streetNote": "“今日休息”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "今日休息",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "03-junbijoong",
+    "languageTag": "zh",
+    "displayMeaning": "准备中",
+    "pronunciationGuide": "junbi jung",
+    "wordParts": [
+      {
+        "korean": "준비",
+        "meaning": "准备"
+      },
+      {
+        "korean": "중",
+        "meaning": "进行中"
+      }
+    ],
+    "streetNote": "“准备中”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "准备中",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "04-magam",
+    "languageTag": "zh",
+    "displayMeaning": "今日结束营业",
+    "pronunciationGuide": "magam",
+    "wordParts": [
+      {
+        "korean": "마감",
+        "meaning": "结束／截止"
+      }
+    ],
+    "streetNote": "“今日结束营业”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "今日结束营业",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "05-daegi",
+    "languageTag": "zh",
+    "displayMeaning": "等候",
+    "pronunciationGuide": "daegi",
+    "wordParts": [
+      {
+        "korean": "대기",
+        "meaning": "等候"
+      }
+    ],
+    "streetNote": "“等候”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "等候",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "06-yeyak",
+    "languageTag": "zh",
+    "displayMeaning": "预约",
+    "pronunciationGuide": "yeyak",
+    "wordParts": [
+      {
+        "korean": "예약",
+        "meaning": "预约"
+      }
+    ],
+    "streetNote": "“预约”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "预约",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "07-ipgu",
+    "languageTag": "zh",
+    "displayMeaning": "入口",
+    "pronunciationGuide": "ipgu",
+    "wordParts": [
+      {
+        "korean": "입구",
+        "meaning": "入口"
+      }
+    ],
+    "streetNote": "“入口”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "入口",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "08-chulgu",
+    "languageTag": "zh",
+    "displayMeaning": "出口",
+    "pronunciationGuide": "chulgu",
+    "wordParts": [
+      {
+        "korean": "출구",
+        "meaning": "exit"
+      }
+    ],
+    "streetNote": "“出口”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "出口",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "09-breaktime",
+    "languageTag": "zh",
+    "displayMeaning": "休息时间",
+    "pronunciationGuide": "beureikeu taim",
+    "wordParts": [
+      {
+        "korean": "브레이크타임",
+        "meaning": "休息时间"
+      }
+    ],
+    "streetNote": "“休息时间”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "休息时间",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "10-lastorder",
+    "languageTag": "zh",
+    "displayMeaning": "最后点单",
+    "pronunciationGuide": "raseuteu odeo",
+    "wordParts": [
+      {
+        "korean": "라스트오더",
+        "meaning": "最后点单"
+      }
+    ],
+    "streetNote": "“最后点单”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "最后点单",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "11-gopchang",
+    "languageTag": "zh",
+    "displayMeaning": "牛小肠",
+    "pronunciationGuide": "gopchang",
+    "wordParts": [
+      {
+        "korean": "곱창",
+        "meaning": "牛小肠"
+      }
+    ],
+    "streetNote": "“牛小肠”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "牛小肠",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "12-makchang",
+    "languageTag": "zh",
+    "displayMeaning": "烤肠",
+    "pronunciationGuide": "makchang",
+    "wordParts": [
+      {
+        "korean": "막창",
+        "meaning": "烤肠"
+      }
+    ],
+    "streetNote": "“烤肠”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "烤肠",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "13-sundae",
+    "languageTag": "zh",
+    "displayMeaning": "韩式血肠",
+    "pronunciationGuide": "sundae",
+    "wordParts": [
+      {
+        "korean": "순대",
+        "meaning": "韩式血肠"
+      }
+    ],
+    "streetNote": "“韩式血肠”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "韩式血肠",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "14-jokbal",
+    "languageTag": "zh",
+    "displayMeaning": "猪蹄",
+    "pronunciationGuide": "jokbal",
+    "wordParts": [
+      {
+        "korean": "족발",
+        "meaning": "猪蹄"
+      }
+    ],
+    "streetNote": "“猪蹄”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "猪蹄",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "15-gamjatang",
+    "languageTag": "zh",
+    "displayMeaning": "土豆排骨汤",
+    "pronunciationGuide": "gamjatang",
+    "wordParts": [
+      {
+        "korean": "감자탕",
+        "meaning": "土豆排骨汤"
+      }
+    ],
+    "streetNote": "“土豆排骨汤”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "土豆排骨汤",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "16-yukhoe",
+    "languageTag": "zh",
+    "displayMeaning": "韩式生牛肉",
+    "pronunciationGuide": "yukhoe",
+    "wordParts": [
+      {
+        "korean": "육회",
+        "meaning": "生牛肉料理"
+      }
+    ],
+    "streetNote": "“韩式生牛肉”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "韩式生牛肉",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "17-sannakji",
+    "languageTag": "zh",
+    "displayMeaning": "活章鱼",
+    "pronunciationGuide": "sannakji",
+    "wordParts": [
+      {
+        "korean": "산낙지",
+        "meaning": "活章鱼"
+      }
+    ],
+    "streetNote": "“活章鱼”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "活章鱼",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "18-jeongol",
+    "languageTag": "zh",
+    "displayMeaning": "韩式火锅",
+    "pronunciationGuide": "jeongol",
+    "wordParts": [
+      {
+        "korean": "전골",
+        "meaning": "火锅"
+      }
+    ],
+    "streetNote": "“韩式火锅”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "韩式火锅",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "19-jjigae",
+    "languageTag": "zh",
+    "displayMeaning": "韩式炖锅",
+    "pronunciationGuide": "jjigae",
+    "wordParts": [
+      {
+        "korean": "찌개",
+        "meaning": "炖锅"
+      }
+    ],
+    "streetNote": "“韩式炖锅”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "韩式炖锅",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "20-sale",
+    "languageTag": "zh",
+    "displayMeaning": "打折",
+    "pronunciationGuide": "seil",
+    "wordParts": [
+      {
+        "korean": "세일",
+        "meaning": "打折"
+      }
+    ],
+    "streetNote": "“打折”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "打折",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "21-event",
+    "languageTag": "zh",
+    "displayMeaning": "活动／促销",
+    "pronunciationGuide": "ibenteu",
+    "wordParts": [
+      {
+        "korean": "이벤트",
+        "meaning": "活动／促销"
+      }
+    ],
+    "streetNote": "“活动／促销”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "活动／促销",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "22-freegift",
+    "languageTag": "zh",
+    "displayMeaning": "赠品",
+    "pronunciationGuide": "saeun-pum",
+    "wordParts": [
+      {
+        "korean": "사은품",
+        "meaning": "赠品"
+      }
+    ],
+    "streetNote": "“赠品”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "赠品",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "23-soldout",
+    "languageTag": "zh",
+    "displayMeaning": "售罄",
+    "pronunciationGuide": "pumjeol",
+    "wordParts": [
+      {
+        "korean": "품절",
+        "meaning": "售罄"
+      }
+    ],
+    "streetNote": "“售罄”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "售罄",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "24-dutyfree",
+    "languageTag": "zh",
+    "displayMeaning": "免税",
+    "pronunciationGuide": "myeonse",
+    "wordParts": [
+      {
+        "korean": "면세",
+        "meaning": "免税"
+      }
+    ],
+    "streetNote": "“免税”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "免税",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "25-exchange",
+    "languageTag": "zh",
+    "displayMeaning": "换货",
+    "pronunciationGuide": "gyohwan",
+    "wordParts": [
+      {
+        "korean": "교환",
+        "meaning": "换货"
+      }
+    ],
+    "streetNote": "“换货”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "换货",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "26-refund",
+    "languageTag": "zh",
+    "displayMeaning": "退款",
+    "pronunciationGuide": "hwanbul",
+    "wordParts": [
+      {
+        "korean": "환불",
+        "meaning": "退款"
+      }
+    ],
+    "streetNote": "“退款”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "退款",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "27-cosmetics",
+    "languageTag": "zh",
+    "displayMeaning": "化妆品",
+    "pronunciationGuide": "hwajangpum",
+    "wordParts": [
+      {
+        "korean": "화장품",
+        "meaning": "化妆品"
+      }
+    ],
+    "streetNote": "“化妆品”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "化妆品",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "28-transfer",
+    "languageTag": "zh",
+    "displayMeaning": "换乘",
+    "pronunciationGuide": "hwanseung",
+    "wordParts": [
+      {
+        "korean": "환승",
+        "meaning": "换乘"
+      }
+    ],
+    "streetNote": "“换乘”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "换乘",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "29-platform",
+    "languageTag": "zh",
+    "displayMeaning": "站台",
+    "pronunciationGuide": "seunggangjang",
+    "wordParts": [
+      {
+        "korean": "승강장",
+        "meaning": "站台"
+      }
+    ],
+    "streetNote": "“站台”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "站台",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "30-firsttrain",
+    "languageTag": "zh",
+    "displayMeaning": "首班车",
+    "pronunciationGuide": "cheotcha",
+    "wordParts": [
+      {
+        "korean": "첫차",
+        "meaning": "首班车"
+      }
+    ],
+    "streetNote": "“首班车”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "首班车",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "31-lasttrain",
+    "languageTag": "zh",
+    "displayMeaning": "末班车",
+    "pronunciationGuide": "makcha",
+    "wordParts": [
+      {
+        "korean": "막차",
+        "meaning": "末班车"
+      }
+    ],
+    "streetNote": "“末班车”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "末班车",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "32-express",
+    "languageTag": "zh",
+    "displayMeaning": "快车",
+    "pronunciationGuide": "geuphaeng",
+    "wordParts": [
+      {
+        "korean": "급행",
+        "meaning": "快车"
+      }
+    ],
+    "streetNote": "“快车”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "快车",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "33-local",
+    "languageTag": "zh",
+    "displayMeaning": "普通车",
+    "pronunciationGuide": "ilban",
+    "wordParts": [
+      {
+        "korean": "일반",
+        "meaning": "普通／一般"
+      }
+    ],
+    "streetNote": "“普通车”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "普通车",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "34-getoff",
+    "languageTag": "zh",
+    "displayMeaning": "下车",
+    "pronunciationGuide": "hacha",
+    "wordParts": [
+      {
+        "korean": "하차",
+        "meaning": "下车"
+      }
+    ],
+    "streetNote": "“下车”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "下车",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "35-matjip",
+    "languageTag": "zh",
+    "displayMeaning": "人气餐厅",
+    "pronunciationGuide": "matjip",
+    "wordParts": [
+      {
+        "korean": "맛집",
+        "meaning": "人气餐厅"
+      }
+    ],
+    "streetNote": "“人气餐厅”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "人气餐厅",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "36-hotplace",
+    "languageTag": "zh",
+    "displayMeaning": "热门地点",
+    "pronunciationGuide": "hatpeul",
+    "wordParts": [
+      {
+        "korean": "핫플",
+        "meaning": "热门地点"
+      }
+    ],
+    "streetNote": "“热门地点”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "热门地点",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "37-waiting",
+    "languageTag": "zh",
+    "displayMeaning": "等候名单",
+    "pronunciationGuide": "daegi",
+    "wordParts": [
+      {
+        "korean": "대기",
+        "meaning": "等候"
+      }
+    ],
+    "streetNote": "“等候名单”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "等候名单",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  },
+  {
+    "cardId": "38-nokidszone",
+    "languageTag": "zh",
+    "displayMeaning": "无儿童区",
+    "pronunciationGuide": "nokijeu jon",
+    "wordParts": [
+      {
+        "korean": "노키즈존",
+        "meaning": "无儿童区"
+      }
+    ],
+    "streetNote": "“无儿童区”是韩国旅行中常见的词语。",
+    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
+    "imageAltTextAnswer": "写着“undefined”的标牌。",
+    "searchTerms": [
+      "无儿童区",
+      "韩国标牌"
+    ],
+    "contentVersion": 2,
+    "reviewer": "native-chinese-review",
+    "reviewedAt": "2026-10-29",
+    "factReviewer": "korean-fact-review",
+    "factReviewedAt": "2026-10-29"
+  }
+]

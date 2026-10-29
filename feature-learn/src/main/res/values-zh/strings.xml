@@ -1,0 +1,98 @@
+<resources>
+    <string name="learn_ready_title">准备好读懂韩国了吗？</string>
+    <string name="learn_ready_description">一段简短的街头阅读练习正在等你。</string>
+    <string name="learn_weekly_goal">每周目标：%1$d/%2$d 天</string>
+    <string name="learn_brand_name">Sign South Korea Ganpan</string>
+    <string name="learn_streak_day_one">连续 %1$d 天</string>
+    <string name="learn_streak_days_other">连续 %1$d 天</string>
+    <string name="learn_today_session">今日学习</string>
+    <string name="learn_pick_up">继续上次的学习</string>
+    <plurals name="learn_street_signs"><item quantity="one">%1$d 个街头标牌</item><item quantity="other">%1$d 个街头标牌</item></plurals>
+    <plurals name="learn_signs_complete"><item quantity="one">已完成 %1$d/%2$d 个标牌</item><item quantity="other">已完成 %1$d/%2$d 个标牌</item></plurals>
+    <plurals name="learn_about_minutes"><item quantity="one">约 %1$d 分钟</item><item quantity="other">约 %1$d 分钟</item></plurals>
+    <plurals name="learn_review_count"><item quantity="one">复习 %1$d 张</item><item quantity="other">复习 %1$d 张</item></plurals>
+    <plurals name="learn_new_count"><item quantity="one">新卡片 %1$d 张</item><item quantity="other">新卡片 %1$d 张</item></plurals>
+    <string name="learn_starting_session">正在开始学习…</string>
+    <string name="learn_resume_session">继续学习</string>
+    <string name="learn_start_session">开始学习</string>
+    <string name="learn_start_error">无法开始学习，请重试。</string>
+    <string name="learn_replace_title">要替换当前学习吗？</string>
+    <string name="learn_replace_body">开始“%1$s”会替换正在进行的学习。</string>
+    <string name="learn_replace_session">替换学习</string>
+    <string name="learn_keep_current_session">保留当前学习</string>
+    <string name="learn_explore_category">按类别探索</string>
+    <string name="learn_category_quick_description">时间不够？按类别快速学习。</string>
+    <string name="learn_see_all">查看全部</string>
+    <string name="learn_category_landmarks">地标</string>
+    <string name="learn_category_neighborhoods">街区</string>
+    <string name="learn_category_markets">市场</string>
+    <string name="learn_category_transport">交通</string>
+    <string name="learn_category_food">美食</string>
+    <string name="learn_category_shopping">购物</string>
+    <string name="learn_category_everyday">日常场所</string>
+    <string name="learn_category_notices">公告</string>
+    <plurals name="learn_category_signs"><item quantity="one">%1$s · %2$d 个标牌</item><item quantity="other">%1$s · %2$d 个标牌</item></plurals>
+    <plurals name="learn_category_count"><item quantity="one">%d 个标牌</item><item quantity="other">%d 个标牌</item></plurals>
+    <string name="learn_your_week">本周</string>
+    <string name="learn_open_settings">打开设置</string>
+    <string name="learn_open_notices">打开公告</string>
+    <string name="learn_open_profile">打开个人资料</string>
+    <string name="learn_close">关闭</string>
+    <string name="learn_more">更多</string>
+    <string name="learn_position">第 %1$d/%2$d 张</string>
+    <string name="learn_show_answer">显示答案</string>
+    <string name="learn_undo">撤销</string>
+    <string name="learn_retry">重试</string>
+    <string name="learn_loading_session">正在加载学习内容…</string>
+    <string name="learn_session_complete">学习完成</string>
+    <string name="learn_completion_summary">你完成了这组标牌。</string>
+    <string name="learn_no_cards">本次学习没有剩余卡片。</string>
+    <string name="learn_back_to_learn">返回学习</string>
+    <string name="learn_card_unavailable">这张学习卡片不可用</string>
+    <string name="learn_error_no_active">没有正在进行的学习。</string>
+    <string name="learn_error_empty">保存的学习内容没有卡片。</string>
+    <string name="learn_error_restart">保存的学习需要重新开始。</string>
+    <string name="learn_error_unknown_card">这个标牌已不再提供。</string>
+    <string name="learn_error_unavailable">无法加载保存的学习内容。</string>
+    <plurals name="learn_signs_practiced"><item quantity="one">已练习 %1$d 个标牌</item><item quantity="other">已练习 %1$d 个标牌</item></plurals>
+    <string name="learn_got_it_count">已掌握：%1$d</string>
+    <string name="learn_review_count_label">复习：%1$d</string>
+    <string name="learn_see_review_cards">查看复习卡片</string>
+    <string name="learn_back_home">返回首页</string>
+    <string name="learn_see_progress">查看进度</string>
+    <string name="learn_next_review">下次复习：%1$s</string>
+    <string name="learn_no_further_review">暂无后续复习安排</string>
+    <string name="learn_upcoming_card">下一张卡片</string>
+    <string name="learn_got_it">掌握</string>
+    <string name="learn_review">复习</string>
+    <string name="learn_mark_as_got_it">标记为已掌握</string>
+    <string name="learn_mark_for_review">标记为复习</string>
+    <string name="learn_feedback_marked_review">已标记为复习</string>
+    <string name="learn_feedback_last_choice_undone">已撤销上次选择</string>
+    <string name="learn_feedback_nothing_to_undo">没有可撤销的操作</string>
+    <string name="learn_feedback_undo_failed">无法撤销评分，请重试。</string>
+    <string name="learn_feedback_save_failed">无法保存评分，请重试。</string>
+    <string name="learn_question">这个标牌是什么意思？</string>
+    <string name="learn_question_hint">揭晓答案前，先花一点时间读读标牌。</string>
+    <string name="learn_answer">答案</string>
+    <string name="learn_playing_pronunciation">正在播放发音</string>
+    <string name="learn_play_pronunciation">播放发音</string>
+    <string name="learn_words">词语</string>
+    <string name="learn_street_note">街头提示</string>
+    <string name="learn_gesture_hint">← 掌握 · 复习 →</string>
+    <string name="learn_close_viewer">关闭查看器</string>
+    <string name="learn_photo_unavailable">照片不可用</string>
+    <string name="learn_photo_alt">街头标牌照片。</string>
+    <string name="learn_report_title">需要检查什么？</string>
+    <string name="learn_report_details_label">补充说明（可选）</string>
+    <string name="learn_report_details_hint">请勿填写个人信息</string>
+    <string name="learn_report_privacy_notice">请勿填写个人信息。</string>
+    <string name="learn_report_sending">正在发送…</string>
+    <string name="learn_report_send">发送报告</string>
+    <string name="learn_report_cancel">取消</string>
+    <string name="learn_report_wrong_korean">韩文内容有误</string>
+    <string name="learn_report_wrong_meaning">释义有误</string>
+    <string name="learn_report_photo_problem">照片有问题</string>
+    <string name="learn_report_audio_problem">音频有问题</string>
+    <string name="learn_report_other">其他问题</string>
+</resources>

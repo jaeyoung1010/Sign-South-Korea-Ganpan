@@ -168,8 +168,7 @@ class ProgressViewModel
             )
         }
 
-        private fun supportedLanguageTag(): String =
-            if (Locale.getDefault().language.equals("ja", ignoreCase = true)) "ja" else "en"
+        private fun supportedLanguageTag(): String = appLocalePort.getCurrent()
     }
 
 private fun ProgressSnapshot.toUiState(

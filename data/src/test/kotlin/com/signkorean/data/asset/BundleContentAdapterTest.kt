@@ -16,7 +16,7 @@ class BundleContentAdapterTest {
         assertEquals(68, report.cardCount)
         assertEquals(68, report.imageCount)
         assertEquals(20, report.typecastAudioCount)
-        assertEquals(setOf("en", "ja"), report.languages)
+        assertEquals(setOf("en", "ja", "zh"), report.languages)
         assertEquals(report.cardCount, cards.size)
         assertEquals((1..68).toList(), cards.map { it.order })
         assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
@@ -25,12 +25,13 @@ class BundleContentAdapterTest {
     }
 
     @Test
-    fun `loads a complete localized copy for English and Japanese`() {
+    fun `loads a complete localized copy for English Japanese and Chinese`() {
         val adapter = BundleContentAdapter(ClasspathAssetSource())
         val cardIds = adapter.getCards().map { it.id }.toSet()
 
         assertEquals(cardIds, adapter.getLocalizedCopy("en").map { it.cardId }.toSet())
         assertEquals(cardIds, adapter.getLocalizedCopy("ja").map { it.cardId }.toSet())
+        assertEquals(cardIds, adapter.getLocalizedCopy("zh").map { it.cardId }.toSet())
         assertTrue(adapter.getLocalizedCopy("en").all { it.wordParts.isNotEmpty() })
         assertTrue(adapter.getLocalizedCopy("ja").all { it.wordParts.isNotEmpty() })
         assertTrue(adapter.getLocalizedCopy("en").all { it.pronunciationGuide.isNotBlank() })
@@ -47,6 +48,7 @@ class BundleContentAdapterTest {
             },
         )
         assertTrue(adapter.getLocalizedCopy("ja").all { it.contentVersion == 2 })
+        assertTrue(adapter.getLocalizedCopy("zh").all { it.reviewer == "native-chinese-review" && it.contentVersion == 2 })
     }
 
     @Test
@@ -158,7 +160,7 @@ class BundleContentAdapterTest {
     @Test
     fun `rejects a manifest with a duplicate language`() {
         val assets = validAssets().toMutableMap()
-        assets[MANIFEST_PATH] = assets.getValue(MANIFEST_PATH).replaceFirst("[\"en\", \"ja\"]", "[\"en\", \"ja\", \"en\"]")
+        assets[MANIFEST_PATH] = assets.getValue(MANIFEST_PATH).replaceFirst("[\"en\", \"ja\", \"zh\"]", "[\"en\", \"ja\", \"zh\", \"en\"]")
 
         assertFailsValidation(assets, "duplicate language")
     }
@@ -170,29 +172,29 @@ class BundleContentAdapterTest {
         assets[MANIFEST_PATH] =
             assets
                 .getValue(MANIFEST_PATH)
-                .replace("[\"en\", \"ja\"]", "[\"en\", \"ja\", \"fr\"]")
+                .replace("[\"en\", \"ja\", \"zh\"]", "[\"en\", \"ja\", \"zh\", \"fr\"]")
                 .replace(
-                    "\"ja\": \"native-japanese-reviewed\"\n  },",
-                    "\"ja\": \"native-japanese-reviewed\",\n    \"fr\": \"future-native-reviewed\"\n  },",
+                    "\"ja\": \"native-japanese-reviewed\", \"zh\": \"native-chinese-reviewed\"}",
+                    "\"ja\": \"native-japanese-reviewed\", \"zh\": \"native-chinese-reviewed\", \"fr\": \"future-native-reviewed\"}",
                 )
                 .replace(
-                    "\"ja\": \"korean-fact-reviewed\"\n  },",
-                    "\"ja\": \"korean-fact-reviewed\",\n    \"fr\": \"korean-fact-reviewed\"\n  },",
+                    "\"ja\": \"korean-fact-reviewed\", \"zh\": \"korean-fact-reviewed\"}",
+                    "\"ja\": \"korean-fact-reviewed\", \"zh\": \"korean-fact-reviewed\", \"fr\": \"korean-fact-reviewed\"}",
                 )
                 .replace(
-                    "\"languages\": [\"en\", \"ja\"],",
-                    "\"languages\": [\"en\", \"ja\", \"fr\"],\n  \"localizedContent\": {\"en\": \"content/en/cards.json\", \"ja\": \"content/ja/cards.json\", \"fr\": \"content/fr/cards.json\"},",
+                    "\"zh\": \"content/zh/cards.json\"",
+                    "\"zh\": \"content/zh/cards.json\", \"fr\": \"content/fr/cards.json\"",
                 )
                 .replace(
-                    "\"content/ja/cards.json\": \"47432ec9343a5da8f5a88f084ebbcfe7b92037f6d66727855b20dff4c681d259\"",
-                    "\"content/ja/cards.json\": \"7b6ded7fddbbefbdeb2dc1da6721a4a3a9cf945436c872fe6cf52e30c36a195b\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
+                    "\"content/zh/cards.json\": \"d2904f7e487dcf0bd40e5f0c7e55d7a208a245e71997257852f9b170fa2dce4d\"",
+                    "\"content/zh/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
                 )
 
         refreshManifestChecksums(assets)
         val adapter = BundleContentAdapter(FakeAssetSource(assets))
 
         assertEquals(68, adapter.getLocalizedCopy("fr").size)
-        assertEquals(setOf("en", "ja", "fr"), adapter.validateBundle().languages)
+        assertEquals(setOf("en", "ja", "zh", "fr"), adapter.validateBundle().languages)
     }
 
     @Test

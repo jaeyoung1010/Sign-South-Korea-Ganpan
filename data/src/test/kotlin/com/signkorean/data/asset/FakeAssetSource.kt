@@ -7,6 +7,7 @@ internal const val MANIFEST_PATH = "content/manifest.json"
 internal const val BASE_CARDS_PATH = "content/cards.base.json"
 internal const val EN_CARDS_PATH = "content/en/cards.json"
 internal const val JA_CARDS_PATH = "content/ja/cards.json"
+internal const val ZH_CARDS_PATH = "content/zh/cards.json"
 
 internal class FakeAssetSource(
     private val assets: Map<String, String>,
@@ -28,7 +29,7 @@ internal class ClasspathAssetSource(
 
 internal fun validAssets(): Map<String, String> {
     val classLoader = checkNotNull(BundleContentAdapterTest::class.java.classLoader)
-    val contentPaths = listOf(MANIFEST_PATH, BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH)
+    val contentPaths = listOf(MANIFEST_PATH, BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH, ZH_CARDS_PATH)
     val baseCardImagePaths =
         Regex("\\\"imageAsset\\\":\\\"assets/([^\\\"]+)\\\"")
             .findAll(classLoader.getResource(BASE_CARDS_PATH)?.readText().orEmpty())

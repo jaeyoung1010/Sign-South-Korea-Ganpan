@@ -48,7 +48,7 @@ class BundleContentAdapter(
         val manifest = decode<ContentManifest>(manifestText, MANIFEST_PATH)
         requireValidation(manifest.contentVersion > 0) { "contentVersion must be positive" }
         requireValidation(manifest.cardCount > 0) { "cardCount must be positive" }
-        requireValidation(manifest.languages.containsAll(REQUIRED_LANGUAGE_TAGS)) { "supported languages must include en and ja" }
+        requireValidation(manifest.languages.containsAll(REQUIRED_LANGUAGE_TAGS)) { "supported languages must include en, ja, and zh" }
         requireValidation(manifest.languages.distinct().size == manifest.languages.size) { "duplicate language in manifest" }
         requireValidation(manifest.languages.all { LanguageTag.parseOrNull(it) != null }) { "manifest contains an invalid BCP-47 language tag" }
         requireValidation(manifest.reviewStatus.keys == manifest.languages.toSet()) { "manifest must record review status for every language" }
@@ -57,6 +57,9 @@ class BundleContentAdapter(
         }
         requireValidation(manifest.reviewStatus.getValue(JAPANESE_LANGUAGE_TAG) == NATIVE_JAPANESE_REVIEW_STATUS) {
             "Japanese review status must record native approval"
+        }
+        requireValidation(manifest.reviewStatus.getValue(CHINESE_LANGUAGE_TAG) == NATIVE_CHINESE_REVIEW_STATUS) {
+            "Chinese review status must record native approval"
         }
         requireValidation(manifest.factReviewStatus.keys == manifest.languages.toSet()) {
             "manifest must record Korean fact review status for every language"
@@ -177,11 +180,16 @@ class BundleContentAdapter(
                 requireValidation(copy.streetNote != englishCopies.getValue(copy.cardId).streetNote) {
                     "independent Japanese copy is required for ${copy.cardId}"
                 }
+            } else if (languageTag == CHINESE_LANGUAGE_TAG) {
+                requireValidation(copy.reviewer == NATIVE_CHINESE_REVIEWER) { "Chinese reviewer missing for ${copy.cardId}" }
+                requireValidation(copy.streetNote != englishCopies.getValue(copy.cardId).streetNote) {
+                    "independent Chinese copy is required for ${copy.cardId}"
+                }
             } else {
                 requireValidation(!copy.reviewer.isNullOrBlank()) { "$languageTag reviewer missing for ${copy.cardId}" }
             }
             requireValidation(copy.factReviewer == KOREAN_FACT_REVIEWER) {
-                "${if (languageTag == JAPANESE_LANGUAGE_TAG) "Japanese" else "English"} fact reviewer missing for ${copy.cardId}"
+                "${when (languageTag) { JAPANESE_LANGUAGE_TAG -> "Japanese"; CHINESE_LANGUAGE_TAG -> "Chinese"; else -> "English" }} fact reviewer missing for ${copy.cardId}"
             }
             requireValidation(copy.factReviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
                 "$languageTag fact review date missing for ${copy.cardId}"
@@ -250,13 +258,16 @@ class BundleContentAdapter(
         const val BASE_CARDS_PATH = "content/cards.base.json"
         const val ENGLISH_LANGUAGE_TAG = "en"
         const val JAPANESE_LANGUAGE_TAG = "ja"
+        const val CHINESE_LANGUAGE_TAG = "zh"
         const val NATIVE_ENGLISH_REVIEW_STATUS = "native-english-reviewed"
         const val NATIVE_JAPANESE_REVIEW_STATUS = "native-japanese-reviewed"
+        const val NATIVE_CHINESE_REVIEW_STATUS = "native-chinese-reviewed"
         const val KOREAN_FACT_REVIEW_STATUS = "korean-fact-reviewed"
         const val NATIVE_ENGLISH_REVIEWER = "native-english-review"
         const val NATIVE_JAPANESE_REVIEWER = "native-japanese-review"
+        const val NATIVE_CHINESE_REVIEWER = "native-chinese-review"
         const val KOREAN_FACT_REVIEWER = "korean-fact-review"
-        val REQUIRED_LANGUAGE_TAGS = setOf(ENGLISH_LANGUAGE_TAG, JAPANESE_LANGUAGE_TAG)
+        val REQUIRED_LANGUAGE_TAGS = setOf(ENGLISH_LANGUAGE_TAG, JAPANESE_LANGUAGE_TAG, CHINESE_LANGUAGE_TAG)
         val PERCENT_RANGE = 0f..100f
         val IMAGE_REVIEW_STATUSES = setOf("approved", "pending")
         val IMAGE_EXTENSIONS = setOf("jpg", "jpeg", "png")

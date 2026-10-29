@@ -9,20 +9,22 @@ import org.junit.Test
 
 class LocalizedResourcesCompletenessTest {
     @Test
-    fun `every user-facing English resource has a Japanese translation`() {
+    fun `every user-facing English resource has a translation for each supported language`() {
         resourceDirectories().forEach { directory ->
             val english = parseResources(directory.resolve("values/strings.xml"))
-            val japanese = parseResources(directory.resolve("values-ja/strings.xml"))
             assertFalse("No English resources found in $directory", english.isEmpty())
-            assertEquals("Missing or extra Japanese keys in $directory", english.keys, japanese.keys)
-            english.forEach { (key, value) ->
-                assertTrue("Blank English value for $key in $directory", value.isNotBlank())
-                assertTrue("Blank Japanese value for $key in $directory", japanese.getValue(key).isNotBlank())
-                assertEquals(
-                    "Placeholder mismatch for $key in $directory",
-                    placeholders(value),
-                    placeholders(japanese.getValue(key)),
-                )
+            listOf("ja", "zh").forEach { languageTag ->
+                val localized = parseResources(directory.resolve("values-$languageTag/strings.xml"))
+                assertEquals("Missing or extra $languageTag keys in $directory", english.keys, localized.keys)
+                english.forEach { (key, value) ->
+                    assertTrue("Blank English value for $key in $directory", value.isNotBlank())
+                    assertTrue("Blank $languageTag value for $key in $directory", localized.getValue(key).isNotBlank())
+                    assertEquals(
+                        "Placeholder mismatch for $key in $directory",
+                        placeholders(value),
+                        placeholders(localized.getValue(key)),
+                    )
+                }
             }
         }
     }

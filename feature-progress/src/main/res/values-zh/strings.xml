@@ -1,0 +1,22 @@
+<resources>
+    <string name="progress_title">学习进度</string>
+    <string name="progress_summary">看看你读懂韩国标牌的进步。</string>
+    <string name="progress_loading">正在加载进度…</string>
+    <string name="progress_retry">重试</string>
+    <string name="progress_empty_title">还没有进度</string>
+    <string name="progress_empty_body">练习一个标牌，开始你的学习之旅。</string>
+    <string name="progress_stat_learned">已学会</string>
+    <string name="progress_stat_mastered">已掌握</string>
+    <string name="progress_stat_due">待复习</string>
+    <string name="progress_week_title">本周</string>
+    <string name="progress_category_title">按类别</string>
+    <string name="progress_category_landmarks">地标</string>
+    <string name="progress_category_neighborhoods">街区</string>
+    <string name="progress_category_markets">市场</string>
+    <string name="progress_category_transport">交通</string>
+    <string name="progress_recent_title">需要复习</string>
+    <string name="progress_see_all">查看全部</string>
+    <string name="progress_close">关闭</string>
+    <string name="progress_empty_reviews">暂时没有需要复习的标牌。</string>
+    <string name="progress_practice">练习这个标牌</string>
+</resources>

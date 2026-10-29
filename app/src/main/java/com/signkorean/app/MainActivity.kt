@@ -1137,6 +1137,7 @@ private fun String.displayName(resources: android.content.res.Resources): String
     when (lowercase()) {
         "en" -> resources.getString(com.signkorean.feature.settings.R.string.language_english)
         "ja" -> resources.getString(com.signkorean.feature.settings.R.string.language_japanese)
+        "zh" -> resources.getString(com.signkorean.feature.settings.R.string.language_chinese)
         else -> this
     }
 

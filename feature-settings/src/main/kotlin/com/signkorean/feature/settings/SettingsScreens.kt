@@ -39,7 +39,7 @@ data class SettingsUiState(
     val followSystemReduceMotion: Boolean = true,
     val reminderEnabled: Boolean = false,
     val appLanguageTag: String = "en",
-    val supportedLanguageTags: List<String> = listOf("en", "ja"),
+    val supportedLanguageTags: List<String> = listOf("en", "ja", "zh"),
     val appVersion: String = "0.1.0",
     val profileName: String = "",
 )
@@ -268,6 +268,7 @@ private fun String.languageDisplayName(): String =
     when (lowercase()) {
         "en" -> stringResource(R.string.language_english)
         "ja" -> stringResource(R.string.language_japanese)
+        "zh" -> stringResource(R.string.language_chinese)
         else -> this
     }
 

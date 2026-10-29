@@ -1,0 +1,36 @@
+<resources>
+    <string name="onboarding_welcome_title">在真实世界读懂韩国</string>
+    <string name="onboarding_welcome_description">学习你在韩国街道、商店和车站真正会看到的韩语。</string>
+    <string name="onboarding_welcome_get_started">开始使用</string>
+    <string name="onboarding_welcome_account_notice">无需注册账号也能使用应用。</string>
+    <string name="onboarding_welcome_collage_description">三张韩国街头标牌照片：商店、车站和药店。</string>
+    <string name="onboarding_tutorial_title">看一看、确认后再滑动</string>
+    <string name="onboarding_tutorial_description">揭晓答案前，先猜猜标牌是什么意思。</string>
+    <string name="onboarding_tutorial_prompt">这个标牌写的是什么？</string>
+    <string name="onboarding_tutorial_show_answer">显示答案</string>
+    <string name="onboarding_tutorial_korean">분식</string>
+    <string name="onboarding_tutorial_meaning">小吃店 · 轻松享用的韩国美食</string>
+    <string name="onboarding_tutorial_got_it">← 知道了</string>
+    <string name="onboarding_tutorial_review">复习 →</string>
+    <string name="onboarding_tutorial_image_description">用于练习的韩国小吃店店面。</string>
+    <string name="onboarding_level_title">你对韩文有多熟悉？</string>
+    <string name="onboarding_level_description">这只会改变你首先看到的标牌。</string>
+    <string name="onboarding_level_beginner_title">初学者</string>
+    <string name="onboarding_level_beginner_description">我能慢慢读懂韩文。</string>
+    <string name="onboarding_level_elementary_title">入门</string>
+    <string name="onboarding_level_elementary_description">我能读懂常见单词和短语。</string>
+    <string name="onboarding_level_not_sure_title">不确定</string>
+    <string name="onboarding_level_not_sure_description">请从更简单的标牌开始。</string>
+    <string name="onboarding_level_skip">跳过</string>
+    <string name="onboarding_interests_title">你想先读懂什么？</string>
+    <string name="onboarding_interests_description">任意选择即可，仍会看到有用的综合内容。</string>
+    <string name="onboarding_interest_food">美食和餐厅</string>
+    <string name="onboarding_interest_transport">交通</string>
+    <string name="onboarding_interest_shopping">购物</string>
+    <string name="onboarding_interest_landmark">地标</string>
+    <string name="onboarding_interest_neighborhood">日常场所</string>
+    <string name="onboarding_interest_market">市场和公告</string>
+    <string name="onboarding_save_error">无法保存你的选择，请重试。</string>
+    <string name="onboarding_continue">继续</string>
+    <string name="onboarding_start_learning">开始学习</string>
+</resources>

@@ -16,6 +16,7 @@
     <string name="settings_version">バージョン %1$s</string>
     <string name="language_english">English</string>
     <string name="language_japanese">日本語</string>
+    <string name="language_chinese">简体中文</string>
     <string name="sheet_choose_language">アプリの言語を選択</string>
     <string name="sheet_language_question">アプリと学習説明に使う言語を選択してください。</string>
     <string name="legal_title">法的情報</string>
