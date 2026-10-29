@@ -2,9 +2,6 @@
 
 package com.signkorean.feature.learn
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -49,6 +46,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.shape.RoundedCornerShape
 import coil3.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
@@ -316,14 +314,13 @@ fun LearnHomeScreen(
             completedDays = state.week.count { it.count > 0 }.coerceAtMost(3),
             onClick = { onAction(LearnUiAction.OpenProgress) },
         )
-        // A category tap can require confirmation before replacing an in-progress session.
-        // Keep that decision next to the tapped category area so the tap never appears ignored.
-        state.pendingCategoryReplacement?.let { category ->
-            CategoryReplacementCard(category, state.isStarting, onAction)
-        }
         CategorySection(state.categories, state.isStarting, onAction)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
-        WeekSection(state.week)
+    }
+    state.pendingCategoryReplacement?.let { category ->
+        Dialog(onDismissRequest = { onAction(LearnUiAction.CancelCategoryReplacement) }) {
+            CategoryReplacementCard(category, state.isStarting, onAction)
+        }
     }
 }
 
@@ -659,77 +656,6 @@ private fun HomeCategoryUiModel.localizedLabel(): String =
             else -> R.string.learn_category_landmarks
         },
     )
-
-@Composable
-private fun WeekSection(week: List<WeekActivityUiModel>) {
-    val maxCount = week.maxOfOrNull { it.count }?.coerceAtLeast(1) ?: 1
-    val totalCount = week.sumOf { it.count }
-    Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = stringResource(R.string.learn_your_week), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-            Text(
-                text = pluralStringResource(R.plurals.learn_signs_practiced, totalCount, totalCount),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Black,
-                color = Color(SignKoreanPalette.GOT_IT_DARK),
-            )
-        }
-        GameCard(modifier = Modifier.fillMaxWidth().testTag(HomeTestTags.WEEK_CHART)) {
-            Row(
-                modifier = Modifier.fillMaxWidth().height(132.dp),
-                horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xSmall),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                week.forEach { day ->
-                    val targetProgress = day.count.toFloat() / maxCount
-                    val barProgress by
-                        animateFloatAsState(
-                            targetValue = targetProgress,
-                            animationSpec = spring(dampingRatio = 0.72f, stiffness = 280f),
-                            label = "week-activity-${day.label}",
-                        )
-                    Column(
-                        modifier = Modifier.width(36.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xxSmall),
-                    ) {
-                        Text(
-                            text = day.count.toString(),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Black,
-                            color = if (day.count > 0) Color(SignKoreanPalette.GOT_IT_DARK) else Color(SignKoreanPalette.MUTED),
-                        )
-                        Box(
-                            modifier =
-                                Modifier
-                                    .width(30.dp)
-                                    .height(76.dp)
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(Color(SignKoreanPalette.SURFACE_STRONG)),
-                            contentAlignment = Alignment.BottomCenter,
-                        ) {
-                            if (day.count > 0) {
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .height((76f * barProgress).coerceAtLeast(6f).dp)
-                                            .clip(MaterialTheme.shapes.small)
-                                            .background(Color(SignKoreanPalette.GOT_IT)),
-                                )
-                            }
-                        }
-                        Text(
-                            text = day.label,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Black,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun LearnSessionScreen(
