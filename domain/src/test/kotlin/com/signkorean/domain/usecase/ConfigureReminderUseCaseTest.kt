@@ -40,15 +40,16 @@ class ConfigureReminderUseCaseTest {
         }
 
     @Test
-    fun `zero due cards cancels and leaves reminder off`() =
+    fun `zero due cards still schedules the next daily check`() =
         runTest {
             val repository = FakeUserSettingsRepository(UserSettings(reminderEnabled = false))
             val scheduler = RecordingReminderScheduler()
             val result = ConfigureReminderUseCase(repository, scheduler, clock)(true, 0)
 
-            assertEquals(ConfigureReminderResult.NoDueCards, result)
-            assertTrue(!repository.settings.first().reminderEnabled)
-            assertEquals(1, scheduler.cancelCount)
+            assertEquals(ConfigureReminderResult.Scheduled, result)
+            assertTrue(repository.settings.first().reminderEnabled)
+            assertEquals(1, scheduler.schedules.size)
+            assertEquals(0, scheduler.cancelCount)
         }
 
     @Test

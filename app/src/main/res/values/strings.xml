@@ -45,8 +45,10 @@
     <string name="policy_privacy_version">1.0</string>
     <string name="policy_terms_version">1.0</string>
     <string name="policy_effective_date">2026–10–21</string>
-    <string name="policy_privacy_checksum">87198343eddfbf52ea29845a3dcde44b0f148e834de4ca5c669ca9b7401a6d8e</string>
-    <string name="policy_terms_checksum">c505bfcb3b9b40e7ed5aa1a396897a023c725afd0a7d091c7978d34d9de4919f</string>
-    <string name="policy_privacy_checksum_ja">1e05a88d26595159e30679e1316bc679583c0f49903a3780960754e279b8a9c6</string>
-    <string name="policy_terms_checksum_ja">ff549e500c945166f7de1fae72d90198a8c307d563bd24ca92fb0c8e4f314578</string>
+    <string name="policy_privacy_checksum">9aeda0981e96ec3169f6bd5b23b5cbe9d8f74af7b0c6c4cf452e08a25622cf13</string>
+    <string name="policy_terms_checksum">d2c200a8f33e453636694bfd8fab36daf18b912220d5dbec98efcf85f49b9a8c</string>
+    <string name="policy_privacy_checksum_ja">6900971dfa48f931e0969442ae61c2ea4d7820640762b0069c7015234053712e</string>
+    <string name="policy_terms_checksum_ja">5ac9762fc06cfed55c2d220b784f98535107b0ab834b609fa8cd9edcc5132071</string>
+    <string name="policy_privacy_checksum_zh">e8054b168350f301c16ca169a2a3bd81e693f7230386f73011a90d8e328d5c98</string>
+    <string name="policy_terms_checksum_zh">002f7d2e7b2dba8f93365b87ba59cce95ec18ed2c01b65faa792008a893c5ac3</string>
 </resources>

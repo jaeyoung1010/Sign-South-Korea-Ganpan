@@ -172,6 +172,29 @@ class SettingsViewModelTest {
             assertEquals(listOf(ReminderChangedEvent(true)), analytics.reminderChanges)
         }
 
+    @Test
+    fun `approved permission enables reminder before cards become due`() =
+        runTest {
+            val repository = FakeUserSettingsRepository()
+            val analytics = RecordingAnalyticsSink()
+            val viewModel =
+                SettingsViewModel(
+                    repository,
+                    RecordingAudioPlayer(),
+                    analytics,
+                    configureReminder = RecordingConfigureReminder(repository),
+                    observeProgress = ObserveProgress { flowOf(emptyProgressSnapshot()) },
+                )
+            advanceUntilIdle()
+
+            viewModel.onReminderPermissionResult(granted = true)
+            advanceUntilIdle()
+
+            assertTrue(repository.settings.first().reminderEnabled)
+            assertEquals(SettingsEffect.ReminderChanged(true), viewModel.effects.first())
+            assertEquals(listOf(ReminderChangedEvent(true)), analytics.reminderChanges)
+        }
+
     private class RecordingAudioPlayer : AudioPlayerPort {
         private val state = MutableStateFlow<AudioPlaybackState>(AudioPlaybackState.Idle)
         var stopCount = 0
@@ -199,8 +222,8 @@ class SettingsViewModelTest {
         private val repository: FakeUserSettingsRepository,
     ) : ConfigureReminder {
         override suspend fun invoke(enabled: Boolean, dueCount: Int): ConfigureReminderResult {
-            repository.updateSettings { it.copy(reminderEnabled = enabled && dueCount > 0) }
-            return if (!enabled) ConfigureReminderResult.Disabled else if (dueCount > 0) ConfigureReminderResult.Scheduled else ConfigureReminderResult.NoDueCards
+            repository.updateSettings { it.copy(reminderEnabled = enabled) }
+            return if (!enabled) ConfigureReminderResult.Disabled else ConfigureReminderResult.Scheduled
         }
     }
 

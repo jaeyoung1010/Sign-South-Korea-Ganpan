@@ -18,8 +18,9 @@ class ReminderPolicyTest {
     }
 
     @Test
-    fun `zero due cards never has a trigger`() {
-        assertNull(ReminderPolicy.nextTrigger(true, 0, LocalTime.of(19, 0), now, zone))
+    fun `zero due cards still has a daily trigger`() {
+        val expected = ZonedDateTime.of(2026, 10, 21, 19, 0, 0, 0, zone).toInstant()
+        assertEquals(expected, ReminderPolicy.nextTrigger(true, 0, LocalTime.of(19, 0), now, zone))
     }
 
     @Test

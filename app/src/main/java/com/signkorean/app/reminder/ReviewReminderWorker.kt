@@ -42,10 +42,16 @@ class ReviewReminderWorker
                     val nextReviewAt = card.nextReviewAt
                     nextReviewAt != null && !nextReviewAt.isAfter(clock.now())
                 }
-            if (dueCount == 0) return Result.success()
+            val languageTag = inputData.getString(KEY_LANGUAGE_TAG) ?: "en"
+            if (dueCount == 0) {
+                // Keep the user's daily reminder preference alive. A card can become due
+                // after this run, so the worker must schedule the next check even when it
+                // has nothing to notify about today.
+                enqueueNext(languageTag)
+                return Result.success()
+            }
 
             NotificationChannels.ensure(applicationContext)
-            val languageTag = inputData.getString(KEY_LANGUAGE_TAG) ?: "en"
             val localizedContext = applicationContext.localized(languageTag)
             val notification =
                 Notification.Builder(localizedContext, NotificationChannels.REVIEW_CHANNEL_ID)

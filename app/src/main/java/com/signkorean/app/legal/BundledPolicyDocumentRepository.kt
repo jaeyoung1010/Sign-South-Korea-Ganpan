@@ -14,6 +14,7 @@ import java.security.MessageDigest
 import javax.inject.Inject
 
 private const val JAPANESE_LANGUAGE_TAG = "ja"
+private const val CHINESE_LANGUAGE_TAG = "zh"
 
 class BundledPolicyDocumentRepository
     @Inject
@@ -42,10 +43,10 @@ class BundledPolicyDocumentRepository
             }
 
         private fun metadataFor(id: PolicyDocumentId): PolicyMetadata =
-            if (appLocalePort.getCurrent().equals(JAPANESE_LANGUAGE_TAG, ignoreCase = true)) {
-                japaneseMetadataFor(id)
-            } else {
-                englishMetadataFor(id)
+            when {
+                appLocalePort.getCurrent().equals(JAPANESE_LANGUAGE_TAG, ignoreCase = true) -> japaneseMetadataFor(id)
+                appLocalePort.getCurrent().equals(CHINESE_LANGUAGE_TAG, ignoreCase = true) -> chineseMetadataFor(id)
+                else -> englishMetadataFor(id)
             }
 
         private fun englishMetadataFor(id: PolicyDocumentId): PolicyMetadata =
@@ -87,6 +88,27 @@ class BundledPolicyDocumentRepository
                         versionRes = R.string.policy_terms_version,
                         urlRes = R.string.policy_terms_url,
                         expectedChecksum = context.getString(R.string.policy_terms_checksum_ja),
+                    )
+            }
+
+        private fun chineseMetadataFor(id: PolicyDocumentId): PolicyMetadata =
+            when (id) {
+                PolicyDocumentId.PRIVACY ->
+                    PolicyMetadata(
+                        assetPath = "legal/zh/privacy-policy.md",
+                        title = context.getString(R.string.legal_privacy_policy),
+                        versionRes = R.string.policy_privacy_version,
+                        urlRes = R.string.policy_privacy_url,
+                        expectedChecksum = context.getString(R.string.policy_privacy_checksum_zh),
+                    )
+
+                PolicyDocumentId.TERMS ->
+                    PolicyMetadata(
+                        assetPath = "legal/zh/terms-of-use.md",
+                        title = context.getString(R.string.legal_terms_of_use),
+                        versionRes = R.string.policy_terms_version,
+                        urlRes = R.string.policy_terms_url,
+                        expectedChecksum = context.getString(R.string.policy_terms_checksum_zh),
                     )
             }
 

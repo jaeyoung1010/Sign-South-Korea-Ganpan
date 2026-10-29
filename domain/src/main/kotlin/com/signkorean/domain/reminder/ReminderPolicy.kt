@@ -15,7 +15,10 @@ object ReminderPolicy {
         zoneId: ZoneId,
     ): Instant? {
         require(dueCount >= 0) { "Due count must not be negative" }
-        if (!enabled || dueCount == 0) return null
+        // Keep the daily work scheduled even when there is nothing due today. The worker
+        // checks the current due count before posting and reschedules itself, so enabling a
+        // reminder remains a stable user preference instead of silently turning itself off.
+        if (!enabled) return null
 
         val localNow = now.atZone(zoneId)
         var next = ZonedDateTime.of(localNow.toLocalDate(), localTime, zoneId)
