@@ -41,6 +41,7 @@ data class SettingsUiState(
     val appLanguageTag: String = "en",
     val supportedLanguageTags: List<String> = listOf("en", "ja"),
     val appVersion: String = "0.1.0",
+    val profileName: String = "",
 )
 
 data class LegalUiState(

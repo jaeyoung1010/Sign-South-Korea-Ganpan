@@ -35,16 +35,19 @@ data class UserSettings(
     val followSystemReduceMotion: Boolean = true,
     val reminderEnabled: Boolean = false,
     val reminderLocalTime: LocalTime = LocalTime.of(19, 0),
+    val profileName: String = "",
 ) {
     init {
         require(sessionLength in SESSION_LENGTH_OPTIONS) { "Unsupported session length: $sessionLength" }
         LanguageTag(appLanguageTag)
         LanguageTag(learningExplanationLanguageTag)
+        require(profileName.length <= MAX_PROFILE_NAME_LENGTH) { "Profile name is too long" }
     }
 
     companion object {
         const val DEFAULT_SESSION_LENGTH = 20
         const val DEFAULT_LANGUAGE_TAG = "en"
         val SESSION_LENGTH_OPTIONS = setOf(5, 10, 20, 30)
+        const val MAX_PROFILE_NAME_LENGTH = 40
     }
 }

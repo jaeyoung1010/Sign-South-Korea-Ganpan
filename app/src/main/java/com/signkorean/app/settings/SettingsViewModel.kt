@@ -67,6 +67,7 @@ class SettingsViewModel
                             appLanguageTag = settings.appLanguageTag,
                             supportedLanguageTags = changeAppLanguage.supportedLanguageTags.toList(),
                             appVersion = appVersion,
+                            profileName = settings.profileName,
                         )
                 }
             }
@@ -153,6 +154,11 @@ class SettingsViewModel
             } else {
                 effectChannel.trySend(SettingsEffect.ReminderPermissionRequested)
             }
+        }
+
+        fun updateProfileName(name: String) {
+            val normalizedName = name.take(UserSettings.MAX_PROFILE_NAME_LENGTH)
+            persistSettings { settings -> settings.copy(profileName = normalizedName) }
         }
 
         fun onReminderPermissionResult(granted: Boolean) {

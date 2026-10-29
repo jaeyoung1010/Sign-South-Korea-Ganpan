@@ -1,6 +1,7 @@
 <resources>
     <string name="learn_ready_title">Ready to read Korea?</string>
     <string name="learn_ready_description">A short street-reading session is waiting.</string>
+    <string name="learn_weekly_goal">Your weekly goal: %1$d/%2$d days</string>
     <string name="learn_brand_name">Sign South Korea Ganpan</string>
     <string name="learn_streak_day_one">%1$d day</string>
     <string name="learn_streak_days_other">%1$d days</string>
@@ -20,6 +21,7 @@
     <string name="learn_replace_session">Replace session</string>
     <string name="learn_keep_current_session">Keep current session</string>
     <string name="learn_explore_category">Explore by category</string>
+    <string name="learn_category_quick_description">Short on time? Learn quickly by category.</string>
     <string name="learn_see_all">See all</string>
     <string name="learn_category_landmarks">Landmarks</string>
     <string name="learn_category_neighborhoods">Neighborhoods</string>
@@ -33,6 +35,8 @@
     <plurals name="learn_category_count"><item quantity="one">%d sign</item><item quantity="other">%d signs</item></plurals>
     <string name="learn_your_week">Your week</string>
     <string name="learn_open_settings">Open settings</string>
+    <string name="learn_open_notices">Open announcements</string>
+    <string name="learn_open_profile">Open profile</string>
     <string name="learn_close">Close</string>
     <string name="learn_more">More</string>
     <string name="learn_position">%1$d of %2$d</string>

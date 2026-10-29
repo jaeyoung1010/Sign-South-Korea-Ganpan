@@ -79,6 +79,7 @@ private fun UserSettingsProto.toDomain(
         followSystemReduceMotion = !hasExplicitReduceMotion,
         reminderEnabled = reminderEnabled,
         reminderLocalTime = if (hasExplicitReminderLocalTime) reminderLocalTimeOrDefault() else LocalTime.of(19, 0),
+        profileName = profileName.take(UserSettings.MAX_PROFILE_NAME_LENGTH),
     )
 }
 
@@ -109,6 +110,7 @@ private fun UserSettings.toProto(
         .setReminderLocalHour(reminderLocalTime.hour)
         .setReminderLocalMinute(reminderLocalTime.minute)
         .setHasExplicitReminderLocalTime(true)
+        .setProfileName(profileName.take(UserSettings.MAX_PROFILE_NAME_LENGTH))
         .build()
 
 private fun LevelProto.toDomain(): LearningLevel =

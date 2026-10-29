@@ -5,8 +5,8 @@ package com.signkorean.feature.learn
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,9 +32,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -46,11 +49,12 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
+import coil3.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
-import com.signkorean.designsystem.components.GameIconButton
 import com.signkorean.designsystem.testing.SignKoreanTestTags
 import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
@@ -271,6 +275,10 @@ sealed interface LearnUiAction {
     data object BackHome : LearnUiAction
 
     data object OpenSettings : LearnUiAction
+
+    data object OpenNotices : LearnUiAction
+
+    data object OpenProfile : LearnUiAction
 }
 
 sealed interface LearnUiEffect {
@@ -298,49 +306,160 @@ fun LearnHomeScreen(
                 .testTag("screen-home"),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.medium),
     ) {
-        HomeBrandBar(state.streakDays, onOpenSettings = { onAction(LearnUiAction.OpenSettings) })
+        HomeHeader(
+            onOpenNotices = { onAction(LearnUiAction.OpenNotices) },
+            onOpenSettings = { onAction(LearnUiAction.OpenSettings) },
+            onOpenProfile = { onAction(LearnUiAction.OpenProfile) },
+        )
         Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-        Text(text = stringResource(R.string.learn_ready_description), style = MaterialTheme.typography.bodyLarge)
+        WeeklyGoalCard(
+            completedDays = state.week.count { it.count > 0 }.coerceAtMost(3),
+            onClick = { onAction(LearnUiAction.OpenProgress) },
+        )
+        CategorySection(state.categories, state.isStarting, onAction)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
         state.pendingCategoryReplacement?.let { category -> CategoryReplacementCard(category, state.isStarting, onAction) }
-        CategorySection(state.categories, state.isStarting, onAction)
         WeekSection(state.week)
     }
 }
 
 @Composable
-private fun HomeBrandBar(
-    streakDays: Int,
+private fun HomeHeader(
+    onOpenNotices: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenProfile: () -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
-            text = stringResource(R.string.learn_brand_name),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Black,
-            color = Color(SignKoreanPalette.INK),
-        )
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            Surface(
+                color = Color(SignKoreanPalette.SURFACE),
+                shape = RoundedCornerShape(28.dp),
+                shadowElevation = 3.dp,
+            ) {
+                Row {
+                    HeaderIconButton(
+                        contentDescription = stringResource(R.string.learn_open_notices),
+                        onClick = onOpenNotices,
+                        modifier = Modifier.testTag("home-open-notices"),
+                    ) { BellIcon() }
+                    HeaderIconButton(
+                        contentDescription = stringResource(R.string.learn_open_settings),
+                        onClick = onOpenSettings,
+                        modifier = Modifier.testTag("home-open-settings"),
+                    ) { GearIcon() }
+                }
+            }
+            HeaderIconButton(
+                contentDescription = stringResource(R.string.learn_open_profile),
+                onClick = onOpenProfile,
+                modifier = Modifier.testTag("home-open-profile"),
+                containerColor = Color(0xFF2F6CE5),
+                contentColor = Color.White,
+            ) { ProfileIcon(Color.White) }
+        }
+    }
+}
+
+@Composable
+private fun HeaderIconButton(
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    containerColor: Color = Color.Transparent,
+    contentColor: Color = Color(SignKoreanPalette.INK),
+    content: @Composable () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier.size(56.dp),
+        colors = IconButtonDefaults.iconButtonColors(containerColor = containerColor, contentColor = contentColor),
+    ) {
+        Box(modifier = Modifier.semantics { this.contentDescription = contentDescription }, contentAlignment = Alignment.Center) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun BellIcon(color: Color = Color(SignKoreanPalette.INK)) {
+    Canvas(modifier = Modifier.size(29.dp)) {
+        val stroke = Stroke(width = 2.3.dp.toPx())
+        val left = size.width * .23f
+        val right = size.width * .77f
+        val top = size.height * .16f
+        val bottom = size.height * .76f
+        drawArc(color, 195f, 150f, false, Offset(left, top), Size(right - left, bottom - top), style = stroke)
+        drawLine(color, Offset(left, size.height * .65f), Offset(left, size.height * .78f), strokeWidth = stroke.width)
+        drawLine(color, Offset(right, size.height * .65f), Offset(right, size.height * .78f), strokeWidth = stroke.width)
+        drawLine(color, Offset(size.width * .14f, size.height * .78f), Offset(size.width * .86f, size.height * .78f), strokeWidth = stroke.width)
+        drawCircle(color, radius = size.width * .075f, center = Offset(size.width / 2f, size.height * .88f))
+    }
+}
+
+@Composable
+private fun GearIcon(color: Color = Color(SignKoreanPalette.INK)) {
+    Canvas(modifier = Modifier.size(30.dp)) {
+        val stroke = Stroke(width = 2.2.dp.toPx())
+        val center = Offset(size.width / 2f, size.height / 2f)
+        repeat(8) { index ->
+            rotate(index * 45f, center) {
+                drawLine(
+                    color = color,
+                    start = Offset(center.x, size.height * .07f),
+                    end = Offset(center.x, size.height * .27f),
+                    strokeWidth = stroke.width,
+                )
+            }
+        }
+        drawCircle(color, radius = size.width * .29f, center = center, style = stroke)
+        drawCircle(color, radius = size.width * .105f, center = center, style = stroke)
+    }
+}
+
+@Composable
+private fun ProfileIcon(color: Color = Color(SignKoreanPalette.INK)) {
+    Canvas(modifier = Modifier.size(28.dp)) {
+        val stroke = Stroke(width = 2.2.dp.toPx())
+        drawCircle(color, radius = size.width * .19f, center = Offset(size.width / 2f, size.height * .32f), style = stroke)
+        drawArc(
+            color = color,
+            startAngle = 205f,
+            sweepAngle = 130f,
+            useCenter = false,
+            topLeft = Offset(size.width * .17f, size.height * .40f),
+            size = Size(size.width * .66f, size.height * .52f),
+            style = stroke,
+        )
+    }
+}
+
+@Composable
+private fun WeeklyGoalCard(
+    completedDays: Int,
+    onClick: () -> Unit,
+) {
+    Surface(
+        onClick = onClick,
+        color = Color(SignKoreanPalette.SURFACE_SOFT),
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth().testTag("home-weekly-goal"),
+    ) {
+        Row(
+            modifier = Modifier.padding(SignKoreanSpacing.medium),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
+        ) {
+            Text(text = "◔", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF2F6CE5))
             Text(
-                text =
-                    if (streakDays == 1) {
-                        stringResource(R.string.learn_streak_day_one, streakDays)
-                    } else {
-                        stringResource(R.string.learn_streak_days_other, streakDays)
-                    },
-                style = MaterialTheme.typography.labelLarge,
+                text = stringResource(R.string.learn_weekly_goal, completedDays, 3),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color(SignKoreanPalette.BODY),
             )
-            GameIconButton(
-                symbol = "⚙",
-                contentDescription = stringResource(R.string.learn_open_settings),
-                onClick = onOpenSettings,
-                modifier = Modifier.testTag("home-open-settings"),
-            )
+            Text(text = "›", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         }
     }
 }
@@ -434,8 +553,13 @@ private fun CategorySection(
     onAction: (LearnUiAction) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = stringResource(R.string.learn_explore_category), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(text = stringResource(R.string.learn_explore_category), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(
+            text = stringResource(R.string.learn_category_quick_description),
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color(SignKoreanPalette.BODY),
+        )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             GameButton(
                 text = stringResource(R.string.learn_see_all),
                 onClick = { onAction(LearnUiAction.ShowDeckSheet) },
@@ -467,7 +591,7 @@ private fun CategoryCard(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.width(156.dp),
+        modifier = Modifier.width(172.dp),
         shape = MaterialTheme.shapes.large,
         color = Color(SignKoreanPalette.SURFACE),
         contentColor = Color(SignKoreanPalette.INK),
@@ -475,116 +599,42 @@ private fun CategoryCard(
         shadowElevation = 0.dp,
     ) {
         Column(
-            modifier = Modifier.padding(SignKoreanSpacing.small),
-            verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xxSmall),
+            verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
         ) {
-            CategoryIcon(
-                category = category.key,
-                contentDescription = category.localizedLabel(),
-                modifier = Modifier.width(36.dp).aspectRatio(1f),
+            AsyncImage(
+                model = category.imageAssetUri(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(132.dp)
+                        .clip(MaterialTheme.shapes.large),
             )
             Text(
                 text = category.localizedLabel(),
-                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = SignKoreanSpacing.small, vertical = SignKoreanSpacing.xSmall),
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Black,
                 maxLines = 1,
-            )
-            Text(
-                text = pluralStringResource(R.plurals.learn_category_count, category.cardCount, category.cardCount),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color(SignKoreanPalette.MUTED),
             )
         }
     }
 }
 
-private data class CategoryVisualStyle(val background: Color)
-
-private fun HomeCategoryUiModel.visualStyle(): CategoryVisualStyle =
-    CategoryVisualStyle(
-        background =
-            when (key) {
-                "LANDMARK", "NEIGHBORHOOD", "MARKET", "TRANSPORT", "FOOD", "SHOPPING", "EVERYDAY", "NOTICE" -> Color(SignKoreanPalette.SURFACE_SOFT)
-                else -> Color(SignKoreanPalette.SURFACE)
-            },
-    )
-
-@Composable
-private fun CategoryIcon(
-    category: String,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-) {
-    val stroke = Color(SignKoreanPalette.INK)
-    Box(
-        modifier =
-            modifier
-                .clip(MaterialTheme.shapes.medium)
-                .background(Color(SignKoreanPalette.SURFACE_STRONG))
-                .drawBehind {
-                    val line = Stroke(width = 1.8.dp.toPx())
-                    val left = size.width * 0.22f
-                    val right = size.width * 0.78f
-                    val top = size.height * 0.19f
-                    val bottom = size.height * 0.81f
-                    fun line(fromX: Float, fromY: Float, toX: Float, toY: Float) =
-                        drawLine(stroke, Offset(fromX, fromY), Offset(toX, toY), strokeWidth = line.width)
-
-                    when (category) {
-                        "LANDMARK" -> {
-                            drawRect(stroke, Offset(left, top + size.height * 0.18f), Size(right - left, bottom - top - size.height * 0.18f), style = line)
-                            line(left, top + size.height * 0.18f, size.width / 2f, top)
-                            line(size.width / 2f, top, right, top + size.height * 0.18f)
-                            line(size.width * 0.43f, bottom, size.width * 0.43f, size.height * 0.61f)
-                            line(size.width * 0.57f, bottom, size.width * 0.57f, size.height * 0.61f)
-                            line(left + size.width * 0.1f, size.height * 0.49f, right - size.width * 0.1f, size.height * 0.49f)
-                        }
-                        "NEIGHBORHOOD" -> {
-                            line(size.width / 2f, top, size.width / 2f, bottom)
-                            line(left, top + size.height * 0.06f, right, top + size.height * 0.06f)
-                            line(left, size.height * 0.54f, right, size.height * 0.54f)
-                            line(left + size.width * 0.11f, top + size.height * 0.06f, left + size.width * 0.11f, size.height * 0.54f)
-                            line(right - size.width * 0.11f, top + size.height * 0.06f, right - size.width * 0.11f, size.height * 0.54f)
-                        }
-                        "MARKET" -> {
-                            drawRect(stroke, Offset(left, size.height * 0.48f), Size(right - left, size.height * 0.29f), style = line)
-                            line(left, size.height * 0.48f, left + size.width * 0.08f, size.height * 0.3f)
-                            line(left + size.width * 0.08f, size.height * 0.3f, right - size.width * 0.08f, size.height * 0.3f)
-                            line(right - size.width * 0.08f, size.height * 0.3f, right, size.height * 0.48f)
-                            line(left, size.height * 0.48f, right, size.height * 0.48f)
-                        }
-                        "TRANSPORT" -> {
-                            drawRoundRect(stroke, Offset(left, top), Size(right - left, bottom - top), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5.dp.toPx()), style = line)
-                            line(left, size.height * 0.53f, right, size.height * 0.53f)
-                            drawCircle(stroke, radius = size.width * 0.07f, center = Offset(size.width * 0.36f, bottom), style = line)
-                            drawCircle(stroke, radius = size.width * 0.07f, center = Offset(size.width * 0.64f, bottom), style = line)
-                        }
-                        "FOOD" -> {
-                            drawArc(stroke, 180f, 180f, false, Offset(left, size.height * 0.4f), Size(right - left, size.height * 0.3f), style = line)
-                            line(left, size.height * 0.55f, right, size.height * 0.55f)
-                            line(size.width * 0.32f, size.height * 0.31f, size.width * 0.27f, size.height * 0.18f)
-                            line(size.width * 0.5f, size.height * 0.29f, size.width * 0.5f, size.height * 0.15f)
-                            line(size.width * 0.68f, size.height * 0.31f, size.width * 0.73f, size.height * 0.18f)
-                        }
-                        "SHOPPING" -> {
-                            drawRoundRect(stroke, Offset(left, size.height * 0.34f), Size(right - left, size.height * 0.43f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()), style = line)
-                            drawArc(stroke, 180f, 180f, false, Offset(size.width * 0.36f, size.height * 0.18f), Size(size.width * 0.28f, size.height * 0.28f), style = line)
-                        }
-                        "EVERYDAY" -> {
-                            drawCircle(stroke, radius = size.width * 0.23f, center = Offset(size.width / 2f, size.height / 2f), style = line)
-                            line(size.width / 2f, size.height * 0.38f, size.width / 2f, size.height * 0.62f)
-                            line(size.width * 0.38f, size.height / 2f, size.width * 0.62f, size.height / 2f)
-                        }
-                        else -> {
-                            drawRoundRect(stroke, Offset(left, top), Size(right - left, bottom - top), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5.dp.toPx()), style = line)
-                            line(size.width / 2f, size.height * 0.34f, size.width / 2f, size.height * 0.57f)
-                            drawCircle(stroke, radius = 1.8.dp.toPx(), center = Offset(size.width / 2f, size.height * 0.68f))
-                        }
-                    }
-                }
-                .semantics { this.contentDescription = contentDescription },
-    )
-}
+private fun HomeCategoryUiModel.imageAssetUri(): String =
+    "file:///android_asset/" +
+        when (key) {
+            "LANDMARK" -> "signs/generated/02-gyeongbokgung.jpg"
+            "NEIGHBORHOOD" -> "signs/generated/01-hongdae-entrance.jpg"
+            "MARKET" -> "signs/generated/06-gwangjang-market.jpg"
+            "TRANSPORT" -> "signs/generated/20-seoul-station.jpg"
+            "FOOD" -> "signs/bunsik.jpg"
+            "SHOPPING" -> "signs/generated/terms-2026-10-29/27-cosmetics.png"
+            "EVERYDAY" -> "signs/convenience-store.jpg"
+            "NOTICE" -> "signs/no-smoking.jpg"
+            else -> "signs/generated/01-hongdae-entrance.jpg"
+        }
 
 @Composable
 private fun HomeCategoryUiModel.localizedLabel(): String =

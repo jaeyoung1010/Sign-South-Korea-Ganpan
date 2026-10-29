@@ -34,4 +34,19 @@
     <string name="account_delete_notice">Deleting or uninstalling the app removes this local progress.</string>
     <string name="account_connect">Connect account</string>
     <string name="account_cloud_unavailable">Cloud sync is not available in this version.</string>
+    <string name="notices_title">Announcements</string>
+    <string name="notices_empty_title">What’s new</string>
+    <string name="notices_welcome_title">Welcome to SSKG</string>
+    <string name="notices_welcome_body">Learn the Korean you see on signs, at your own pace.</string>
+    <string name="notices_content_title">More signs are on the way</string>
+    <string name="notices_content_body">We’re adding useful signs for food, shopping, transport, and everyday travel.</string>
+    <string name="notices_back">Back to home</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_intro">Set up a name for your learning profile. You can update it whenever you like.</string>
+    <string name="profile_name_label">Display name</string>
+    <string name="profile_name_placeholder">Traveler</string>
+    <string name="profile_save">Save profile</string>
+    <string name="profile_saved_name">Learning as %1$s</string>
+    <string name="profile_not_set">Your profile has not been set up yet.</string>
+    <string name="profile_back">Back to home</string>
 </resources>

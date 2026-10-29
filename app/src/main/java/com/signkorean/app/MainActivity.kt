@@ -113,6 +113,8 @@ import com.signkorean.feature.settings.LegalUiAction
 import com.signkorean.feature.settings.LegalUiState
 import com.signkorean.feature.settings.AccountSheet
 import com.signkorean.feature.settings.AccountUiState
+import com.signkorean.feature.settings.AnnouncementsScreen
+import com.signkorean.feature.settings.ProfileScreen
 import com.signkorean.feature.settings.SettingsScreen
 import com.signkorean.feature.settings.SettingsUiAction
 import com.signkorean.feature.settings.SettingsUiState
@@ -337,6 +339,7 @@ private fun SignKoreanApp(
         onToggleAutoPlay = settingsViewModel::toggleAutoPlay,
         onToggleReduceMotion = settingsViewModel::toggleReduceMotion,
         onToggleReminder = settingsViewModel::toggleReminder,
+        onUpdateProfileName = settingsViewModel::updateProfileName,
         legalState = legalState,
         onLegalAction = { action ->
             when (action) {
@@ -392,6 +395,7 @@ internal fun SignKoreanAppContent(
     onToggleAutoPlay: () -> Unit = {},
     onToggleReduceMotion: () -> Unit = {},
     onToggleReminder: () -> Unit = {},
+    onUpdateProfileName: (String) -> Unit = {},
     legalState: LegalUiState = LegalUiState(),
     onLegalAction: (LegalUiAction) -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
@@ -482,6 +486,16 @@ internal fun SignKoreanAppContent(
                         onToggleReduceMotion = onToggleReduceMotion,
                         onToggleReminder = onToggleReminder,
                         onOpenAccount = { onAction(AppNavigationAction.ShowSheet(AppSheet.Account)) },
+                    )
+                }
+                entry<AppRoute.Notices> {
+                    AnnouncementsScreen(onBack = { onAction(AppNavigationAction.Back) })
+                }
+                entry<AppRoute.Profile> {
+                    ProfileScreen(
+                        profileName = settingsState.profileName,
+                        onSave = onUpdateProfileName,
+                        onBack = { onAction(AppNavigationAction.Back) },
                     )
                 }
                 entry<AppRoute.Legal> {
@@ -670,6 +684,8 @@ private fun LearnHomeDestination(
                 LearnUiAction.ShowDeckSheet -> onAction(AppNavigationAction.ShowSheet(AppSheet.Category))
                 LearnUiAction.OpenProgress -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
                 LearnUiAction.OpenSettings -> onAction(AppNavigationAction.Navigate(AppRoute.Settings))
+                LearnUiAction.OpenNotices -> onAction(AppNavigationAction.Navigate(AppRoute.Notices))
+                LearnUiAction.OpenProfile -> onAction(AppNavigationAction.Navigate(AppRoute.Profile))
                 else -> Unit
             }
         },

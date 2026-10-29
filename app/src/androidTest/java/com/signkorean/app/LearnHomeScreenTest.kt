@@ -49,7 +49,7 @@ class LearnHomeScreenTest {
             }
         }
 
-        composeRule.onNodeWithText("3 days").assertIsDisplayed()
+        composeRule.onNodeWithText("Your weekly goal: 3/3 days").assertIsDisplayed()
         composeRule.onNodeWithText("20 street signs").assertIsDisplayed()
         composeRule.onNodeWithText("About 8 minutes").assertIsDisplayed()
         composeRule.onNodeWithText("3 review").assertIsDisplayed()
@@ -78,17 +78,17 @@ class LearnHomeScreenTest {
     }
 
     @Test
-    fun single_day_streak_uses_singular_copy() {
+    fun weekly_goal_uses_completed_days_from_the_activity_history() {
         composeRule.setContent {
             SignKoreanTheme {
                 LearnHomeScreen(
-                    state = regularHomeState().copy(streakDays = 1),
+                    state = regularHomeState().copy(week = listOf(WeekActivityUiModel("M", 1))),
                     onAction = {},
                 )
             }
         }
 
-        composeRule.onNodeWithText("1 day").assertIsDisplayed()
+        composeRule.onNodeWithText("Your weekly goal: 1/3 days").assertIsDisplayed()
     }
 
     @Test

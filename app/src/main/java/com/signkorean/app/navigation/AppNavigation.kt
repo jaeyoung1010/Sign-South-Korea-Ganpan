@@ -59,6 +59,16 @@ sealed interface AppRoute : NavKey {
     }
 
     @Serializable
+    data object Notices : AppRoute {
+        override val screenId: String = "screen-notices"
+    }
+
+    @Serializable
+    data object Profile : AppRoute {
+        override val screenId: String = "screen-profile"
+    }
+
+    @Serializable
     data object Legal : AppRoute {
         override val screenId: String = "screen-legal"
     }
@@ -229,6 +239,8 @@ object AppNavigationIntent {
             AppRoute.Done,
             AppRoute.Progress,
             AppRoute.Settings,
+            AppRoute.Notices,
+            AppRoute.Profile,
             AppRoute.Legal,
         )
 }

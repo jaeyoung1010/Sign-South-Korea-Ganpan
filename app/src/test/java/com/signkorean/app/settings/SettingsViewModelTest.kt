@@ -63,6 +63,19 @@ class SettingsViewModelTest {
         }
 
     @Test
+    fun `profile name is persisted and exposed to the profile screen`() =
+        runTest {
+            val repository = FakeUserSettingsRepository()
+            val viewModel = SettingsViewModel(repository, RecordingAudioPlayer(), RecordingAnalyticsSink())
+
+            viewModel.updateProfileName("Traveler")
+            advanceUntilIdle()
+
+            assertEquals("Traveler", repository.settings.first().profileName)
+            assertEquals("Traveler", viewModel.uiState.value.profileName)
+        }
+
+    @Test
     fun `selecting an app language persists it and emits a refresh effect`() =
         runTest {
             val repository = FakeUserSettingsRepository()

@@ -34,4 +34,19 @@
     <string name="account_delete_notice">アプリを削除またはアンインストールすると、この端末の進捗も削除されます。</string>
     <string name="account_connect">アカウントを接続</string>
     <string name="account_cloud_unavailable">このバージョンではクラウド同期を利用できません。</string>
+    <string name="notices_title">お知らせ</string>
+    <string name="notices_empty_title">最新情報</string>
+    <string name="notices_welcome_title">SSKGへようこそ</string>
+    <string name="notices_welcome_body">街で見かける韓国語を、自分のペースで学べます。</string>
+    <string name="notices_content_title">新しい看板を追加中です</string>
+    <string name="notices_content_body">食べ物、買い物、交通、日常の旅行に役立つ看板を追加しています。</string>
+    <string name="notices_back">ホームに戻る</string>
+    <string name="profile_title">プロフィール</string>
+    <string name="profile_intro">学習プロフィールの名前を設定できます。いつでも変更できます。</string>
+    <string name="profile_name_label">表示名</string>
+    <string name="profile_name_placeholder">旅行者</string>
+    <string name="profile_save">プロフィールを保存</string>
+    <string name="profile_saved_name">%1$sとして学習中</string>
+    <string name="profile_not_set">プロフィールはまだ設定されていません。</string>
+    <string name="profile_back">ホームに戻る</string>
 </resources>

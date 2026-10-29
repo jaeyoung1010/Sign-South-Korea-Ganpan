@@ -154,6 +154,8 @@ class AppNavigationReducerTest {
                 AppRoute.Done,
                 AppRoute.Progress,
                 AppRoute.Settings,
+                AppRoute.Notices,
+                AppRoute.Profile,
             ),
             AppNavigationIntent.prototypeScreenIds.map(AppNavigationIntent::routeForScreenId),
         )
