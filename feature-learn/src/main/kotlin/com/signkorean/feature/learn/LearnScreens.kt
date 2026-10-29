@@ -356,9 +356,9 @@ private fun HomeHeader(
                 contentDescription = stringResource(R.string.learn_open_profile),
                 onClick = onOpenProfile,
                 modifier = Modifier.testTag("home-open-profile"),
-                containerColor = Color(0xFF2F6CE5),
-                contentColor = Color.White,
-            ) { ProfileIcon(Color.White) }
+                containerColor = Color(SignKoreanPalette.PRIMARY),
+                contentColor = Color(SignKoreanPalette.INK),
+            ) { ProfileIcon() }
         }
     }
 }
@@ -452,7 +452,11 @@ private fun WeeklyGoalCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
         ) {
-            Text(text = "◔", style = MaterialTheme.typography.headlineMedium, color = Color(0xFF2F6CE5))
+            Text(
+                text = "◔",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color(SignKoreanPalette.PRIMARY_DARK),
+            )
             Text(
                 text = stringResource(R.string.learn_weekly_goal, completedDays, 3),
                 modifier = Modifier.weight(1f),
