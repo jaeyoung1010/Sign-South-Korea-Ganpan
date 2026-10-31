@@ -2,6 +2,9 @@
 <resources>
     <style name="Theme.SignKorean" parent="Theme.AppCompat.NoActionBar">
         <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">@drawable/splash_window_background</item>
+        <item name="android:statusBarColor">#FF9FE870</item>
+        <item name="android:navigationBarColor">#FF9FE870</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowNoTitle">true</item>

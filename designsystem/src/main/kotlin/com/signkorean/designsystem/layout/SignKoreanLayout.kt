@@ -22,6 +22,7 @@ fun SignKoreanScreen(
     modifier: Modifier = Modifier,
     applySafeDrawingInsets: Boolean = true,
     bottomInsetColor: Color? = null,
+    backgroundColor: Color = Color(SignKoreanPalette.BACKGROUND),
     content: @Composable () -> Unit,
 ) {
     val safeDrawingModifier =
@@ -34,7 +35,7 @@ fun SignKoreanScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Color(SignKoreanPalette.BACKGROUND))
+                .background(backgroundColor)
     ) {
         bottomInsetColor?.let { color ->
             Box(

@@ -14,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -46,6 +47,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
@@ -538,14 +540,21 @@ internal fun SignKoreanAppContent(
         if (state.sheet != AppSheet.Report) onCancelReport()
     }
 
+    val isLaunchScreen = renderedRoute == AppRoute.Launch
     SignKoreanTheme {
         SignKoreanScreen(
-            applySafeDrawingInsets = !state.isViewerVisible,
+            applySafeDrawingInsets = !state.isViewerVisible && !isLaunchScreen,
             bottomInsetColor =
                 if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     Color(SignKoreanPalette.SURFACE)
                 } else {
                     null
+                },
+            backgroundColor =
+                if (isLaunchScreen) {
+                    Color(SignKoreanPalette.PRIMARY)
+                } else {
+                    Color(SignKoreanPalette.BACKGROUND)
                 },
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -553,7 +562,16 @@ internal fun SignKoreanAppContent(
                     backStack = backStack,
                     entryProvider = entries,
                     onBack = { onAction(AppNavigationAction.Back) },
-                    modifier = Modifier.fillMaxSize().padding(SignKoreanSpacing.large),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .then(
+                                if (isLaunchScreen) {
+                                    Modifier
+                                } else {
+                                    Modifier.padding(SignKoreanSpacing.large)
+                                },
+                            ),
                 )
                 if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     TopLevelTabs(
@@ -624,17 +642,25 @@ private fun LaunchScreen(
     onRetry: () -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color(SignKoreanPalette.PRIMARY)),
         contentAlignment = Alignment.Center,
     ) {
-        GameCard(modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
-            when (state) {
-                LaunchUiState.Loading -> {
-                    Text(stringResource(R.string.launch_loading), style = MaterialTheme.typography.bodyLarge)
-                }
+        when (state) {
+            LaunchUiState.Loading,
+            is LaunchUiState.Ready,
+            -> {
+                Image(
+                    painter = painterResource(R.drawable.sskg_wordmark_taegeuk),
+                    contentDescription = stringResource(R.string.app_icon_label),
+                    modifier = Modifier.width(250.dp).height(84.dp).testTag("launch-brand-mark"),
+                )
+            }
 
-                is LaunchUiState.Error -> {
+            is LaunchUiState.Error -> {
+                GameCard(modifier = Modifier.fillMaxWidth().padding(SignKoreanSpacing.large)) {
                     val message =
                         when (state.failure) {
                             LaunchFailure.Database -> stringResource(R.string.launch_database_error)
@@ -646,10 +672,6 @@ private fun LaunchScreen(
                         onClick = onRetry,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                }
-
-                is LaunchUiState.Ready -> {
-                    Unit
                 }
             }
         }
