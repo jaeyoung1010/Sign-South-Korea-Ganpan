@@ -35,7 +35,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -417,6 +420,15 @@ internal fun SignKoreanAppContent(
     // of truth for what is actually being drawn, so derive the chrome from it
     // as well. This keeps the bottom tabs attached to the visible destination.
     val renderedRoute = backStack.lastOrNull() as? AppRoute ?: state.currentRoute
+    var awaitingFirstDestinationFrame by remember { mutableStateOf(true) }
+    LaunchedEffect(launchState, renderedRoute) {
+        if (launchState is LaunchUiState.Ready && renderedRoute != AppRoute.Launch) {
+            withFrameNanos { }
+            awaitingFirstDestinationFrame = false
+        }
+    }
+    val showLaunchSplash = awaitingFirstDestinationFrame && launchState !is LaunchUiState.Error
+    val useLaunchBackground = renderedRoute == AppRoute.Launch || showLaunchSplash
     val entries = entryProvider<NavKey> {
                 entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
                 entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
@@ -540,10 +552,9 @@ internal fun SignKoreanAppContent(
         if (state.sheet != AppSheet.Report) onCancelReport()
     }
 
-    val isLaunchScreen = renderedRoute == AppRoute.Launch
     SignKoreanTheme {
         SignKoreanScreen(
-            applySafeDrawingInsets = !state.isViewerVisible && !isLaunchScreen,
+            applySafeDrawingInsets = !state.isViewerVisible && !useLaunchBackground,
             bottomInsetColor =
                 if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     Color(SignKoreanPalette.SURFACE)
@@ -551,7 +562,7 @@ internal fun SignKoreanAppContent(
                     null
                 },
             backgroundColor =
-                if (isLaunchScreen) {
+                if (useLaunchBackground) {
                     Color(SignKoreanPalette.PRIMARY)
                 } else {
                     Color(SignKoreanPalette.BACKGROUND)
@@ -566,14 +577,14 @@ internal fun SignKoreanAppContent(
                         Modifier
                             .fillMaxSize()
                             .then(
-                                if (isLaunchScreen) {
+                                if (useLaunchBackground) {
                                     Modifier
                                 } else {
                                     Modifier.padding(SignKoreanSpacing.large)
                                 },
                             ),
                 )
-                if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
+                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
                     TopLevelTabs(
                         selectedTab = renderedRoute.topLevelTab,
                         onAction = onAction,
@@ -597,6 +608,9 @@ internal fun SignKoreanAppContent(
                     onSelectSessionLength = onSelectSessionLength,
                     accountState = AccountUiState(),
                 )
+                if (showLaunchSplash) {
+                    LaunchBrandSplash(modifier = Modifier.fillMaxSize())
+                }
             }
         }
     }
@@ -641,23 +655,11 @@ private fun LaunchScreen(
     state: LaunchUiState,
     onRetry: () -> Unit,
 ) {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color(SignKoreanPalette.PRIMARY)),
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         when (state) {
             LaunchUiState.Loading,
             is LaunchUiState.Ready,
-            -> {
-                Image(
-                    painter = painterResource(R.drawable.sskg_wordmark_taegeuk),
-                    contentDescription = stringResource(R.string.app_icon_label),
-                    modifier = Modifier.width(250.dp).height(84.dp).testTag("launch-brand-mark"),
-                )
-            }
+            -> LaunchBrandSplash()
 
             is LaunchUiState.Error -> {
                 GameCard(modifier = Modifier.fillMaxWidth().padding(SignKoreanSpacing.large)) {
@@ -675,6 +677,23 @@ private fun LaunchScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LaunchBrandSplash(modifier: Modifier = Modifier) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Color(SignKoreanPalette.PRIMARY)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.sskg_wordmark_taegeuk),
+            contentDescription = stringResource(R.string.app_icon_label),
+            modifier = Modifier.width(250.dp).height(84.dp).testTag("launch-brand-mark"),
+        )
     }
 }
 
