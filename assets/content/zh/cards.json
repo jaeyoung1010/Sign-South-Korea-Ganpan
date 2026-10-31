@@ -1711,28 +1711,23 @@
     "factReviewer": "korean-fact-review",
     "factReviewedAt": "2026-10-29"
   },
-  {
-    "cardId": "38-nokidszone",
-    "languageTag": "zh",
-    "displayMeaning": "无儿童区",
-    "pronunciationGuide": "nokijeu jon",
-    "wordParts": [
-      {
-        "korean": "노키즈존",
-        "meaning": "无儿童区"
-      }
-    ],
-    "streetNote": "“无儿童区”是韩国旅行中常见的词语。",
-    "imageAltTextQuestion": "文字部分被高亮的韩国标牌。",
-    "imageAltTextAnswer": "写着“undefined”的标牌。",
-    "searchTerms": [
-      "无儿童区",
-      "韩国标牌"
-    ],
-    "contentVersion": 2,
-    "reviewer": "native-chinese-review",
-    "reviewedAt": "2026-10-29",
-    "factReviewer": "korean-fact-review",
-    "factReviewedAt": "2026-10-29"
-  }
+{"cardId":"38-nokidszone","languageTag":"zh","displayMeaning":"无儿童区","pronunciationGuide":"nokijeu jon","wordParts":[{"korean":"노키즈존","meaning":"无儿童区"}],"streetNote":"“无儿童区”是韩国旅行中常见的词语。","imageAltTextQuestion":"文字部分被高亮的韩国标牌。","imageAltTextAnswer":"写着“undefined”的标牌。","searchTerms":["无儿童区","韩国标牌"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-29","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-29"},
+{"cardId":"01-myeongdong-kyoja","languageTag":"zh","displayMeaning":"明洞饺子","pronunciationGuide":"myeongdong gyoja","wordParts":[{"korean":"명동교자","meaning":"明洞饺子"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“명동교자”的标牌。","searchTerms":["明洞饺子","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"02-hongdae-dakgalbi","languageTag":"zh","displayMeaning":"弘大铁板鸡排","pronunciationGuide":"hongdae dakgalbi","wordParts":[{"korean":"홍대닭갈비","meaning":"弘大铁板鸡排"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“홍대닭갈비”的标牌。","searchTerms":["弘大铁板鸡排","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"03-ssamziegil","languageTag":"zh","displayMeaning":"Ssamziegil 创意街","pronunciationGuide":"ssamji-gil","wordParts":[{"korean":"쌈지길","meaning":"Ssamziegil 创意街"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“쌈지길”的标牌。","searchTerms":["Ssamziegil 创意街","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"04-samcheongdong-sujebi","languageTag":"zh","displayMeaning":"三清洞手擀面汤","pronunciationGuide":"samcheongdong sujebi","wordParts":[{"korean":"삼청동 수제비","meaning":"三清洞手擀面汤"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“삼청동 수제비”的标牌。","searchTerms":["三清洞手擀面汤","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"05-gyeongnidan-gil","languageTag":"zh","displayMeaning":"经利团路","pronunciationGuide":"gyeongnidan-gil","wordParts":[{"korean":"경리단길","meaning":"经利团路"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“경리단길”的标牌。","searchTerms":["经利团路","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"06-garosu-gil","languageTag":"zh","displayMeaning":"林荫道","pronunciationGuide":"garosu-gil","wordParts":[{"korean":"가로수길","meaning":"林荫道"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“가로수길”的标牌。","searchTerms":["林荫道","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"07-nogari-golmok","languageTag":"zh","displayMeaning":"干明太鱼胡同","pronunciationGuide":"nogari golmok","wordParts":[{"korean":"노가리골목","meaning":"干明太鱼胡同"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“노가리골목”的标牌。","searchTerms":["干明太鱼胡同","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"08-yeonmujang-gil","languageTag":"zh","displayMeaning":"延武场街","pronunciationGuide":"yeonmujang-gil","wordParts":[{"korean":"연무장길","meaning":"延武场街"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“연무장길”的标牌。","searchTerms":["延武场街","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"09-pyeonghwa-market","languageTag":"zh","displayMeaning":"平和市场","pronunciationGuide":"pyeonghwa sijang","wordParts":[{"korean":"평화시장","meaning":"平和市场"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“평화시장”的标牌。","searchTerms":["平和市场","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"10-lotte-dutyfree","languageTag":"zh","displayMeaning":"乐天免税店","pronunciationGuide":"lotte myeonsejeom","wordParts":[{"korean":"롯데면세점","meaning":"乐天免税店"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“롯데면세점”的标牌。","searchTerms":["乐天免税店","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"11-hongdae-kakaofriends","languageTag":"zh","displayMeaning":"弘大 Kakao Friends","pronunciationGuide":"kakao peurenjeu hongdae","wordParts":[{"korean":"카카오프렌즈 홍대","meaning":"弘大 Kakao Friends"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“카카오프렌즈 홍대”的标牌。","searchTerms":["弘大 Kakao Friends","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"12-insadong-teahouse","languageTag":"zh","displayMeaning":"传统茶馆","pronunciationGuide":"jeontong chatjip","wordParts":[{"korean":"전통찻집","meaning":"传统茶馆"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“전통찻집”的标牌。","searchTerms":["传统茶馆","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"13-bukchon-hanbok-rental","languageTag":"zh","displayMeaning":"韩服租赁","pronunciationGuide":"hanbok daeyeo","wordParts":[{"korean":"한복 대여","meaning":"韩服租赁"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“한복 대여”的标牌。","searchTerms":["韩服租赁","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"14-itaewon-world-food-street","languageTag":"zh","displayMeaning":"世界美食街","pronunciationGuide":"segye eumsik geori","wordParts":[{"korean":"세계음식거리","meaning":"世界美食街"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“세계음식거리”的标牌。","searchTerms":["世界美食街","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"15-galleria-luxury","languageTag":"zh","displayMeaning":"格乐丽雅名品馆","pronunciationGuide":"gaelleoria myeongpumgwan","wordParts":[{"korean":"갤러리아 명품관","meaning":"格乐丽雅名品馆"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“갤러리아 명품관”的标牌。","searchTerms":["格乐丽雅名品馆","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"16-seun-sangga","languageTag":"zh","displayMeaning":"世运商街","pronunciationGuide":"seun sangga","wordParts":[{"korean":"세운상가","meaning":"世运商街"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“세운상가”的标牌。","searchTerms":["世运商街","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"17-musinsa-megastore","languageTag":"zh","displayMeaning":"无信社旗舰店","pronunciationGuide":"musinsa megaseutoeo","wordParts":[{"korean":"무신사 메가스토어","meaning":"无信社旗舰店"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“무신사 메가스토어”的标牌。","searchTerms":["无信社旗舰店","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"},
+{"cardId":"18-gwangjang-bindaetteok","languageTag":"zh","displayMeaning":"绿豆煎饼","pronunciationGuide":"bindaetteok","wordParts":[{"korean":"빈대떡","meaning":"绿豆煎饼"}],"streetNote":"这是韩国旅行中常见的店铺、地点或街头标识。","imageAltTextQuestion":"文字部分被高亮的韩国店铺或街头标牌。","imageAltTextAnswer":"写着“빈대떡”的标牌。","searchTerms":["绿豆煎饼","韩国旅行"],"contentVersion":2,"reviewer":"native-chinese-review","reviewedAt":"2026-10-31","factReviewer":"korean-fact-review","factReviewedAt":"2026-10-31"}
 ]

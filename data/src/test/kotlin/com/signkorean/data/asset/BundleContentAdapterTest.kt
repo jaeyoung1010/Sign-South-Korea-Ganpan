@@ -7,18 +7,18 @@ import org.junit.Test
 
 class BundleContentAdapterTest {
     @Test
-    fun `release bundle validates 68 cards 68 images and 20 Typecast files`() {
+    fun `release bundle validates 86 cards 86 images and 20 Typecast files`() {
         val adapter = BundleContentAdapter(ClasspathAssetSource())
 
         val cards = adapter.getCards()
         val report = adapter.validateBundle()
 
-        assertEquals(68, report.cardCount)
-        assertEquals(68, report.imageCount)
+        assertEquals(86, report.cardCount)
+        assertEquals(86, report.imageCount)
         assertEquals(20, report.typecastAudioCount)
         assertEquals(setOf("en", "ja", "zh"), report.languages)
         assertEquals(report.cardCount, cards.size)
-        assertEquals((1..68).toList(), cards.map { it.order })
+        assertEquals((1..86).toList(), cards.map { it.order })
         assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
         assertEquals(20, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
         assertTrue(cards.all { it.audioAssetUris.values.all { uri -> uri.startsWith("file:///android_asset/") } })
@@ -122,7 +122,8 @@ class BundleContentAdapterTest {
     @Test
     fun `rejects an out of bounds focus rectangle`() {
         val assets = validAssets().toMutableMap()
-        assets[BASE_CARDS_PATH] = assets.getValue(BASE_CARDS_PATH).replaceFirst("\"x\":40", "\"x\":101")
+        assets[BASE_CARDS_PATH] =
+            assets.getValue(BASE_CARDS_PATH).replaceFirst("\"x\"\\s*:\\s*40".toRegex(), "\"x\":101")
 
         refreshManifestChecksums(assets)
         assertFailsValidation(assets, "focus")
@@ -186,14 +187,14 @@ class BundleContentAdapterTest {
                     "\"zh\": \"content/zh/cards.json\", \"fr\": \"content/fr/cards.json\"",
                 )
                 .replace(
-                    "\"content/zh/cards.json\": \"d2904f7e487dcf0bd40e5f0c7e55d7a208a245e71997257852f9b170fa2dce4d\"",
+                    "\"content/zh/cards.json\": \"[0-9a-f]{64}\"".toRegex(),
                     "\"content/zh/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
                 )
 
         refreshManifestChecksums(assets)
         val adapter = BundleContentAdapter(FakeAssetSource(assets))
 
-        assertEquals(68, adapter.getLocalizedCopy("fr").size)
+        assertEquals(86, adapter.getLocalizedCopy("fr").size)
         assertEquals(setOf("en", "ja", "zh", "fr"), adapter.validateBundle().languages)
     }
 
@@ -213,7 +214,7 @@ class BundleContentAdapterTest {
 
         val adapter = BundleContentAdapter(FakeAssetSource(assets), allowMissingAssets = true)
 
-        assertEquals(68, adapter.getCards().size)
+        assertEquals(86, adapter.getCards().size)
         val card = adapter.getCard("20-seoul-station")
         assertTrue(card?.imageAssetUri?.contains("20-seoul-station.jpg") == true)
         assertTrue(card?.audioAssetUris?.get(VoiceId.TYPECAST_EUNKYUNG)?.contains("20-seoul-station.mp3") == true)

@@ -31,7 +31,7 @@ internal fun validAssets(): Map<String, String> {
     val classLoader = checkNotNull(BundleContentAdapterTest::class.java.classLoader)
     val contentPaths = listOf(MANIFEST_PATH, BASE_CARDS_PATH, EN_CARDS_PATH, JA_CARDS_PATH, ZH_CARDS_PATH)
     val baseCardImagePaths =
-        Regex("\\\"imageAsset\\\":\\\"assets/([^\\\"]+)\\\"")
+        Regex("\\\"imageAsset\\\"\\s*:\\s*\\\"assets/([^\\\"]+)\\\"")
             .findAll(classLoader.getResource(BASE_CARDS_PATH)?.readText().orEmpty())
             .map { it.groupValues[1] }
             .toList()

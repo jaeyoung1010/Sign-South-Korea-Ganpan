@@ -1,70 +1,1656 @@
 [
-  {"id":"01-hongdae-entrance","order":1,"korean":"홍대입구","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/01-hongdae-entrance.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":40,"y":18,"width":28,"height":12},"typecastAudioAsset":"assets/audio/eunkyung/01-hongdae-entrance.mp3","contentVersion":2},
-  {"id":"02-gyeongbokgung","order":2,"korean":"경복궁","category":"LANDMARK","imageAsset":"assets/signs/generated/02-gyeongbokgung.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":50,"y":19,"width":14,"height":8},"typecastAudioAsset":"assets/audio/eunkyung/02-gyeongbokgung.mp3","contentVersion":2},
-  {"id":"03-bukchon-hanok-village","order":3,"korean":"북촌한옥마을","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/03-bukchon-hanok-village.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":24,"y":20,"width":40,"height":18},"typecastAudioAsset":"assets/audio/eunkyung/03-bukchon-hanok-village.mp3","contentVersion":2},
-  {"id":"04-namsan-seoul-tower","order":4,"korean":"남산서울타워","category":"LANDMARK","imageAsset":"assets/signs/generated/04-namsan-seoul-tower.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":36,"y":37,"width":37,"height":14},"typecastAudioAsset":"assets/audio/eunkyung/04-namsan-seoul-tower.mp3","contentVersion":2},
-  {"id":"05-myeongdong","order":5,"korean":"명동","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/05-myeongdong.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":31,"y":26,"width":30,"height":13},"typecastAudioAsset":"assets/audio/eunkyung/05-myeongdong.mp3","contentVersion":2},
-  {"id":"06-gwangjang-market","order":6,"korean":"광장시장","category":"MARKET","imageAsset":"assets/signs/generated/06-gwangjang-market.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":33,"y":17,"width":37,"height":15},"typecastAudioAsset":"assets/audio/eunkyung/06-gwangjang-market.mp3","contentVersion":2},
-  {"id":"07-namdaemun-market","order":7,"korean":"남대문시장","category":"MARKET","imageAsset":"assets/signs/generated/07-namdaemun-market.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":31,"y":13,"width":37,"height":15},"typecastAudioAsset":"assets/audio/eunkyung/07-namdaemun-market.mp3","contentVersion":2},
-  {"id":"08-itaewon","order":8,"korean":"이태원","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/08-itaewon.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":31,"y":22,"width":35,"height":16},"typecastAudioAsset":"assets/audio/eunkyung/08-itaewon.mp3","contentVersion":2},
-  {"id":"09-hangang-park","order":9,"korean":"한강공원","category":"LANDMARK","imageAsset":"assets/signs/generated/09-hangang-park.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":47,"y":12,"width":41,"height":15},"typecastAudioAsset":"assets/audio/eunkyung/09-hangang-park.mp3","contentVersion":2},
-  {"id":"10-seongsu-dong","order":10,"korean":"성수동","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/10-seongsu-dong.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":47,"y":13,"width":38,"height":15},"typecastAudioAsset":"assets/audio/eunkyung/10-seongsu-dong.mp3","contentVersion":2},
-  {"id":"11-insadong","order":11,"korean":"인사동","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/11-insadong.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":34,"y":19,"width":34,"height":18},"typecastAudioAsset":"assets/audio/eunkyung/11-insadong.mp3","contentVersion":2},
-  {"id":"12-ikseon-dong","order":12,"korean":"익선동","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/12-ikseon-dong.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":48,"y":19,"width":33,"height":18},"typecastAudioAsset":"assets/audio/eunkyung/12-ikseon-dong.mp3","contentVersion":2},
-  {"id":"13-dongdaemun-design-plaza","order":13,"korean":"동대문디자인플라자","category":"LANDMARK","imageAsset":"assets/signs/generated/13-dongdaemun-design-plaza.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":52,"y":29,"width":25,"height":7},"typecastAudioAsset":"assets/audio/eunkyung/13-dongdaemun-design-plaza.mp3","contentVersion":2},
-  {"id":"14-haeundae","order":14,"korean":"해운대","category":"LANDMARK","imageAsset":"assets/signs/generated/14-haeundae.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":40,"y":14,"width":31,"height":17},"typecastAudioAsset":"assets/audio/eunkyung/14-haeundae.mp3","contentVersion":2},
-  {"id":"15-gamcheon-culture-village","order":15,"korean":"감천문화마을","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/15-gamcheon-culture-village.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":37,"y":21,"width":37,"height":14},"typecastAudioAsset":"assets/audio/eunkyung/15-gamcheon-culture-village.mp3","contentVersion":2},
-  {"id":"16-jeonju-hanok-village","order":16,"korean":"전주한옥마을","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/16-jeonju-hanok-village.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":36,"y":22,"width":37,"height":17},"typecastAudioAsset":"assets/audio/eunkyung/16-jeonju-hanok-village.mp3","contentVersion":2},
-  {"id":"17-jeju-olle-trail","order":17,"korean":"제주올레길","category":"LANDMARK","imageAsset":"assets/signs/generated/17-jeju-olle-trail.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":47,"y":13,"width":40,"height":13},"typecastAudioAsset":"assets/audio/eunkyung/17-jeju-olle-trail.mp3","contentVersion":2},
-  {"id":"18-bulguksa","order":18,"korean":"불국사","category":"LANDMARK","imageAsset":"assets/signs/generated/18-bulguksa.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":51,"y":28,"width":17,"height":11},"typecastAudioAsset":"assets/audio/eunkyung/18-bulguksa.mp3","contentVersion":2},
-  {"id":"19-busan-station","order":19,"korean":"부산역","category":"TRANSPORT","imageAsset":"assets/signs/generated/19-busan-station.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":51,"y":27,"width":18,"height":12},"typecastAudioAsset":"assets/audio/eunkyung/19-busan-station.mp3","contentVersion":2},
-  {"id":"20-seoul-station","order":20,"korean":"서울역","category":"TRANSPORT","imageAsset":"assets/signs/generated/20-seoul-station.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":38,"y":16,"width":23,"height":12},"typecastAudioAsset":"assets/audio/eunkyung/20-seoul-station.mp3","contentVersion":2},
-  {"id":"bunsik","order":21,"korean":"분식","category":"FOOD","imageAsset":"assets/signs/bunsik.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":31,"y":12,"width":48,"height":20},"contentVersion":2},
-  {"id":"exit","order":22,"korean":"출구","category":"TRANSPORT","imageAsset":"assets/signs/exit.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":49,"y":25,"width":28,"height":15},"contentVersion":2},
-  {"id":"pharmacy","order":23,"korean":"약국","category":"EVERYDAY","imageAsset":"assets/signs/pharmacy.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":29,"y":15,"width":57,"height":15},"contentVersion":2},
-  {"id":"no-parking","order":24,"korean":"주차 금지","category":"NOTICE","imageAsset":"assets/signs/no-parking.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":25,"y":22,"width":49,"height":31},"contentVersion":2},
-  {"id":"restroom","order":25,"korean":"화장실","category":"EVERYDAY","imageAsset":"assets/signs/restroom.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":36,"y":33,"width":35,"height":20},"contentVersion":2},
-  {"id":"convenience-store","order":26,"korean":"편의점","category":"SHOPPING","imageAsset":"assets/signs/convenience-store.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":31,"y":14,"width":38,"height":14},"contentVersion":2},
-  {"id":"entrance","order":27,"korean":"입구","category":"EVERYDAY","imageAsset":"assets/signs/entrance.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":26,"y":22,"width":32,"height":31},"contentVersion":2},
-  {"id":"open","order":28,"korean":"영업중","category":"SHOPPING","imageAsset":"assets/signs/open.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":27,"y":38,"width":47,"height":33},"contentVersion":2},
-  {"id":"no-smoking","order":29,"korean":"금연","category":"NOTICE","imageAsset":"assets/signs/no-smoking.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":35,"y":18,"width":35,"height":54},"contentVersion":2},
-  {"id":"sale","order":30,"korean":"세일","category":"SHOPPING","imageAsset":"assets/signs/sale.jpg","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":31,"y":25,"width":39,"height":42},"contentVersion":2},
-  {"id":"01-yeongupjung","order":31,"korean":"영업중","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/01-yeongupjung.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"02-hyumu","order":32,"korean":"휴무","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/02-hyumu.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"03-junbijoong","order":33,"korean":"준비중","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/03-junbijoong.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"04-magam","order":34,"korean":"마감","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/04-magam.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"05-daegi","order":35,"korean":"대기","category":"EVERYDAY","imageAsset":"assets/signs/generated/terms-2026-10-29/05-daegi.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"06-yeyak","order":36,"korean":"예약","category":"EVERYDAY","imageAsset":"assets/signs/generated/terms-2026-10-29/06-yeyak.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"07-ipgu","order":37,"korean":"입구","category":"EVERYDAY","imageAsset":"assets/signs/generated/terms-2026-10-29/07-ipgu.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"08-chulgu","order":38,"korean":"출구","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/08-chulgu.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"09-breaktime","order":39,"korean":"브레이크타임","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/09-breaktime.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"10-lastorder","order":40,"korean":"라스트오더","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/10-lastorder.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"11-gopchang","order":41,"korean":"곱창","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/11-gopchang.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"12-makchang","order":42,"korean":"막창","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/12-makchang.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"13-sundae","order":43,"korean":"순대","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/13-sundae.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"14-jokbal","order":44,"korean":"족발","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/14-jokbal.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"15-gamjatang","order":45,"korean":"감자탕","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/15-gamjatang.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"16-yukhoe","order":46,"korean":"육회","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/16-yukhoe.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"17-sannakji","order":47,"korean":"산낙지","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/17-sannakji.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"18-jeongol","order":48,"korean":"전골","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/18-jeongol.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"19-jjigae","order":49,"korean":"찌개","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/19-jjigae.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"20-sale","order":50,"korean":"세일","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/20-sale.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"21-event","order":51,"korean":"이벤트","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/21-event.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"22-freegift","order":52,"korean":"사은품","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/22-freegift.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"23-soldout","order":53,"korean":"품절","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/23-soldout.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"24-dutyfree","order":54,"korean":"면세","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/24-dutyfree.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"25-exchange","order":55,"korean":"교환","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/25-exchange.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"26-refund","order":56,"korean":"환불","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/26-refund.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"27-cosmetics","order":57,"korean":"화장품","category":"SHOPPING","imageAsset":"assets/signs/generated/terms-2026-10-29/27-cosmetics.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"28-transfer","order":58,"korean":"환승","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/28-transfer.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"29-platform","order":59,"korean":"승강장","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/29-platform.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"30-firsttrain","order":60,"korean":"첫차","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/30-firsttrain.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"31-lasttrain","order":61,"korean":"막차","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/31-lasttrain.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"32-express","order":62,"korean":"급행","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/32-express.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"33-local","order":63,"korean":"일반","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/33-local.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"34-getoff","order":64,"korean":"하차","category":"TRANSPORT","imageAsset":"assets/signs/generated/terms-2026-10-29/34-getoff.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"35-matjip","order":65,"korean":"맛집","category":"FOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/35-matjip.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"36-hotplace","order":66,"korean":"핫플","category":"NEIGHBORHOOD","imageAsset":"assets/signs/generated/terms-2026-10-29/36-hotplace.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"37-waiting","order":67,"korean":"대기","category":"EVERYDAY","imageAsset":"assets/signs/generated/terms-2026-10-29/37-waiting.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2},
-  {"id":"38-nokidszone","order":68,"korean":"노키즈존","category":"NOTICE","imageAsset":"assets/signs/generated/terms-2026-10-29/38-nokidszone.png","image":{"source":"generated","rights":"project-owned-generated","reviewStatus":"pending"},"focus":{"x":10,"y":10,"width":80,"height":80},"contentVersion":2}
+  {
+    "id": "01-hongdae-entrance",
+    "order": 1,
+    "korean": "홍대입구",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/01-hongdae-entrance.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 40,
+      "y": 18,
+      "width": 28,
+      "height": 12
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/01-hongdae-entrance.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "02-gyeongbokgung",
+    "order": 2,
+    "korean": "경복궁",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/02-gyeongbokgung.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 50,
+      "y": 19,
+      "width": 14,
+      "height": 8
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/02-gyeongbokgung.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "03-bukchon-hanok-village",
+    "order": 3,
+    "korean": "북촌한옥마을",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/03-bukchon-hanok-village.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 24,
+      "y": 20,
+      "width": 40,
+      "height": 18
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/03-bukchon-hanok-village.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "04-namsan-seoul-tower",
+    "order": 4,
+    "korean": "남산서울타워",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/04-namsan-seoul-tower.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 36,
+      "y": 37,
+      "width": 37,
+      "height": 14
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/04-namsan-seoul-tower.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "05-myeongdong",
+    "order": 5,
+    "korean": "명동",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/05-myeongdong.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 31,
+      "y": 26,
+      "width": 30,
+      "height": 13
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/05-myeongdong.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "06-gwangjang-market",
+    "order": 6,
+    "korean": "광장시장",
+    "category": "MARKET",
+    "imageAsset": "assets/signs/generated/06-gwangjang-market.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 33,
+      "y": 17,
+      "width": 37,
+      "height": 15
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/06-gwangjang-market.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "07-namdaemun-market",
+    "order": 7,
+    "korean": "남대문시장",
+    "category": "MARKET",
+    "imageAsset": "assets/signs/generated/07-namdaemun-market.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 31,
+      "y": 13,
+      "width": 37,
+      "height": 15
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/07-namdaemun-market.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "08-itaewon",
+    "order": 8,
+    "korean": "이태원",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/08-itaewon.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 31,
+      "y": 22,
+      "width": 35,
+      "height": 16
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/08-itaewon.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "09-hangang-park",
+    "order": 9,
+    "korean": "한강공원",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/09-hangang-park.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 47,
+      "y": 12,
+      "width": 41,
+      "height": 15
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/09-hangang-park.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "10-seongsu-dong",
+    "order": 10,
+    "korean": "성수동",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/10-seongsu-dong.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 47,
+      "y": 13,
+      "width": 38,
+      "height": 15
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/10-seongsu-dong.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "11-insadong",
+    "order": 11,
+    "korean": "인사동",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/11-insadong.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 34,
+      "y": 19,
+      "width": 34,
+      "height": 18
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/11-insadong.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "12-ikseon-dong",
+    "order": 12,
+    "korean": "익선동",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/12-ikseon-dong.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 48,
+      "y": 19,
+      "width": 33,
+      "height": 18
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/12-ikseon-dong.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "13-dongdaemun-design-plaza",
+    "order": 13,
+    "korean": "동대문디자인플라자",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/13-dongdaemun-design-plaza.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 52,
+      "y": 29,
+      "width": 25,
+      "height": 7
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/13-dongdaemun-design-plaza.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "14-haeundae",
+    "order": 14,
+    "korean": "해운대",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/14-haeundae.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 40,
+      "y": 14,
+      "width": 31,
+      "height": 17
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/14-haeundae.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "15-gamcheon-culture-village",
+    "order": 15,
+    "korean": "감천문화마을",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/15-gamcheon-culture-village.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 37,
+      "y": 21,
+      "width": 37,
+      "height": 14
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/15-gamcheon-culture-village.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "16-jeonju-hanok-village",
+    "order": 16,
+    "korean": "전주한옥마을",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/16-jeonju-hanok-village.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 36,
+      "y": 22,
+      "width": 37,
+      "height": 17
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/16-jeonju-hanok-village.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "17-jeju-olle-trail",
+    "order": 17,
+    "korean": "제주올레길",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/17-jeju-olle-trail.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 47,
+      "y": 13,
+      "width": 40,
+      "height": 13
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/17-jeju-olle-trail.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "18-bulguksa",
+    "order": 18,
+    "korean": "불국사",
+    "category": "LANDMARK",
+    "imageAsset": "assets/signs/generated/18-bulguksa.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 51,
+      "y": 28,
+      "width": 17,
+      "height": 11
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/18-bulguksa.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "19-busan-station",
+    "order": 19,
+    "korean": "부산역",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/19-busan-station.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 51,
+      "y": 27,
+      "width": 18,
+      "height": 12
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/19-busan-station.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "20-seoul-station",
+    "order": 20,
+    "korean": "서울역",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/20-seoul-station.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 38,
+      "y": 16,
+      "width": 23,
+      "height": 12
+    },
+    "typecastAudioAsset": "assets/audio/eunkyung/20-seoul-station.mp3",
+    "contentVersion": 2
+  },
+  {
+    "id": "bunsik",
+    "order": 21,
+    "korean": "분식",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/bunsik.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 31,
+      "y": 12,
+      "width": 48,
+      "height": 20
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "exit",
+    "order": 22,
+    "korean": "출구",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/exit.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 49,
+      "y": 25,
+      "width": 28,
+      "height": 15
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "pharmacy",
+    "order": 23,
+    "korean": "약국",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/pharmacy.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 29,
+      "y": 15,
+      "width": 57,
+      "height": 15
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "no-parking",
+    "order": 24,
+    "korean": "주차 금지",
+    "category": "NOTICE",
+    "imageAsset": "assets/signs/no-parking.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 25,
+      "y": 22,
+      "width": 49,
+      "height": 31
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "restroom",
+    "order": 25,
+    "korean": "화장실",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/restroom.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 36,
+      "y": 33,
+      "width": 35,
+      "height": 20
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "convenience-store",
+    "order": 26,
+    "korean": "편의점",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/convenience-store.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 31,
+      "y": 14,
+      "width": 38,
+      "height": 14
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "entrance",
+    "order": 27,
+    "korean": "입구",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/entrance.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 26,
+      "y": 22,
+      "width": 32,
+      "height": 31
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "open",
+    "order": 28,
+    "korean": "영업중",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/open.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 27,
+      "y": 38,
+      "width": 47,
+      "height": 33
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "no-smoking",
+    "order": 29,
+    "korean": "금연",
+    "category": "NOTICE",
+    "imageAsset": "assets/signs/no-smoking.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 35,
+      "y": 18,
+      "width": 35,
+      "height": 54
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "sale",
+    "order": 30,
+    "korean": "세일",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/sale.jpg",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 31,
+      "y": 25,
+      "width": 39,
+      "height": 42
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "01-yeongupjung",
+    "order": 31,
+    "korean": "영업중",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/01-yeongupjung.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "02-hyumu",
+    "order": 32,
+    "korean": "휴무",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/02-hyumu.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "03-junbijoong",
+    "order": 33,
+    "korean": "준비중",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/03-junbijoong.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "04-magam",
+    "order": 34,
+    "korean": "마감",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/04-magam.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "05-daegi",
+    "order": 35,
+    "korean": "대기",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/05-daegi.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "06-yeyak",
+    "order": 36,
+    "korean": "예약",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/06-yeyak.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "07-ipgu",
+    "order": 37,
+    "korean": "입구",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/07-ipgu.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "08-chulgu",
+    "order": 38,
+    "korean": "출구",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/08-chulgu.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "09-breaktime",
+    "order": 39,
+    "korean": "브레이크타임",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/09-breaktime.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "10-lastorder",
+    "order": 40,
+    "korean": "라스트오더",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/10-lastorder.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "11-gopchang",
+    "order": 41,
+    "korean": "곱창",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/11-gopchang.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "12-makchang",
+    "order": 42,
+    "korean": "막창",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/12-makchang.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "13-sundae",
+    "order": 43,
+    "korean": "순대",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/13-sundae.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "14-jokbal",
+    "order": 44,
+    "korean": "족발",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/14-jokbal.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "15-gamjatang",
+    "order": 45,
+    "korean": "감자탕",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/15-gamjatang.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "16-yukhoe",
+    "order": 46,
+    "korean": "육회",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/16-yukhoe.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "17-sannakji",
+    "order": 47,
+    "korean": "산낙지",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/17-sannakji.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "18-jeongol",
+    "order": 48,
+    "korean": "전골",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/18-jeongol.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "19-jjigae",
+    "order": 49,
+    "korean": "찌개",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/19-jjigae.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "20-sale",
+    "order": 50,
+    "korean": "세일",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/20-sale.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "21-event",
+    "order": 51,
+    "korean": "이벤트",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/21-event.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "22-freegift",
+    "order": 52,
+    "korean": "사은품",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/22-freegift.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "23-soldout",
+    "order": 53,
+    "korean": "품절",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/23-soldout.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "24-dutyfree",
+    "order": 54,
+    "korean": "면세",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/24-dutyfree.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "25-exchange",
+    "order": 55,
+    "korean": "교환",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/25-exchange.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "26-refund",
+    "order": 56,
+    "korean": "환불",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/26-refund.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "27-cosmetics",
+    "order": 57,
+    "korean": "화장품",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/27-cosmetics.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "28-transfer",
+    "order": 58,
+    "korean": "환승",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/28-transfer.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "29-platform",
+    "order": 59,
+    "korean": "승강장",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/29-platform.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "30-firsttrain",
+    "order": 60,
+    "korean": "첫차",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/30-firsttrain.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "31-lasttrain",
+    "order": 61,
+    "korean": "막차",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/31-lasttrain.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "32-express",
+    "order": 62,
+    "korean": "급행",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/32-express.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "33-local",
+    "order": 63,
+    "korean": "일반",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/33-local.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "34-getoff",
+    "order": 64,
+    "korean": "하차",
+    "category": "TRANSPORT",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/34-getoff.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "35-matjip",
+    "order": 65,
+    "korean": "맛집",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/35-matjip.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "36-hotplace",
+    "order": 66,
+    "korean": "핫플",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/36-hotplace.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "37-waiting",
+    "order": 67,
+    "korean": "대기",
+    "category": "EVERYDAY",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/37-waiting.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "38-nokidszone",
+    "order": 68,
+    "korean": "노키즈존",
+    "category": "NOTICE",
+    "imageAsset": "assets/signs/generated/terms-2026-10-29/38-nokidszone.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "01-myeongdong-kyoja",
+    "order": 69,
+    "korean": "명동교자",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/01-myeongdong-kyoja.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "02-hongdae-dakgalbi",
+    "order": 70,
+    "korean": "홍대닭갈비",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/02-hongdae-dakgalbi.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "03-ssamziegil",
+    "order": 71,
+    "korean": "쌈지길",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/03-ssamziegil.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "04-samcheongdong-sujebi",
+    "order": 72,
+    "korean": "삼청동 수제비",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/04-samcheongdong-sujebi.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "05-gyeongnidan-gil",
+    "order": 73,
+    "korean": "경리단길",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/05-gyeongnidan-gil.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "06-garosu-gil",
+    "order": 74,
+    "korean": "가로수길",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/06-garosu-gil.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "07-nogari-golmok",
+    "order": 75,
+    "korean": "노가리골목",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/07-nogari-golmok.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "08-yeonmujang-gil",
+    "order": 76,
+    "korean": "연무장길",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/08-yeonmujang-gil.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "09-pyeonghwa-market",
+    "order": 77,
+    "korean": "평화시장",
+    "category": "MARKET",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31/09-pyeonghwa-market.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "10-lotte-dutyfree",
+    "order": 78,
+    "korean": "롯데면세점",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/10-lotte-dutyfree.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "11-hongdae-kakaofriends",
+    "order": 79,
+    "korean": "카카오프렌즈 홍대",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/11-hongdae-kakaofriends.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "12-insadong-teahouse",
+    "order": 80,
+    "korean": "전통찻집",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/12-insadong-teahouse.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "13-bukchon-hanbok-rental",
+    "order": 81,
+    "korean": "한복 대여",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/13-bukchon-hanbok-rental.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "14-itaewon-world-food-street",
+    "order": 82,
+    "korean": "세계음식거리",
+    "category": "NEIGHBORHOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/14-itaewon-world-food-street.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "15-galleria-luxury",
+    "order": 83,
+    "korean": "갤러리아 명품관",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/15-galleria-luxury.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "16-seun-sangga",
+    "order": 84,
+    "korean": "세운상가",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/16-seun-sangga.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "17-musinsa-megastore",
+    "order": 85,
+    "korean": "무신사 메가스토어",
+    "category": "SHOPPING",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/17-musinsa-megastore.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  },
+  {
+    "id": "18-gwangjang-bindaetteok",
+    "order": 86,
+    "korean": "빈대떡",
+    "category": "FOOD",
+    "imageAsset": "assets/signs/generated/streets-2026-10-31-additional/18-gwangjang-bindaetteok.png",
+    "image": {
+      "source": "generated",
+      "rights": "project-owned-generated",
+      "reviewStatus": "pending"
+    },
+    "focus": {
+      "x": 10,
+      "y": 10,
+      "width": 80,
+      "height": 80
+    },
+    "contentVersion": 2
+  }
 ]

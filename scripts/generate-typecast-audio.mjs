@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdir, rename, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,28 +23,21 @@ try {
   if (error?.code !== "ENOENT") throw error;
 }
 
-const phrases = [
-  { file: "01-hongdae-entrance.mp3", text: "홍대입구" },
-  { file: "02-gyeongbokgung.mp3", text: "경복궁" },
-  { file: "03-bukchon-hanok-village.mp3", text: "북촌한옥마을" },
-  { file: "04-namsan-seoul-tower.mp3", text: "남산서울타워" },
-  { file: "05-myeongdong.mp3", text: "명동" },
-  { file: "06-gwangjang-market.mp3", text: "광장시장" },
-  { file: "07-namdaemun-market.mp3", text: "남대문시장" },
-  { file: "08-itaewon.mp3", text: "이태원" },
-  { file: "09-hangang-park.mp3", text: "한강공원" },
-  { file: "10-seongsu-dong.mp3", text: "성수동" },
-  { file: "11-insadong.mp3", text: "인사동" },
-  { file: "12-ikseon-dong.mp3", text: "익선동" },
-  { file: "13-dongdaemun-design-plaza.mp3", text: "동대문디자인플라자" },
-  { file: "14-haeundae.mp3", text: "해운대" },
-  { file: "15-gamcheon-culture-village.mp3", text: "감천문화마을" },
-  { file: "16-jeonju-hanok-village.mp3", text: "전주한옥마을" },
-  { file: "17-jeju-olle-trail.mp3", text: "제주올레길" },
-  { file: "18-bulguksa.mp3", text: "불국사" },
-  { file: "19-busan-station.mp3", text: "부산역" },
-  { file: "20-seoul-station.mp3", text: "서울역" },
-];
+async function loadPhrases() {
+  const contentPath = path.join(projectRoot, "assets", "content", "cards.base.json");
+  const cards = JSON.parse(await readFile(contentPath, "utf8"));
+  const files = new Set();
+
+  return cards.map((card) => {
+    if (!card.id?.trim() || !card.korean?.trim()) {
+      throw new Error("Every learning card must provide a non-empty id and Korean text for Typecast synthesis.");
+    }
+    const file = `${card.id}.mp3`;
+    if (files.has(file)) throw new Error(`Duplicate Typecast output filename: ${file}`);
+    files.add(file);
+    return { file, text: card.korean };
+  });
+}
 
 function requireApiKey() {
   const apiKey = process.env.TYPECAST_API_KEY?.trim();
@@ -220,6 +213,7 @@ async function synthesize(apiKey, voiceId, phrase) {
 
 async function main() {
   const apiKey = requireApiKey();
+  const phrases = await loadPhrases();
   await mkdir(outputDirectory, { recursive: true });
   const voice = await findEunkyungVoice(apiKey);
   console.log(`Using ${voice.voiceName} (${voice.voiceId}) with ${MODEL}`);

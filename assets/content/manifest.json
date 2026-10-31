@@ -1,6 +1,6 @@
 {
   "contentVersion": 2,
-  "cardCount": 68,
+  "cardCount": 86,
   "languages": ["en", "ja", "zh"],
   "localizedContent": {
     "en": "content/en/cards.json",
@@ -10,9 +10,9 @@
   "reviewStatus": {"en": "native-english-reviewed", "ja": "native-japanese-reviewed", "zh": "native-chinese-reviewed"},
   "factReviewStatus": {"en": "korean-fact-reviewed", "ja": "korean-fact-reviewed", "zh": "korean-fact-reviewed"},
   "checksums": {
-    "content/cards.base.json": "ed6e8c4b6a4637f3711ed4f91a89f2a7881e5781599d9622198851148cb0137c",
-    "content/en/cards.json": "4fbb11d40a08d443c4f5a3f6e0f73eb3dcf31a1956cc194d87ebb91b8acf4ba5",
-    "content/ja/cards.json": "47432ec9343a5da8f5a88f084ebbcfe7b92037f6d66727855b20dff4c681d259",
-    "content/zh/cards.json": "d2904f7e487dcf0bd40e5f0c7e55d7a208a245e71997257852f9b170fa2dce4d"
+    "content/cards.base.json": "0d8b97550d08ba6e42d921524d88bb5a9f02a2a18f04f34e9a9094ef029c6a60",
+    "content/en/cards.json": "d393382909400307d650356696ae6a158b719b99ae147a20a4babad5e6c0a96f",
+    "content/ja/cards.json": "af11a7a5c17b2bad469566cbcba1544ac2293195bf8767ca61553d3ac9c58341",
+    "content/zh/cards.json": "93c8f033d1c72cb45908c2fc3bbb1ffd0e3f6671957b3257ace5a5ba7fc02306"
   }
 }
