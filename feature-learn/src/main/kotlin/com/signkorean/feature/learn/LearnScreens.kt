@@ -342,7 +342,12 @@ private fun HomeHeader(
     onOpenProfile: () -> Unit,
     profileAvatar: ProfileAvatar?,
 ) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SskgWordmark()
         Row(
             horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
             verticalAlignment = Alignment.CenterVertically,
@@ -383,8 +388,32 @@ private fun HomeHeader(
 }
 
 @Composable
+private fun SskgWordmark() {
+    val bitmap = rememberAssetBitmap("branding/sskg-wordmark-taegeuk.png", sampleSize = 2)
+    if (bitmap == null) {
+        Text(
+            text = "SSKG",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.testTag("home-brand-mark"),
+        )
+    } else {
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = stringResource(R.string.learn_brand_name),
+            contentScale = ContentScale.Fit,
+            modifier =
+                Modifier
+                    .width(150.dp)
+                    .height(50.dp)
+                    .testTag("home-brand-mark"),
+        )
+    }
+}
+
+@Composable
 private fun ProfileAvatarImage(avatar: ProfileAvatar) {
-    val bitmap = rememberProfileAvatarBitmap(avatar.assetPath)
+    val bitmap = rememberAssetBitmap(avatar.assetPath)
     if (bitmap == null) {
         ProfileIcon()
     } else {
@@ -398,14 +427,17 @@ private fun ProfileAvatarImage(avatar: ProfileAvatar) {
 }
 
 @Composable
-private fun rememberProfileAvatarBitmap(assetPath: String): Bitmap? {
+private fun rememberAssetBitmap(
+    assetPath: String,
+    sampleSize: Int = 4,
+): Bitmap? {
     val context = LocalContext.current
     val bitmap by
-        produceState<Bitmap?>(initialValue = null, context, assetPath) {
+        produceState<Bitmap?>(initialValue = null, context, assetPath, sampleSize) {
             value =
                 withContext(kotlinx.coroutines.Dispatchers.IO) {
                     runCatching {
-                        val options = BitmapFactory.Options().apply { inSampleSize = 4 }
+                        val options = BitmapFactory.Options().apply { inSampleSize = sampleSize }
                         context.assets.open(assetPath).use { input -> BitmapFactory.decodeStream(input, null, options) }
                     }.getOrNull()
                 }
