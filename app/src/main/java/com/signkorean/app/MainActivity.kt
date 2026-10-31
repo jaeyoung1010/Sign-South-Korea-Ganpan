@@ -881,12 +881,6 @@ private fun TopLevelTabs(
                     selected = selectedTab == AppTopLevelTab.Learn,
                     onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn)) },
                 )
-                TopLevelTabItem(
-                    label = stringResource(R.string.progress_tab),
-                    tab = AppTopLevelTab.Progress,
-                    selected = selectedTab == AppTopLevelTab.Progress,
-                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress)) },
-                )
             }
         }
     }
