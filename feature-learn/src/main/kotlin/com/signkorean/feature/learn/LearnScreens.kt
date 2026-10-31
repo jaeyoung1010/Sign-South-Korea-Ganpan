@@ -325,8 +325,8 @@ fun LearnHomeScreen(
             completedDays = state.week.count { it.count > 0 }.coerceAtMost(3),
             onClick = { onAction(LearnUiAction.OpenProgress) },
         )
-        CategorySection(state.categories, state.isStarting, onAction)
         HomeSessionCard(state.session, state.isStarting, state.hasStartError, onAction)
+        CategorySection(state.categories, state.isStarting, onAction)
     }
     state.pendingCategoryReplacement?.let { category ->
         Dialog(onDismissRequest = { onAction(LearnUiAction.CancelCategoryReplacement) }) {
