@@ -341,7 +341,7 @@ private fun SignKoreanApp(
         onToggleAutoPlay = settingsViewModel::toggleAutoPlay,
         onToggleReduceMotion = settingsViewModel::toggleReduceMotion,
         onToggleReminder = settingsViewModel::toggleReminder,
-        onUpdateProfileName = settingsViewModel::updateProfileName,
+        onUpdateProfile = settingsViewModel::updateProfile,
         legalState = legalState,
         onLegalAction = { action ->
             when (action) {
@@ -399,7 +399,7 @@ internal fun SignKoreanAppContent(
     onToggleAutoPlay: () -> Unit = {},
     onToggleReduceMotion: () -> Unit = {},
     onToggleReminder: () -> Unit = {},
-    onUpdateProfileName: (String) -> Unit = {},
+    onUpdateProfile: (String, com.signkorean.domain.model.ProfileAvatar) -> Unit = { _, _ -> },
     legalState: LegalUiState = LegalUiState(),
     onLegalAction: (LegalUiAction) -> Unit = {},
     reportState: ReportUiState = ReportUiState(),
@@ -506,7 +506,8 @@ internal fun SignKoreanAppContent(
                 entry<AppRoute.Profile> {
                     ProfileScreen(
                         profileName = settingsState.profileName,
-                        onSave = onUpdateProfileName,
+                        profileAvatar = settingsState.profileAvatar,
+                        onSave = onUpdateProfile,
                         onBack = { onAction(AppNavigationAction.Back) },
                     )
                 }

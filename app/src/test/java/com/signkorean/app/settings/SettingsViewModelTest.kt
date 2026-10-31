@@ -5,6 +5,7 @@ import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
 import com.signkorean.domain.model.ReminderChangedEvent
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ChangeAppLanguage
@@ -63,16 +64,28 @@ class SettingsViewModelTest {
         }
 
     @Test
-    fun `profile name is persisted and exposed to the profile screen`() =
+    fun `profile details are persisted and the avatar changes the app language`() =
         runTest {
             val repository = FakeUserSettingsRepository()
-            val viewModel = SettingsViewModel(repository, RecordingAudioPlayer(), RecordingAnalyticsSink())
+            val languageUseCase = RecordingChangeAppLanguage(repository)
+            val viewModel =
+                SettingsViewModel(
+                    repository,
+                    RecordingAudioPlayer(),
+                    RecordingAnalyticsSink(),
+                    changeAppLanguage = languageUseCase,
+                )
 
-            viewModel.updateProfileName("Traveler")
+            viewModel.updateProfile("Sora", ProfileAvatar.JAPANESE_MAN)
             advanceUntilIdle()
 
-            assertEquals("Traveler", repository.settings.first().profileName)
-            assertEquals("Traveler", viewModel.uiState.value.profileName)
+            val settings = repository.settings.first()
+            assertEquals("Sora", settings.profileName)
+            assertEquals(ProfileAvatar.JAPANESE_MAN, settings.profileAvatar)
+            assertEquals("ja", settings.appLanguageTag)
+            assertEquals("ja", settings.learningExplanationLanguageTag)
+            assertEquals(ProfileAvatar.JAPANESE_MAN, viewModel.uiState.value.profileAvatar)
+            assertEquals(SettingsEffect.LanguageChanged("ja"), viewModel.effects.first())
         }
 
     @Test

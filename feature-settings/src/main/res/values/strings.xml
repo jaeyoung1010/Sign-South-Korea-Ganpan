@@ -43,10 +43,12 @@
     <string name="notices_content_body">We’re adding useful signs for food, shopping, transport, and everyday travel.</string>
     <string name="notices_back">Back to home</string>
     <string name="profile_title">Profile</string>
-    <string name="profile_intro">Set up a name for your learning profile. You can update it whenever you like.</string>
+    <string name="profile_intro">Choose your profile and display name. Your profile also sets the app language.</string>
+    <string name="profile_choose_avatar">Choose a profile picture</string>
+    <string name="profile_language">App language: %1$s</string>
     <string name="profile_name_label">Display name</string>
     <string name="profile_name_placeholder">Traveler</string>
-    <string name="profile_save">Save profile</string>
+    <string name="profile_save">Save profile and language</string>
     <string name="profile_saved_name">Learning as %1$s</string>
     <string name="profile_not_set">Your profile has not been set up yet.</string>
     <string name="profile_back">Back to home</string>

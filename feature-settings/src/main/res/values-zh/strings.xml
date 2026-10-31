@@ -43,10 +43,12 @@
     <string name="notices_content_body">我们正在添加美食、购物、交通和日常旅行中实用的标牌。</string>
     <string name="notices_back">返回首页</string>
     <string name="profile_title">个人资料</string>
-    <string name="profile_intro">设置学习资料中的名字，之后随时可以修改。</string>
+    <string name="profile_intro">选择头像和显示名称。所选头像也会决定应用语言。</string>
+    <string name="profile_choose_avatar">选择头像</string>
+    <string name="profile_language">应用语言：%1$s</string>
     <string name="profile_name_label">显示名称</string>
     <string name="profile_name_placeholder">旅行者</string>
-    <string name="profile_save">保存资料</string>
+    <string name="profile_save">保存资料和语言</string>
     <string name="profile_saved_name">正在以 %1$s 的身份学习</string>
     <string name="profile_not_set">你还没有设置个人资料。</string>
     <string name="profile_back">返回首页</string>

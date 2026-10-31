@@ -6,6 +6,7 @@ import com.signkorean.app.di.AppVersionName
 import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.ConfigureReminder
 import com.signkorean.domain.port.input.ConfigureReminderResult
@@ -68,6 +69,7 @@ class SettingsViewModel
                             supportedLanguageTags = changeAppLanguage.supportedLanguageTags.toList(),
                             appVersion = appVersion,
                             profileName = settings.profileName,
+                            profileAvatar = settings.profileAvatar,
                         )
                 }
             }
@@ -156,9 +158,34 @@ class SettingsViewModel
             }
         }
 
-        fun updateProfileName(name: String) {
-            val normalizedName = name.take(UserSettings.MAX_PROFILE_NAME_LENGTH)
-            persistSettings { settings -> settings.copy(profileName = normalizedName) }
+        fun updateProfile(
+            name: String,
+            avatar: ProfileAvatar,
+        ) {
+            val normalizedName = name.trim().take(UserSettings.MAX_PROFILE_NAME_LENGTH)
+            if (normalizedName.isBlank()) return
+            viewModelScope.launch {
+                try {
+                    val result =
+                        settingsMutex.withLock {
+                            userSettingsRepository.updateSettings { settings ->
+                                settings.copy(profileName = normalizedName, profileAvatar = avatar)
+                            }
+                            changeAppLanguage(avatar.languageTag)
+                        }
+                    when (result) {
+                        is ChangeAppLanguageResult.Changed -> effectChannel.trySend(SettingsEffect.LanguageChanged(result.languageTag))
+                        ChangeAppLanguageResult.InvalidTag,
+                        is ChangeAppLanguageResult.Unsupported,
+                        ChangeAppLanguageResult.Failed,
+                        -> effectChannel.trySend(SettingsEffect.LanguageChangeFailed)
+                    }
+                } catch (cancellation: CancellationException) {
+                    throw cancellation
+                } catch (_: Exception) {
+                    effectChannel.trySend(SettingsEffect.LanguageChangeFailed)
+                }
+            }
         }
 
         fun onReminderPermissionResult(granted: Boolean) {

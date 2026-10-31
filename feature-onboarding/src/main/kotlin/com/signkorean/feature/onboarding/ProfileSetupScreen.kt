@@ -128,7 +128,7 @@ private fun ProfileAvatarChoice(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val bitmap = rememberAssetBitmap(avatar.assetPath(), sampleSize = 4)
+    val bitmap = rememberAssetBitmap(avatar.assetPath, sampleSize = 4)
     Surface(
         modifier =
             modifier
@@ -163,18 +163,5 @@ private fun ProfileAvatar.languageName(): String =
             else -> R.string.onboarding_profile_language_english
         },
     )
-
-private fun ProfileAvatar.assetPath(): String =
-    "profile-avatars/with-flags/" +
-        when (this) {
-            ProfileAvatar.US_BLACK_MAN -> "01-us-black-man-flag.png"
-            ProfileAvatar.US_BLACK_WOMAN -> "02-us-black-woman-flag.png"
-            ProfileAvatar.US_WHITE_MAN -> "03-us-white-man-flag.png"
-            ProfileAvatar.US_WHITE_WOMAN -> "04-us-white-woman-flag.png"
-            ProfileAvatar.CHINESE_MAN -> "05-chinese-man-flag.png"
-            ProfileAvatar.CHINESE_WOMAN -> "06-chinese-woman-flag.png"
-            ProfileAvatar.JAPANESE_MAN -> "07-japanese-man-flag.png"
-            ProfileAvatar.JAPANESE_WOMAN -> "08-japanese-woman-flag.png"
-        }
 
 private const val MAX_PROFILE_NAME_LENGTH = 40

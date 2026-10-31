@@ -29,6 +29,7 @@ import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.domain.model.GuestAccount
 import com.signkorean.domain.model.PolicyDocument
 import com.signkorean.domain.model.PolicyDocumentId
+import com.signkorean.domain.model.ProfileAvatar
 
 data class SettingsUiState(
     val title: String = "Settings",
@@ -42,6 +43,7 @@ data class SettingsUiState(
     val supportedLanguageTags: List<String> = listOf("en", "ja", "zh"),
     val appVersion: String = "0.1.0",
     val profileName: String = "",
+    val profileAvatar: ProfileAvatar? = null,
 )
 
 data class LegalUiState(

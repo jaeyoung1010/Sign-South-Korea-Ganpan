@@ -43,10 +43,12 @@
     <string name="notices_content_body">食べ物、買い物、交通、日常の旅行に役立つ看板を追加しています。</string>
     <string name="notices_back">ホームに戻る</string>
     <string name="profile_title">プロフィール</string>
-    <string name="profile_intro">学習プロフィールの名前を設定できます。いつでも変更できます。</string>
+    <string name="profile_intro">プロフィール画像と表示名を選びましょう。プロフィールに合わせてアプリの言語も変わります。</string>
+    <string name="profile_choose_avatar">プロフィール画像を選ぶ</string>
+    <string name="profile_language">アプリの言語：%1$s</string>
     <string name="profile_name_label">表示名</string>
     <string name="profile_name_placeholder">旅行者</string>
-    <string name="profile_save">プロフィールを保存</string>
+    <string name="profile_save">プロフィールと言語を保存</string>
     <string name="profile_saved_name">%1$sとして学習中</string>
     <string name="profile_not_set">プロフィールはまだ設定されていません。</string>
     <string name="profile_back">ホームに戻る</string>
