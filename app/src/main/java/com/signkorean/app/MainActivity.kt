@@ -445,6 +445,7 @@ internal fun SignKoreanAppContent(
                 entry<AppRoute.Home> {
                     LearnHomeDestination(
                         state = learnHomeState,
+                        profileAvatar = settingsState.profileAvatar,
                         onAction = onAction,
                         onStartSession = onStartSession,
                         onStartCategorySession = onStartCategorySession,
@@ -681,6 +682,7 @@ private fun OnboardingDestination(
 @Composable
 private fun LearnHomeDestination(
     state: LearnHomeUiState,
+    profileAvatar: com.signkorean.domain.model.ProfileAvatar?,
     onAction: (AppNavigationAction) -> Unit,
     onStartSession: () -> Unit,
     onStartCategorySession: (String) -> Unit,
@@ -689,6 +691,7 @@ private fun LearnHomeDestination(
 ) {
     LearnHomeScreen(
         state = state,
+        profileAvatar = profileAvatar,
         onAction = { action ->
             when (action) {
                 LearnUiAction.StartSession -> onStartSession()

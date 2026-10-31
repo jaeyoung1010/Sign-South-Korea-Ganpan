@@ -2,7 +2,10 @@
 
 package com.signkorean.feature.learn
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -25,15 +28,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -48,6 +54,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import coil3.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import com.signkorean.designsystem.components.GameButton
@@ -60,9 +67,11 @@ import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.RatingInputSource
 import java.time.LocalDate
 import com.signkorean.domain.model.VoiceId
+import kotlinx.coroutines.withContext
 
 data class LearnHomeUiState(
     val streakDays: Int = 0,
@@ -293,6 +302,7 @@ sealed interface LearnUiEffect {
 fun LearnHomeScreen(
     state: LearnHomeUiState,
     onAction: (LearnUiAction) -> Unit,
+    profileAvatar: ProfileAvatar? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -308,6 +318,7 @@ fun LearnHomeScreen(
             onOpenNotices = { onAction(LearnUiAction.OpenNotices) },
             onOpenSettings = { onAction(LearnUiAction.OpenSettings) },
             onOpenProfile = { onAction(LearnUiAction.OpenProfile) },
+            profileAvatar = profileAvatar,
         )
         Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         WeeklyGoalCard(
@@ -329,6 +340,7 @@ private fun HomeHeader(
     onOpenNotices: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenProfile: () -> Unit,
+    profileAvatar: ProfileAvatar?,
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
         Row(
@@ -359,9 +371,46 @@ private fun HomeHeader(
                 modifier = Modifier.testTag("home-open-profile"),
                 containerColor = Color(SignKoreanPalette.PRIMARY),
                 contentColor = Color(SignKoreanPalette.INK),
-            ) { ProfileIcon() }
+            ) {
+                if (profileAvatar == null) {
+                    ProfileIcon()
+                } else {
+                    ProfileAvatarImage(profileAvatar)
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun ProfileAvatarImage(avatar: ProfileAvatar) {
+    val bitmap = rememberProfileAvatarBitmap(avatar.assetPath)
+    if (bitmap == null) {
+        ProfileIcon()
+    } else {
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(38.dp).clip(CircleShape),
+        )
+    }
+}
+
+@Composable
+private fun rememberProfileAvatarBitmap(assetPath: String): Bitmap? {
+    val context = LocalContext.current
+    val bitmap by
+        produceState<Bitmap?>(initialValue = null, context, assetPath) {
+            value =
+                withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    runCatching {
+                        val options = BitmapFactory.Options().apply { inSampleSize = 4 }
+                        context.assets.open(assetPath).use { input -> BitmapFactory.decodeStream(input, null, options) }
+                    }.getOrNull()
+                }
+        }
+    return bitmap
 }
 
 @Composable
