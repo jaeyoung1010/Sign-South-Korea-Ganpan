@@ -34,6 +34,11 @@ sealed interface AppRoute : NavKey {
     }
 
     @Serializable
+    data object ProfileSetup : AppRoute {
+        override val screenId: String = "screen-onboarding-profile"
+    }
+
+    @Serializable
     data object Home : AppRoute {
         override val screenId: String = "screen-home"
     }
@@ -234,6 +239,7 @@ object AppNavigationIntent {
             AppRoute.Tutorial,
             AppRoute.Level,
             AppRoute.Interests,
+            AppRoute.ProfileSetup,
             AppRoute.Home,
             AppRoute.Learn,
             AppRoute.Done,

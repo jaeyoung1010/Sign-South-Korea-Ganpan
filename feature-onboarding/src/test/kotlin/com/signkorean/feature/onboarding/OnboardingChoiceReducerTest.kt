@@ -2,6 +2,7 @@ package com.signkorean.feature.onboarding
 
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.ProfileAvatar
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -41,5 +42,17 @@ class OnboardingChoiceReducerTest {
         assertEquals(emptySet<Interest>(), initial.selectedInterests)
         assertEquals(setOf(Interest.FOOD, Interest.TRANSPORT), selected.selectedInterests)
         assertEquals(setOf(Interest.TRANSPORT), deselected.selectedInterests)
+    }
+
+    @Test
+    fun `profile needs both an avatar and a name before onboarding can finish`() {
+        val initial = OnboardingChoiceUiState()
+        val avatar = reducer.reduce(initial, OnboardingChoiceAction.SelectProfileAvatar(ProfileAvatar.CHINESE_MAN))
+        val complete = reducer.reduce(avatar, OnboardingChoiceAction.UpdateProfileName("Wei"))
+
+        assertFalse(initial.canCompleteProfile)
+        assertFalse(avatar.canCompleteProfile)
+        assertTrue(complete.canCompleteProfile)
+        assertEquals(ProfileAvatar.CHINESE_MAN, complete.selectedProfileAvatar)
     }
 }

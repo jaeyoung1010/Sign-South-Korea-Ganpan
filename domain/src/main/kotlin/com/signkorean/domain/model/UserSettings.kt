@@ -36,6 +36,7 @@ data class UserSettings(
     val reminderEnabled: Boolean = false,
     val reminderLocalTime: LocalTime = LocalTime.of(19, 0),
     val profileName: String = "",
+    val profileAvatar: ProfileAvatar? = null,
 ) {
     init {
         require(sessionLength in SESSION_LENGTH_OPTIONS) { "Unsupported session length: $sessionLength" }

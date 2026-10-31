@@ -5,10 +5,12 @@ package com.signkorean.app
 import androidx.compose.runtime.Composable
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.feature.onboarding.InterestsScreen
 import com.signkorean.feature.onboarding.LevelScreen
 import com.signkorean.feature.onboarding.OnboardingChoiceAction
 import com.signkorean.feature.onboarding.OnboardingChoiceUiState
+import com.signkorean.feature.onboarding.ProfileSetupScreen
 
 @Composable
 internal fun LevelDestination(
@@ -46,14 +48,34 @@ internal fun LevelDestination(
 internal fun InterestsDestination(
     state: OnboardingChoiceUiState,
     onToggleInterest: (Interest) -> Unit,
-    onStartLearning: () -> Unit,
+    onContinue: () -> Unit,
 ) {
     InterestsScreen(
         state = state,
         onAction = { action ->
             when (action) {
                 is OnboardingChoiceAction.ToggleInterest -> onToggleInterest(action.interest)
-                OnboardingChoiceAction.StartLearning -> onStartLearning()
+                OnboardingChoiceAction.ContinueFromInterests -> onContinue()
+                else -> Unit
+            }
+        },
+    )
+}
+
+@Composable
+internal fun ProfileSetupDestination(
+    state: OnboardingChoiceUiState,
+    onSelectAvatar: (ProfileAvatar) -> Unit,
+    onUpdateName: (String) -> Unit,
+    onComplete: () -> Unit,
+) {
+    ProfileSetupScreen(
+        state = state,
+        onAction = { action ->
+            when (action) {
+                is OnboardingChoiceAction.SelectProfileAvatar -> onSelectAvatar(action.avatar)
+                is OnboardingChoiceAction.UpdateProfileName -> onUpdateName(action.name)
+                OnboardingChoiceAction.CompleteProfile -> if (state.canCompleteProfile) onComplete()
                 else -> Unit
             }
         },

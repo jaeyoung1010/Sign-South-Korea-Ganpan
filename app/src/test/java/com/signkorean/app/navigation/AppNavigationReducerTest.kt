@@ -149,6 +149,7 @@ class AppNavigationReducerTest {
                 AppRoute.Tutorial,
                 AppRoute.Level,
                 AppRoute.Interests,
+                AppRoute.ProfileSetup,
                 AppRoute.Home,
                 AppRoute.Learn,
                 AppRoute.Done,

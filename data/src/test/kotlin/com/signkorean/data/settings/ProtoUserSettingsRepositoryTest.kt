@@ -5,6 +5,7 @@ import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.usecase.CompleteOnboardingUseCase
@@ -132,11 +133,13 @@ class ProtoUserSettingsRepositoryTest {
     @Test
     fun `onboarding choices persist through the actual DataStore adapter`() =
         runTest {
-            val fixture = createFixture()
+            val fixture = createFixture(supportedLanguageTags = setOf("en", "ja", "zh"))
 
             CompleteOnboardingUseCase(fixture.repository, NoopAnalyticsSink)(
                 level = LearningLevel.NOT_SURE,
                 interests = setOf(Interest.FOOD, Interest.SHOPPING),
+                profileName = "Lin",
+                profileAvatar = ProfileAvatar.CHINESE_WOMAN,
             )
 
             assertEquals(
@@ -144,6 +147,10 @@ class ProtoUserSettingsRepositoryTest {
                     onboardingCompleted = true,
                     level = LearningLevel.NOT_SURE,
                     interests = setOf(Interest.FOOD, Interest.SHOPPING),
+                    profileName = "Lin",
+                    profileAvatar = ProfileAvatar.CHINESE_WOMAN,
+                    appLanguageTag = "zh",
+                    learningExplanationLanguageTag = "zh",
                 ),
                 fixture.repository.settings.first(),
             )

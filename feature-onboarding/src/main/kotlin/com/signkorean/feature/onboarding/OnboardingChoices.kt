@@ -32,16 +32,22 @@ import com.signkorean.designsystem.theme.SignKoreanShapes
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.ProfileAvatar
 
 data class OnboardingChoiceUiState(
     val selectedLevel: LearningLevel? = null,
     val selectedInterests: Set<Interest> = emptySet(),
+    val profileName: String = "",
+    val selectedProfileAvatar: ProfileAvatar? = null,
     val isSaving: Boolean = false,
     val hasSaveError: Boolean = false,
     val isCompleted: Boolean = false,
 ) {
     val canContinueFromLevel: Boolean
         get() = selectedLevel != null
+
+    val canCompleteProfile: Boolean
+        get() = profileName.isNotBlank() && selectedProfileAvatar != null
 }
 
 sealed interface OnboardingChoiceAction {
@@ -57,7 +63,17 @@ sealed interface OnboardingChoiceAction {
 
     data object ContinueFromLevel : OnboardingChoiceAction
 
-    data object StartLearning : OnboardingChoiceAction
+    data object ContinueFromInterests : OnboardingChoiceAction
+
+    data class SelectProfileAvatar(
+        val avatar: ProfileAvatar,
+    ) : OnboardingChoiceAction
+
+    data class UpdateProfileName(
+        val name: String,
+    ) : OnboardingChoiceAction
+
+    data object CompleteProfile : OnboardingChoiceAction
 }
 
 class OnboardingChoiceReducer {
@@ -72,8 +88,13 @@ class OnboardingChoiceReducer {
 
             is OnboardingChoiceAction.ToggleInterest -> state.toggleInterest(action.interest)
 
+            is OnboardingChoiceAction.SelectProfileAvatar -> state.copy(selectedProfileAvatar = action.avatar, hasSaveError = false)
+
+            is OnboardingChoiceAction.UpdateProfileName -> state.copy(profileName = action.name, hasSaveError = false)
+
             OnboardingChoiceAction.ContinueFromLevel,
-            OnboardingChoiceAction.StartLearning,
+            OnboardingChoiceAction.ContinueFromInterests,
+            OnboardingChoiceAction.CompleteProfile,
             -> state
         }
 
@@ -92,7 +113,8 @@ class OnboardingChoiceReducer {
 object OnboardingChoiceTestTags {
     const val LEVEL_CONTINUE = "level-continue"
     const val LEVEL_SKIP = "level-skip"
-    const val INTERESTS_START = "interests-start"
+    const val INTERESTS_CONTINUE = "interests-continue"
+    const val PROFILE_CONTINUE = "profile-continue"
 }
 
 @Composable
@@ -203,10 +225,10 @@ fun InterestsScreen(
             }
         }
         GameButton(
-            text = stringResource(R.string.onboarding_start_learning),
+            text = stringResource(R.string.onboarding_continue),
             enabled = !state.isSaving && !state.isCompleted,
-            onClick = { onAction(OnboardingChoiceAction.StartLearning) },
-            modifier = Modifier.fillMaxWidth().testTag(OnboardingChoiceTestTags.INTERESTS_START),
+            onClick = { onAction(OnboardingChoiceAction.ContinueFromInterests) },
+            modifier = Modifier.fillMaxWidth().testTag(OnboardingChoiceTestTags.INTERESTS_CONTINUE),
         )
     }
 }

@@ -116,7 +116,8 @@ object UseCaseModule {
     fun provideCompleteOnboarding(
         userSettingsRepository: UserSettingsRepository,
         analyticsSink: AnalyticsSink,
-    ): CompleteOnboarding = CompleteOnboardingUseCase(userSettingsRepository, analyticsSink)
+        appLocalePort: AppLocalePort,
+    ): CompleteOnboarding = CompleteOnboardingUseCase(userSettingsRepository, analyticsSink, appLocalePort)
 
     @Provides
     fun provideConfigureReminder(

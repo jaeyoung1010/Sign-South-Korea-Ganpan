@@ -47,4 +47,5 @@ message UserSettingsProto {
   int32 reminder_local_minute = 15;
   bool has_explicit_reminder_local_time = 16;
   string profile_name = 17;
+  string profile_avatar_id = 18;
 }

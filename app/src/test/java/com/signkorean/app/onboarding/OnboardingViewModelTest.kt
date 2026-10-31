@@ -3,6 +3,7 @@ package com.signkorean.app.onboarding
 import androidx.lifecycle.SavedStateHandle
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.testsupport.MainDispatcherRule
@@ -21,22 +22,24 @@ class OnboardingViewModelTest {
     @Test
     fun `successful completion saves choices before reporting completion`() =
         runTest {
-            var saved: Pair<LearningLevel, Set<Interest>>? = null
+            var saved: OnboardingInput? = null
             val viewModel =
                 OnboardingViewModel(
                     SavedStateHandle(),
-                    CompleteOnboarding { level, interests ->
-                        saved = level to interests
-                        UserSettings(onboardingCompleted = true, level = level, interests = interests)
+                    CompleteOnboarding { level, interests, name, avatar ->
+                        saved = OnboardingInput(level, interests, name, avatar)
+                        UserSettings(onboardingCompleted = true, level = level, interests = interests, profileName = name, profileAvatar = avatar)
                     },
                 )
 
             viewModel.selectLevel(LearningLevel.NOT_SURE)
             viewModel.toggleInterest(Interest.FOOD)
+            viewModel.selectProfileAvatar(ProfileAvatar.JAPANESE_MAN)
+            viewModel.updateProfileName("Sora")
             viewModel.completeOnboarding()
             advanceUntilIdle()
 
-            assertEquals(LearningLevel.NOT_SURE to setOf(Interest.FOOD), saved)
+            assertEquals(OnboardingInput(LearningLevel.NOT_SURE, setOf(Interest.FOOD), "Sora", ProfileAvatar.JAPANESE_MAN), saved)
             assertTrue(viewModel.uiState.value.isCompleted)
             assertFalse(viewModel.uiState.value.isSaving)
         }
@@ -48,14 +51,16 @@ class OnboardingViewModelTest {
             val viewModel =
                 OnboardingViewModel(
                     SavedStateHandle(),
-                    CompleteOnboarding { level, interests ->
+                    CompleteOnboarding { level, interests, name, avatar ->
                         attempts += 1
                         if (attempts == 1) error("storage unavailable")
-                        UserSettings(onboardingCompleted = true, level = level, interests = interests)
+                        UserSettings(onboardingCompleted = true, level = level, interests = interests, profileName = name, profileAvatar = avatar)
                     },
                 )
 
             viewModel.skipLevel()
+            viewModel.selectProfileAvatar(ProfileAvatar.US_BLACK_MAN)
+            viewModel.updateProfileName("Jordan")
             viewModel.completeOnboarding()
             advanceUntilIdle()
 
@@ -69,4 +74,11 @@ class OnboardingViewModelTest {
             assertEquals(2, attempts)
             assertTrue(viewModel.uiState.value.isCompleted)
         }
+
+    private data class OnboardingInput(
+        val level: LearningLevel,
+        val interests: Set<Interest>,
+        val name: String,
+        val avatar: ProfileAvatar,
+    )
 }

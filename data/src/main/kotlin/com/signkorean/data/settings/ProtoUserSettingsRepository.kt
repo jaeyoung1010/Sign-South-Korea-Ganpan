@@ -9,6 +9,7 @@ import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.LanguageTag
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.UserSettingsRepository
@@ -80,6 +81,7 @@ private fun UserSettingsProto.toDomain(
         reminderEnabled = reminderEnabled,
         reminderLocalTime = if (hasExplicitReminderLocalTime) reminderLocalTimeOrDefault() else LocalTime.of(19, 0),
         profileName = profileName.take(UserSettings.MAX_PROFILE_NAME_LENGTH),
+        profileAvatar = ProfileAvatar.fromId(profileAvatarId),
     )
 }
 
@@ -111,6 +113,7 @@ private fun UserSettings.toProto(
         .setReminderLocalMinute(reminderLocalTime.minute)
         .setHasExplicitReminderLocalTime(true)
         .setProfileName(profileName.take(UserSettings.MAX_PROFILE_NAME_LENGTH))
+        .setProfileAvatarId(profileAvatar?.id.orEmpty())
         .build()
 
 private fun LevelProto.toDomain(): LearningLevel =

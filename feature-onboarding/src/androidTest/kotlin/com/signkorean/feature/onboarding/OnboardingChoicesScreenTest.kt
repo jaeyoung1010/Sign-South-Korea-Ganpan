@@ -42,7 +42,7 @@ class OnboardingChoicesScreenTest {
         var currentState: OnboardingChoiceUiState? = null
         composeRule.setContent { InterestsUnderTest(onStateChanged = { currentState = it }) }
 
-        composeRule.onNodeWithTag(OnboardingChoiceTestTags.INTERESTS_START).assertIsEnabled()
+        composeRule.onNodeWithTag(OnboardingChoiceTestTags.INTERESTS_CONTINUE).assertIsEnabled()
         composeRule.onNodeWithTag("interest-food").performClick()
         composeRule.onNodeWithTag("interest-transport").performClick()
         composeRule.runOnIdle {

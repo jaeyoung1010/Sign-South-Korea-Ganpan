@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.model.Interest
 import com.signkorean.domain.model.LearningLevel
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.port.input.CompleteOnboarding
 import com.signkorean.feature.onboarding.OnboardingChoiceReducer
 import com.signkorean.feature.onboarding.OnboardingChoiceUiState
@@ -50,14 +51,34 @@ class OnboardingViewModel
             }
         }
 
+        fun selectProfileAvatar(avatar: ProfileAvatar) {
+            updateChoice {
+                reducer.reduce(
+                    it,
+                    com.signkorean.feature.onboarding.OnboardingChoiceAction.SelectProfileAvatar(avatar),
+                )
+            }
+        }
+
+        fun updateProfileName(name: String) {
+            updateChoice {
+                reducer.reduce(
+                    it,
+                    com.signkorean.feature.onboarding.OnboardingChoiceAction.UpdateProfileName(name),
+                )
+            }
+        }
+
         fun completeOnboarding() {
             val state = mutableUiState.value
             val level = state.selectedLevel ?: return
-            if (state.isSaving || state.isCompleted) return
+            val profileAvatar = state.selectedProfileAvatar ?: return
+            val profileName = state.profileName.trim()
+            if (profileName.isBlank() || state.isSaving || state.isCompleted) return
 
             mutableUiState.value = state.copy(isSaving = true, hasSaveError = false)
             viewModelScope.launch {
-                runCatching { completeOnboarding(level, state.selectedInterests) }
+                runCatching { completeOnboarding(level, state.selectedInterests, profileName, profileAvatar) }
                     .onSuccess {
                         mutableUiState.value = mutableUiState.value.copy(isSaving = false, isCompleted = true)
                     }.onFailure {
@@ -81,11 +102,15 @@ class OnboardingViewModel
                         .orEmpty()
                         .mapNotNull { it.toInterestOrNull() }
                         .toSet(),
+                profileName = savedStateHandle.get<String>(PROFILE_NAME_KEY).orEmpty(),
+                selectedProfileAvatar = savedStateHandle.get<String>(PROFILE_AVATAR_KEY)?.toProfileAvatarOrNull(),
             )
 
         private fun persistChoiceState(state: OnboardingChoiceUiState) {
             savedStateHandle[LEVEL_KEY] = state.selectedLevel?.name
             savedStateHandle[INTERESTS_KEY] = ArrayList(state.selectedInterests.map(Interest::name))
+            savedStateHandle[PROFILE_NAME_KEY] = state.profileName
+            savedStateHandle[PROFILE_AVATAR_KEY] = state.selectedProfileAvatar?.id
         }
 
         private fun String.toLearningLevelOrNull(): LearningLevel? =
@@ -94,8 +119,12 @@ class OnboardingViewModel
 
         private fun String.toInterestOrNull(): Interest? = Interest.entries.firstOrNull { it.name == this }
 
+        private fun String.toProfileAvatarOrNull(): ProfileAvatar? = ProfileAvatar.fromId(this)
+
         private companion object {
             const val LEVEL_KEY = "onboarding-level"
             const val INTERESTS_KEY = "onboarding-interests"
+            const val PROFILE_NAME_KEY = "onboarding-profile-name"
+            const val PROFILE_AVATAR_KEY = "onboarding-profile-avatar"
         }
     }

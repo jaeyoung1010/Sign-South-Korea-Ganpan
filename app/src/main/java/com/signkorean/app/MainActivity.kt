@@ -312,6 +312,8 @@ private fun SignKoreanApp(
         onSelectLevel = onboardingViewModel::selectLevel,
         onSkipLevel = onboardingViewModel::skipLevel,
         onToggleInterest = onboardingViewModel::toggleInterest,
+        onSelectOnboardingProfileAvatar = onboardingViewModel::selectProfileAvatar,
+        onUpdateOnboardingProfileName = onboardingViewModel::updateProfileName,
         onCompleteOnboarding = onboardingViewModel::completeOnboarding,
         learnHomeState = learnHomeState,
         onStartSession = learnHomeViewModel::startDailySession,
@@ -368,6 +370,8 @@ internal fun SignKoreanAppContent(
     onSelectLevel: (com.signkorean.domain.model.LearningLevel) -> Unit = {},
     onSkipLevel: () -> Unit = {},
     onToggleInterest: (com.signkorean.domain.model.Interest) -> Unit = {},
+    onSelectOnboardingProfileAvatar: (com.signkorean.domain.model.ProfileAvatar) -> Unit = {},
+    onUpdateOnboardingProfileName: (String) -> Unit = {},
     onCompleteOnboarding: () -> Unit = {},
     learnHomeState: LearnHomeUiState = LearnHomeUiState(),
     onStartSession: () -> Unit = {},
@@ -427,7 +431,15 @@ internal fun SignKoreanAppContent(
                     InterestsDestination(
                         state = onboardingState,
                         onToggleInterest = onToggleInterest,
-                        onStartLearning = onCompleteOnboarding,
+                        onContinue = { onAction(AppNavigationAction.Navigate(AppRoute.ProfileSetup)) },
+                    )
+                }
+                entry<AppRoute.ProfileSetup> {
+                    ProfileSetupDestination(
+                        state = onboardingState,
+                        onSelectAvatar = onSelectOnboardingProfileAvatar,
+                        onUpdateName = onUpdateOnboardingProfileName,
+                        onComplete = onCompleteOnboarding,
                     )
                 }
                 entry<AppRoute.Home> {
@@ -656,7 +668,8 @@ private fun OnboardingDestination(
                         OnboardingStep.Welcome -> AppNavigationAction.StartOnboarding
                         OnboardingStep.Tutorial -> AppNavigationAction.Navigate(AppRoute.Level)
                         OnboardingStep.Level -> AppNavigationAction.Navigate(AppRoute.Interests)
-                        OnboardingStep.Interests -> AppNavigationAction.CompleteOnboarding
+                        OnboardingStep.Interests -> AppNavigationAction.Navigate(AppRoute.ProfileSetup)
+                        OnboardingStep.Profile -> AppNavigationAction.CompleteOnboarding
                     },
                 )
             }

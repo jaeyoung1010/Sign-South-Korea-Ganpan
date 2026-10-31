@@ -53,6 +53,7 @@ enum class OnboardingStep(
     Tutorial("screen-tutorial", R.string.onboarding_tutorial_title, R.string.onboarding_tutorial_description),
     Level("screen-level", R.string.onboarding_level_title, R.string.onboarding_level_description),
     Interests("screen-interests", R.string.onboarding_interests_title, R.string.onboarding_interests_description),
+    Profile("screen-onboarding-profile", R.string.onboarding_profile_title, R.string.onboarding_profile_description),
 }
 
 data class OnboardingUiState(
@@ -173,7 +174,7 @@ internal fun OnboardingProgressIndicator(
         horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.xSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        repeat(4) { index ->
+        repeat(5) { index ->
             Box(
                 modifier =
                     Modifier
@@ -244,14 +245,18 @@ private fun CollagePhoto(
 }
 
 @Composable
-internal fun rememberAssetBitmap(assetPath: String): Bitmap? {
+internal fun rememberAssetBitmap(
+    assetPath: String,
+    sampleSize: Int = 1,
+): Bitmap? {
     val context = LocalContext.current
     val bitmap by
-        produceState<Bitmap?>(initialValue = null, context, assetPath) {
+        produceState<Bitmap?>(initialValue = null, context, assetPath, sampleSize) {
             value =
                 withContext(Dispatchers.IO) {
                     runCatching {
-                        context.assets.open(assetPath).use(BitmapFactory::decodeStream)
+                        val options = BitmapFactory.Options().apply { inSampleSize = sampleSize.coerceAtLeast(1) }
+                        context.assets.open(assetPath).use { input -> BitmapFactory.decodeStream(input, null, options) }
                     }.getOrNull()
                 }
         }
