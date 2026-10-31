@@ -10,7 +10,7 @@
   "reviewStatus": {"en": "native-english-reviewed", "ja": "native-japanese-reviewed", "zh": "native-chinese-reviewed"},
   "factReviewStatus": {"en": "korean-fact-reviewed", "ja": "korean-fact-reviewed", "zh": "korean-fact-reviewed"},
   "checksums": {
-    "content/cards.base.json": "0d8b97550d08ba6e42d921524d88bb5a9f02a2a18f04f34e9a9094ef029c6a60",
+    "content/cards.base.json": "e98ba9ccd514eef81f43dfa6283afa1c57c37c2ea6c2e4fb19f7f27e395952f9",
     "content/en/cards.json": "d393382909400307d650356696ae6a158b719b99ae147a20a4babad5e6c0a96f",
     "content/ja/cards.json": "af11a7a5c17b2bad469566cbcba1544ac2293195bf8767ca61553d3ac9c58341",
     "content/zh/cards.json": "93c8f033d1c72cb45908c2fc3bbb1ffd0e3f6671957b3257ace5a5ba7fc02306"

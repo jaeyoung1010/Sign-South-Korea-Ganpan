@@ -7,7 +7,7 @@
   "language": "kor",
   "source": "api-page",
   "generated_by": "codex",
-  "generated_at": "2026-10-15T16:12:19.135Z",
+  "generated_at": "2026-10-31T09:06:31.333Z",
   "output": {
     "audio_format": "mp3",
     "audio_tempo": 0.9,
@@ -114,6 +114,336 @@
       "file": "20-seoul-station.mp3",
       "text": "서울역",
       "bytes": 35569
+    },
+    {
+      "file": "bunsik.mp3",
+      "text": "분식",
+      "bytes": 31390
+    },
+    {
+      "file": "exit.mp3",
+      "text": "출구",
+      "bytes": 31390
+    },
+    {
+      "file": "pharmacy.mp3",
+      "text": "약국",
+      "bytes": 31390
+    },
+    {
+      "file": "no-parking.mp3",
+      "text": "주차 금지",
+      "bytes": 52288
+    },
+    {
+      "file": "restroom.mp3",
+      "text": "화장실",
+      "bytes": 41839
+    },
+    {
+      "file": "convenience-store.mp3",
+      "text": "편의점",
+      "bytes": 39749
+    },
+    {
+      "file": "entrance.mp3",
+      "text": "입구",
+      "bytes": 34524
+    },
+    {
+      "file": "open.mp3",
+      "text": "영업중",
+      "bytes": 41839
+    },
+    {
+      "file": "no-smoking.mp3",
+      "text": "금연",
+      "bytes": 33479
+    },
+    {
+      "file": "sale.mp3",
+      "text": "세일",
+      "bytes": 33479
+    },
+    {
+      "file": "01-yeongupjung.mp3",
+      "text": "영업중",
+      "bytes": 42884
+    },
+    {
+      "file": "02-hyumu.mp3",
+      "text": "휴무",
+      "bytes": 35569
+    },
+    {
+      "file": "03-junbijoong.mp3",
+      "text": "준비중",
+      "bytes": 42884
+    },
+    {
+      "file": "04-magam.mp3",
+      "text": "마감",
+      "bytes": 33479
+    },
+    {
+      "file": "05-daegi.mp3",
+      "text": "대기",
+      "bytes": 38704
+    },
+    {
+      "file": "06-yeyak.mp3",
+      "text": "예약",
+      "bytes": 28255
+    },
+    {
+      "file": "07-ipgu.mp3",
+      "text": "입구",
+      "bytes": 32435
+    },
+    {
+      "file": "08-chulgu.mp3",
+      "text": "출구",
+      "bytes": 35569
+    },
+    {
+      "file": "09-breaktime.mp3",
+      "text": "브레이크타임",
+      "bytes": 47063
+    },
+    {
+      "file": "10-lastorder.mp3",
+      "text": "라스트오더",
+      "bytes": 47063
+    },
+    {
+      "file": "11-gopchang.mp3",
+      "text": "곱창",
+      "bytes": 35569
+    },
+    {
+      "file": "12-makchang.mp3",
+      "text": "막창",
+      "bytes": 35569
+    },
+    {
+      "file": "13-sundae.mp3",
+      "text": "순대",
+      "bytes": 32435
+    },
+    {
+      "file": "14-jokbal.mp3",
+      "text": "족발",
+      "bytes": 32435
+    },
+    {
+      "file": "15-gamjatang.mp3",
+      "text": "감자탕",
+      "bytes": 38704
+    },
+    {
+      "file": "16-yukhoe.mp3",
+      "text": "육회",
+      "bytes": 32435
+    },
+    {
+      "file": "17-sannakji.mp3",
+      "text": "산낙지",
+      "bytes": 39749
+    },
+    {
+      "file": "18-jeongol.mp3",
+      "text": "전골",
+      "bytes": 33479
+    },
+    {
+      "file": "19-jjigae.mp3",
+      "text": "찌개",
+      "bytes": 36614
+    },
+    {
+      "file": "20-sale.mp3",
+      "text": "세일",
+      "bytes": 51243
+    },
+    {
+      "file": "21-event.mp3",
+      "text": "이벤트",
+      "bytes": 36614
+    },
+    {
+      "file": "22-freegift.mp3",
+      "text": "사은품",
+      "bytes": 41839
+    },
+    {
+      "file": "23-soldout.mp3",
+      "text": "품절",
+      "bytes": 31390
+    },
+    {
+      "file": "24-dutyfree.mp3",
+      "text": "면세",
+      "bytes": 36614
+    },
+    {
+      "file": "25-exchange.mp3",
+      "text": "교환",
+      "bytes": 31390
+    },
+    {
+      "file": "26-refund.mp3",
+      "text": "환불",
+      "bytes": 35569
+    },
+    {
+      "file": "27-cosmetics.mp3",
+      "text": "화장품",
+      "bytes": 41839
+    },
+    {
+      "file": "28-transfer.mp3",
+      "text": "환승",
+      "bytes": 37659
+    },
+    {
+      "file": "29-platform.mp3",
+      "text": "승강장",
+      "bytes": 48108
+    },
+    {
+      "file": "30-firsttrain.mp3",
+      "text": "첫차",
+      "bytes": 39749
+    },
+    {
+      "file": "31-lasttrain.mp3",
+      "text": "막차",
+      "bytes": 30345
+    },
+    {
+      "file": "32-express.mp3",
+      "text": "급행",
+      "bytes": 35569
+    },
+    {
+      "file": "33-local.mp3",
+      "text": "일반",
+      "bytes": 33479
+    },
+    {
+      "file": "34-getoff.mp3",
+      "text": "하차",
+      "bytes": 31390
+    },
+    {
+      "file": "35-matjip.mp3",
+      "text": "맛집",
+      "bytes": 31390
+    },
+    {
+      "file": "36-hotplace.mp3",
+      "text": "핫플",
+      "bytes": 32435
+    },
+    {
+      "file": "37-waiting.mp3",
+      "text": "대기",
+      "bytes": 30345
+    },
+    {
+      "file": "38-nokidszone.mp3",
+      "text": "노키즈존",
+      "bytes": 44973
+    },
+    {
+      "file": "01-myeongdong-kyoja.mp3",
+      "text": "명동교자",
+      "bytes": 48108
+    },
+    {
+      "file": "02-hongdae-dakgalbi.mp3",
+      "text": "홍대닭갈비",
+      "bytes": 53332
+    },
+    {
+      "file": "03-ssamziegil.mp3",
+      "text": "쌈지길",
+      "bytes": 56467
+    },
+    {
+      "file": "04-samcheongdong-sujebi.mp3",
+      "text": "삼청동 수제비",
+      "bytes": 61692
+    },
+    {
+      "file": "05-gyeongnidan-gil.mp3",
+      "text": "경리단길",
+      "bytes": 47063
+    },
+    {
+      "file": "06-garosu-gil.mp3",
+      "text": "가로수길",
+      "bytes": 47063
+    },
+    {
+      "file": "07-nogari-golmok.mp3",
+      "text": "노가리골목",
+      "bytes": 48108
+    },
+    {
+      "file": "08-yeonmujang-gil.mp3",
+      "text": "연무장길",
+      "bytes": 48108
+    },
+    {
+      "file": "09-pyeonghwa-market.mp3",
+      "text": "평화시장",
+      "bytes": 46018
+    },
+    {
+      "file": "10-lotte-dutyfree.mp3",
+      "text": "롯데면세점",
+      "bytes": 49153
+    },
+    {
+      "file": "11-hongdae-kakaofriends.mp3",
+      "text": "카카오프렌즈 홍대",
+      "bytes": 69006
+    },
+    {
+      "file": "12-insadong-teahouse.mp3",
+      "text": "전통찻집",
+      "bytes": 44973
+    },
+    {
+      "file": "13-bukchon-hanbok-rental.mp3",
+      "text": "한복 대여",
+      "bytes": 47063
+    },
+    {
+      "file": "14-itaewon-world-food-street.mp3",
+      "text": "세계음식거리",
+      "bytes": 55422
+    },
+    {
+      "file": "15-galleria-luxury.mp3",
+      "text": "갤러리아 명품관",
+      "bytes": 67961
+    },
+    {
+      "file": "16-seun-sangga.mp3",
+      "text": "세운상가",
+      "bytes": 44973
+    },
+    {
+      "file": "17-musinsa-megastore.mp3",
+      "text": "무신사 메가스토어",
+      "bytes": 58557
+    },
+    {
+      "file": "18-gwangjang-bindaetteok.mp3",
+      "text": "빈대떡",
+      "bytes": 43928
     }
   ]
 }

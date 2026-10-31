@@ -35,11 +35,16 @@ internal fun validAssets(): Map<String, String> {
             .findAll(classLoader.getResource(BASE_CARDS_PATH)?.readText().orEmpty())
             .map { it.groupValues[1] }
             .toList()
+    val baseCardAudioPaths =
+        Regex("\\\"typecastAudioAsset\\\"\\s*:\\s*\\\"assets/([^\\\"]+)\\\"")
+            .findAll(classLoader.getResource(BASE_CARDS_PATH)?.readText().orEmpty())
+            .map { it.groupValues[1] }
+            .toList()
     val binaryPaths =
         (1..20).flatMap { order ->
             val slug = cardSlugs.getValue(order)
             listOf("signs/generated/$slug.jpg", "audio/eunkyung/$slug.mp3")
-        } + baseCardImagePaths + legacySignImagePaths
+        } + baseCardImagePaths + baseCardAudioPaths + legacySignImagePaths
     return buildMap {
         contentPaths.forEach { path ->
             put(path, classLoader.getResource(path)?.readText() ?: error("Missing test resource: $path"))

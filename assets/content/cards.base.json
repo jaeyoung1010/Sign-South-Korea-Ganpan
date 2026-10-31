@@ -416,7 +416,8 @@
       "width": 48,
       "height": 20
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/bunsik.mp3"
   },
   {
     "id": "exit",
@@ -435,7 +436,8 @@
       "width": 28,
       "height": 15
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/exit.mp3"
   },
   {
     "id": "pharmacy",
@@ -454,7 +456,8 @@
       "width": 57,
       "height": 15
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/pharmacy.mp3"
   },
   {
     "id": "no-parking",
@@ -473,7 +476,8 @@
       "width": 49,
       "height": 31
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/no-parking.mp3"
   },
   {
     "id": "restroom",
@@ -492,7 +496,8 @@
       "width": 35,
       "height": 20
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/restroom.mp3"
   },
   {
     "id": "convenience-store",
@@ -511,7 +516,8 @@
       "width": 38,
       "height": 14
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/convenience-store.mp3"
   },
   {
     "id": "entrance",
@@ -530,7 +536,8 @@
       "width": 32,
       "height": 31
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/entrance.mp3"
   },
   {
     "id": "open",
@@ -549,7 +556,8 @@
       "width": 47,
       "height": 33
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/open.mp3"
   },
   {
     "id": "no-smoking",
@@ -568,7 +576,8 @@
       "width": 35,
       "height": 54
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/no-smoking.mp3"
   },
   {
     "id": "sale",
@@ -587,7 +596,8 @@
       "width": 39,
       "height": 42
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/sale.mp3"
   },
   {
     "id": "01-yeongupjung",
@@ -606,7 +616,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/01-yeongupjung.mp3"
   },
   {
     "id": "02-hyumu",
@@ -625,7 +636,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/02-hyumu.mp3"
   },
   {
     "id": "03-junbijoong",
@@ -644,7 +656,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/03-junbijoong.mp3"
   },
   {
     "id": "04-magam",
@@ -663,7 +676,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/04-magam.mp3"
   },
   {
     "id": "05-daegi",
@@ -682,7 +696,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/05-daegi.mp3"
   },
   {
     "id": "06-yeyak",
@@ -701,7 +716,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/06-yeyak.mp3"
   },
   {
     "id": "07-ipgu",
@@ -720,7 +736,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/07-ipgu.mp3"
   },
   {
     "id": "08-chulgu",
@@ -739,7 +756,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/08-chulgu.mp3"
   },
   {
     "id": "09-breaktime",
@@ -758,7 +776,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/09-breaktime.mp3"
   },
   {
     "id": "10-lastorder",
@@ -777,7 +796,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/10-lastorder.mp3"
   },
   {
     "id": "11-gopchang",
@@ -796,7 +816,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/11-gopchang.mp3"
   },
   {
     "id": "12-makchang",
@@ -815,7 +836,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/12-makchang.mp3"
   },
   {
     "id": "13-sundae",
@@ -834,7 +856,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/13-sundae.mp3"
   },
   {
     "id": "14-jokbal",
@@ -853,7 +876,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/14-jokbal.mp3"
   },
   {
     "id": "15-gamjatang",
@@ -872,7 +896,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/15-gamjatang.mp3"
   },
   {
     "id": "16-yukhoe",
@@ -891,7 +916,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/16-yukhoe.mp3"
   },
   {
     "id": "17-sannakji",
@@ -910,7 +936,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/17-sannakji.mp3"
   },
   {
     "id": "18-jeongol",
@@ -929,7 +956,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/18-jeongol.mp3"
   },
   {
     "id": "19-jjigae",
@@ -948,7 +976,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/19-jjigae.mp3"
   },
   {
     "id": "20-sale",
@@ -967,7 +996,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/20-sale.mp3"
   },
   {
     "id": "21-event",
@@ -986,7 +1016,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/21-event.mp3"
   },
   {
     "id": "22-freegift",
@@ -1005,7 +1036,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/22-freegift.mp3"
   },
   {
     "id": "23-soldout",
@@ -1024,7 +1056,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/23-soldout.mp3"
   },
   {
     "id": "24-dutyfree",
@@ -1043,7 +1076,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/24-dutyfree.mp3"
   },
   {
     "id": "25-exchange",
@@ -1062,7 +1096,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/25-exchange.mp3"
   },
   {
     "id": "26-refund",
@@ -1081,7 +1116,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/26-refund.mp3"
   },
   {
     "id": "27-cosmetics",
@@ -1100,7 +1136,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/27-cosmetics.mp3"
   },
   {
     "id": "28-transfer",
@@ -1119,7 +1156,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/28-transfer.mp3"
   },
   {
     "id": "29-platform",
@@ -1138,7 +1176,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/29-platform.mp3"
   },
   {
     "id": "30-firsttrain",
@@ -1157,7 +1196,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/30-firsttrain.mp3"
   },
   {
     "id": "31-lasttrain",
@@ -1176,7 +1216,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/31-lasttrain.mp3"
   },
   {
     "id": "32-express",
@@ -1195,7 +1236,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/32-express.mp3"
   },
   {
     "id": "33-local",
@@ -1214,7 +1256,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/33-local.mp3"
   },
   {
     "id": "34-getoff",
@@ -1233,7 +1276,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/34-getoff.mp3"
   },
   {
     "id": "35-matjip",
@@ -1252,7 +1296,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/35-matjip.mp3"
   },
   {
     "id": "36-hotplace",
@@ -1271,7 +1316,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/36-hotplace.mp3"
   },
   {
     "id": "37-waiting",
@@ -1290,7 +1336,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/37-waiting.mp3"
   },
   {
     "id": "38-nokidszone",
@@ -1309,7 +1356,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/38-nokidszone.mp3"
   },
   {
     "id": "01-myeongdong-kyoja",
@@ -1328,7 +1376,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/01-myeongdong-kyoja.mp3"
   },
   {
     "id": "02-hongdae-dakgalbi",
@@ -1347,7 +1396,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/02-hongdae-dakgalbi.mp3"
   },
   {
     "id": "03-ssamziegil",
@@ -1366,7 +1416,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/03-ssamziegil.mp3"
   },
   {
     "id": "04-samcheongdong-sujebi",
@@ -1385,7 +1436,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/04-samcheongdong-sujebi.mp3"
   },
   {
     "id": "05-gyeongnidan-gil",
@@ -1404,7 +1456,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/05-gyeongnidan-gil.mp3"
   },
   {
     "id": "06-garosu-gil",
@@ -1423,7 +1476,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/06-garosu-gil.mp3"
   },
   {
     "id": "07-nogari-golmok",
@@ -1442,7 +1496,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/07-nogari-golmok.mp3"
   },
   {
     "id": "08-yeonmujang-gil",
@@ -1461,7 +1516,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/08-yeonmujang-gil.mp3"
   },
   {
     "id": "09-pyeonghwa-market",
@@ -1480,7 +1536,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/09-pyeonghwa-market.mp3"
   },
   {
     "id": "10-lotte-dutyfree",
@@ -1499,7 +1556,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/10-lotte-dutyfree.mp3"
   },
   {
     "id": "11-hongdae-kakaofriends",
@@ -1518,7 +1576,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/11-hongdae-kakaofriends.mp3"
   },
   {
     "id": "12-insadong-teahouse",
@@ -1537,7 +1596,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/12-insadong-teahouse.mp3"
   },
   {
     "id": "13-bukchon-hanbok-rental",
@@ -1556,7 +1616,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/13-bukchon-hanbok-rental.mp3"
   },
   {
     "id": "14-itaewon-world-food-street",
@@ -1575,7 +1636,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/14-itaewon-world-food-street.mp3"
   },
   {
     "id": "15-galleria-luxury",
@@ -1594,7 +1656,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/15-galleria-luxury.mp3"
   },
   {
     "id": "16-seun-sangga",
@@ -1613,7 +1676,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/16-seun-sangga.mp3"
   },
   {
     "id": "17-musinsa-megastore",
@@ -1632,7 +1696,8 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/17-musinsa-megastore.mp3"
   },
   {
     "id": "18-gwangjang-bindaetteok",
@@ -1651,6 +1716,7 @@
       "width": 80,
       "height": 80
     },
-    "contentVersion": 2
+    "contentVersion": 2,
+    "typecastAudioAsset": "assets/audio/eunkyung/18-gwangjang-bindaetteok.mp3"
   }
 ]

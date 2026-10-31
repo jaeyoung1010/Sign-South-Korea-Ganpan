@@ -7,7 +7,7 @@ import org.junit.Test
 
 class BundleContentAdapterTest {
     @Test
-    fun `release bundle validates 86 cards 86 images and 20 Typecast files`() {
+    fun `release bundle validates 86 cards 86 images and 86 Typecast files`() {
         val adapter = BundleContentAdapter(ClasspathAssetSource())
 
         val cards = adapter.getCards()
@@ -15,12 +15,12 @@ class BundleContentAdapterTest {
 
         assertEquals(86, report.cardCount)
         assertEquals(86, report.imageCount)
-        assertEquals(20, report.typecastAudioCount)
+        assertEquals(86, report.typecastAudioCount)
         assertEquals(setOf("en", "ja", "zh"), report.languages)
         assertEquals(report.cardCount, cards.size)
         assertEquals((1..86).toList(), cards.map { it.order })
         assertTrue(cards.all { it.imageAssetUri.startsWith("file:///android_asset/") })
-        assertEquals(20, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
+        assertEquals(86, cards.count { VoiceId.TYPECAST_EUNKYUNG in it.audioAssetUris })
         assertTrue(cards.all { it.audioAssetUris.values.all { uri -> uri.startsWith("file:///android_asset/") } })
     }
 
