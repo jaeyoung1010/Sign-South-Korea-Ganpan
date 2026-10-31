@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -206,7 +207,11 @@ fun InterestsScreen(
                             description = null,
                             selected = interest in state.selectedInterests,
                             onClick = { onAction(OnboardingChoiceAction.ToggleInterest(interest)) },
-                            modifier = Modifier.weight(1f).testTag("interest-${interest.name.lowercase()}"),
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .height(INTEREST_CARD_HEIGHT)
+                                    .testTag("interest-${interest.name.lowercase()}"),
                             role = Role.Checkbox,
                         )
                     }
@@ -232,6 +237,8 @@ fun InterestsScreen(
         )
     }
 }
+
+private val INTEREST_CARD_HEIGHT = 88.dp
 
 @Composable
 private fun ChoiceCard(
