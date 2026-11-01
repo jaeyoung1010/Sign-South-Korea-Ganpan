@@ -453,7 +453,8 @@ class LearnViewModelTest {
 
             val loadingNext = assertActive(viewModel.uiState.value)
             assertTrue(loadingNext.isLoadingNext)
-            assertFalse(loadingNext.isRating)
+            assertTrue(loadingNext.isRating)
+            assertEquals(RatingDecision.GotIt, loadingNext.ratingDecision)
             nextCard.complete(active(position = 2, total = 2).copy(answerRevealed = true))
             advanceUntilIdle()
             assertFalse(assertActive(viewModel.uiState.value).isLoadingNext)

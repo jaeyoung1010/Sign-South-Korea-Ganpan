@@ -181,9 +181,12 @@ class LearnViewModel
                 if (active != null) {
                     mutableUiState.value =
                         active.copy(
-                            isRating = false,
+                            // Keep the rated card outside the viewport until
+                            // the next card is ready. Resetting this flag
+                            // here re-composes the previous photo at x = 0,
+                            // which creates a visible flash between cards.
+                            isRating = true,
                             isLoadingNext = true,
-                            ratingDecision = null,
                             ratingError = false,
                         )
                 }
