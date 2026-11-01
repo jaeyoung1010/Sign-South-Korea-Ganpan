@@ -11,10 +11,11 @@ import androidx.compose.ui.unit.Density
 
 internal fun Modifier.cardPointerInput(
     density: Density,
+    eventPass: PointerEventPass,
     onMove: (offsetXDp: Float, offsetYDp: Float) -> Boolean,
-    onRelease: (cancelled: Boolean, outOfBounds: Boolean) -> Unit,
+    onRelease: (offsetXDp: Float, cancelled: Boolean, outOfBounds: Boolean) -> Unit,
 ): Modifier =
-    pointerInput(density) {
+    pointerInput(density, eventPass) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false)
             val boundary =
@@ -31,14 +32,14 @@ internal fun Modifier.cardPointerInput(
             var releaseSent = false
             try {
                 while (!finished) {
-                    // Observe the gesture before the card's nested vertical
-                    // scrollable content can consume it. Horizontal swipes
-                    // must remain available even when they start over the
-                    // answer text or photo viewer content.
-                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    // Answer details are vertically scrollable, so receive
+                    // those swipes before the scroll container consumes them.
+                    // The question card has no scrollable body and uses the
+                    // main pass for its normal tap-and-reveal interaction.
+                    val event = awaitPointerEvent(eventPass)
                     val change = event.changes.firstOrNull { it.id == down.id }
                     if (change == null) {
-                        onRelease(true, false)
+                        onRelease(0f, true, false)
                         releaseSent = true
                         finished = true
                         continue
@@ -64,14 +65,18 @@ internal fun Modifier.cardPointerInput(
                             if (onMove(result.offsetXpx / density.density, result.offsetYpx / density.density)) {
                                 change.consume()
                             }
-                            onRelease(result.cancelled && !result.outOfBounds, result.outOfBounds)
+                            onRelease(
+                                result.offsetXpx / density.density,
+                                result.cancelled && !result.outOfBounds,
+                                result.outOfBounds,
+                            )
                             releaseSent = true
                             finished = true
                         }
                     }
                 }
             } finally {
-                if (!releaseSent) onRelease(true, false)
+                if (!releaseSent) onRelease(0f, true, false)
             }
         }
     }

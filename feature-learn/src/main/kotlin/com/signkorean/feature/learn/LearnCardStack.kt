@@ -43,6 +43,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -135,6 +136,12 @@ internal fun LearnCardStack(
                     .padding(bottom = PREVIEW_OFFSET * previewCount.toFloat())
                     .cardPointerInput(
                         density = androidx.compose.ui.platform.LocalDensity.current,
+                        eventPass =
+                            if (state.stage == LearnCardStage.Answer) {
+                                PointerEventPass.Initial
+                            } else {
+                                PointerEventPass.Main
+                            },
                         onMove = { offsetXDp, offsetYDp ->
                             if (interactionLocked) {
                                 false
@@ -166,13 +173,13 @@ internal fun LearnCardStack(
                                 feedback.axis == DragAxis.Horizontal
                             }
                         },
-                        onRelease = { cancelled, outOfBounds ->
+                        onRelease = { releaseOffsetXDp, cancelled, outOfBounds ->
                             if (!cancelled || outOfBounds) {
                                 if (state.stage == LearnCardStage.Question) {
                                     when (
                                         policy.release(
                                             QuestionGestureInput(
-                                                dxDp = dragOffsetDp,
+                                                dxDp = releaseOffsetXDp,
                                                 dyDp = 0f,
                                                 previousAxis = dragAxis,
                                             ),
@@ -188,7 +195,7 @@ internal fun LearnCardStack(
                                     val release =
                                         policy.release(
                                             AnswerGestureInput(
-                                                dxDp = dragOffsetDp,
+                                                dxDp = releaseOffsetXDp,
                                                 dyDp = 0f,
                                                 previousAxis = dragAxis,
                                             ),

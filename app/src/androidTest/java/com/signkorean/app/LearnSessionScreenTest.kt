@@ -17,6 +17,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -142,6 +144,25 @@ class LearnSessionScreenTest {
             ),
             actions,
         )
+    }
+
+    @Test
+    fun answer_card_swipe_dispatches_a_rating_action() {
+        val actions = mutableListOf<LearnUiAction>()
+        composeRule.setContent {
+            SignKoreanTheme {
+                LearnSessionScreen(state = answerState(), onAction = actions::add)
+            }
+        }
+
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_ACTIVE_CARD).performTouchInput { swipeLeft() }
+
+        composeRule.runOnIdle {
+            assertEquals(
+                listOf(LearnUiAction.RateCard(RatingDecision.GotIt, RatingInputSource.Gesture)),
+                actions,
+            )
+        }
     }
 
     @Test
