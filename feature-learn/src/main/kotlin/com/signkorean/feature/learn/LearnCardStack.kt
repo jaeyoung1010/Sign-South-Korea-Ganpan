@@ -542,6 +542,12 @@ internal fun CardQuestion(onRevealAnswer: () -> Unit) {
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
+        Text(
+            text = stringResource(R.string.learn_question_hint),
+            color = Color(SignKoreanPalette.PRIMARY_DARK),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Black,
+        )
     }
 }
 

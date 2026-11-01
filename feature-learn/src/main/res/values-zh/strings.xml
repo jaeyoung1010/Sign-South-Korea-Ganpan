@@ -141,7 +141,7 @@
     <string name="learn_feedback_undo_failed">无法撤销评分，请重试。</string>
     <string name="learn_feedback_save_failed">无法保存评分，请重试。</string>
     <string name="learn_question">这个标牌是什么意思？</string>
-    <string name="learn_question_hint">揭晓答案前，先花一点时间读读标牌。</string>
+    <string name="learn_question_hint">点击照片查看答案！</string>
     <string name="learn_answer">答案</string>
     <string name="learn_playing_pronunciation">正在播放发音</string>
     <string name="learn_play_pronunciation">播放发音</string>

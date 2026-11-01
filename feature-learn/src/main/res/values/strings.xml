@@ -141,7 +141,7 @@
     <string name="learn_feedback_undo_failed">Couldn’t undo rating. Try again.</string>
     <string name="learn_feedback_save_failed">Couldn’t save this rating. Try again.</string>
     <string name="learn_question">What does this sign mean?</string>
-    <string name="learn_question_hint">Take a moment to read the sign before you reveal it.</string>
+    <string name="learn_question_hint">Tap the photo to reveal the answer!</string>
     <string name="learn_answer">Answer</string>
     <string name="learn_playing_pronunciation">Playing pronunciation</string>
     <string name="learn_play_pronunciation">Play pronunciation</string>
