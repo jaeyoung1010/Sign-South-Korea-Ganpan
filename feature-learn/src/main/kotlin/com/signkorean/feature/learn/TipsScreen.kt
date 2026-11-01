@@ -235,7 +235,7 @@ private fun TipFeatureCard(card: TipCard, onClick: () -> Unit) {
             AsyncImage(
                 model = card.imageAssetUri,
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxWidth().height(190.dp),
             )
             Column(modifier = Modifier.padding(SignKoreanSpacing.medium)) {
@@ -273,7 +273,7 @@ private fun TipThumbnail(card: TipCard, onClick: () -> Unit) {
             AsyncImage(
                 model = card.imageAssetUri,
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize(),
             )
             Box(
@@ -307,7 +307,7 @@ private fun TipDetail(card: TipCard, onBack: () -> Unit, onShowPhrase: (TipPhras
         AsyncImage(
             model = card.imageAssetUri,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxWidth().height(176.dp).clip(RoundedCornerShape(24.dp)),
         )
         Spacer(modifier = Modifier.height(SignKoreanSpacing.medium))
