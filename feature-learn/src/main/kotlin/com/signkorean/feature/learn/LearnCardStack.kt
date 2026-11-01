@@ -57,6 +57,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.components.GameIconButton
@@ -539,8 +540,11 @@ internal fun CardQuestion(onRevealAnswer: () -> Unit) {
         Text(
             text = stringResource(R.string.learn_question),
             modifier = Modifier.semantics { heading() },
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Black,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Clip,
         )
         Surface(
             modifier =
