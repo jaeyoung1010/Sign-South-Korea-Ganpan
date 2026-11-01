@@ -70,7 +70,7 @@ private val tipCards =
             id = "price-numbers",
             titleRes = R.string.learn_tip_price_title,
             descriptionRes = R.string.learn_tip_price_description,
-            imageAssetUri = "file:///android_asset/tips/price-numbers-helper.png",
+            imageAssetUri = "file:///android_asset/tips/price-numbers-helper-card.png",
             phrases = listOf(
                 TipPhrase("₩5,000  →  오천 원", R.string.learn_tip_price_five_thousand),
                 TipPhrase("₩12,000  →  만 이천 원", R.string.learn_tip_price_twelve_thousand),
@@ -82,7 +82,7 @@ private val tipCards =
             id = "dietary-allergy",
             titleRes = R.string.learn_tip_dietary_title,
             descriptionRes = R.string.learn_tip_dietary_description,
-            imageAssetUri = "file:///android_asset/tips/dietary-allergy-card.png",
+            imageAssetUri = "file:///android_asset/tips/dietary-allergy-card-cover.png",
             phrases = listOf(
                 TipPhrase("저는 채식주의자입니다.", R.string.learn_tip_dietary_vegetarian),
                 TipPhrase("돼지고기를 먹지 않습니다.", R.string.learn_tip_dietary_no_pork),
@@ -96,7 +96,7 @@ private val tipCards =
             id = "staff-phrases",
             titleRes = R.string.learn_tip_staff_title,
             descriptionRes = R.string.learn_tip_staff_description,
-            imageAssetUri = "file:///android_asset/tips/staff-phrase-board.png",
+            imageAssetUri = "file:///android_asset/tips/staff-phrase-board-card.png",
             phrases = listOf(
                 TipPhrase("천천히 말해 주세요.", R.string.learn_tip_staff_slowly),
                 TipPhrase("영어를 할 수 있나요?", R.string.learn_tip_staff_english),
@@ -111,7 +111,7 @@ private val tipCards =
             id = "emergency",
             titleRes = R.string.learn_tip_emergency_title,
             descriptionRes = R.string.learn_tip_emergency_description,
-            imageAssetUri = "file:///android_asset/tips/emergency-phrases.png",
+            imageAssetUri = "file:///android_asset/tips/emergency-phrases-card.png",
             phrases = listOf(
                 TipPhrase("도와주세요.", R.string.learn_tip_emergency_help),
                 TipPhrase("경찰을 불러 주세요.", R.string.learn_tip_emergency_police),
@@ -125,7 +125,7 @@ private val tipCards =
             id = "transport",
             titleRes = R.string.learn_tip_transport_title,
             descriptionRes = R.string.learn_tip_transport_description,
-            imageAssetUri = "file:///android_asset/tips/transport-mini-card.png",
+            imageAssetUri = "file:///android_asset/tips/transport-mini-card-cover.png",
             phrases = listOf(
                 TipPhrase("어느 역에서 내려요?", R.string.learn_tip_transport_stop),
                 TipPhrase("몇 호선이에요?", R.string.learn_tip_transport_line),
@@ -235,7 +235,7 @@ private fun TipFeatureCard(card: TipCard, onClick: () -> Unit) {
             AsyncImage(
                 model = card.imageAssetUri,
                 contentDescription = null,
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth().height(190.dp),
             )
             Column(modifier = Modifier.padding(SignKoreanSpacing.medium)) {
@@ -273,7 +273,7 @@ private fun TipThumbnail(card: TipCard, onClick: () -> Unit) {
             AsyncImage(
                 model = card.imageAssetUri,
                 contentDescription = null,
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
             Box(
@@ -307,7 +307,7 @@ private fun TipDetail(card: TipCard, onBack: () -> Unit, onShowPhrase: (TipPhras
         AsyncImage(
             model = card.imageAssetUri,
             contentDescription = null,
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxWidth().height(176.dp).clip(RoundedCornerShape(24.dp)),
         )
         Spacer(modifier = Modifier.height(SignKoreanSpacing.medium))
