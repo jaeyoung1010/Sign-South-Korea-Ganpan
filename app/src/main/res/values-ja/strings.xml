@@ -25,6 +25,7 @@
     <string name="toast_card_unavailable">この看板は利用できません。</string>
     <string name="learn_tab">学習</string>
     <string name="progress_tab">進捗</string>
+    <string name="tips_tab">ヒント</string>
     <string name="legal_privacy_policy">プライバシーポリシー</string>
     <string name="legal_terms_of_use">利用規約</string>
     <string name="sheet_all_categories">すべてのカテゴリー</string>

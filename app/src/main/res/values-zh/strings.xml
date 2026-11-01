@@ -22,6 +22,7 @@
     <string name="toast_card_unavailable">这张卡片不可用。</string>
     <string name="learn_tab">学习</string>
     <string name="progress_tab">进度</string>
+    <string name="tips_tab">小贴士</string>
     <string name="legal_privacy_policy">隐私政策</string>
     <string name="legal_terms_of_use">使用条款</string>
     <string name="sheet_all_categories">全部类别</string>

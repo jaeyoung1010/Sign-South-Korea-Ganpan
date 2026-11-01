@@ -504,6 +504,9 @@ internal fun SignKoreanAppContent(
                         },
                     )
                 }
+                entry<AppRoute.Tips> {
+                    TipsDestination()
+                }
                 entry<AppRoute.Settings> {
                     SettingsDestination(
                         state = settingsState,
@@ -556,7 +559,7 @@ internal fun SignKoreanAppContent(
         SignKoreanScreen(
             applySafeDrawingInsets = !state.isViewerVisible && !useLaunchBackground,
             bottomInsetColor =
-                if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
+                if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
                     Color(SignKoreanPalette.SURFACE)
                 } else {
                     null
@@ -584,7 +587,7 @@ internal fun SignKoreanAppContent(
                                 },
                             ),
                 )
-                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Home, AppRoute.Progress)) {
+                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
                     TopLevelTabs(
                         selectedTab = renderedRoute.topLevelTab,
                         onAction = onAction,
@@ -922,6 +925,12 @@ private fun TopLevelTabs(
                     selected = selectedTab == AppTopLevelTab.Learn,
                     onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn)) },
                 )
+                TopLevelTabItem(
+                    label = stringResource(R.string.tips_tab),
+                    tab = AppTopLevelTab.Tips,
+                    selected = selectedTab == AppTopLevelTab.Tips,
+                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Tips)) },
+                )
             }
         }
     }
@@ -990,8 +999,29 @@ private fun BottomTabIcon(
                     drawLine(color, Offset(size.width * x, size.height * 0.8f), Offset(size.width * x, size.height * top), strokeWidth = stroke.width)
                 }
             }
+
+            AppTopLevelTab.Tips -> {
+                val bulbTop = size.height * 0.13f
+                val bulbBottom = size.height * 0.64f
+                drawArc(
+                    color = color,
+                    startAngle = 200f,
+                    sweepAngle = 140f,
+                    useCenter = false,
+                    topLeft = Offset(size.width * 0.22f, bulbTop),
+                    size = Size(size.width * 0.56f, bulbBottom - bulbTop),
+                    style = stroke,
+                )
+                drawLine(color, Offset(size.width * 0.34f, size.height * 0.7f), Offset(size.width * 0.66f, size.height * 0.7f), strokeWidth = stroke.width)
+                drawLine(color, Offset(size.width * 0.39f, size.height * 0.83f), Offset(size.width * 0.61f, size.height * 0.83f), strokeWidth = stroke.width)
+            }
         }
     }
+}
+
+@Composable
+private fun TipsDestination() {
+    Box(modifier = Modifier.fillMaxSize().testTag("screen-tips"))
 }
 
 @Composable
@@ -1245,6 +1275,7 @@ private val AppRoute.topLevelTab: AppTopLevelTab
         when (this) {
             AppRoute.Home -> AppTopLevelTab.Learn
             AppRoute.Progress -> AppTopLevelTab.Progress
+            AppRoute.Tips -> AppTopLevelTab.Tips
             AppRoute.Settings -> AppTopLevelTab.Learn
             else -> AppTopLevelTab.Learn
         }

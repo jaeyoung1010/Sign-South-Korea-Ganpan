@@ -154,6 +154,7 @@ class AppNavigationReducerTest {
                 AppRoute.Learn,
                 AppRoute.Done,
                 AppRoute.Progress,
+                AppRoute.Tips,
                 AppRoute.Settings,
                 AppRoute.Notices,
                 AppRoute.Profile,
