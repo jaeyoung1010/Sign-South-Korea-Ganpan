@@ -105,6 +105,7 @@ import com.signkorean.feature.learn.LearnSessionUiState
 import com.signkorean.feature.learn.LearnUiAction
 import com.signkorean.feature.learn.ReportSheet
 import com.signkorean.feature.learn.ReportUiState
+import com.signkorean.feature.learn.TipsScreen
 import com.signkorean.feature.onboarding.OnboardingChoiceUiState
 import com.signkorean.feature.onboarding.OnboardingScreen
 import com.signkorean.feature.onboarding.OnboardingStep
@@ -505,7 +506,10 @@ internal fun SignKoreanAppContent(
                     )
                 }
                 entry<AppRoute.Tips> {
-                    TipsDestination()
+                    TipsDestination(
+                        profileAvatar = settingsState.profileAvatar,
+                        onAction = onAction,
+                    )
                 }
                 entry<AppRoute.Settings> {
                     SettingsDestination(
@@ -1020,8 +1024,17 @@ private fun BottomTabIcon(
 }
 
 @Composable
-private fun TipsDestination() {
-    Box(modifier = Modifier.fillMaxSize().testTag("screen-tips"))
+private fun TipsDestination(
+    profileAvatar: com.signkorean.domain.model.ProfileAvatar?,
+    onAction: (AppNavigationAction) -> Unit,
+) {
+    TipsScreen(
+        profileAvatar = profileAvatar,
+        onOpenNotices = { onAction(AppNavigationAction.Navigate(AppRoute.Notices)) },
+        onOpenSettings = { onAction(AppNavigationAction.Navigate(AppRoute.Settings)) },
+        onOpenProfile = { onAction(AppNavigationAction.Navigate(AppRoute.Profile)) },
+        modifier = Modifier.testTag("screen-tips"),
+    )
 }
 
 @Composable

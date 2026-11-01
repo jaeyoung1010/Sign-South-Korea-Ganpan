@@ -23,6 +23,8 @@
     <string name="learn_explore_category">カテゴリーから探す</string>
     <string name="learn_category_quick_description">時間がないときは、カテゴリーごとにさっと学びましょう。</string>
     <string name="learn_see_all">すべて見る</string>
+    <string name="learn_tips_all_cards">すべてのカード</string>
+    <string name="learn_tips_card_photo">韓国語の看板カード</string>
     <string name="learn_category_landmarks">名所</string>
     <string name="learn_category_neighborhoods">街並み</string>
     <string name="learn_category_markets">市場</string>

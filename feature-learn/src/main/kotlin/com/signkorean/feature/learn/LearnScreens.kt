@@ -336,7 +336,7 @@ fun LearnHomeScreen(
 }
 
 @Composable
-private fun HomeHeader(
+internal fun HomeHeader(
     onOpenNotices: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenProfile: () -> Unit,
