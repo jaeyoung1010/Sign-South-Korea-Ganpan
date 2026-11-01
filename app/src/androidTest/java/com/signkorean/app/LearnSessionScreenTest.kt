@@ -16,8 +16,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -85,7 +83,7 @@ class LearnSessionScreenTest {
     }
 
     @Test
-    fun question_hides_answer_content_until_show_answer_is_pressed() {
+    fun question_shows_only_the_photo_and_question_before_reveal() {
         composeRule.setContent {
             SignKoreanTheme {
                 LearnSessionScreen(state = answerState().copy(stage = LearnCardStage.Question), onAction = {})
@@ -96,7 +94,7 @@ class LearnSessionScreenTest {
         composeRule.onNodeWithText("홍대입구").assertDoesNotExist()
         composeRule.onNodeWithText("Hongdae Entrance").assertDoesNotExist()
         composeRule.onNodeWithText("Words").assertDoesNotExist()
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertIsDisplayed()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertDoesNotExist()
     }
 
     @Test
@@ -345,28 +343,18 @@ class LearnSessionScreenTest {
     }
 
     @Test
-    fun large_font_question_keeps_show_answer_action_visible() {
+    fun tapping_a_question_card_photo_reveals_the_answer() {
         val actions = mutableListOf<LearnUiAction>()
         composeRule.setContent {
-            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = 2f)) {
-                SignKoreanTheme {
-                    Box(
-                        modifier =
-                            androidx.compose.ui.Modifier
-                                .width(360.dp)
-                                .height(390.dp),
-                    ) {
-                        LearnSessionScreen(
-                            state = localizedAnswerState("ja").copy(stage = LearnCardStage.Question),
-                            onAction = actions::add,
-                        )
-                    }
-                }
+            SignKoreanTheme {
+                LearnSessionScreen(
+                    state = localizedAnswerState("ja").copy(stage = LearnCardStage.Question),
+                    onAction = actions::add,
+                )
             }
         }
 
-        composeRule.onNodeWithTag("screen-learn").performScrollToNode(hasTestTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER))
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertIsDisplayed().performClick()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).performClick()
         composeRule.runOnIdle { assertEquals(listOf(LearnUiAction.RevealAnswer), actions) }
     }
 

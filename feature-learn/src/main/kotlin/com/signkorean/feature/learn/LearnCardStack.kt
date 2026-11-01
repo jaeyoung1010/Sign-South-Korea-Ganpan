@@ -7,6 +7,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -202,7 +203,7 @@ internal fun LearnCardStack(
                                         AnswerRelease.Ignored,
                                         AnswerRelease.SnapBack,
                                         -> {
-                                            Unit
+                                            // Keep the answer card in place when the gesture is not a rating.
                                         }
                                     }
                                 }
@@ -478,7 +479,15 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
                 .padding(bottom = SignKoreanSpacing.small),
         contentScale = ContentScale.Crop,
         cropVerticalAlignment = CropVerticalAlignment.Top,
-        onClick = { onAction(LearnUiAction.ShowImageViewer) },
+        onClick = {
+            onAction(
+                if (state.stage == LearnCardStage.Question) {
+                    LearnUiAction.RevealAnswer
+                } else {
+                    LearnUiAction.ShowImageViewer
+                },
+            )
+        },
     )
     val informationScroll = rememberScrollState()
     LaunchedEffect(state.cardId, state.stage) {
@@ -494,7 +503,7 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
     ) {
         when (state.stage) {
             LearnCardStage.Question -> {
-                CardQuestion()
+                CardQuestion(onRevealAnswer = { onAction(LearnUiAction.RevealAnswer) })
             }
 
             LearnCardStage.Answer -> {
@@ -512,17 +521,19 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveCardContent(
 }
 
 @Composable
-internal fun CardQuestion() {
-    Column(modifier = Modifier.testTag(SignKoreanTestTags.LEARN_QUESTION)) {
+internal fun CardQuestion(onRevealAnswer: () -> Unit) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onRevealAnswer)
+                .testTag(SignKoreanTestTags.LEARN_QUESTION),
+    ) {
         Text(
             text = stringResource(R.string.learn_question),
             modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
-        )
-        Text(
-            text = stringResource(R.string.learn_question_hint),
-            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }

@@ -840,13 +840,6 @@ private fun androidx.compose.foundation.layout.ColumnScope.ActiveLearnSession(
                 .then(if (isCompact) Modifier.height(compactCardHeight) else Modifier.weight(1f)),
     )
     feedback?.let { LearnFeedbackHost(it, onAction) }
-    if (state.stage == LearnCardStage.Question) {
-        GameButton(
-            text = stringResource(R.string.learn_show_answer),
-            onClick = { onAction(LearnUiAction.RevealAnswer) },
-            modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER),
-        )
-    }
 }
 
 @Composable
