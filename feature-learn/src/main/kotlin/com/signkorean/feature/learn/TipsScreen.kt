@@ -3,6 +3,7 @@
 package com.signkorean.feature.learn
 
 import androidx.annotation.StringRes
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -151,6 +152,9 @@ fun TipsScreen(
     var selectedCardId by remember { mutableStateOf<String?>(null) }
     var phraseToShow by remember { mutableStateOf<TipPhrase?>(null) }
     val selectedCard = tipCards.firstOrNull { it.id == selectedCardId }
+    BackHandler(enabled = selectedCard != null && phraseToShow == null) {
+        selectedCardId = null
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
