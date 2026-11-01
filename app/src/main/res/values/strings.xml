@@ -25,6 +25,7 @@
     <string name="toast_reminders_off">Review reminders are off.</string>
     <string name="toast_card_unavailable">This card is not available.</string>
     <string name="learn_tab">Learn</string>
+    <string name="help_tab">Help</string>
     <string name="progress_tab">Progress</string>
     <string name="tips_tab">Tips</string>
     <string name="legal_privacy_policy">Privacy policy</string>

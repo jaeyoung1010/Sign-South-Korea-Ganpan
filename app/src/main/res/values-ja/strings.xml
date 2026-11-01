@@ -24,6 +24,7 @@
     <string name="toast_reminders_off">復習リマインダーはオフです。</string>
     <string name="toast_card_unavailable">この看板は利用できません。</string>
     <string name="learn_tab">学習</string>
+    <string name="help_tab">ヘルプ</string>
     <string name="progress_tab">進捗</string>
     <string name="tips_tab">ヒント</string>
     <string name="legal_privacy_policy">プライバシーポリシー</string>

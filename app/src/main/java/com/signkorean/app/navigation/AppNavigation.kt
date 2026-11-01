@@ -39,6 +39,11 @@ sealed interface AppRoute : NavKey {
     }
 
     @Serializable
+    data object Help : AppRoute {
+        override val screenId: String = "screen-help"
+    }
+
+    @Serializable
     data object Home : AppRoute {
         override val screenId: String = "screen-home"
     }
@@ -85,6 +90,7 @@ sealed interface AppRoute : NavKey {
 }
 
 enum class AppTopLevelTab {
+    Help,
     Learn,
     Progress,
     Tips,
@@ -213,6 +219,7 @@ class AppNavigationReducer {
     private val AppTopLevelTab.route: AppRoute
         get() =
             when (this) {
+                AppTopLevelTab.Help -> AppRoute.Help
                 AppTopLevelTab.Learn -> AppRoute.Home
                 AppTopLevelTab.Progress -> AppRoute.Progress
                 AppTopLevelTab.Tips -> AppRoute.Tips
@@ -247,6 +254,7 @@ object AppNavigationIntent {
             AppRoute.Level,
             AppRoute.Interests,
             AppRoute.ProfileSetup,
+            AppRoute.Help,
             AppRoute.Home,
             AppRoute.Learn,
             AppRoute.Done,

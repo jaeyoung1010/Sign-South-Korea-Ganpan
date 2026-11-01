@@ -106,6 +106,7 @@ import com.signkorean.feature.learn.LearnUiAction
 import com.signkorean.feature.learn.ReportSheet
 import com.signkorean.feature.learn.ReportUiState
 import com.signkorean.feature.learn.TipsScreen
+import com.signkorean.feature.learn.HelpScreen
 import com.signkorean.feature.onboarding.OnboardingChoiceUiState
 import com.signkorean.feature.onboarding.OnboardingScreen
 import com.signkorean.feature.onboarding.OnboardingStep
@@ -457,6 +458,12 @@ internal fun SignKoreanAppContent(
                         onComplete = onCompleteOnboarding,
                     )
                 }
+                entry<AppRoute.Help> {
+                    HelpDestination(
+                        profileAvatar = settingsState.profileAvatar,
+                        onAction = onAction,
+                    )
+                }
                 entry<AppRoute.Home> {
                     LearnHomeDestination(
                         state = learnHomeState,
@@ -563,7 +570,7 @@ internal fun SignKoreanAppContent(
         SignKoreanScreen(
             applySafeDrawingInsets = !state.isViewerVisible && !useLaunchBackground,
             bottomInsetColor =
-                if (renderedRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
+                if (renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
                     Color(SignKoreanPalette.SURFACE)
                 } else {
                     null
@@ -591,7 +598,7 @@ internal fun SignKoreanAppContent(
                                 },
                             ),
                 )
-                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
+                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
                     TopLevelTabs(
                         selectedTab = renderedRoute.topLevelTab,
                         onAction = onAction,
@@ -924,6 +931,12 @@ private fun TopLevelTabs(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TopLevelTabItem(
+                    label = stringResource(R.string.help_tab),
+                    tab = AppTopLevelTab.Help,
+                    selected = selectedTab == AppTopLevelTab.Help,
+                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Help)) },
+                )
+                TopLevelTabItem(
                     label = stringResource(R.string.learn_tab),
                     tab = AppTopLevelTab.Learn,
                     selected = selectedTab == AppTopLevelTab.Learn,
@@ -982,6 +995,11 @@ private fun BottomTabIcon(
         val stroke = Stroke(width = 1.8.dp.toPx())
         val center = Offset(size.width / 2f, size.height / 2f)
         when (tab) {
+            AppTopLevelTab.Help -> {
+                drawCircle(color = color, radius = size.width * 0.36f, center = center, style = stroke)
+                drawLine(color, Offset(center.x, size.height * 0.31f), Offset(center.x, size.height * 0.69f), strokeWidth = stroke.width)
+                drawLine(color, Offset(size.width * 0.31f, center.y), Offset(size.width * 0.69f, center.y), strokeWidth = stroke.width)
+            }
             AppTopLevelTab.Learn -> {
                 val left = size.width * 0.21f
                 val right = size.width * 0.79f
@@ -1034,6 +1052,20 @@ private fun TipsDestination(
         onOpenSettings = { onAction(AppNavigationAction.Navigate(AppRoute.Settings)) },
         onOpenProfile = { onAction(AppNavigationAction.Navigate(AppRoute.Profile)) },
         modifier = Modifier.testTag("screen-tips"),
+    )
+}
+
+@Composable
+private fun HelpDestination(
+    profileAvatar: com.signkorean.domain.model.ProfileAvatar?,
+    onAction: (AppNavigationAction) -> Unit,
+) {
+    HelpScreen(
+        profileAvatar = profileAvatar,
+        onOpenNotices = { onAction(AppNavigationAction.Navigate(AppRoute.Notices)) },
+        onOpenSettings = { onAction(AppNavigationAction.Navigate(AppRoute.Settings)) },
+        onOpenProfile = { onAction(AppNavigationAction.Navigate(AppRoute.Profile)) },
+        modifier = Modifier.testTag("screen-help"),
     )
 }
 
@@ -1286,6 +1318,7 @@ private fun AppNavigationUiState.shouldRequestLearnClose(learnSessionState: Lear
 private val AppRoute.topLevelTab: AppTopLevelTab
     get() =
         when (this) {
+            AppRoute.Help -> AppTopLevelTab.Help
             AppRoute.Home -> AppTopLevelTab.Learn
             AppRoute.Progress -> AppTopLevelTab.Progress
             AppRoute.Tips -> AppTopLevelTab.Tips
