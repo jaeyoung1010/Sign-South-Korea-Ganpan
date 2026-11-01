@@ -542,12 +542,23 @@ internal fun CardQuestion(onRevealAnswer: () -> Unit) {
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
-        Text(
-            text = stringResource(R.string.learn_question_hint),
-            color = Color(SignKoreanPalette.PRIMARY_DARK),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Black,
-        )
+        Surface(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = SignKoreanSpacing.small),
+            color = Color(SignKoreanPalette.PRIMARY),
+            contentColor = Color(SignKoreanPalette.INK),
+            shape = MaterialTheme.shapes.medium,
+            border = BorderStroke(2.dp, Color(SignKoreanPalette.PRIMARY_DARK)),
+        ) {
+            Text(
+                text = stringResource(R.string.learn_question_hint),
+                modifier = Modifier.padding(SignKoreanSpacing.medium),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Black,
+            )
+        }
     }
 }
 
