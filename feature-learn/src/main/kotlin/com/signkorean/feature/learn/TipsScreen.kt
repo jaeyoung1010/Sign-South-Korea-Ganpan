@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -185,8 +188,9 @@ private fun ColumnScope.TipsOverview(onOpenCard: (TipCard) -> Unit) {
         style = MaterialTheme.typography.bodyLarge,
         color = Color(SignKoreanPalette.BODY),
     )
+    TipsCarousel(cards = tipCards, onOpenCard = onOpenCard)
     Text(
-        text = stringResource(R.string.learn_tips_choose_topic),
+        text = stringResource(R.string.learn_tips_all_cards),
         modifier = Modifier.padding(horizontal = SignKoreanSpacing.xSmall, vertical = SignKoreanSpacing.medium),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Black,
@@ -200,6 +204,60 @@ private fun ColumnScope.TipsOverview(onOpenCard: (TipCard) -> Unit) {
     ) {
         items(tipCards, key = TipCard::id) { card ->
             TipThumbnail(card = card, onClick = { onOpenCard(card) })
+        }
+    }
+}
+
+@Composable
+private fun TipsCarousel(cards: List<TipCard>, onOpenCard: (TipCard) -> Unit) {
+    val pagerState = rememberPagerState(pageCount = { cards.size })
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxWidth().height(350.dp),
+        contentPadding = PaddingValues(horizontal = SignKoreanSpacing.large),
+        pageSpacing = SignKoreanSpacing.small,
+        pageSize = PageSize.Fixed(290.dp),
+    ) { page ->
+        val card = cards[page]
+        TipFeatureCard(card = card, onClick = { onOpenCard(card) })
+    }
+}
+
+@Composable
+private fun TipFeatureCard(card: TipCard, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxSize().clickable(onClick = onClick),
+        color = Color(SignKoreanPalette.SURFACE),
+        shape = RoundedCornerShape(28.dp),
+        shadowElevation = 2.dp,
+    ) {
+        Column {
+            AsyncImage(
+                model = card.imageAssetUri,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth().height(190.dp),
+            )
+            Column(modifier = Modifier.padding(SignKoreanSpacing.medium)) {
+                Text(
+                    text = stringResource(card.titleRes),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black,
+                )
+                Spacer(modifier = Modifier.height(SignKoreanSpacing.xxSmall))
+                Text(
+                    text = stringResource(card.descriptionRes),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(SignKoreanPalette.BODY),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(R.string.learn_tips_open),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(SignKoreanPalette.PRIMARY_DARK),
+                )
+            }
         }
     }
 }
