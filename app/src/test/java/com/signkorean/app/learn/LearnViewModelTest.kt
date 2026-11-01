@@ -73,7 +73,7 @@ class LearnViewModelTest {
             assertEquals(3, state.position)
             assertEquals(10, state.totalCount)
             assertEquals(.3f, state.progressFraction)
-            assertEquals(LearnCardStage.Answer, state.stage)
+            assertEquals(LearnCardStage.Question, state.stage)
         }
 
     @Test
@@ -87,6 +87,8 @@ class LearnViewModelTest {
                 )
 
             viewModel.load()
+            advanceUntilIdle()
+            viewModel.revealAnswer()
             advanceUntilIdle()
             viewModel.playAudio()
 
@@ -308,7 +310,7 @@ class LearnViewModelTest {
         }
 
     @Test
-    fun `shows the answer even when automatic reveal persistence is unavailable`() =
+    fun `keeps the question visible until the learner reveals the answer`() =
         runTest {
             val viewModel =
                 LearnViewModel(
@@ -318,7 +320,7 @@ class LearnViewModelTest {
             viewModel.load()
             advanceUntilIdle()
 
-            assertEquals(LearnCardStage.Answer, assertActive(viewModel.uiState.value).stage)
+            assertEquals(LearnCardStage.Question, assertActive(viewModel.uiState.value).stage)
         }
 
     @Test
