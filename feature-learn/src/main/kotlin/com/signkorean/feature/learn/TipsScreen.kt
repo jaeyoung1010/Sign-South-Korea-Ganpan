@@ -20,9 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,10 +48,6 @@ import coil3.compose.AsyncImage
 import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.model.ProfileAvatar
-import kotlinx.coroutines.delay
-
-private const val AUTO_SLIDE_INTERVAL_MILLIS = 2_000L
-
 private data class TipPhrase(
     val korean: String,
     @StringRes val meaningRes: Int,
@@ -193,9 +185,8 @@ private fun ColumnScope.TipsOverview(onOpenCard: (TipCard) -> Unit) {
         style = MaterialTheme.typography.bodyLarge,
         color = Color(SignKoreanPalette.BODY),
     )
-    TipsCarousel(cards = tipCards, onOpenCard = onOpenCard)
     Text(
-        text = stringResource(R.string.learn_tips_all_cards),
+        text = stringResource(R.string.learn_tips_choose_topic),
         modifier = Modifier.padding(horizontal = SignKoreanSpacing.xSmall, vertical = SignKoreanSpacing.medium),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Black,
@@ -209,66 +200,6 @@ private fun ColumnScope.TipsOverview(onOpenCard: (TipCard) -> Unit) {
     ) {
         items(tipCards, key = TipCard::id) { card ->
             TipThumbnail(card = card, onClick = { onOpenCard(card) })
-        }
-    }
-}
-
-@Composable
-private fun TipsCarousel(cards: List<TipCard>, onOpenCard: (TipCard) -> Unit) {
-    val pagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2, pageCount = { Int.MAX_VALUE })
-    LaunchedEffect(pagerState) {
-        while (true) {
-            delay(AUTO_SLIDE_INTERVAL_MILLIS)
-            pagerState.animateScrollToPage(pagerState.currentPage - 1)
-        }
-    }
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxWidth().height(350.dp),
-        contentPadding = PaddingValues(horizontal = SignKoreanSpacing.large),
-        pageSpacing = SignKoreanSpacing.small,
-        pageSize = PageSize.Fixed(290.dp),
-    ) { page ->
-        val card = cards[page % cards.size]
-        TipFeatureCard(card = card, onClick = { onOpenCard(card) })
-    }
-}
-
-@Composable
-private fun TipFeatureCard(card: TipCard, onClick: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxSize().clickable(onClick = onClick),
-        color = Color(SignKoreanPalette.SURFACE),
-        shape = RoundedCornerShape(28.dp),
-        shadowElevation = 2.dp,
-    ) {
-        Column {
-            AsyncImage(
-                model = card.imageAssetUri,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().height(190.dp),
-            )
-            Column(modifier = Modifier.padding(SignKoreanSpacing.medium)) {
-                Text(
-                    text = stringResource(card.titleRes),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Black,
-                )
-                Spacer(modifier = Modifier.height(SignKoreanSpacing.xxSmall))
-                Text(
-                    text = stringResource(card.descriptionRes),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(SignKoreanPalette.BODY),
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(R.string.learn_tips_open),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(SignKoreanPalette.PRIMARY_DARK),
-                )
-            }
         }
     }
 }
