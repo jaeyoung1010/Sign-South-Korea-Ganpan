@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="save_tab">保存</string>
+    <string name="save_title">保存した看板</string>
+    <string name="save_description">見つけた看板を撮影して、ここに保存しましょう。</string>
+    <string name="save_take_photo">写真を撮る</string>
+    <string name="save_empty">撮影した写真がここに表示されます。</string>
+    <string name="save_photo">保存した看板の写真</string>
+    <string name="save_close">閉じる</string>
+    <string name="save_error">写真を保存できませんでした。もう一度お試しください。</string>
     <string name="app_name">Sign South Korea Ganpan</string>
     <string name="app_icon_label">SSKG</string>
     <string name="launch_loading">標識を準備しています…</string>

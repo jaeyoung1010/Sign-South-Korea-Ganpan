@@ -69,6 +69,11 @@ sealed interface AppRoute : NavKey {
     }
 
     @Serializable
+    data object Save : AppRoute {
+        override val screenId: String = "screen-save"
+    }
+
+    @Serializable
     data object Settings : AppRoute {
         override val screenId: String = "screen-settings"
     }
@@ -94,6 +99,7 @@ enum class AppTopLevelTab {
     Learn,
     Progress,
     Tips,
+    Save,
 }
 
 enum class AppSheet {
@@ -223,6 +229,7 @@ class AppNavigationReducer {
                 AppTopLevelTab.Learn -> AppRoute.Home
                 AppTopLevelTab.Progress -> AppRoute.Progress
                 AppTopLevelTab.Tips -> AppRoute.Tips
+                AppTopLevelTab.Save -> AppRoute.Save
             }
 
     private val LaunchDestination.route: AppRoute
@@ -260,6 +267,7 @@ object AppNavigationIntent {
             AppRoute.Done,
             AppRoute.Progress,
             AppRoute.Tips,
+            AppRoute.Save,
             AppRoute.Settings,
             AppRoute.Notices,
             AppRoute.Profile,

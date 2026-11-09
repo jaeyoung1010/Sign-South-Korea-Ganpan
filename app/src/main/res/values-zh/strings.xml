@@ -1,4 +1,12 @@
 <resources>
+    <string name="save_tab">收藏</string>
+    <string name="save_title">收藏的招牌</string>
+    <string name="save_description">拍下发现的招牌，保存在这里。</string>
+    <string name="save_take_photo">拍照</string>
+    <string name="save_empty">拍摄的照片会显示在这里。</string>
+    <string name="save_photo">收藏的招牌照片</string>
+    <string name="save_close">关闭</string>
+    <string name="save_error">无法保存照片，请重试。</string>
     <string name="app_name">Sign South Korea Ganpan</string>
     <string name="app_icon_label">SSKG</string>
     <string name="launch_loading">正在准备标牌…</string>

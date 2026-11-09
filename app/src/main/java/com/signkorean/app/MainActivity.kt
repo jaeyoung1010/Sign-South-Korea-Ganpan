@@ -518,6 +518,14 @@ internal fun SignKoreanAppContent(
                         onAction = onAction,
                     )
                 }
+                entry<AppRoute.Save> {
+                    SaveScreen(
+                        profileAvatar = settingsState.profileAvatar,
+                        onOpenNotices = { onAction(AppNavigationAction.Navigate(AppRoute.Notices)) },
+                        onOpenSettings = { onAction(AppNavigationAction.Navigate(AppRoute.Settings)) },
+                        onOpenProfile = { onAction(AppNavigationAction.Navigate(AppRoute.Profile)) },
+                    )
+                }
                 entry<AppRoute.Settings> {
                     SettingsDestination(
                         state = settingsState,
@@ -570,7 +578,7 @@ internal fun SignKoreanAppContent(
         SignKoreanScreen(
             applySafeDrawingInsets = !state.isViewerVisible && !useLaunchBackground,
             bottomInsetColor =
-                if (renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
+                if (renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips, AppRoute.Save)) {
                     Color(SignKoreanPalette.SURFACE)
                 } else {
                     null
@@ -598,7 +606,7 @@ internal fun SignKoreanAppContent(
                                 },
                             ),
                 )
-                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips)) {
+                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips, AppRoute.Save)) {
                     TopLevelTabs(
                         selectedTab = renderedRoute.topLevelTab,
                         onAction = onAction,
@@ -948,6 +956,12 @@ private fun TopLevelTabs(
                     selected = selectedTab == AppTopLevelTab.Tips,
                     onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Tips)) },
                 )
+                TopLevelTabItem(
+                    label = stringResource(R.string.save_tab),
+                    tab = AppTopLevelTab.Save,
+                    selected = selectedTab == AppTopLevelTab.Save,
+                    onClick = { onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Save)) },
+                )
             }
         }
     }
@@ -1036,6 +1050,10 @@ private fun BottomTabIcon(
                 )
                 drawLine(color, Offset(size.width * 0.34f, size.height * 0.7f), Offset(size.width * 0.66f, size.height * 0.7f), strokeWidth = stroke.width)
                 drawLine(color, Offset(size.width * 0.39f, size.height * 0.83f), Offset(size.width * 0.61f, size.height * 0.83f), strokeWidth = stroke.width)
+            }
+            AppTopLevelTab.Save -> {
+                drawRoundRect(color = color, topLeft = Offset(size.width * .2f, size.height * .18f), size = Size(size.width * .6f, size.height * .65f), cornerRadius = CornerRadius(2.dp.toPx()), style = stroke)
+                drawCircle(color = color, radius = size.width * .14f, center = center, style = stroke)
             }
         }
     }
@@ -1322,6 +1340,7 @@ private val AppRoute.topLevelTab: AppTopLevelTab
             AppRoute.Home -> AppTopLevelTab.Learn
             AppRoute.Progress -> AppTopLevelTab.Progress
             AppRoute.Tips -> AppTopLevelTab.Tips
+            AppRoute.Save -> AppTopLevelTab.Save
             AppRoute.Settings -> AppTopLevelTab.Learn
             else -> AppTopLevelTab.Learn
         }

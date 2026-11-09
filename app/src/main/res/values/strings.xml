@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="save_tab">Save</string>
+    <string name="save_title">Saved signs</string>
+    <string name="save_description">Capture the signs you discover and keep them here.</string>
+    <string name="save_take_photo">Take a photo</string>
+    <string name="save_empty">Your photos will appear here.</string>
+    <string name="save_photo">Saved sign photo</string>
+    <string name="save_close">Close</string>
+    <string name="save_error">Couldn’t save the photo. Please try again.</string>
     <string name="app_name">Sign South Korea Ganpan</string>
     <string name="app_icon_label">SSKG</string>
     <string name="launch_loading">Preparing your signs…</string>
