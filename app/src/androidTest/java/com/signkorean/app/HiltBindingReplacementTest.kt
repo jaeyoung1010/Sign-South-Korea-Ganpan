@@ -113,7 +113,7 @@ object FakeDataAdapterModule {
 
             override fun getLocalizedCopy(languageTag: String) = emptyList<com.signkorean.domain.model.LocalizedCardCopy>()
 
-            override fun validateBundle() = BundleValidationReport(1, 1, 1, 1, setOf("en"))
+            override fun validateBundle() = BundleValidationReport(1, 1, 1, setOf("en"))
         }
 
     @Provides
