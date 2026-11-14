@@ -28,7 +28,7 @@ class ReportSheetTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun `all five reasons are shown and send stays disabled until one is selected`() {
+    fun all_five_reasons_are_shown_and_send_stays_disabled_until_one_is_selected() {
         var selectedReason by mutableStateOf<CardReportReason?>(null)
         composeRule.setContent {
             SignKoreanTheme {
@@ -51,7 +51,7 @@ class ReportSheetTest {
     }
 
     @Test
-    fun `details field shows privacy guidance and cancel is exposed`() {
+    fun details_field_shows_privacy_guidance_and_cancel_is_exposed() {
         val details = mutableListOf<String>()
         val cancellations = mutableListOf<Unit>()
         composeRule.setContent {

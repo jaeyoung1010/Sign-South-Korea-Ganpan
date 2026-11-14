@@ -1,8 +1,11 @@
 package com.signkorean.app
 
+import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.app.di.DataAdapterModule
+import com.signkorean.app.di.IoDispatcher
 import com.signkorean.app.di.SessionAdapterModule
+import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.BundleValidationReport
 import com.signkorean.domain.model.ContentMigrationResult
@@ -13,10 +16,14 @@ import com.signkorean.domain.model.SignCard
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.ResolveLaunchDestination
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.CardCatalog
+import com.signkorean.domain.port.output.CardReportIdGenerator
+import com.signkorean.domain.port.output.CardReportRepository
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.HomeActivityRepository
+import com.signkorean.domain.port.output.PolicyDocumentRepository
 import com.signkorean.domain.port.output.SessionCreationRepository
 import com.signkorean.domain.port.output.SessionIdGenerator
 import com.signkorean.domain.port.output.SessionRepository
@@ -26,10 +33,12 @@ import com.signkorean.testsupport.FakeSessionRepository
 import com.signkorean.testsupport.FakeUserSettingsRepository
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -61,6 +70,29 @@ class HiltBindingReplacementTest {
     replaces = [DataAdapterModule::class, SessionAdapterModule::class],
 )
 object FakeDataAdapterModule {
+    @Provides
+    @IoDispatcher
+    fun provideIoDispatcher(): CoroutineDispatcher = DataAdapterModule.provideIoDispatcher()
+
+    @Provides
+    @Singleton
+    fun providePolicyDocumentRepository(
+        @ApplicationContext context: Context,
+        @IoDispatcher dispatcher: CoroutineDispatcher,
+        locale: AppLocalePort,
+    ): PolicyDocumentRepository = DataAdapterModule.providePolicyDocumentRepository(context, dispatcher, locale)
+
+    @Provides
+    @Singleton
+    fun provideCardReportRepository(
+        database: SignKoreanDatabase,
+        @IoDispatcher dispatcher: CoroutineDispatcher,
+    ): CardReportRepository = DataAdapterModule.provideCardReportRepository(database, dispatcher)
+
+    @Provides
+    @Singleton
+    fun provideCardReportIdGenerator(): CardReportIdGenerator = DataAdapterModule.provideCardReportIdGenerator()
+
     @Provides
     @Singleton
     fun provideUserSettingsRepository(): UserSettingsRepository = FakeUserSettingsRepository(UserSettings(onboardingCompleted = true))
