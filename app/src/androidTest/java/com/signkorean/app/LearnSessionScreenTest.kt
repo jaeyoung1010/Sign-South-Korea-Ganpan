@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.Density
@@ -27,6 +28,7 @@ import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.RatingInputSource
+import com.signkorean.domain.model.VoiceId
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel
 import com.signkorean.feature.learn.LearnCardStage
@@ -60,12 +62,10 @@ class LearnSessionScreenTest {
 
         composeRule.onNodeWithText("3 of 10").assertIsDisplayed()
         composeRule.onNodeWithTag(LearnSessionTestTags.PROGRESS).assertIsDisplayed()
-        composeRule.runOnIdle {
-            val positionConfig = composeRule.onNodeWithTag(LearnSessionTestTags.POSITION).fetchSemanticsNode().config
-            val progressConfig = composeRule.onNodeWithTag(LearnSessionTestTags.PROGRESS).fetchSemanticsNode().config
-            assertTrue(positionConfig.contains(SemanticsProperties.Heading))
-            assertEquals("3 of 10", progressConfig[SemanticsProperties.StateDescription])
-        }
+        val positionConfig = composeRule.onNodeWithTag(LearnSessionTestTags.POSITION).fetchSemanticsNode().config
+        val progressConfig = composeRule.onNodeWithTag(LearnSessionTestTags.PROGRESS).fetchSemanticsNode().config
+        assertTrue(positionConfig.contains(SemanticsProperties.Heading))
+        assertEquals("3 of 10", progressConfig[SemanticsProperties.StateDescription])
     }
 
     @Test
@@ -115,11 +115,8 @@ class LearnSessionScreenTest {
         val customActions = if (config.contains(SemanticsActions.CustomActions)) config[SemanticsActions.CustomActions] else emptyList()
 
         assertEquals(listOf("Mark as Got it", "Mark for review"), customActions.map { it.label })
-        assertTrue(customActions.all { it.action() })
-        assertEquals(
-            listOf(LearnUiAction.CheckAnswerFirst, LearnUiAction.CheckAnswerFirst),
-            dispatchedActions,
-        )
+        assertTrue(customActions.none { it.action() })
+        assertTrue(dispatchedActions.isEmpty())
     }
 
     @Test
@@ -179,7 +176,7 @@ class LearnSessionScreenTest {
         composeRule.onNodeWithText("hongdae ipgu").assertIsDisplayed()
         composeRule.onNodeWithText("Words").assertIsDisplayed()
         composeRule.onNodeWithText("Street note").assertIsDisplayed()
-        composeRule.onNodeWithText("← Got it · Review →").assertIsDisplayed()
+        composeRule.onNodeWithText("← Got it · Review →").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REVEAL_ANSWER).assertDoesNotExist()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
     }
@@ -193,7 +190,7 @@ class LearnSessionScreenTest {
             }
         }
 
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performClick()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performScrollTo().performClick()
 
         composeRule.runOnIdle {
             assertEquals(listOf(LearnUiAction.PlayAudio), actions)
@@ -246,24 +243,26 @@ class LearnSessionScreenTest {
 
     @Test
     fun photo_stage_captures_at_each_supported_width_without_truncating_the_stack() {
-        listOf(360, 390, 480).forEach { width ->
-            composeRule.setContent {
-                SignKoreanTheme {
-                    Box(
-                        modifier =
-                            androidx.compose.ui.Modifier
-                                .width(width.dp)
-                                .height(720.dp),
-                    ) {
-                        LearnSessionScreen(state = photoState(), onAction = {})
-                    }
+        var width by mutableStateOf(360)
+        composeRule.setContent {
+            SignKoreanTheme {
+                Box(
+                    modifier =
+                        androidx.compose.ui.Modifier
+                            .width(width.dp)
+                            .height(720.dp),
+                ) {
+                    LearnSessionScreen(state = photoState(), onAction = {})
                 }
             }
+        }
+        listOf(360, 390, 480).forEach { size ->
+            composeRule.runOnIdle { width = size }
 
             val image = composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_CARD_STACK).captureToImage()
             val artifact =
                 ScreenshotTestHarness.capture(
-                    ScreenshotCase("learn-photo-$width", widthDp = width, localeTag = "en-US"),
+                    ScreenshotCase("learn-photo-$size", widthDp = size, localeTag = "en-US"),
                 ) { case -> ScreenshotArtifact(case.id, byteArrayOf(image.width.toByte(), image.height.toByte())) }
 
             assertTrue(artifact.bytes.isNotEmpty())
@@ -275,33 +274,38 @@ class LearnSessionScreenTest {
         val widths = listOf(360, 390, 480)
         val locales = listOf("en", "ja")
         val fontScales = listOf(1f, 1.3f, 2f)
+        var widthState by mutableStateOf(360)
+        var localeState by mutableStateOf("en")
+        var fontScaleState by mutableStateOf(1f)
+        composeRule.setContent {
+            CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = fontScaleState)) {
+                SignKoreanTheme {
+                    Box(
+                        modifier =
+                            androidx.compose.ui.Modifier
+                                .width(widthState.dp)
+                                .height(720.dp),
+                    ) {
+                        LearnSessionScreen(state = localizedAnswerState(localeState), onAction = {})
+                    }
+                }
+            }
+        }
 
         widths.forEach { width ->
             locales.forEach { locale ->
                 fontScales.forEach { fontScale ->
                     val case =
                         ScreenshotCase("learn-answer-$locale-$width-${fontScale.toString().replace('.', '-')}", width, locale, fontScale)
-                    composeRule.setContent {
-                        CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = fontScale)) {
-                            SignKoreanTheme {
-                                Box(
-                                    modifier =
-                                        androidx.compose.ui.Modifier
-                                            .width(width.dp)
-                                            .height(720.dp),
-                                ) {
-                                    LearnSessionScreen(
-                                        state = localizedAnswerState(locale),
-                                        onAction = {},
-                                    )
-                                }
-                            }
-                        }
+                    composeRule.runOnIdle {
+                        widthState = width
+                        localeState = locale
+                        fontScaleState = fontScale
                     }
 
                     composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
                     composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
-                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).assertIsDisplayed()
+                    composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performScrollTo().assertIsDisplayed()
                     val image = composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_CARD_STACK).captureToImage()
                     val artifact =
                         ScreenshotTestHarness.capture(case) { screenshotCase ->
@@ -341,7 +345,7 @@ class LearnSessionScreenTest {
 
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performClick()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PLAY_AUDIO).performScrollTo().performClick()
 
         composeRule.runOnIdle {
             assertEquals(listOf(LearnUiAction.PlayAudio), actions)
@@ -382,6 +386,19 @@ class LearnSessionScreenTest {
 
     @Test
     fun long_english_and_japanese_answer_content_keeps_the_photo_above_the_scrollable_information_panel() {
+        var note by mutableStateOf("")
+        composeRule.setContent {
+            SignKoreanTheme {
+                Box(
+                    modifier =
+                        androidx.compose.ui.Modifier
+                            .width(390.dp)
+                            .height(720.dp),
+                ) {
+                    LearnSessionScreen(state = answerState().copy(answer = answerState().answer.copy(streetNote = note)), onAction = {})
+                }
+            }
+        }
         listOf(
             "en" to
                 "The gateway to Hongdae, a popular area for live music, cafés, shopping, and nightlife. " +
@@ -390,21 +407,7 @@ class LearnSessionScreenTest {
                 "ライブハウスやカフェ、買い物でにぎわう弘大エリアの玄関口です。" +
                 "週末は特に混雑するため、周囲の歩行者に注意しましょう。",
         ).forEach { (language, streetNote) ->
-            composeRule.setContent {
-                SignKoreanTheme {
-                    Box(
-                        modifier =
-                            androidx.compose.ui.Modifier
-                                .width(390.dp)
-                                .height(720.dp),
-                    ) {
-                        LearnSessionScreen(
-                            state = answerState().copy(answer = answerState().answer.copy(streetNote = streetNote)),
-                            onAction = {},
-                        )
-                    }
-                }
-            }
+            composeRule.runOnIdle { note = streetNote }
 
             composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_PHOTO).assertIsDisplayed()
             composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_INFO_PANEL).assertIsDisplayed()
@@ -448,6 +451,7 @@ class LearnSessionScreenTest {
         photoState().copy(
             sign = "홍대입구",
             stage = LearnCardStage.Answer,
+            audioAssetUris = mapOf(VoiceId.TYPECAST_EUNKYUNG to "file:///android_asset/audio/eunkyung/01-hongdae-entrance.mp3"),
             answer =
                 LearnAnswerUiModel(
                     displayMeaning = "Hongdae Entrance",

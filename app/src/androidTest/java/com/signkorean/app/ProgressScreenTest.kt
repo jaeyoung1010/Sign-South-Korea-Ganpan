@@ -1,5 +1,9 @@
 package com.signkorean.app
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -43,8 +47,31 @@ class ProgressScreenTest {
     fun see_all_and_card_detail_expose_close_and_practice_actions() {
         val actions = mutableListOf<ProgressUiAction>()
         composeRule.setContent {
+            var state by remember { mutableStateOf(populatedState()) }
             SignKoreanTheme {
-                ProgressScreen(populatedState(), onAction = { actions += it })
+                ProgressScreen(state, onAction = { action ->
+                    actions += action
+                    state =
+                        when (action) {
+                            ProgressUiAction.OpenReviewList -> {
+                                state.copy(isReviewListVisible = true)
+                            }
+
+                            is ProgressUiAction.SelectReview -> {
+                                state.copy(
+                                    selectedReview = state.allReviews.first { it.cardId == action.cardId },
+                                )
+                            }
+
+                            ProgressUiAction.CloseDetail -> {
+                                state.copy(selectedReview = null)
+                            }
+
+                            else -> {
+                                state
+                            }
+                        }
+                })
             }
         }
 

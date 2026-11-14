@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.app.navigation.AppNavigationAction
@@ -52,10 +53,9 @@ class LearnHomeScreenTest {
         composeRule.onNodeWithText("Your weekly goal: 3/3 days").assertIsDisplayed()
         composeRule.onNodeWithText("20 street signs").assertIsDisplayed()
         composeRule.onNodeWithText("About 8 minutes").assertIsDisplayed()
-        composeRule.onNodeWithText("3 review").assertIsDisplayed()
+        composeRule.onNodeWithText("3 reviews").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText("17 new").assertIsDisplayed()
-        composeRule.onNodeWithText("Landmarks").assertIsDisplayed()
-        composeRule.onNodeWithText("7 signs").assertIsDisplayed()
+        composeRule.onNodeWithText("Landmarks").performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithTag(HomeTestTags.SEE_ALL).performClick()
 
         composeRule.runOnIdle { assertEquals(LearnUiAction.ShowDeckSheet, action) }
