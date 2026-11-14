@@ -55,7 +55,8 @@ class OnboardingViewModel
             updateChoice {
                 reducer.reduce(
                     it,
-                    com.signkorean.feature.onboarding.OnboardingChoiceAction.SelectProfileAvatar(avatar),
+                    com.signkorean.feature.onboarding.OnboardingChoiceAction
+                        .SelectProfileAvatar(avatar),
                 )
             }
         }
@@ -64,7 +65,8 @@ class OnboardingViewModel
             updateChoice {
                 reducer.reduce(
                     it,
-                    com.signkorean.feature.onboarding.OnboardingChoiceAction.UpdateProfileName(name),
+                    com.signkorean.feature.onboarding.OnboardingChoiceAction
+                        .UpdateProfileName(name),
                 )
             }
         }

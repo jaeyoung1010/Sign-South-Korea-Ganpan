@@ -107,7 +107,14 @@ fun ReportSheet(
             )
         }
         GameButton(
-            text = if (state.status == ReportStatus.Saving) stringResource(R.string.learn_report_sending) else stringResource(R.string.learn_report_send),
+            text =
+                if (state.status ==
+                    ReportStatus.Saving
+                ) {
+                    stringResource(R.string.learn_report_sending)
+                } else {
+                    stringResource(R.string.learn_report_send)
+                },
             onClick = onSubmit,
             modifier = Modifier.fillMaxWidth().testTag(SignKoreanTestTags.LEARN_REPORT_SUBMIT),
             enabled = state.canSubmit,

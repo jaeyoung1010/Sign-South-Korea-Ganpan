@@ -8,10 +8,10 @@ import com.signkorean.domain.port.input.OpenPolicyDocument
 import com.signkorean.feature.settings.LegalUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,17 +35,18 @@ class LegalViewModel
             hasLoaded = true
             viewModelScope.launch {
                 mutableUiState.update { it.copy(isLoading = true, loadError = null) }
-                val documents = buildList {
-                    PolicyDocumentId.entries.forEach { id ->
-                        try {
-                            add(loadPolicyDocument(id))
-                        } catch (cancellation: CancellationException) {
-                            throw cancellation
-                        } catch (_: Exception) {
-                            // Keep the other bundled policy available when one asset is damaged.
+                val documents =
+                    buildList {
+                        PolicyDocumentId.entries.forEach { id ->
+                            try {
+                                add(loadPolicyDocument(id))
+                            } catch (cancellation: CancellationException) {
+                                throw cancellation
+                            } catch (_: Exception) {
+                                // Keep the other bundled policy available when one asset is damaged.
+                            }
                         }
                     }
-                }
                 mutableUiState.update {
                     it.copy(
                         documents = documents,

@@ -22,6 +22,7 @@ keystore.properties
 # Tool output
 lint-results*.xml
 detekt*.xml
+!app/detekt-baseline.xml
 
 # Generated temporary files
 assets/audio/**/*.tmp

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming", "ktlint:standard:function-naming")
+
 package com.signkorean.feature.settings
 
 import android.graphics.Bitmap
@@ -36,9 +38,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
@@ -107,7 +109,11 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )
-            Text(text = stringResource(R.string.profile_choose_avatar), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+            Text(
+                text = stringResource(R.string.profile_choose_avatar),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Black,
+            )
             ProfileAvatar.entries.chunked(4).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
                     row.forEach { avatar ->

@@ -3,8 +3,8 @@ package com.signkorean.domain.port.output
 import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
-import com.signkorean.domain.model.SessionTransitionWriteResult
 import com.signkorean.domain.model.SessionCompletion
+import com.signkorean.domain.model.SessionTransitionWriteResult
 import java.time.Instant
 
 interface SessionRepository {

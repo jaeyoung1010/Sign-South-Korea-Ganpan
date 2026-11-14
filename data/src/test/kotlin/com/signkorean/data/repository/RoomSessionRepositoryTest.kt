@@ -3,10 +3,10 @@ package com.signkorean.data.repository
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.signkorean.data.db.CardProgressEntity
 import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
-import com.signkorean.data.db.CardProgressEntity
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.SessionTransitionWriteResult

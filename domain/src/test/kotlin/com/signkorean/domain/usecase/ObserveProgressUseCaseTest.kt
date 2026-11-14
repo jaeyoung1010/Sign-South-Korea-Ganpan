@@ -141,8 +141,11 @@ class ObserveProgressUseCaseTest {
         version = 1,
     )
 
-    private fun activity(cardId: String, decision: RatingDecision, ratedAt: Instant) =
-        RatingActivity(cardId, decision, ratedAt)
+    private fun activity(
+        cardId: String,
+        decision: RatingDecision,
+        ratedAt: Instant,
+    ) = RatingActivity(cardId, decision, ratedAt)
 
     private class FakeLearningRepository(
         progress: List<CardProgress> = emptyList(),
@@ -159,8 +162,10 @@ class ObserveProgressUseCaseTest {
 
         override fun observeRatingActivity(): Flow<List<RatingActivity>> = activity
 
-        override fun observeReviewCards(limit: Int, offset: Int): Flow<List<ProgressReview>> =
-            flowOf(reviews.value.drop(offset).take(limit))
+        override fun observeReviewCards(
+            limit: Int,
+            offset: Int,
+        ): Flow<List<ProgressReview>> = flowOf(reviews.value.drop(offset).take(limit))
     }
 
     private class FixtureCatalog : CardCatalog {
@@ -177,8 +182,10 @@ class ObserveProgressUseCaseTest {
 
         override fun validateBundle() = BundleValidationReport(3, 3, 3, setOf("en"))
 
-        private fun card(id: String, category: String) =
-            SignCard(id, 0, id, category, "asset://$id", FocusRect(0f, 0f, 1f, 1f), emptyMap(), 1)
+        private fun card(
+            id: String,
+            category: String,
+        ) = SignCard(id, 0, id, category, "asset://$id", FocusRect(0f, 0f, 1f, 1f), emptyMap(), 1)
     }
 
     private inner class FixedClock : ClockPort {

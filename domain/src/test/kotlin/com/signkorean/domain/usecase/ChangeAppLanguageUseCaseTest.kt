@@ -4,9 +4,9 @@ import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.input.ChangeAppLanguageResult
 import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.UserSettingsRepository
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -52,7 +52,9 @@ class ChangeAppLanguageUseCaseTest {
         }
     }
 
-    private class FakeSettingsRepository(initial: UserSettings) : UserSettingsRepository {
+    private class FakeSettingsRepository(
+        initial: UserSettings,
+    ) : UserSettingsRepository {
         private val state = MutableStateFlow(initial)
         override val settings: Flow<UserSettings> = state
 

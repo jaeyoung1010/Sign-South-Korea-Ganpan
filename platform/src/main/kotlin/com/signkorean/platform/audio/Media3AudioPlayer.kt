@@ -164,7 +164,8 @@ class ExoPlayerAudioPlayerFactory(
         ExoPlayerHandle(
             ExoPlayer.Builder(context).build().apply {
                 setAudioAttributes(
-                    AudioAttributes.Builder()
+                    AudioAttributes
+                        .Builder()
                         .setUsage(C.USAGE_MEDIA)
                         .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
                         .build(),

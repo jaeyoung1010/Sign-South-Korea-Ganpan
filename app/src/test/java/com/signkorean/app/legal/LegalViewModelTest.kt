@@ -64,8 +64,7 @@ class LegalViewModelTest {
             assertEquals(null, viewModel.uiState.value.loadError)
         }
 
-    private fun loading(values: List<PolicyDocument>) =
-        LoadPolicyDocument { id -> values.first { it.id == id } }
+    private fun loading(values: List<PolicyDocument>) = LoadPolicyDocument { id -> values.first { it.id == id } }
 
     private fun document(id: PolicyDocumentId) =
         PolicyDocument(

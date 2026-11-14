@@ -31,7 +31,9 @@ class PracticeCardUseCaseTest {
     @Test
     fun `practice passes an active-session replacement result to the caller`() =
         runTest {
-            val active = com.signkorean.domain.model.ActiveSession(completedCount = 1, totalCount = 5, sessionId = "active")
+            val active =
+                com.signkorean.domain.model
+                    .ActiveSession(completedCount = 1, totalCount = 5, sessionId = "active")
             val useCase = PracticeCardUseCase(StartSession { StartSessionResult.ReplacementRequired(active) })
 
             assertEquals(StartSessionResult.ReplacementRequired(active), useCase(PracticeCardRequest("card-7")))

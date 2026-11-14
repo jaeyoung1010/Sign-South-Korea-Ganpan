@@ -1,20 +1,20 @@
 package com.signkorean.domain.port.output
 
-import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AnalyticsEvent
+import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlayedEvent
-import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardRatingUndoneEvent
+import com.signkorean.domain.model.CardReportSavedEvent
+import com.signkorean.domain.model.OnboardingCompletedEvent
+import com.signkorean.domain.model.ReminderChangedEvent
+import com.signkorean.domain.model.SessionCompletedEvent
 import com.signkorean.domain.model.SessionPausedEvent
 import com.signkorean.domain.model.SessionResumedEvent
 import com.signkorean.domain.model.SessionStartedEvent
-import com.signkorean.domain.model.SessionCompletedEvent
 import com.signkorean.domain.model.VoiceChangedEvent
-import com.signkorean.domain.model.OnboardingCompletedEvent
-import com.signkorean.domain.model.ReminderChangedEvent
 
 interface AnalyticsPort {
     fun record(event: AnalyticsEvent) = Unit

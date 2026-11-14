@@ -3,31 +3,31 @@ package com.signkorean.app.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.app.di.AppVersionName
-import com.signkorean.domain.model.ReminderChangedEvent
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
-import com.signkorean.domain.model.ProfileAvatar
+import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.model.UserSettings
-import com.signkorean.domain.port.input.ConfigureReminder
-import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ChangeAppLanguage
 import com.signkorean.domain.port.input.ChangeAppLanguageResult
+import com.signkorean.domain.port.input.ConfigureReminder
+import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ObserveProgress
-import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.ReminderPermission
 import com.signkorean.domain.port.output.ReminderSchedulerPort
 import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.feature.settings.SettingsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -98,9 +98,10 @@ class SettingsViewModel
             sessionLengthJob =
                 viewModelScope.launch {
                     try {
-                        val updatedSettings = settingsMutex.withLock {
-                            userSettingsRepository.updateSettings { settings -> settings.copy(sessionLength = length) }
-                        }
+                        val updatedSettings =
+                            settingsMutex.withLock {
+                                userSettingsRepository.updateSettings { settings -> settings.copy(sessionLength = length) }
+                            }
                         mutableUiState.update { it.copy(sessionLength = updatedSettings.sessionLength) }
                         effectChannel.trySend(SettingsEffect.SessionLengthChanged(length))
                     } catch (cancellation: CancellationException) {
@@ -118,6 +119,7 @@ class SettingsViewModel
                     val result = settingsMutex.withLock { changeAppLanguage(languageTag) }
                     when (result) {
                         is ChangeAppLanguageResult.Changed -> effectChannel.trySend(SettingsEffect.LanguageChanged(result.languageTag))
+
                         ChangeAppLanguageResult.InvalidTag,
                         is ChangeAppLanguageResult.Unsupported,
                         ChangeAppLanguageResult.Failed,
@@ -175,6 +177,7 @@ class SettingsViewModel
                         }
                     when (result) {
                         is ChangeAppLanguageResult.Changed -> effectChannel.trySend(SettingsEffect.LanguageChanged(result.languageTag))
+
                         ChangeAppLanguageResult.InvalidTag,
                         is ChangeAppLanguageResult.Unsupported,
                         ChangeAppLanguageResult.Failed,
@@ -204,10 +207,12 @@ class SettingsViewModel
                             recordReminderChanged(enabled = true)
                             effectChannel.trySend(SettingsEffect.ReminderChanged(true))
                         }
+
                         ConfigureReminderResult.NoDueCards -> {
                             recordReminderChanged(enabled = false)
                             effectChannel.trySend(SettingsEffect.ReminderChanged(false))
                         }
+
                         ConfigureReminderResult.Disabled -> {
                             recordReminderChanged(enabled = false)
                         }
@@ -225,8 +230,11 @@ class SettingsViewModel
                 try {
                     configureReminder(enabled = false, dueCount = latestDueCount)
                     recordReminderChanged(enabled = false)
-                    if (showDeniedMessage) effectChannel.trySend(SettingsEffect.ReminderPermissionDenied)
-                    else effectChannel.trySend(SettingsEffect.ReminderChanged(false))
+                    if (showDeniedMessage) {
+                        effectChannel.trySend(SettingsEffect.ReminderPermissionDenied)
+                    } else {
+                        effectChannel.trySend(SettingsEffect.ReminderChanged(false))
+                    }
                 } catch (cancellation: CancellationException) {
                     throw cancellation
                 } catch (_: Exception) {
@@ -267,7 +275,9 @@ sealed interface SettingsEffect {
 
     data object SettingsChangeFailed : SettingsEffect
 
-    data class LanguageChanged(val languageTag: String) : SettingsEffect
+    data class LanguageChanged(
+        val languageTag: String,
+    ) : SettingsEffect
 
     data object LanguageChangeFailed : SettingsEffect
 
@@ -275,7 +285,9 @@ sealed interface SettingsEffect {
 
     data object ReminderPermissionDenied : SettingsEffect
 
-    data class ReminderChanged(val enabled: Boolean) : SettingsEffect
+    data class ReminderChanged(
+        val enabled: Boolean,
+    ) : SettingsEffect
 }
 
 private object NoopReminderScheduler : ReminderSchedulerPort {

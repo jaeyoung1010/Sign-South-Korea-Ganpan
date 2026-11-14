@@ -2,8 +2,8 @@ package com.signkorean.app.learn
 
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlayRequest
-import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
+import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.AudioPlayedEvent
 import com.signkorean.domain.model.CardReportReason
@@ -32,14 +32,14 @@ import com.signkorean.domain.port.input.SubmitCardReport
 import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingResult
-import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
-import com.signkorean.testsupport.FakeUserSettingsRepository
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.feature.learn.LearnCardStage
 import com.signkorean.feature.learn.LearnFeedbackMessage
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnPhotoPrefetcher
 import com.signkorean.feature.learn.LearnSessionUiState
+import com.signkorean.testsupport.FakeUserSettingsRepository
 import com.signkorean.testsupport.MainDispatcherRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
@@ -131,10 +131,11 @@ class LearnViewModelTest {
             val audioPlayer = RecordingAudioPlayer()
             val viewModel =
                 LearnViewModel(
-                    loadLearnSession = LoadLearnSession {
-                        loadCount += 1
-                        active(position = 1, total = 1).copy(answerRevealed = loadCount > 1)
-                    },
+                    loadLearnSession =
+                        LoadLearnSession {
+                            loadCount += 1
+                            active(position = 1, total = 1).copy(answerRevealed = loadCount > 1)
+                        },
                     audioPlayer = audioPlayer,
                     userSettingsRepository = FakeUserSettingsRepository(UserSettings(autoPlayAudio = true)),
                 )

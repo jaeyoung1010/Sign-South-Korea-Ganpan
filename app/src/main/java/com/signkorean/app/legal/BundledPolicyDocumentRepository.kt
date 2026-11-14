@@ -51,7 +51,7 @@ class BundledPolicyDocumentRepository
 
         private fun englishMetadataFor(id: PolicyDocumentId): PolicyMetadata =
             when (id) {
-                PolicyDocumentId.PRIVACY ->
+                PolicyDocumentId.PRIVACY -> {
                     PolicyMetadata(
                         assetPath = "legal/privacy-policy.md",
                         title = context.getString(R.string.legal_privacy_policy),
@@ -59,8 +59,9 @@ class BundledPolicyDocumentRepository
                         urlRes = R.string.policy_privacy_url,
                         expectedChecksum = context.getString(R.string.policy_privacy_checksum),
                     )
+                }
 
-                PolicyDocumentId.TERMS ->
+                PolicyDocumentId.TERMS -> {
                     PolicyMetadata(
                         assetPath = "legal/terms-of-use.md",
                         title = context.getString(R.string.legal_terms_of_use),
@@ -68,11 +69,12 @@ class BundledPolicyDocumentRepository
                         urlRes = R.string.policy_terms_url,
                         expectedChecksum = context.getString(R.string.policy_terms_checksum),
                     )
+                }
             }
 
         private fun japaneseMetadataFor(id: PolicyDocumentId): PolicyMetadata =
             when (id) {
-                PolicyDocumentId.PRIVACY ->
+                PolicyDocumentId.PRIVACY -> {
                     PolicyMetadata(
                         assetPath = "legal/ja/privacy-policy.md",
                         title = context.getString(R.string.legal_privacy_policy),
@@ -80,8 +82,9 @@ class BundledPolicyDocumentRepository
                         urlRes = R.string.policy_privacy_url,
                         expectedChecksum = context.getString(R.string.policy_privacy_checksum_ja),
                     )
+                }
 
-                PolicyDocumentId.TERMS ->
+                PolicyDocumentId.TERMS -> {
                     PolicyMetadata(
                         assetPath = "legal/ja/terms-of-use.md",
                         title = context.getString(R.string.legal_terms_of_use),
@@ -89,11 +92,12 @@ class BundledPolicyDocumentRepository
                         urlRes = R.string.policy_terms_url,
                         expectedChecksum = context.getString(R.string.policy_terms_checksum_ja),
                     )
+                }
             }
 
         private fun chineseMetadataFor(id: PolicyDocumentId): PolicyMetadata =
             when (id) {
-                PolicyDocumentId.PRIVACY ->
+                PolicyDocumentId.PRIVACY -> {
                     PolicyMetadata(
                         assetPath = "legal/zh/privacy-policy.md",
                         title = context.getString(R.string.legal_privacy_policy),
@@ -101,8 +105,9 @@ class BundledPolicyDocumentRepository
                         urlRes = R.string.policy_privacy_url,
                         expectedChecksum = context.getString(R.string.policy_privacy_checksum_zh),
                     )
+                }
 
-                PolicyDocumentId.TERMS ->
+                PolicyDocumentId.TERMS -> {
                     PolicyMetadata(
                         assetPath = "legal/zh/terms-of-use.md",
                         title = context.getString(R.string.legal_terms_of_use),
@@ -110,6 +115,7 @@ class BundledPolicyDocumentRepository
                         urlRes = R.string.policy_terms_url,
                         expectedChecksum = context.getString(R.string.policy_terms_checksum_zh),
                     )
+                }
             }
 
         private data class PolicyMetadata(
@@ -122,5 +128,4 @@ class BundledPolicyDocumentRepository
 
         private fun sha256(bytes: ByteArray): String =
             MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
-
     }

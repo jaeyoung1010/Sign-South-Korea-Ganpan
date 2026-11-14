@@ -123,7 +123,9 @@ class RoomSessionTransactionStore(
             if (insertionGap != null) {
                 val gap = insertionGap
                 val insertionPosition = command.position + 1 + gap
-                database.sessionCardDao().forSession(command.sessionId)
+                database
+                    .sessionCardDao()
+                    .forSession(command.sessionId)
                     .asSequence()
                     .filter { it.position >= insertionPosition }
                     .sortedByDescending(SessionCardEntity::position)
@@ -224,7 +226,9 @@ class RoomSessionTransactionStore(
             check(database.sessionCardDao().delete(session.sessionId, insertionPosition) == 1) {
                 "Could not remove the reinserted card"
             }
-            database.sessionCardDao().forSession(session.sessionId)
+            database
+                .sessionCardDao()
+                .forSession(session.sessionId)
                 .asSequence()
                 .filter { it.position > insertionPosition }
                 .sortedBy(SessionCardEntity::position)

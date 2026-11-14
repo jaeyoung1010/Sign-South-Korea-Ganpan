@@ -28,7 +28,13 @@ class OnboardingViewModelTest {
                     SavedStateHandle(),
                     CompleteOnboarding { level, interests, name, avatar ->
                         saved = OnboardingInput(level, interests, name, avatar)
-                        UserSettings(onboardingCompleted = true, level = level, interests = interests, profileName = name, profileAvatar = avatar)
+                        UserSettings(
+                            onboardingCompleted = true,
+                            level = level,
+                            interests = interests,
+                            profileName = name,
+                            profileAvatar = avatar,
+                        )
                     },
                 )
 
@@ -54,7 +60,13 @@ class OnboardingViewModelTest {
                     CompleteOnboarding { level, interests, name, avatar ->
                         attempts += 1
                         if (attempts == 1) error("storage unavailable")
-                        UserSettings(onboardingCompleted = true, level = level, interests = interests, profileName = name, profileAvatar = avatar)
+                        UserSettings(
+                            onboardingCompleted = true,
+                            level = level,
+                            interests = interests,
+                            profileName = name,
+                            profileAvatar = avatar,
+                        )
                     },
                 )
 

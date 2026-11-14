@@ -8,17 +8,17 @@ import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlayedEvent
 import com.signkorean.domain.model.AudioVoice
-import com.signkorean.domain.model.CardReportReason
-import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardRatingUndoneEvent
+import com.signkorean.domain.model.CardReportReason
+import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.OnboardingCompletedEvent
+import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.ReminderChangedEvent
 import com.signkorean.domain.model.SessionCompletedEvent
 import com.signkorean.domain.model.SessionPausedEvent
 import com.signkorean.domain.model.SessionResumedEvent
 import com.signkorean.domain.model.SessionStartedEvent
-import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.VoiceChangedEvent
 import com.signkorean.domain.model.VoiceId
 import com.signkorean.domain.port.output.DiagnosticLogLevel
@@ -79,7 +79,12 @@ class PrivacySafeAnalyticsAdapterTest {
         assertEquals(1, logger.entries.size)
         assertEquals(DiagnosticLogLevel.ERROR, logger.entries.single().level)
         assertEquals("audio_playback_failed", logger.entries.single().message)
-        assertFalse(logger.entries.single().attributes.values.any { it.contains("/", ignoreCase = false) })
+        assertFalse(
+            logger.entries
+                .single()
+                .attributes.values
+                .any { it.contains("/", ignoreCase = false) },
+        )
     }
 
     @Test
@@ -124,7 +129,11 @@ class PrivacySafeAnalyticsAdapterTest {
     private class RecordingLogger : DiagnosticLoggerPort {
         val entries = mutableListOf<Entry>()
 
-        override fun log(level: DiagnosticLogLevel, message: String, attributes: Map<String, String>) {
+        override fun log(
+            level: DiagnosticLogLevel,
+            message: String,
+            attributes: Map<String, String>,
+        ) {
             entries += Entry(level, message, attributes)
         }
     }

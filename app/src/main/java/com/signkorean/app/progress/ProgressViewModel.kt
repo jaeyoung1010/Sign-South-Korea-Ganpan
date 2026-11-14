@@ -19,10 +19,6 @@ import com.signkorean.feature.progress.ProgressUiAction
 import com.signkorean.feature.progress.ProgressUiEffect
 import com.signkorean.feature.progress.ProgressUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -31,6 +27,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,18 +57,20 @@ class ProgressViewModel
 
         fun refresh() {
             progressJob?.cancel()
-            progressJob = viewModelScope.launch {
-                try {
-                    observeProgress().collect { snapshot ->
-                        val baseState = snapshot.toUiState(mutableUiState.value, appLocalePort.getCurrent())
-                        mutableUiState.value = baseState.copy(recentReviews = snapshot.recentReviews.mapNotNull(::toCardUiModel))
+            progressJob =
+                viewModelScope.launch {
+                    try {
+                        observeProgress().collect { snapshot ->
+                            val baseState = snapshot.toUiState(mutableUiState.value, appLocalePort.getCurrent())
+                            mutableUiState.value = baseState.copy(recentReviews = snapshot.recentReviews.mapNotNull(::toCardUiModel))
+                        }
+                    } catch (cancellation: CancellationException) {
+                        throw cancellation
+                    } catch (_: Exception) {
+                        mutableUiState.value =
+                            mutableUiState.value.copy(isLoading = false, errorMessage = "Progress is unavailable. Try again.")
                     }
-                } catch (cancellation: CancellationException) {
-                    throw cancellation
-                } catch (_: Exception) {
-                    mutableUiState.value = mutableUiState.value.copy(isLoading = false, errorMessage = "Progress is unavailable. Try again.")
                 }
-            }
         }
 
         fun openReviewList() {
@@ -96,12 +98,31 @@ class ProgressViewModel
 
         fun onAction(action: ProgressUiAction) {
             when (action) {
-                ProgressUiAction.ReturnToLearn -> effectChannel.trySend(ProgressUiEffect.NavigateToLearn)
-                ProgressUiAction.OpenReviewList -> openReviewList()
-                ProgressUiAction.CloseReviewList -> mutableUiState.value = mutableUiState.value.copy(isReviewListVisible = false, selectedReview = null)
-                is ProgressUiAction.SelectReview -> selectReview(action.cardId)
-                ProgressUiAction.CloseDetail -> mutableUiState.value = mutableUiState.value.copy(selectedReview = null)
-                is ProgressUiAction.PracticeReview -> practice(action.cardId)
+                ProgressUiAction.ReturnToLearn -> {
+                    effectChannel.trySend(ProgressUiEffect.NavigateToLearn)
+                }
+
+                ProgressUiAction.OpenReviewList -> {
+                    openReviewList()
+                }
+
+                ProgressUiAction.CloseReviewList -> {
+                    mutableUiState.value =
+                        mutableUiState.value.copy(isReviewListVisible = false, selectedReview = null)
+                }
+
+                is ProgressUiAction.SelectReview -> {
+                    selectReview(action.cardId)
+                }
+
+                ProgressUiAction.CloseDetail -> {
+                    mutableUiState.value = mutableUiState.value.copy(selectedReview = null)
+                }
+
+                is ProgressUiAction.PracticeReview -> {
+                    practice(action.cardId)
+                }
+
                 ProgressUiAction.Retry -> {
                     refresh()
                     if (mutableUiState.value.isReviewListVisible) loadReviewList()
@@ -136,13 +157,15 @@ class ProgressViewModel
                         }
 
                         StartSessionResult.NoCardsAvailable -> {
-                            mutableUiState.value = mutableUiState.value.copy(isPracticing = false, errorMessage = "This sign is not available right now.")
+                            mutableUiState.value =
+                                mutableUiState.value.copy(isPracticing = false, errorMessage = "This sign is not available right now.")
                         }
                     }
                 } catch (cancellation: CancellationException) {
                     throw cancellation
                 } catch (_: Exception) {
-                    mutableUiState.value = mutableUiState.value.copy(isPracticing = false, errorMessage = "Could not start practice. Try again.")
+                    mutableUiState.value =
+                        mutableUiState.value.copy(isPracticing = false, errorMessage = "Could not start practice. Try again.")
                 }
             }
         }
@@ -189,7 +212,16 @@ private fun ProgressSnapshot.toUiState(
                     dayOfWeek = it.date.dayOfWeek,
                 )
             },
-        categories = categoryProgress.map { ProgressCategoryUiModel(it.key, it.key.toCategoryLabel(), it.learnedCount, it.totalCount, it.ratio) },
+        categories =
+            categoryProgress.map {
+                ProgressCategoryUiModel(
+                    it.key,
+                    it.key.toCategoryLabel(),
+                    it.learnedCount,
+                    it.totalCount,
+                    it.ratio,
+                )
+            },
     )
 
 private fun String.toCategoryLabel(): String =

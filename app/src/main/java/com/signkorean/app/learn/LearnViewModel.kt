@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlayRequest
-import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
+import com.signkorean.domain.model.AudioPlaybackFailure
 import com.signkorean.domain.model.AudioPlaybackState
 import com.signkorean.domain.model.AudioPlayedEvent
-import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.CardReportReason
+import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.LoadLearnSessionResult
 import com.signkorean.domain.model.RatingInputSource
@@ -35,8 +35,8 @@ import com.signkorean.domain.port.input.SubmitCardReportResult
 import com.signkorean.domain.port.input.UndoRating
 import com.signkorean.domain.port.input.UndoRatingRequest
 import com.signkorean.domain.port.input.UndoRatingResult
-import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.feature.learn.LearnAnswerUiModel
 import com.signkorean.feature.learn.LearnCardPreviewUiModel

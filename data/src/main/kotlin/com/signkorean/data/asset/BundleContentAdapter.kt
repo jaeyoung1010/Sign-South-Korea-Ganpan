@@ -50,8 +50,12 @@ class BundleContentAdapter(
         requireValidation(manifest.cardCount > 0) { "cardCount must be positive" }
         requireValidation(manifest.languages.containsAll(REQUIRED_LANGUAGE_TAGS)) { "supported languages must include en, ja, and zh" }
         requireValidation(manifest.languages.distinct().size == manifest.languages.size) { "duplicate language in manifest" }
-        requireValidation(manifest.languages.all { LanguageTag.parseOrNull(it) != null }) { "manifest contains an invalid BCP-47 language tag" }
-        requireValidation(manifest.reviewStatus.keys == manifest.languages.toSet()) { "manifest must record review status for every language" }
+        requireValidation(
+            manifest.languages.all { LanguageTag.parseOrNull(it) != null },
+        ) { "manifest contains an invalid BCP-47 language tag" }
+        requireValidation(
+            manifest.reviewStatus.keys == manifest.languages.toSet(),
+        ) { "manifest must record review status for every language" }
         requireValidation(manifest.reviewStatus.getValue(ENGLISH_LANGUAGE_TAG) == NATIVE_ENGLISH_REVIEW_STATUS) {
             "English content must record native review status"
         }
@@ -133,7 +137,9 @@ class BundleContentAdapter(
             card.typecastAudioAsset?.let { validateAsset(it, card.id, ".mp3") }
         }
         requireValidation(cards.map(BaseCardJson::imageAsset).distinct().size == cards.size) { "duplicate image asset" }
-        requireValidation(cards.mapNotNull(BaseCardJson::typecastAudioAsset).distinct().size == cards.count { it.typecastAudioAsset != null }) {
+        requireValidation(
+            cards.mapNotNull(BaseCardJson::typecastAudioAsset).distinct().size == cards.count { it.typecastAudioAsset != null },
+        ) {
             "duplicate Typecast asset"
         }
     }
@@ -189,7 +195,11 @@ class BundleContentAdapter(
                 requireValidation(!copy.reviewer.isNullOrBlank()) { "$languageTag reviewer missing for ${copy.cardId}" }
             }
             requireValidation(copy.factReviewer == KOREAN_FACT_REVIEWER) {
-                "${when (languageTag) { JAPANESE_LANGUAGE_TAG -> "Japanese"; CHINESE_LANGUAGE_TAG -> "Chinese"; else -> "English" }} fact reviewer missing for ${copy.cardId}"
+                "${when (languageTag) {
+                    JAPANESE_LANGUAGE_TAG -> "Japanese"
+                    CHINESE_LANGUAGE_TAG -> "Chinese"
+                    else -> "English"
+                }} fact reviewer missing for ${copy.cardId}"
             }
             requireValidation(copy.factReviewedAt?.matches(REVIEW_DATE_PATTERN) == true) {
                 "$languageTag fact review date missing for ${copy.cardId}"

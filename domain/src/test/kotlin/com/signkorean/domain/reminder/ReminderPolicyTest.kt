@@ -1,12 +1,12 @@
 package com.signkorean.domain.reminder
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Test
 import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Test
 
 class ReminderPolicyTest {
     private val zone = ZoneId.of("Asia/Seoul")

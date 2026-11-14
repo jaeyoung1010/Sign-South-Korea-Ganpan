@@ -35,7 +35,7 @@ fun SignKoreanScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(backgroundColor)
+                .background(backgroundColor),
     ) {
         bottomInsetColor?.let { color ->
             Box(

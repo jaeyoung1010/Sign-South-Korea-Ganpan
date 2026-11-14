@@ -94,18 +94,17 @@ class RoomProgressRepositoryTest {
         stage: Int = 1,
         mastered: Boolean = false,
         nextReviewAt: Instant,
-    ) =
-        com.signkorean.data.db.CardProgressEntity(
-            cardId = cardId,
-            stage = stage,
-            mastered = mastered,
-            lastRating = "GOT_IT",
-            lastReviewedAt = now,
-            nextReviewAt = nextReviewAt,
-            reviewCount = 1,
-            gotItCount = 1,
-            version = 1,
-        )
+    ) = com.signkorean.data.db.CardProgressEntity(
+        cardId = cardId,
+        stage = stage,
+        mastered = mastered,
+        lastRating = "GOT_IT",
+        lastReviewedAt = now,
+        nextReviewAt = nextReviewAt,
+        reviewCount = 1,
+        gotItCount = 1,
+        version = 1,
+    )
 
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()

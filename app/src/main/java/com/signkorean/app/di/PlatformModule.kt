@@ -6,8 +6,8 @@ import com.signkorean.app.legal.AndroidCustomTabsPolicyBrowser
 import com.signkorean.app.observability.AndroidDiagnosticLogger
 import com.signkorean.app.reminder.WorkManagerReminderScheduler
 import com.signkorean.data.observability.RedactingDiagnosticLogger
-import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AppLocalePort
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.DiagnosticLoggerPort
 import com.signkorean.domain.port.output.PolicyBrowserPort
 import com.signkorean.domain.port.output.ReminderSchedulerPort
@@ -27,8 +27,9 @@ object PlatformModule {
     @Provides
     @Singleton
     @SupportedLanguageTags
-    fun provideSupportedLanguageTags(@ApplicationContext context: Context): Set<String> =
-        context.resources.getStringArray(com.signkorean.app.R.array.supported_language_tags).toSet()
+    fun provideSupportedLanguageTags(
+        @ApplicationContext context: Context,
+    ): Set<String> = context.resources.getStringArray(com.signkorean.app.R.array.supported_language_tags).toSet()
 
     @Provides
     @Singleton
@@ -38,14 +39,14 @@ object PlatformModule {
 
     @Provides
     @Singleton
-    fun provideDiagnosticLogger(): DiagnosticLoggerPort =
-        RedactingDiagnosticLogger(AndroidDiagnosticLogger(enabled = BuildConfig.DEBUG))
+    fun provideDiagnosticLogger(): DiagnosticLoggerPort = RedactingDiagnosticLogger(AndroidDiagnosticLogger(enabled = BuildConfig.DEBUG))
 
     @Provides
     @Singleton
     @AppVersionName
-    fun provideAppVersionName(@ApplicationContext context: Context): String =
-        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown"
+    fun provideAppVersionName(
+        @ApplicationContext context: Context,
+    ): String = context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown"
 
     @Provides
     @Singleton

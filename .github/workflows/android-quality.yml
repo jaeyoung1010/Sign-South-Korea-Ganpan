@@ -98,15 +98,13 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           disable-animations: true
-          script: |
+          script: >-
             if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-              for attempt in 1 2 3; do
-                echo "Phase 44 emulator QA run $attempt/3"
-                ./gradlew connectedDebugAndroidTest --stacktrace
-              done
-            else
-              ./gradlew connectedDebugAndroidTest --stacktrace
-            fi
+            for attempt in 1 2 3; do
+            echo "Phase 44 emulator QA run $attempt/3";
+            ./gradlew connectedDebugAndroidTest --stacktrace || exit $?;
+            done;
+            else ./gradlew connectedDebugAndroidTest --stacktrace; fi
 
       - name: Upload instrumentation reports
         if: always()

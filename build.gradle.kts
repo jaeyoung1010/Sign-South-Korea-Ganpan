@@ -128,17 +128,17 @@ plugins {
 spotless {
     kotlin {
         target("**/*.kt")
-        targetExclude("**/build/**")
+        targetExclude("**/build/**", "**/node_modules/**", ".codex-build/**")
         ktlint(libs.versions.ktlint.get())
     }
     kotlinGradle {
         target("**/*.gradle.kts")
-        targetExclude("**/build/**")
+        targetExclude("**/build/**", "**/node_modules/**", ".codex-build/**")
         ktlint(libs.versions.ktlint.get())
     }
     format("misc") {
         target("*.md", "docs/**/*.md", "**/*.toml", "**/*.yml", "**/*.yaml", ".gitignore", ".gitattributes")
-        targetExclude("**/build/**")
+        targetExclude("**/build/**", "**/node_modules/**", ".codex-build/**")
         trimTrailingWhitespace()
         endWithNewline()
     }

@@ -334,29 +334,28 @@ private fun ActiveCard(
                 Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                    val exitDirection =
-                        when (ratingDecision) {
-                            RatingDecision.GotIt -> -1f
-                            RatingDecision.Review -> 1f
-                            null -> 0f
-                        }
-                    translationX =
-                        if (isRating) {
-                            exitDirection * widthPx * motionPolicy.cardExitTranslationFactor * ratingProgress
-                        } else {
-                            dragOffsetDp * density
-                        }
-                    rotationZ =
-                        if (isRating) {
-                            exitDirection * motionPolicy.cardExitRotationDegrees * ratingProgress
-                        } else if (motionPolicy.reduceMotion) {
-                            0f
-                        } else {
-                            (dragOffsetDp / 12f).coerceIn(-8f, 8f)
-                        }
-                    alpha = if (isRating && motionPolicy.reduceMotion) 1f - ratingProgress else 1f
-                    }
-                    .testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)
+                        val exitDirection =
+                            when (ratingDecision) {
+                                RatingDecision.GotIt -> -1f
+                                RatingDecision.Review -> 1f
+                                null -> 0f
+                            }
+                        translationX =
+                            if (isRating) {
+                                exitDirection * widthPx * motionPolicy.cardExitTranslationFactor * ratingProgress
+                            } else {
+                                dragOffsetDp * density
+                            }
+                        rotationZ =
+                            if (isRating) {
+                                exitDirection * motionPolicy.cardExitRotationDegrees * ratingProgress
+                            } else if (motionPolicy.reduceMotion) {
+                                0f
+                            } else {
+                                (dragOffsetDp / 12f).coerceIn(-8f, 8f)
+                            }
+                        alpha = if (isRating && motionPolicy.reduceMotion) 1f - ratingProgress else 1f
+                    }.testTag(SignKoreanTestTags.LEARN_ACTIVE_CARD)
                     .semantics {
                         customActions =
                             listOf(
@@ -591,7 +590,14 @@ internal fun CardAnswer(
             if (hasAudio) {
                 GameIconButton(
                     symbol = if (isPlaying) "■" else "♪",
-                    contentDescription = if (isPlaying) stringResource(R.string.learn_playing_pronunciation) else stringResource(R.string.learn_play_pronunciation),
+                    contentDescription =
+                        if (isPlaying) {
+                            stringResource(
+                                R.string.learn_playing_pronunciation,
+                            )
+                        } else {
+                            stringResource(R.string.learn_play_pronunciation)
+                        },
                     onClick = onPlayAudio,
                     modifier = Modifier.testTag(SignKoreanTestTags.LEARN_PLAY_AUDIO),
                 )
@@ -633,6 +639,7 @@ private val PREVIEW_OFFSET = 14.dp
 private val MIN_PHOTO_HEIGHT = 200.dp
 private const val PHOTO_PORTION = .68f
 private const val INFO_PORTION = .32f
+
 private fun RatingDecision.toOverlay(): DragOverlay =
     when (this) {
         RatingDecision.GotIt -> DragOverlay.GotIt

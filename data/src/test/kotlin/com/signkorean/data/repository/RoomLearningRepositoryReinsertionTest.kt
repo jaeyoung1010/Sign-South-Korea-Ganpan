@@ -3,8 +3,8 @@ package com.signkorean.data.repository
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.signkorean.data.db.RoomSessionTransactionStore
 import com.signkorean.data.db.CardProgressEntity
+import com.signkorean.data.db.RoomSessionTransactionStore
 import com.signkorean.data.db.SessionCardEntity
 import com.signkorean.data.db.SessionEntity
 import com.signkorean.data.db.SignKoreanDatabase
@@ -103,12 +103,28 @@ class RoomLearningRepositoryReinsertionTest {
         runTest {
             repository.rateCard(request(0, "card-0"), ratedAt)
 
-            val undo = repository.undoLastRating(com.signkorean.domain.port.input.UndoRatingRequest("session-1"))
+            val undo =
+                repository.undoLastRating(
+                    com.signkorean.domain.port.input
+                        .UndoRatingRequest("session-1"),
+                )
 
             assertTrue(undo is com.signkorean.domain.port.input.UndoRatingResult.Undone)
             assertEquals(6, database.sessionCardDao().countForSession("session-1"))
             assertEquals(6, database.sessionDao().get("session-1")?.requestedLength)
-            assertEquals(listOf("card-0", "card-1", "card-2", "card-3", "card-4", "card-5"), database.sessionCardDao().forSession("session-1").map { it.cardId })
+            assertEquals(
+                listOf(
+                    "card-0",
+                    "card-1",
+                    "card-2",
+                    "card-3",
+                    "card-4",
+                    "card-5",
+                ),
+                database.sessionCardDao().forSession("session-1").map {
+                    it.cardId
+                },
+            )
         }
 
     @Test
@@ -140,8 +156,10 @@ class RoomLearningRepositoryReinsertionTest {
             assertEquals("card-0", cards.last().cardId)
         }
 
-    private fun request(position: Int, cardId: String) =
-        RateCardRequest("session-1", position, cardId, RatingDecision.Review, RatingInputSource.Gesture)
+    private fun request(
+        position: Int,
+        cardId: String,
+    ) = RateCardRequest("session-1", position, cardId, RatingDecision.Review, RatingInputSource.Gesture)
 
     private val context: Context
         get() = ApplicationProvider.getApplicationContext()

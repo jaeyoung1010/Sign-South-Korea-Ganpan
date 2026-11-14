@@ -50,13 +50,14 @@ class LoadLearnHomeUseCase(
     }
 
     private fun List<com.signkorean.domain.model.SignCard>.categories(): List<LearnHomeCategory> =
-        CATEGORY_LABELS.map { (key, label) ->
-            LearnHomeCategory(
-                key = key,
-                label = label,
-                cardCount = count { it.category == key },
-            )
-        }.filter { it.cardCount > 0 }
+        CATEGORY_LABELS
+            .map { (key, label) ->
+                LearnHomeCategory(
+                    key = key,
+                    label = label,
+                    cardCount = count { it.category == key },
+                )
+            }.filter { it.cardCount > 0 }
 
     private fun Int.estimatedMinutes(): Int =
         when (this) {

@@ -1,9 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { collectTextFiles, findLikelySecrets } from './quality-rules.mjs';
 
 const root = path.resolve(process.argv[2] ?? '.');
-const candidates = collectTextFiles(root);
+const included = new Set(execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean));
+const candidates = collectTextFiles(root).filter((file) => included.has(path.relative(root, file)));
 const findings = [];
 
 for (const file of candidates) {

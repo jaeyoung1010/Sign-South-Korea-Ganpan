@@ -15,9 +15,10 @@ class RedactingDiagnosticLogger(
         delegate.log(
             level = level,
             message = redactText(message),
-            attributes = attributes.mapValues { (key, value) ->
-                if (key !in SAFE_ATTRIBUTE_KEYS || SENSITIVE_KEY.matches(key)) REDACTED else redactText(value)
-            },
+            attributes =
+                attributes.mapValues { (key, value) ->
+                    if (key !in SAFE_ATTRIBUTE_KEYS || SENSITIVE_KEY.matches(key)) REDACTED else redactText(value)
+                },
         )
     }
 
@@ -25,11 +26,9 @@ class RedactingDiagnosticLogger(
         value
             .replace(DETAILS_ASSIGNMENT_PATTERN) { match ->
                 "${match.groupValues[1]}$ASSIGNMENT_SEPARATOR$REDACTED"
-            }
-            .replace(ASSIGNMENT_PATTERN) { match ->
+            }.replace(ASSIGNMENT_PATTERN) { match ->
                 "${match.groupValues[1]}$ASSIGNMENT_SEPARATOR$REDACTED"
-            }
-            .replace(EMAIL_PATTERN, REDACTED)
+            }.replace(EMAIL_PATTERN, REDACTED)
             .replace(ABSOLUTE_PATH_PATTERN, REDACTED)
             .replace(UUID_PATTERN, REDACTED)
 
@@ -37,7 +36,9 @@ class RedactingDiagnosticLogger(
         const val REDACTED = "<redacted>"
         const val ASSIGNMENT_SEPARATOR = "="
         val SENSITIVE_KEY =
-            Regex("(?i)^(?:api[_-]?key|token|secret|authorization|password|user|user[_-]?id|uid|session[_-]?id|name|phone|email|details?|report[_-]?details?|path|asset[_-]?uri)$")
+            Regex(
+                "(?i)^(?:api[_-]?key|token|secret|authorization|password|user|user[_-]?id|uid|session[_-]?id|name|phone|email|details?|report[_-]?details?|path|asset[_-]?uri)$",
+            )
         val SAFE_ATTRIBUTE_KEYS =
             setOf(
                 "card_id",
@@ -65,9 +66,12 @@ class RedactingDiagnosticLogger(
         val DETAILS_ASSIGNMENT_PATTERN =
             Regex("(?i)\\b(details?|report[_-]?details?)\\s*[:=]\\s*[^;]+")
         val ASSIGNMENT_PATTERN =
-            Regex("(?i)\\b(api[_-]?key|token|secret|authorization|password|user|user[_-]?id|uid|session[_-]?id|name|phone|email|details?|report[_-]?details?|path|asset[_-]?uri)\\s*[:=]\\s*[^,;\\s]+")
+            Regex(
+                "(?i)\\b(api[_-]?key|token|secret|authorization|password|user|user[_-]?id|uid|session[_-]?id|name|phone|email|details?|report[_-]?details?|path|asset[_-]?uri)\\s*[:=]\\s*[^,;\\s]+",
+            )
         val EMAIL_PATTERN = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
-        val ABSOLUTE_PATH_PATTERN = Regex("(?<![A-Za-z0-9])(?:/(?:Users|home|private|var|tmp|data|storage|sdcard|mnt)/[^\\s,;]+|[A-Za-z]:\\\\[^\\s,;]+)")
+        val ABSOLUTE_PATH_PATTERN =
+            Regex("(?<![A-Za-z0-9])(?:/(?:Users|home|private|var|tmp|data|storage|sdcard|mnt)/[^\\s,;]+|[A-Za-z]:\\\\[^\\s,;]+)")
         val UUID_PATTERN = Regex("(?i)\\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\b")
     }
 }

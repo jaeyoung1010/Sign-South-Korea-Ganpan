@@ -5,8 +5,7 @@ object ReinsertionPolicy {
     const val MIN_GAP = 3
     const val MAX_GAP = 5
 
-    fun gapFor(reviewCount: Int): Int =
-        MIN_GAP + ((reviewCount - 1).coerceAtLeast(0) % (MAX_GAP - MIN_GAP + 1))
+    fun gapFor(reviewCount: Int): Int = MIN_GAP + ((reviewCount - 1).coerceAtLeast(0) % (MAX_GAP - MIN_GAP + 1))
 
     fun insertionIndex(
         remainingSize: Int,

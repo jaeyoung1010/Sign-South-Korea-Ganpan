@@ -61,10 +61,10 @@ internal fun refreshManifestChecksums(assets: MutableMap<String, String>) {
         .filter { it.startsWith("content/") && it.endsWith(".json") && it != MANIFEST_PATH }
         .sorted()
         .forEach { path ->
-        val checksum = sha256ForTest(assets.getValue(path))
-        val checksumPattern = "\"$path\": \"[0-9a-f]{64}\"".toRegex()
-        manifest = manifest.replace(checksumPattern, "\"$path\": \"$checksum\"")
-    }
+            val checksum = sha256ForTest(assets.getValue(path))
+            val checksumPattern = "\"$path\": \"[0-9a-f]{64}\"".toRegex()
+            manifest = manifest.replace(checksumPattern, "\"$path\": \"$checksum\"")
+        }
     assets[MANIFEST_PATH] = manifest
 }
 

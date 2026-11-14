@@ -1,7 +1,7 @@
 package com.signkorean.data.db
 
-import androidx.room.Dao
 import androidx.room.ColumnInfo
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -71,7 +71,10 @@ interface SessionCardDao {
     fun countForSession(sessionId: String): Int
 
     @Query("DELETE FROM session_cards WHERE session_id = :sessionId AND position = :position")
-    fun delete(sessionId: String, position: Int): Int
+    fun delete(
+        sessionId: String,
+        position: Int,
+    ): Int
 
     @Query(
         """

@@ -7,9 +7,9 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,27 +19,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -53,10 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.shape.CircleShape
 import coil3.compose.AsyncImage
-import androidx.compose.ui.layout.ContentScale
 import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
@@ -69,9 +69,9 @@ import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LearnSessionError
 import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.RatingInputSource
-import java.time.LocalDate
 import com.signkorean.domain.model.VoiceId
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 data class LearnHomeUiState(
     val streakDays: Int = 0,
@@ -320,7 +320,11 @@ fun LearnHomeScreen(
             onOpenProfile = { onAction(LearnUiAction.OpenProfile) },
             profileAvatar = profileAvatar,
         )
-        Text(text = stringResource(R.string.learn_ready_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(
+            text = stringResource(R.string.learn_ready_title),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Black,
+        )
         WeeklyGoalCard(
             completedDays = state.week.count { it.count > 0 }.coerceAtMost(3),
             onClick = { onAction(LearnUiAction.OpenProgress) },
@@ -476,7 +480,12 @@ private fun BellIcon(color: Color = Color(SignKoreanPalette.INK)) {
         drawArc(color, 195f, 150f, false, Offset(left, top), Size(right - left, bottom - top), style = stroke)
         drawLine(color, Offset(left, size.height * .65f), Offset(left, size.height * .78f), strokeWidth = stroke.width)
         drawLine(color, Offset(right, size.height * .65f), Offset(right, size.height * .78f), strokeWidth = stroke.width)
-        drawLine(color, Offset(size.width * .14f, size.height * .78f), Offset(size.width * .86f, size.height * .78f), strokeWidth = stroke.width)
+        drawLine(
+            color,
+            Offset(size.width * .14f, size.height * .78f),
+            Offset(size.width * .86f, size.height * .78f),
+            strokeWidth = stroke.width,
+        )
         drawCircle(color, radius = size.width * .075f, center = Offset(size.width / 2f, size.height * .88f))
     }
 }
@@ -558,9 +567,20 @@ private fun HomeSessionCard(
     onAction: (LearnUiAction) -> Unit,
 ) {
     GameCard(modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(R.string.learn_today_session), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
         Text(
-            text = if (session.isActive) stringResource(R.string.learn_pick_up) else pluralStringResource(R.plurals.learn_street_signs, session.length, session.length),
+            text = stringResource(R.string.learn_today_session),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Black,
+        )
+        Text(
+            text =
+                if (session.isActive) {
+                    stringResource(
+                        R.string.learn_pick_up,
+                    )
+                } else {
+                    pluralStringResource(R.plurals.learn_street_signs, session.length, session.length)
+                },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
         )
@@ -572,8 +592,14 @@ private fun HomeSessionCard(
         )
         if (!session.isActive) {
             Row(horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-                Text(text = pluralStringResource(R.plurals.learn_review_count, session.reviewCount, session.reviewCount), style = MaterialTheme.typography.labelLarge)
-                Text(text = pluralStringResource(R.plurals.learn_new_count, session.newCount, session.newCount), style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = pluralStringResource(R.plurals.learn_review_count, session.reviewCount, session.reviewCount),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Text(
+                    text = pluralStringResource(R.plurals.learn_new_count, session.newCount, session.newCount),
+                    style = MaterialTheme.typography.labelLarge,
+                )
             }
         }
         GameButton(
@@ -639,7 +665,11 @@ private fun CategorySection(
     onAction: (LearnUiAction) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-        Text(text = stringResource(R.string.learn_explore_category), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(
+            text = stringResource(R.string.learn_explore_category),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Black,
+        )
         Text(
             text = stringResource(R.string.learn_category_quick_description),
             style = MaterialTheme.typography.bodyLarge,
@@ -762,8 +792,11 @@ fun LearnSessionScreen(
         ) {
             LearnTopBar(onAction)
             when (state) {
-                LearnSessionUiState.Loading -> LearnLoadingState()
-                is LearnSessionUiState.Active ->
+                LearnSessionUiState.Loading -> {
+                    LearnLoadingState()
+                }
+
+                is LearnSessionUiState.Active -> {
                     ActiveLearnSession(
                         state,
                         onAction,
@@ -773,9 +806,15 @@ fun LearnSessionScreen(
                         isCompact,
                         compactCardHeight,
                     )
+                }
 
-                LearnSessionUiState.Completed -> LearnCompletedState(onAction)
-                is LearnSessionUiState.Error -> LearnErrorState(state.error, onAction)
+                LearnSessionUiState.Completed -> {
+                    LearnCompletedState(onAction)
+                }
+
+                is LearnSessionUiState.Error -> {
+                    LearnErrorState(state.error, onAction)
+                }
             }
             if (state !is LearnSessionUiState.Active) {
                 feedback?.let { LearnFeedbackHost(it, onAction) }
@@ -950,9 +989,15 @@ fun CompletionScreen(
     modifier: Modifier = Modifier,
 ) {
     GameCard(modifier = modifier.testTag("screen-done")) {
-        Text(text = state.title.ifBlank { stringResource(R.string.learn_session_complete) }, style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = state.title.ifBlank { stringResource(R.string.learn_session_complete) },
+            style = MaterialTheme.typography.headlineMedium,
+        )
         Text(text = state.summary.ifBlank { stringResource(R.string.learn_completion_summary) }, style = MaterialTheme.typography.bodyLarge)
-        Text(text = pluralStringResource(R.plurals.learn_signs_practiced, state.totalCount, state.totalCount), style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = pluralStringResource(R.plurals.learn_signs_practiced, state.totalCount, state.totalCount),
+            style = MaterialTheme.typography.bodyLarge,
+        )
         Text(text = stringResource(R.string.learn_got_it_count, state.gotItCount), style = MaterialTheme.typography.bodyLarge)
         Text(text = stringResource(R.string.learn_review_count_label, state.reviewCount), style = MaterialTheme.typography.bodyLarge)
         Text(

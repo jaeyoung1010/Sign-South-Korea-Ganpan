@@ -2,6 +2,7 @@ package com.signkorean.app.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import com.signkorean.app.legal.BundledPolicyDocumentRepository
 import com.signkorean.data.asset.AndroidAssetSource
 import com.signkorean.data.asset.BundleContentAdapter
 import com.signkorean.data.db.RoomContentMigrationRepository
@@ -19,10 +20,9 @@ import com.signkorean.data.settings.SystemReduceMotionSource
 import com.signkorean.data.settings.UserSettingsDataStoreFactory
 import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.data.time.SystemClockAdapter
-import com.signkorean.app.legal.BundledPolicyDocumentRepository
 import com.signkorean.domain.port.output.AnalyticsPort
-import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.domain.port.output.CardCatalog
 import com.signkorean.domain.port.output.CardReportIdGenerator
 import com.signkorean.domain.port.output.CardReportRepository
@@ -30,9 +30,9 @@ import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ContentMigrationRepository
 import com.signkorean.domain.port.output.DiagnosticLoggerPort
 import com.signkorean.domain.port.output.HomeActivityRepository
+import com.signkorean.domain.port.output.PolicyDocumentRepository
 import com.signkorean.domain.port.output.SessionRepository
 import com.signkorean.domain.port.output.UserSettingsRepository
-import com.signkorean.domain.port.output.PolicyDocumentRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -123,8 +123,7 @@ object DataAdapterModule {
 
     @Provides
     @Singleton
-    fun provideAnalyticsSink(diagnosticLogger: DiagnosticLoggerPort): AnalyticsSink =
-        PrivacySafeAnalyticsAdapter(diagnosticLogger)
+    fun provideAnalyticsSink(diagnosticLogger: DiagnosticLoggerPort): AnalyticsSink = PrivacySafeAnalyticsAdapter(diagnosticLogger)
 
     @Provides
     @Singleton

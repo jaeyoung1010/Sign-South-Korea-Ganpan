@@ -8,13 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -193,7 +193,11 @@ private fun ProgressDashboard(
             }
         } else if (state.learnedCount == 0 && state.recentReviews.isEmpty()) {
             GameCard(modifier = Modifier.fillMaxWidth().testTag(ProgressTestTags.EMPTY)) {
-                Text(text = stringResource(R.string.progress_empty_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(
+                    text = stringResource(R.string.progress_empty_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
+                )
                 Text(text = stringResource(R.string.progress_empty_body), style = MaterialTheme.typography.bodyLarge)
             }
         } else {
@@ -246,7 +250,11 @@ private fun ProgressStatCard(
 private fun WeekChart(week: List<ProgressDayUiModel>) {
     val maxCount = remember(week) { week.maxOfOrNull { it.count }?.coerceAtLeast(1) ?: 1 }
     Column(verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small)) {
-        Text(text = stringResource(R.string.progress_week_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(
+            text = stringResource(R.string.progress_week_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Black,
+        )
         GameCard(modifier = Modifier.fillMaxWidth().testTag(ProgressTestTags.WEEK_CHART)) {
             Row(
                 modifier = Modifier.fillMaxWidth().height(112.dp),
@@ -285,7 +293,11 @@ private fun CategoryProgress(categories: List<ProgressCategoryUiModel>) {
         modifier = Modifier.fillMaxWidth().testTag(ProgressTestTags.CATEGORY_PROGRESS),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
     ) {
-        Text(text = stringResource(R.string.progress_category_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Text(
+            text = stringResource(R.string.progress_category_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Black,
+        )
         categories.forEach { category ->
             GameCard(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -322,8 +334,16 @@ private fun RecentReviews(
         modifier = Modifier.fillMaxWidth().testTag(ProgressTestTags.RECENT_REVIEWS),
         verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(text = stringResource(R.string.progress_recent_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.progress_recent_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Black,
+            )
             GameButton(
                 text = stringResource(R.string.progress_see_all),
                 onClick = { onAction(ProgressUiAction.OpenReviewList) },
@@ -349,7 +369,11 @@ private fun ReviewList(
                 modifier = Modifier.testTag(ProgressTestTags.CLOSE),
                 style = GameButtonStyle.Secondary,
             )
-            Text(text = stringResource(R.string.progress_recent_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+            Text(
+                text = stringResource(R.string.progress_recent_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Black,
+            )
         }
         if (state.allReviews.isEmpty()) {
             GameCard(modifier = Modifier.fillMaxWidth().padding(top = SignKoreanSpacing.medium)) {
@@ -404,7 +428,12 @@ private fun ReviewDetailSheet(
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Box(
-            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.32f)).clickable { onAction(ProgressUiAction.CloseDetail) },
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        Color.Black.copy(alpha = 0.32f),
+                    ).clickable { onAction(ProgressUiAction.CloseDetail) },
         )
         GameSheet(title = review.korean, modifier = Modifier.testTag(ProgressTestTags.REVIEW_DETAIL)) {
             Column(

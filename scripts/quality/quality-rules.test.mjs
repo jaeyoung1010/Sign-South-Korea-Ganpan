@@ -17,6 +17,7 @@ test('dotenv variants are included in credential scans', (context) => {
 
 test('fixed dependency versions pass', () => {
   assert.deepEqual(findDynamicVersions('agp = "9.4.0"'), []);
+  assert.deepEqual(findDynamicVersions('if (property("enabled")) command += "--flag"'), []);
 });
 
 test('dynamic dependency versions fail', () => {

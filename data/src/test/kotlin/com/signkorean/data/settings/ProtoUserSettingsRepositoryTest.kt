@@ -56,8 +56,18 @@ class ProtoUserSettingsRepositoryTest {
         runTest {
             val fixture = createFixture(deviceLanguageTag = "ja")
 
-            assertEquals("ja", fixture.repository.settings.first().appLanguageTag)
-            assertEquals("ja", fixture.repository.settings.first().learningExplanationLanguageTag)
+            assertEquals(
+                "ja",
+                fixture.repository.settings
+                    .first()
+                    .appLanguageTag,
+            )
+            assertEquals(
+                "ja",
+                fixture.repository.settings
+                    .first()
+                    .learningExplanationLanguageTag,
+            )
         }
 
     @Test
@@ -65,8 +75,18 @@ class ProtoUserSettingsRepositoryTest {
         runTest {
             val fixture = createFixture(deviceLanguageTag = "fr")
 
-            assertEquals("en", fixture.repository.settings.first().appLanguageTag)
-            assertEquals("en", fixture.repository.settings.first().learningExplanationLanguageTag)
+            assertEquals(
+                "en",
+                fixture.repository.settings
+                    .first()
+                    .appLanguageTag,
+            )
+            assertEquals(
+                "en",
+                fixture.repository.settings
+                    .first()
+                    .learningExplanationLanguageTag,
+            )
         }
 
     @Test
@@ -86,7 +106,8 @@ class ProtoUserSettingsRepositoryTest {
         runTest {
             val fixture = createFixture(supportedLanguageTags = setOf("en"))
             fixture.dataStore.updateData {
-                it.toBuilder()
+                it
+                    .toBuilder()
                     .setAppLanguageTag("ja")
                     .setLearningExplanationLanguageTag("ja")
                     .build()
@@ -217,9 +238,21 @@ class ProtoUserSettingsRepositoryTest {
 
             val reopened = createFixture(file = file, systemReduceMotion = false)
 
-            assertFalse(reopened.repository.settings.first().reduceMotion)
-            assertFalse(reopened.repository.settings.first().followSystemReduceMotion)
-            assertTrue(reopened.repository.settings.first().autoPlayAudio)
+            assertFalse(
+                reopened.repository.settings
+                    .first()
+                    .reduceMotion,
+            )
+            assertFalse(
+                reopened.repository.settings
+                    .first()
+                    .followSystemReduceMotion,
+            )
+            assertTrue(
+                reopened.repository.settings
+                    .first()
+                    .autoPlayAudio,
+            )
         }
 
     @Test
@@ -227,11 +260,23 @@ class ProtoUserSettingsRepositoryTest {
         runTest {
             val fixture = createFixture(systemReduceMotion = false)
             fixture.dataStore.updateData {
-                it.toBuilder().setReduceMotion(true).setHasExplicitReduceMotion(false).build()
+                it
+                    .toBuilder()
+                    .setReduceMotion(true)
+                    .setHasExplicitReduceMotion(false)
+                    .build()
             }
 
-            assertFalse(fixture.repository.settings.first().reduceMotion)
-            assertTrue(fixture.repository.settings.first().followSystemReduceMotion)
+            assertFalse(
+                fixture.repository.settings
+                    .first()
+                    .reduceMotion,
+            )
+            assertTrue(
+                fixture.repository.settings
+                    .first()
+                    .followSystemReduceMotion,
+            )
         }
 
     @Test

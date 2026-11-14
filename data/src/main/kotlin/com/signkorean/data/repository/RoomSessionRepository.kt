@@ -10,8 +10,8 @@ import com.signkorean.domain.model.ActiveLearnSession
 import com.signkorean.domain.model.ActiveSession
 import com.signkorean.domain.model.AnswerRevealWriteResult
 import com.signkorean.domain.model.LearnSessionCard
-import com.signkorean.domain.model.SessionTransitionWriteResult
 import com.signkorean.domain.model.SessionCompletion
+import com.signkorean.domain.model.SessionTransitionWriteResult
 import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.SessionRepository
 import kotlinx.coroutines.CancellationException

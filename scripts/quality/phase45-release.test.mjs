@@ -64,7 +64,7 @@ test('keeps policy versions and effective dates aligned', () => {
 
 test('rejects secrets and debug-only content in a release artifact', () => {
   const result = scanArtifactEntries({
-    'base/dex/classes.dex': 'DebugQaActivity sk-xxxxxxxxxxxxxxxxxxxxxxxx',
+    'base/dex/classes.dex': `DebugQaActivity sk-${'x'.repeat(24)}`,
     'base/assets/content/manifest.json': '{}',
   });
 

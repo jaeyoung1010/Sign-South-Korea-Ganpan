@@ -7,8 +7,8 @@ import com.signkorean.data.settings.proto.LevelProto
 import com.signkorean.data.settings.proto.UserSettingsProto
 import com.signkorean.domain.model.AudioVoice
 import com.signkorean.domain.model.Interest
-import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.LanguageTag
+import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.UserSettings
 import com.signkorean.domain.port.output.AppLocalePort
@@ -100,8 +100,7 @@ private fun UserSettings.toProto(
         .setAppLanguageTag(appLanguageTag.supportedLanguageTagOrDefault(supportedLanguageTags, fallbackLanguageTag))
         .setLearningExplanationLanguageTag(
             learningExplanationLanguageTag.supportedLanguageTagOrDefault(supportedLanguageTags, fallbackLanguageTag),
-        )
-        .setShowRomanization(showRomanization)
+        ).setShowRomanization(showRomanization)
         .setAutoPlayAudio(autoPlayAudio)
         .setVoice(audioVoice.toProto())
         // When following the system, persist only the app preference (off). The effective value
@@ -165,8 +164,7 @@ private fun UserSettingsProto.reminderLocalTimeOrDefault(): LocalTime =
 private fun String.supportedLanguageTagOrDefault(
     supportedLanguageTags: Set<String>,
     fallbackLanguageTag: String,
-): String =
-    takeIf { it in supportedLanguageTags } ?: fallbackLanguageTag
+): String = takeIf { it in supportedLanguageTags } ?: fallbackLanguageTag
 
 private fun AppLocalePort.validSupportedLanguageTags(): Set<String> =
     getSupported().mapNotNull(LanguageTag::parseOrNull).map(LanguageTag::value).toSet()

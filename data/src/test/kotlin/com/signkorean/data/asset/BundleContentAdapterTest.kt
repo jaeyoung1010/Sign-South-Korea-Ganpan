@@ -54,10 +54,11 @@ class BundleContentAdapterTest {
     @Test
     fun `rejects an English card without native review metadata`() {
         val assets = validAssets().toMutableMap()
-        assets[EN_CARDS_PATH] = assets.getValue(EN_CARDS_PATH).replaceFirst(
-            "\"reviewer\":\"native-english-review\"",
-            "\"reviewer\":null",
-        )
+        assets[EN_CARDS_PATH] =
+            assets.getValue(EN_CARDS_PATH).replaceFirst(
+                "\"reviewer\":\"native-english-review\"",
+                "\"reviewer\":null",
+            )
 
         refreshManifestChecksums(assets)
         assertFailsValidation(assets, "English reviewer")
@@ -66,10 +67,11 @@ class BundleContentAdapterTest {
     @Test
     fun `rejects a Japanese card without native review metadata`() {
         val assets = validAssets().toMutableMap()
-        assets[JA_CARDS_PATH] = assets.getValue(JA_CARDS_PATH).replaceFirst(
-            "\"reviewer\":\"native-japanese-review\"",
-            "\"reviewer\":\"editor-draft\"",
-        )
+        assets[JA_CARDS_PATH] =
+            assets.getValue(JA_CARDS_PATH).replaceFirst(
+                "\"reviewer\":\"native-japanese-review\"",
+                "\"reviewer\":\"editor-draft\"",
+            )
 
         refreshManifestChecksums(assets)
         assertFailsValidation(assets, "Japanese reviewer")
@@ -78,10 +80,11 @@ class BundleContentAdapterTest {
     @Test
     fun `rejects a Japanese card without Korean fact review metadata`() {
         val assets = validAssets().toMutableMap()
-        assets[JA_CARDS_PATH] = assets.getValue(JA_CARDS_PATH).replaceFirst(
-            "\"factReviewer\":\"korean-fact-review\"",
-            "\"factReviewer\":null",
-        )
+        assets[JA_CARDS_PATH] =
+            assets.getValue(JA_CARDS_PATH).replaceFirst(
+                "\"factReviewer\":\"korean-fact-review\"",
+                "\"factReviewer\":null",
+            )
 
         refreshManifestChecksums(assets)
         assertFailsValidation(assets, "Japanese fact reviewer")
@@ -91,10 +94,11 @@ class BundleContentAdapterTest {
     fun `rejects Japanese copy that duplicates the English sentence structure`() {
         val assets = validAssets().toMutableMap()
         val englishStreetNote = "The gateway to Hongdae, a popular area for live music, cafés, shopping, and nightlife."
-        assets[JA_CARDS_PATH] = assets.getValue(JA_CARDS_PATH).replaceFirst(
-            "ライブハウスやカフェ、買い物でにぎわう弘大エリアの玄関口です。",
-            englishStreetNote,
-        )
+        assets[JA_CARDS_PATH] =
+            assets.getValue(JA_CARDS_PATH).replaceFirst(
+                "ライブハウスやカフェ、買い物でにぎわう弘大エリアの玄関口です。",
+                englishStreetNote,
+            )
 
         refreshManifestChecksums(assets)
         assertFailsValidation(assets, "independent Japanese")
@@ -103,9 +107,11 @@ class BundleContentAdapterTest {
     @Test
     fun `rejects a manifest without Japanese and Korean approval statuses`() {
         val assets = validAssets().toMutableMap()
-        assets[MANIFEST_PATH] = assets.getValue(MANIFEST_PATH)
-            .replace("\"ja\": \"native-japanese-reviewed\"", "\"ja\": \"editor-reviewed\"")
-            .replace("\"ja\": \"korean-fact-reviewed\"", "\"ja\": \"pending\"")
+        assets[MANIFEST_PATH] =
+            assets
+                .getValue(MANIFEST_PATH)
+                .replace("\"ja\": \"native-japanese-reviewed\"", "\"ja\": \"editor-reviewed\"")
+                .replace("\"ja\": \"korean-fact-reviewed\"", "\"ja\": \"pending\"")
 
         assertFailsValidation(assets, "Japanese review status")
     }
@@ -177,16 +183,13 @@ class BundleContentAdapterTest {
                 .replace(
                     "\"ja\": \"native-japanese-reviewed\", \"zh\": \"native-chinese-reviewed\"}",
                     "\"ja\": \"native-japanese-reviewed\", \"zh\": \"native-chinese-reviewed\", \"fr\": \"future-native-reviewed\"}",
-                )
-                .replace(
+                ).replace(
                     "\"ja\": \"korean-fact-reviewed\", \"zh\": \"korean-fact-reviewed\"}",
                     "\"ja\": \"korean-fact-reviewed\", \"zh\": \"korean-fact-reviewed\", \"fr\": \"korean-fact-reviewed\"}",
-                )
-                .replace(
+                ).replace(
                     "\"zh\": \"content/zh/cards.json\"",
                     "\"zh\": \"content/zh/cards.json\", \"fr\": \"content/fr/cards.json\"",
-                )
-                .replace(
+                ).replace(
                     "\"content/zh/cards.json\": \"[0-9a-f]{64}\"".toRegex(),
                     "\"content/zh/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n    \"content/fr/cards.json\": \"0000000000000000000000000000000000000000000000000000000000000000\"",
                 )

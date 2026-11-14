@@ -13,10 +13,10 @@ import androidx.work.WorkManager
 import com.signkorean.domain.port.output.ReminderPermission
 import com.signkorean.domain.port.output.ReminderSchedule
 import com.signkorean.domain.port.output.ReminderSchedulerPort
-import java.time.Duration
-import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.time.Duration
+import java.time.Instant
 
 class WorkManagerReminderScheduler(
     private val context: Context,
@@ -30,7 +30,8 @@ class WorkManagerReminderScheduler(
             OneTimeWorkRequestBuilder<ReviewReminderWorker>()
                 .setInitialDelay(Duration.between(Instant.now(), schedule.triggerAt).coerceAtLeast(Duration.ZERO))
                 .setInputData(
-                    Data.Builder()
+                    Data
+                        .Builder()
                         .putString(ReviewReminderWorker.KEY_LANGUAGE_TAG, schedule.appLanguageTag)
                         .putString(ReviewReminderWorker.KEY_LOCAL_TIME, schedule.localTime.toString())
                         .putString(ReviewReminderWorker.KEY_ZONE_ID, schedule.zoneId.id)

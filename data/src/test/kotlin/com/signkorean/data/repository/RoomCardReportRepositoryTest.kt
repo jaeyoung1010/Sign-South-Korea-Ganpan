@@ -3,8 +3,8 @@ package com.signkorean.data.repository
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.data.db.CardReportEntity
+import com.signkorean.data.db.SignKoreanDatabase
 import com.signkorean.domain.model.CardReport
 import com.signkorean.domain.model.CardReportReason
 import com.signkorean.domain.model.CardReportSyncState

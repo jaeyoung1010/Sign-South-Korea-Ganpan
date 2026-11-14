@@ -46,8 +46,9 @@ data class AnalyticsEvent(
     val properties: Map<String, String>,
 ) {
     init {
-        val eventName = AnalyticsEventName.entries.firstOrNull { it.value == name }
-            ?: error("Unknown analytics event: $name")
+        val eventName =
+            AnalyticsEventName.entries.firstOrNull { it.value == name }
+                ?: error("Unknown analytics event: $name")
         val requiredAttributes = AnalyticsEventContract.requiredAttributes.getValue(eventName)
         require(properties.keys == requiredAttributes) {
             "Analytics properties must match the contract for $name"

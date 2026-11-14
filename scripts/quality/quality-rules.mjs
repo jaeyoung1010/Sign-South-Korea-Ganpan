@@ -66,10 +66,13 @@ export function collectTextFiles(rootDirectory) {
 export function findDynamicVersions(text) {
   const findings = [];
   const lines = text.split(/\r?\n/u);
-  const dynamicPattern = /["'][^"'\r\n]*(?:\+|latest\.(?:release|integration)|-SNAPSHOT)[^"'\r\n]*["']/iu;
+  const quotedPattern = /(["'])([^"'\r\n]*)\1/gu;
+  const dynamicPattern = /(?:\+|latest\.(?:release|integration)|-SNAPSHOT)/iu;
 
   lines.forEach((line, index) => {
-    if (dynamicPattern.test(line)) findings.push({ line: index + 1, value: line.trim() });
+    if ([...line.matchAll(quotedPattern)].some((match) => dynamicPattern.test(match[2]))) {
+      findings.push({ line: index + 1, value: line.trim() });
+    }
   });
   return findings;
 }

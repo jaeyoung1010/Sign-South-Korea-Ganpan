@@ -109,9 +109,25 @@ class StartSessionUseCase(
         now: java.time.Instant,
     ): SessionBuildRequest =
         when (type) {
-            SessionType.DAILY -> SessionBuildRequest.daily(length, candidates, interests, level, seed(), now = now)
-            SessionType.CATEGORY -> SessionBuildRequest.category(length, checkNotNull(category), candidates, interests, level, seed(), now = now)
-            SessionType.PRACTICE -> SessionBuildRequest.practice(checkNotNull(practiceCardId), candidates, seed(), now = now)
+            SessionType.DAILY -> {
+                SessionBuildRequest.daily(length, candidates, interests, level, seed(), now = now)
+            }
+
+            SessionType.CATEGORY -> {
+                SessionBuildRequest.category(
+                    length,
+                    checkNotNull(category),
+                    candidates,
+                    interests,
+                    level,
+                    seed(),
+                    now = now,
+                )
+            }
+
+            SessionType.PRACTICE -> {
+                SessionBuildRequest.practice(checkNotNull(practiceCardId), candidates, seed(), now = now)
+            }
         }
 
     private fun StartSessionRequest.seed(): Long =

@@ -1,6 +1,5 @@
 package com.signkorean.app.progress
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.signkorean.domain.model.FocusRect
 import com.signkorean.domain.model.LocalizedCardCopy
 import com.signkorean.domain.model.LocalizedWordPart
@@ -23,10 +22,9 @@ import com.signkorean.domain.port.output.AppLocalePort
 import com.signkorean.feature.progress.ProgressUiAction
 import com.signkorean.feature.progress.ProgressUiEffect
 import com.signkorean.testsupport.MainDispatcherRule
-import java.time.Instant
-import java.time.LocalDate
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -34,6 +32,8 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import java.time.Instant
+import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProgressViewModelTest {
@@ -50,7 +50,11 @@ class ProgressViewModelTest {
             assertEquals(2, viewModel.uiState.value.learnedCount)
             assertEquals(1, viewModel.uiState.value.masteredCount)
             assertEquals(1, viewModel.uiState.value.dueCount)
-            assertEquals(listOf("홍대입구"), viewModel.uiState.value.recentReviews.map { it.korean })
+            assertEquals(
+                listOf("홍대입구"),
+                viewModel.uiState.value.recentReviews
+                    .map { it.korean },
+            )
             assertFalse(viewModel.uiState.value.isLoading)
         }
 
@@ -61,7 +65,11 @@ class ProgressViewModelTest {
 
             advanceUntilIdle()
 
-            assertEquals(listOf("火"), viewModel.uiState.value.week.map { it.label })
+            assertEquals(
+                listOf("火"),
+                viewModel.uiState.value.week
+                    .map { it.label },
+            )
         }
 
     @Test
@@ -74,7 +82,11 @@ class ProgressViewModelTest {
             viewModel.onAction(ProgressUiAction.SelectReview("card-1"))
 
             assertTrue(viewModel.uiState.value.isReviewListVisible)
-            assertEquals("card-1", viewModel.uiState.value.selectedReview?.cardId)
+            assertEquals(
+                "card-1",
+                viewModel.uiState.value.selectedReview
+                    ?.cardId,
+            )
 
             viewModel.onAction(ProgressUiAction.PracticeReview("card-1"))
             advanceUntilIdle()

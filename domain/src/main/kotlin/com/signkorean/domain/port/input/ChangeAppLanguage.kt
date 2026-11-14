@@ -1,9 +1,13 @@
 package com.signkorean.domain.port.input
 
 sealed interface ChangeAppLanguageResult {
-    data class Changed(val languageTag: String) : ChangeAppLanguageResult
+    data class Changed(
+        val languageTag: String,
+    ) : ChangeAppLanguageResult
 
-    data class Unsupported(val languageTag: String) : ChangeAppLanguageResult
+    data class Unsupported(
+        val languageTag: String,
+    ) : ChangeAppLanguageResult
 
     data object InvalidTag : ChangeAppLanguageResult
 

@@ -2,27 +2,28 @@
 
 package com.signkorean.app
 
-import android.os.Bundle
 import android.Manifest
 import android.os.Build
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -48,8 +48,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -62,8 +62,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.signkorean.app.home.LearnHomeViewModel
-import com.signkorean.app.legal.LegalViewModel
 import com.signkorean.app.learn.LearnViewModel
+import com.signkorean.app.legal.LegalViewModel
 import com.signkorean.app.navigation.AppNavigationAction
 import com.signkorean.app.navigation.AppNavigationIntent
 import com.signkorean.app.navigation.AppNavigationUiState
@@ -85,8 +85,8 @@ import com.signkorean.designsystem.components.GameSheet
 import com.signkorean.designsystem.components.GameToast
 import com.signkorean.designsystem.layout.SignKoreanScreen
 import com.signkorean.designsystem.testing.SignKoreanTestTags
-import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanPalette
+import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.domain.gesture.RatingDecision
 import com.signkorean.domain.model.AudioPlaybackFailure
@@ -96,6 +96,7 @@ import com.signkorean.domain.model.RatingInputSource
 import com.signkorean.domain.model.SessionCompletion
 import com.signkorean.feature.learn.CompletionScreen
 import com.signkorean.feature.learn.CompletionUiState
+import com.signkorean.feature.learn.HelpScreen
 import com.signkorean.feature.learn.LearnFeedbackUiState
 import com.signkorean.feature.learn.LearnHomeScreen
 import com.signkorean.feature.learn.LearnHomeUiState
@@ -106,7 +107,6 @@ import com.signkorean.feature.learn.LearnUiAction
 import com.signkorean.feature.learn.ReportSheet
 import com.signkorean.feature.learn.ReportUiState
 import com.signkorean.feature.learn.TipsScreen
-import com.signkorean.feature.learn.HelpScreen
 import com.signkorean.feature.onboarding.OnboardingChoiceUiState
 import com.signkorean.feature.onboarding.OnboardingScreen
 import com.signkorean.feature.onboarding.OnboardingStep
@@ -115,12 +115,12 @@ import com.signkorean.feature.onboarding.OnboardingUiState
 import com.signkorean.feature.progress.ProgressScreen
 import com.signkorean.feature.progress.ProgressUiAction
 import com.signkorean.feature.progress.ProgressUiState
-import com.signkorean.feature.settings.LegalScreen
-import com.signkorean.feature.settings.LegalUiAction
-import com.signkorean.feature.settings.LegalUiState
 import com.signkorean.feature.settings.AccountSheet
 import com.signkorean.feature.settings.AccountUiState
 import com.signkorean.feature.settings.AnnouncementsScreen
+import com.signkorean.feature.settings.LegalScreen
+import com.signkorean.feature.settings.LegalUiAction
+import com.signkorean.feature.settings.LegalUiState
 import com.signkorean.feature.settings.ProfileScreen
 import com.signkorean.feature.settings.SettingsScreen
 import com.signkorean.feature.settings.SettingsUiAction
@@ -273,7 +273,9 @@ private fun SignKoreanApp(
             when (effect) {
                 is SettingsEffect.SessionLengthChanged -> {
                     navigationViewModel.dispatch(
-                        AppNavigationAction.ShowToast(resources.getQuantityString(R.plurals.toast_cards_selected, effect.length, effect.length)),
+                        AppNavigationAction.ShowToast(
+                            resources.getQuantityString(R.plurals.toast_cards_selected, effect.length, effect.length),
+                        ),
                     )
                 }
 
@@ -431,129 +433,130 @@ internal fun SignKoreanAppContent(
     }
     val showLaunchSplash = awaitingFirstDestinationFrame && launchState !is LaunchUiState.Error
     val useLaunchBackground = renderedRoute == AppRoute.Launch || showLaunchSplash
-    val entries = entryProvider<NavKey> {
-                entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
-                entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
-                entry<AppRoute.Tutorial> { OnboardingDestination(OnboardingStep.Tutorial, onAction) }
-                entry<AppRoute.Level> {
-                    LevelDestination(
-                        state = onboardingState,
-                        onSelectLevel = onSelectLevel,
-                        onSkipLevel = onSkipLevel,
-                        onContinue = { onAction(AppNavigationAction.Navigate(AppRoute.Interests)) },
-                    )
-                }
-                entry<AppRoute.Interests> {
-                    InterestsDestination(
-                        state = onboardingState,
-                        onToggleInterest = onToggleInterest,
-                        onContinue = { onAction(AppNavigationAction.Navigate(AppRoute.ProfileSetup)) },
-                    )
-                }
-                entry<AppRoute.ProfileSetup> {
-                    ProfileSetupDestination(
-                        state = onboardingState,
-                        onSelectAvatar = onSelectOnboardingProfileAvatar,
-                        onUpdateName = onUpdateOnboardingProfileName,
-                        onComplete = onCompleteOnboarding,
-                    )
-                }
-                entry<AppRoute.Help> {
-                    HelpDestination(
-                        profileAvatar = settingsState.profileAvatar,
-                        onAction = onAction,
-                    )
-                }
-                entry<AppRoute.Home> {
-                    LearnHomeDestination(
-                        state = learnHomeState,
-                        profileAvatar = settingsState.profileAvatar,
-                        onAction = onAction,
-                        onStartSession = onStartSession,
-                        onStartCategorySession = onStartCategorySession,
-                        onConfirmCategoryReplacement = onConfirmCategoryReplacement,
-                        onCancelCategoryReplacement = onCancelCategoryReplacement,
-                    )
-                }
-                entry<AppRoute.Learn> {
-                    LearnDestination(
-                        state = learnSessionState,
-                        audioState = audioState,
-                        feedback = learnFeedbackState,
-                        onAction = onAction,
-                        onRevealAnswer = onRevealAnswer,
-                        onRateCard = onRateCard,
-                        onRatingAnimationFinished = onRatingAnimationFinished,
-                        onUndoRating = onUndoRating,
-                        onRetryRating = onRetryRating,
-                        onPlayAudio = onPlayAudio,
-                        reduceMotion = settingsState.reduceMotion,
-                        onShowReport = onShowReport,
-                    )
-                }
-                entry<AppRoute.Done> {
-                    DoneDestination(
-                        completion = completionState,
-                        onAction = onAction,
-                        onOpenReviewCards = {
-                            onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
-                            onOpenProgressReviews()
-                        },
-                    )
-                }
-                entry<AppRoute.Progress> {
-                    ProgressScreen(
-                        state = progressState,
-                        onAction = { action ->
-                            when (action) {
-                                ProgressUiAction.ReturnToLearn -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn))
-                                else -> onProgressAction(action)
-                            }
-                        },
-                    )
-                }
-                entry<AppRoute.Tips> {
-                    TipsDestination(
-                        profileAvatar = settingsState.profileAvatar,
-                        onAction = onAction,
-                    )
-                }
-                entry<AppRoute.Save> {
-                    SaveScreen(
-                        profileAvatar = settingsState.profileAvatar,
-                        onOpenNotices = { onAction(AppNavigationAction.Navigate(AppRoute.Notices)) },
-                        onOpenSettings = { onAction(AppNavigationAction.Navigate(AppRoute.Settings)) },
-                        onOpenProfile = { onAction(AppNavigationAction.Navigate(AppRoute.Profile)) },
-                    )
-                }
-                entry<AppRoute.Settings> {
-                    SettingsDestination(
-                        state = settingsState,
-                        onAction = onAction,
-                        onToggleRomanization = onToggleRomanization,
-                        onToggleAutoPlay = onToggleAutoPlay,
-                        onToggleReduceMotion = onToggleReduceMotion,
-                        onToggleReminder = onToggleReminder,
-                        onOpenAccount = { onAction(AppNavigationAction.ShowSheet(AppSheet.Account)) },
-                    )
-                }
-                entry<AppRoute.Notices> {
-                    AnnouncementsScreen(onBack = { onAction(AppNavigationAction.Back) })
-                }
-                entry<AppRoute.Profile> {
-                    ProfileScreen(
-                        profileName = settingsState.profileName,
-                        profileAvatar = settingsState.profileAvatar,
-                        onSave = onUpdateProfile,
-                        onBack = { onAction(AppNavigationAction.Back) },
-                    )
-                }
-                entry<AppRoute.Legal> {
-                    LegalScreen(
-                        state = legalState,
-                        onAction = onLegalAction,
-                    )
-                }
+    val entries =
+        entryProvider<NavKey> {
+            entry<AppRoute.Launch> { LaunchScreen(launchState, onLaunchRetry) }
+            entry<AppRoute.Welcome> { OnboardingDestination(OnboardingStep.Welcome, onAction) }
+            entry<AppRoute.Tutorial> { OnboardingDestination(OnboardingStep.Tutorial, onAction) }
+            entry<AppRoute.Level> {
+                LevelDestination(
+                    state = onboardingState,
+                    onSelectLevel = onSelectLevel,
+                    onSkipLevel = onSkipLevel,
+                    onContinue = { onAction(AppNavigationAction.Navigate(AppRoute.Interests)) },
+                )
+            }
+            entry<AppRoute.Interests> {
+                InterestsDestination(
+                    state = onboardingState,
+                    onToggleInterest = onToggleInterest,
+                    onContinue = { onAction(AppNavigationAction.Navigate(AppRoute.ProfileSetup)) },
+                )
+            }
+            entry<AppRoute.ProfileSetup> {
+                ProfileSetupDestination(
+                    state = onboardingState,
+                    onSelectAvatar = onSelectOnboardingProfileAvatar,
+                    onUpdateName = onUpdateOnboardingProfileName,
+                    onComplete = onCompleteOnboarding,
+                )
+            }
+            entry<AppRoute.Help> {
+                HelpDestination(
+                    profileAvatar = settingsState.profileAvatar,
+                    onAction = onAction,
+                )
+            }
+            entry<AppRoute.Home> {
+                LearnHomeDestination(
+                    state = learnHomeState,
+                    profileAvatar = settingsState.profileAvatar,
+                    onAction = onAction,
+                    onStartSession = onStartSession,
+                    onStartCategorySession = onStartCategorySession,
+                    onConfirmCategoryReplacement = onConfirmCategoryReplacement,
+                    onCancelCategoryReplacement = onCancelCategoryReplacement,
+                )
+            }
+            entry<AppRoute.Learn> {
+                LearnDestination(
+                    state = learnSessionState,
+                    audioState = audioState,
+                    feedback = learnFeedbackState,
+                    onAction = onAction,
+                    onRevealAnswer = onRevealAnswer,
+                    onRateCard = onRateCard,
+                    onRatingAnimationFinished = onRatingAnimationFinished,
+                    onUndoRating = onUndoRating,
+                    onRetryRating = onRetryRating,
+                    onPlayAudio = onPlayAudio,
+                    reduceMotion = settingsState.reduceMotion,
+                    onShowReport = onShowReport,
+                )
+            }
+            entry<AppRoute.Done> {
+                DoneDestination(
+                    completion = completionState,
+                    onAction = onAction,
+                    onOpenReviewCards = {
+                        onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
+                        onOpenProgressReviews()
+                    },
+                )
+            }
+            entry<AppRoute.Progress> {
+                ProgressScreen(
+                    state = progressState,
+                    onAction = { action ->
+                        when (action) {
+                            ProgressUiAction.ReturnToLearn -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn))
+                            else -> onProgressAction(action)
+                        }
+                    },
+                )
+            }
+            entry<AppRoute.Tips> {
+                TipsDestination(
+                    profileAvatar = settingsState.profileAvatar,
+                    onAction = onAction,
+                )
+            }
+            entry<AppRoute.Save> {
+                SaveScreen(
+                    profileAvatar = settingsState.profileAvatar,
+                    onOpenNotices = { onAction(AppNavigationAction.Navigate(AppRoute.Notices)) },
+                    onOpenSettings = { onAction(AppNavigationAction.Navigate(AppRoute.Settings)) },
+                    onOpenProfile = { onAction(AppNavigationAction.Navigate(AppRoute.Profile)) },
+                )
+            }
+            entry<AppRoute.Settings> {
+                SettingsDestination(
+                    state = settingsState,
+                    onAction = onAction,
+                    onToggleRomanization = onToggleRomanization,
+                    onToggleAutoPlay = onToggleAutoPlay,
+                    onToggleReduceMotion = onToggleReduceMotion,
+                    onToggleReminder = onToggleReminder,
+                    onOpenAccount = { onAction(AppNavigationAction.ShowSheet(AppSheet.Account)) },
+                )
+            }
+            entry<AppRoute.Notices> {
+                AnnouncementsScreen(onBack = { onAction(AppNavigationAction.Back) })
+            }
+            entry<AppRoute.Profile> {
+                ProfileScreen(
+                    profileName = settingsState.profileName,
+                    profileAvatar = settingsState.profileAvatar,
+                    onSave = onUpdateProfile,
+                    onBack = { onAction(AppNavigationAction.Back) },
+                )
+            }
+            entry<AppRoute.Legal> {
+                LegalScreen(
+                    state = legalState,
+                    onAction = onLegalAction,
+                )
+            }
         }
 
     NavigationEffects(
@@ -606,7 +609,9 @@ internal fun SignKoreanAppContent(
                                 },
                             ),
                 )
-                if (!showLaunchSplash && renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips, AppRoute.Save)) {
+                if (!showLaunchSplash &&
+                    renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips, AppRoute.Save)
+                ) {
                     TopLevelTabs(
                         selectedTab = renderedRoute.topLevelTab,
                         onAction = onAction,
@@ -681,7 +686,9 @@ private fun LaunchScreen(
         when (state) {
             LaunchUiState.Loading,
             is LaunchUiState.Ready,
-            -> LaunchBrandSplash()
+            -> {
+                LaunchBrandSplash()
+            }
 
             is LaunchUiState.Error -> {
                 GameCard(modifier = Modifier.fillMaxWidth().padding(SignKoreanSpacing.large)) {
@@ -863,11 +870,8 @@ private fun DoneDestination(
         onAction = { action ->
             when (action) {
                 LearnUiAction.BackHome -> onAction(AppNavigationAction.BackHome)
-
                 LearnUiAction.OpenReviewCards -> onOpenReviewCards()
-
                 LearnUiAction.OpenProgress -> onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Progress))
-
                 else -> Unit
             }
         },
@@ -981,7 +985,7 @@ private fun RowScope.TopLevelTabItem(
                 .weight(1f)
                 .fillMaxHeight()
                 .clickable(role = Role.Tab, onClick = onClick)
-                .semantics { this.selected = selected }
+                .semantics { this.selected = selected },
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -1014,6 +1018,7 @@ private fun BottomTabIcon(
                 drawLine(color, Offset(center.x, size.height * 0.31f), Offset(center.x, size.height * 0.69f), strokeWidth = stroke.width)
                 drawLine(color, Offset(size.width * 0.31f, center.y), Offset(size.width * 0.69f, center.y), strokeWidth = stroke.width)
             }
+
             AppTopLevelTab.Learn -> {
                 val left = size.width * 0.21f
                 val right = size.width * 0.79f
@@ -1030,9 +1035,15 @@ private fun BottomTabIcon(
                 )
                 drawLine(color, Offset(center.x, bottom), Offset(center.x, size.height * 0.55f), strokeWidth = stroke.width)
             }
+
             AppTopLevelTab.Progress -> {
                 listOf(0.28f to 0.58f, 0.5f to 0.28f, 0.72f to 0.42f).forEach { (x, top) ->
-                    drawLine(color, Offset(size.width * x, size.height * 0.8f), Offset(size.width * x, size.height * top), strokeWidth = stroke.width)
+                    drawLine(
+                        color,
+                        Offset(size.width * x, size.height * 0.8f),
+                        Offset(size.width * x, size.height * top),
+                        strokeWidth = stroke.width,
+                    )
                 }
             }
 
@@ -1048,11 +1059,32 @@ private fun BottomTabIcon(
                     size = Size(size.width * 0.56f, bulbBottom - bulbTop),
                     style = stroke,
                 )
-                drawLine(color, Offset(size.width * 0.34f, size.height * 0.7f), Offset(size.width * 0.66f, size.height * 0.7f), strokeWidth = stroke.width)
-                drawLine(color, Offset(size.width * 0.39f, size.height * 0.83f), Offset(size.width * 0.61f, size.height * 0.83f), strokeWidth = stroke.width)
+                drawLine(
+                    color,
+                    Offset(size.width * 0.34f, size.height * 0.7f),
+                    Offset(size.width * 0.66f, size.height * 0.7f),
+                    strokeWidth = stroke.width,
+                )
+                drawLine(
+                    color,
+                    Offset(size.width * 0.39f, size.height * 0.83f),
+                    Offset(size.width * 0.61f, size.height * 0.83f),
+                    strokeWidth = stroke.width,
+                )
             }
+
             AppTopLevelTab.Save -> {
-                drawRoundRect(color = color, topLeft = Offset(size.width * .2f, size.height * .18f), size = Size(size.width * .6f, size.height * .65f), cornerRadius = CornerRadius(2.dp.toPx()), style = stroke)
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(size.width * .2f, size.height * .18f),
+                    size =
+                        Size(
+                            size.width * .6f,
+                            size.height * .65f,
+                        ),
+                    cornerRadius = CornerRadius(2.dp.toPx()),
+                    style = stroke,
+                )
                 drawCircle(color = color, radius = size.width * .14f, center = center, style = stroke)
             }
         }
@@ -1156,14 +1188,18 @@ private fun BoxScope.AppOverlayHost(
                         }
                     }
 
-
                     AppSheet.SessionLength -> {
                         Text(stringResource(R.string.sheet_session_length_question), style = MaterialTheme.typography.bodyLarge)
                         listOf(5, 10, 20, 30).forEach { length ->
                             GameButton(
                                 text =
                                     if (length == settingsState.sessionLength) {
-                                        "✓ ${resources.getQuantityString(R.plurals.sheet_cards_length, length, length, length.estimatedMinutes())}"
+                                        "✓ ${resources.getQuantityString(
+                                            R.plurals.sheet_cards_length,
+                                            length,
+                                            length,
+                                            length.estimatedMinutes(),
+                                        )}"
                                     } else {
                                         resources.getQuantityString(R.plurals.sheet_cards_length, length, length, length.estimatedMinutes())
                                     },
@@ -1196,7 +1232,9 @@ private fun BoxScope.AppOverlayHost(
                         )
                     }
 
-                    AppSheet.Account -> AccountSheet(state = accountState)
+                    AppSheet.Account -> {
+                        AccountSheet(state = accountState)
+                    }
 
                     AppSheet.Language -> {
                         Text(

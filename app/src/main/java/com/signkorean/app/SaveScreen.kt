@@ -1,17 +1,35 @@
+@file:Suppress("FunctionNaming", "ktlint:standard:function-naming")
+
 package com.signkorean.app
 
 import android.content.ActivityNotFoundException
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,25 +57,33 @@ fun SaveScreen(
 ) {
     val context = LocalContext.current
     val directory = remember { File(context.filesDir, "saved_sign_photos") }
-    fun photos(): List<File> = directory.listFiles()?.filter { it.name.startsWith("photo_") && it.extension == "jpg" }?.sortedByDescending { it.lastModified() }.orEmpty()
+
+    fun photos(): List<File> =
+        directory
+            .listFiles()
+            ?.filter {
+                it.name.startsWith("photo_") && it.extension == "jpg"
+            }?.sortedByDescending { it.lastModified() }
+            .orEmpty()
     var photos by remember { mutableStateOf(photos()) }
     var pendingName by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedName by rememberSaveable { mutableStateOf<String?>(null) }
     var error by remember { mutableStateOf(false) }
-    val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        pendingName?.let { name ->
-            val pending = File(directory, name)
-            if (success && pending.length() > 0) {
-                val saved = File(directory, "photo_${UUID.randomUUID()}.jpg")
-                if (!pending.renameTo(saved)) error = true
-            } else if (success) {
-                error = true
+    val camera =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            pendingName?.let { name ->
+                val pending = File(directory, name)
+                if (success && pending.length() > 0) {
+                    val saved = File(directory, "photo_${UUID.randomUUID()}.jpg")
+                    if (!pending.renameTo(saved)) error = true
+                } else if (success) {
+                    error = true
+                }
+                if (pending.exists()) pending.delete()
             }
-            if (pending.exists()) pending.delete()
+            pendingName = null
+            photos = photos()
         }
-        pendingName = null
-        photos = photos()
-    }
     Column(Modifier.fillMaxSize()) {
         HomeHeader(onOpenNotices, onOpenSettings, onOpenProfile, profileAvatar)
         LazyVerticalGrid(
@@ -66,10 +92,17 @@ fun SaveScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
+            item(span = {
+                androidx.compose.foundation.lazy.grid
+                    .GridItemSpan(maxLineSpan)
+            }) {
                 Column {
                     Text(stringResource(R.string.save_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-                    Text(stringResource(R.string.save_description), modifier = Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        stringResource(R.string.save_description),
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                     Button(
                         onClick = {
                             try {
@@ -87,15 +120,41 @@ fun SaveScreen(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(SignKoreanPalette.PRIMARY), contentColor = Color(SignKoreanPalette.INK)),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = Color(SignKoreanPalette.PRIMARY),
+                                contentColor = Color(SignKoreanPalette.INK),
+                            ),
                     ) { Text(stringResource(R.string.save_take_photo), fontWeight = FontWeight.Bold) }
-                    if (error) Text(stringResource(R.string.save_error), color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
-                    if (photos.isEmpty()) Text(stringResource(R.string.save_empty), modifier = Modifier.padding(vertical = 24.dp), style = MaterialTheme.typography.bodyMedium)
+                    if (error) {
+                        Text(
+                            stringResource(R.string.save_error),
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                    }
+                    if (photos.isEmpty()) {
+                        Text(
+                            stringResource(R.string.save_empty),
+                            modifier = Modifier.padding(vertical = 24.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
             }
             items(photos, key = { it.name }) { photo ->
-                AsyncImage(model = photo, contentDescription = stringResource(R.string.save_photo), contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(18.dp)).clickable { selectedName = photo.name })
+                AsyncImage(
+                    model = photo,
+                    contentDescription = stringResource(R.string.save_photo),
+                    contentScale = ContentScale.Crop,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(
+                                1f,
+                            ).clip(RoundedCornerShape(18.dp))
+                            .clickable { selectedName = photo.name },
+                )
             }
         }
     }
@@ -104,9 +163,16 @@ fun SaveScreen(
         Dialog(onDismissRequest = { selectedName = null }) {
             Surface(shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surface) {
                 Column(Modifier.padding(12.dp)) {
-                    AsyncImage(model = selected, contentDescription = stringResource(R.string.save_photo), contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 550.dp))
-                    TextButton(onClick = { selectedName = null }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.save_close)) }
+                    AsyncImage(
+                        model = selected,
+                        contentDescription = stringResource(R.string.save_photo),
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 550.dp),
+                    )
+                    TextButton(
+                        onClick = { selectedName = null },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(stringResource(R.string.save_close)) }
                 }
             }
         }

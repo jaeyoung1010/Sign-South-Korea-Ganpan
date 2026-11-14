@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "ktlint:standard:function-naming")
 
 package com.signkorean.feature.learn
 
@@ -102,12 +102,13 @@ fun HelpScreen(
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = SignKoreanSpacing.xSmall,
-                end = SignKoreanSpacing.xSmall,
-                top = SignKoreanSpacing.medium,
-                bottom = 104.dp,
-            ),
+            contentPadding =
+                PaddingValues(
+                    start = SignKoreanSpacing.xSmall,
+                    end = SignKoreanSpacing.xSmall,
+                    top = SignKoreanSpacing.medium,
+                    bottom = 104.dp,
+                ),
             verticalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
         ) {
             item {

@@ -6,8 +6,6 @@ import com.signkorean.domain.port.output.ClockPort
 import com.signkorean.domain.port.output.ReminderPermission
 import com.signkorean.domain.port.output.ReminderSchedule
 import com.signkorean.domain.port.output.ReminderSchedulerPort
-import java.time.Instant
-import java.time.ZoneId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +16,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.time.ZoneId
 
 class ConfigureReminderUseCaseTest {
     private val clock =
@@ -95,8 +95,9 @@ class ConfigureReminderUseCaseTest {
         }
     }
 
-    private class FakeUserSettingsRepository(initial: UserSettings = UserSettings()) :
-        com.signkorean.domain.port.output.UserSettingsRepository {
+    private class FakeUserSettingsRepository(
+        initial: UserSettings = UserSettings(),
+    ) : com.signkorean.domain.port.output.UserSettingsRepository {
         private val state = MutableStateFlow(initial)
         private val mutex = Mutex()
         override val settings: Flow<UserSettings> = state.asStateFlow()

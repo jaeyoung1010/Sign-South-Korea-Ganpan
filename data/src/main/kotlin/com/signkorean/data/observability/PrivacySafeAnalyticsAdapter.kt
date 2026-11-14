@@ -6,9 +6,9 @@ import com.signkorean.domain.model.AnswerRevealedEvent
 import com.signkorean.domain.model.AppStartupEvent
 import com.signkorean.domain.model.AudioPlaybackFailedEvent
 import com.signkorean.domain.model.AudioPlayedEvent
-import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.CardRatedEvent
 import com.signkorean.domain.model.CardRatingUndoneEvent
+import com.signkorean.domain.model.CardReportSavedEvent
 import com.signkorean.domain.model.LearningLevel
 import com.signkorean.domain.model.OnboardingCompletedEvent
 import com.signkorean.domain.model.ReminderChangedEvent

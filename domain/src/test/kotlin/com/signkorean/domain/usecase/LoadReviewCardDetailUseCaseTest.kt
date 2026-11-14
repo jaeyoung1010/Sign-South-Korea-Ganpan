@@ -58,8 +58,11 @@ class LoadReviewCardDetailUseCaseTest {
         private val copy: LocalizedCardCopy,
     ) : CardCatalog {
         override fun getCards(): List<SignCard> = listOf(card)
+
         override fun getCard(cardId: String): SignCard? = card.takeIf { it.id == cardId }
+
         override fun getLocalizedCopy(languageTag: String): List<LocalizedCardCopy> = listOf(copy).filter { it.languageTag == languageTag }
+
         override fun validateBundle() = error("not needed")
     }
 }

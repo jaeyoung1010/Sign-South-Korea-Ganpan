@@ -12,8 +12,7 @@ object DuePriority {
             compareBy<SessionCandidate> { if (it.isDue) 0 else 1 }
                 .thenBy {
                     if (it.isDue && it.nextReviewAt != null && it.nextReviewAt.isBefore(now)) 0 else 1
-                }
-                .thenByDescending { if (it.isDue) it.reviewCount else Int.MIN_VALUE }
+                }.thenByDescending { if (it.isDue) it.reviewCount else Int.MIN_VALUE }
                 .thenBy { it.nextReviewAt ?: Instant.MAX }
                 .thenBy(SessionCandidate::order)
                 .thenBy(SessionCandidate::cardId),

@@ -37,7 +37,10 @@ class RoomLearningRepository(
     override fun observeRatingActivity(): Flow<List<RatingActivity>> =
         database.sessionCardDao().observeRatingActivity().map { activity -> activity.mapNotNull { it.toDomain() } }
 
-    override fun observeReviewCards(limit: Int, offset: Int): Flow<List<ProgressReview>> =
+    override fun observeReviewCards(
+        limit: Int,
+        offset: Int,
+    ): Flow<List<ProgressReview>> =
         database.sessionCardDao().observeRecentReviews(limit, offset).map { reviews ->
             reviews.map { ProgressReview(cardId = it.cardId, reviewedAt = it.ratedAt) }
         }
@@ -61,14 +64,21 @@ class RoomLearningRepository(
                     ),
                 )
             when (result) {
-                is RatingTransactionResult.Applied ->
+                is RatingTransactionResult.Applied -> {
                     RateCardResult.Rated(
                         nextPosition = result.nextPosition,
                         completed = result.completed,
                         completion = result.completion,
                     )
-                RatingTransactionResult.AlreadyRated -> RateCardResult.AlreadyRated
-                RatingTransactionResult.Unavailable -> RateCardResult.Unavailable
+                }
+
+                RatingTransactionResult.AlreadyRated -> {
+                    RateCardResult.AlreadyRated
+                }
+
+                RatingTransactionResult.Unavailable -> {
+                    RateCardResult.Unavailable
+                }
             }
         }
 

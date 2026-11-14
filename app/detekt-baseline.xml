@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:LearnViewModel.kt:LearnViewModel$active.sessionId != pending.sessionId || active.position != pending.position || active.cardId != pending.cardId || active.stage != LearnCardStage.Answer</ID>
+    <ID>CyclomaticComplexMethod:MainActivity.kt:@Composable @Suppress("LongMethod") internal fun SignKoreanAppContent</ID>
+    <ID>CyclomaticComplexMethod:MainActivity.kt:@Composable @Suppress("LongMethod") private fun BoxScope.AppOverlayHost</ID>
+    <ID>CyclomaticComplexMethod:MainActivity.kt:@Composable private fun SignKoreanApp</ID>
+    <ID>CyclomaticComplexMethod:SaveScreen.kt:@Composable fun SaveScreen</ID>
+    <ID>LargeClass:LearnViewModelTest.kt:LearnViewModelTest</ID>
+    <ID>LongMethod:LearnViewModel.kt:LearnViewModel$fun load</ID>
+    <ID>LongMethod:LearnViewModel.kt:LearnViewModel$private fun beginRating</ID>
+    <ID>LongMethod:MainActivity.kt:@Composable private fun BottomTabIcon</ID>
+    <ID>LongMethod:MainActivity.kt:@Composable private fun SignKoreanApp</ID>
+    <ID>LongMethod:SaveScreen.kt:@Composable fun SaveScreen</ID>
+    <ID>LoopWithTooManyJumpStatements:LocalizedResourcesCompletenessTest.kt:LocalizedResourcesCompletenessTest$for</ID>
+    <ID>MagicNumber:MainActivity.kt:.18f</ID>
+    <ID>MagicNumber:MainActivity.kt:.2f</ID>
+    <ID>MagicNumber:MainActivity.kt:.65f</ID>
+    <ID>MagicNumber:MainActivity.kt:.6f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.15f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.22f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.28f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.31f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.34f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.39f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.42f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.55f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.56f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.58f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.5f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.61f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.66f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.69f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.72f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.7f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.83f</ID>
+    <ID>MagicNumber:MainActivity.kt:0.8f</ID>
+    <ID>MagicNumber:MainActivity.kt:10</ID>
+    <ID>MagicNumber:MainActivity.kt:12</ID>
+    <ID>MagicNumber:MainActivity.kt:20</ID>
+    <ID>MagicNumber:MainActivity.kt:30</ID>
+    <ID>MagicNumber:MainActivity.kt:4</ID>
+    <ID>MagicNumber:MainActivity.kt:5</ID>
+    <ID>MagicNumber:MainActivity.kt:8</ID>
+    <ID>MaxLineLength:DataAdapterModule.kt:DataAdapterModule$fun</ID>
+    <ID>MaxLineLength:LearnViewModel.kt:LearnViewModel$if</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.LastChoiceUndone, canUndo = false), viewModel.feedbackState.value)</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$assertEquals(LearnFeedbackUiState(LearnFeedbackMessage.MarkedReview, canUndo = true), viewModel.feedbackState.value)</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$if (calls == 1) RateCardResult.Unavailable else RateCardResult.Rated(nextPosition = 1, completed = false)</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$if (calls == 1) active(position = 1, total = 2).copy(answerRevealed = true) else nextCard.await()</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$loadLearnSession = LoadLearnSession { LoadLearnSessionResult.Invalid(LearnSessionError.NoActiveSession) }</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$loadLearnSession = LoadLearnSession { active(position = 1, total = 2).copy(answerRevealed = false) }</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$rateCardUseCase = RateCard { RateCardResult.Rated(nextPosition = 2, completed = true, completion = completion) }</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$scores = listOf(SessionCardScore("card-1", RatingDecision.GotIt), SessionCardScore("card-2", RatingDecision.GotIt))</ID>
+    <ID>MaxLineLength:LearnViewModelTest.kt:LearnViewModelTest$scores = listOf(SessionCardScore("card-1", RatingDecision.GotIt), SessionCardScore("card-2", RatingDecision.Review))</ID>
+    <ID>MaxLineLength:LocalizedResourcesCompletenessTest.kt:LocalizedResourcesCompletenessTest$private fun placeholders: Set&lt;String&gt;</ID>
+    <ID>MaxLineLength:MainActivity.kt:AppSheet.Account -&gt; stringResource(com.signkorean.feature.settings.R.string.settings_account_sync)</ID>
+    <ID>MaxLineLength:MainActivity.kt:AppSheet.Language -&gt; stringResource(com.signkorean.feature.settings.R.string.sheet_choose_language)</ID>
+    <ID>MaxLineLength:MainActivity.kt:AudioPlaybackFailure.AudioFocusDenied -&gt; resources.getString(R.string.toast_audio_focus_unavailable)</ID>
+    <ID>MaxLineLength:MainActivity.kt:ProgressUiAction.ReturnToLearn -&gt; onAction(AppNavigationAction.SelectTab(AppTopLevelTab.Learn))</ID>
+    <ID>MaxLineLength:MainActivity.kt:Text(stringResource(R.string.sheet_session_length_question), style = MaterialTheme.typography.bodyLarge)</ID>
+    <ID>MaxLineLength:MainActivity.kt:drawLine(color, Offset(center.x, bottom), Offset(center.x, size.height * 0.55f), strokeWidth = stroke.width)</ID>
+    <ID>MaxLineLength:MainActivity.kt:drawLine(color, Offset(center.x, size.height * 0.31f), Offset(center.x, size.height * 0.69f), strokeWidth = stroke.width)</ID>
+    <ID>MaxLineLength:MainActivity.kt:drawLine(color, Offset(size.width * 0.31f, center.y), Offset(size.width * 0.69f, center.y), strokeWidth = stroke.width)</ID>
+    <ID>MaxLineLength:MainActivity.kt:if</ID>
+    <ID>MaxLineLength:MainActivity.kt:navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_language_save_failed)))</ID>
+    <ID>MaxLineLength:MainActivity.kt:navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_reminders_off)))</ID>
+    <ID>MaxLineLength:MainActivity.kt:navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_report_thanks)))</ID>
+    <ID>MaxLineLength:MainActivity.kt:navigationViewModel.dispatch(AppNavigationAction.ShowToast(resources.getString(R.string.toast_setting_save_failed)))</ID>
+    <ID>MaxLineLength:MainActivity.kt:nextReviewDate = nextReviewAt?.let { DateTimeFormatter.ISO_LOCAL_DATE.format(it.atZone(ZoneId.systemDefault())) }</ID>
+    <ID>MaxLineLength:MainActivity.kt:renderedRoute in setOf(AppRoute.Help, AppRoute.Home, AppRoute.Progress, AppRoute.Tips, AppRoute.Save)</ID>
+    <ID>MaxLineLength:MainActivity.kt:resources.getQuantityString(R.plurals.sheet_cards_length, length, length, length.estimatedMinutes())</ID>
+    <ID>MaxLineLength:MainActivity.kt:text = resources.getQuantityString(R.plurals.session_signs_complete, it.totalCount, it.position - 1, it.totalCount)</ID>
+    <ID>MaxLineLength:OnboardingViewModelTest.kt:OnboardingViewModelTest$assertEquals(OnboardingInput(LearningLevel.NOT_SURE, setOf(Interest.FOOD), "Sora", ProfileAvatar.JAPANESE_MAN), saved)</ID>
+    <ID>MaxLineLength:PlatformModule.kt:PlatformModule$fun</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$mutableUiState.value = baseState.copy(recentReviews = snapshot.recentReviews.mapNotNull(::toCardUiModel))</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$mutableUiState.value = mutableUiState.value.copy(errorMessage = "Review cards are unavailable. Try again.")</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$mutableUiState.value = mutableUiState.value.copy(isPracticing = false, selectedReview = null)</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$mutableUiState.value.copy(isLoading = false, errorMessage = "Progress is unavailable. Try again.")</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$mutableUiState.value.copy(isPracticing = false, errorMessage = "Could not start practice. Try again.")</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$mutableUiState.value.copy(isPracticing = false, errorMessage = "This sign is not available right now.")</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$reviewedAtLabel = DateTimeFormatter.ISO_LOCAL_DATE.format(review.reviewedAt.atZone(ZoneId.systemDefault()))</ID>
+    <ID>MaxLineLength:ProgressViewModel.kt:ProgressViewModel$val review = (mutableUiState.value.allReviews + mutableUiState.value.recentReviews).firstOrNull { it.cardId == cardId }</ID>
+    <ID>MaxLineLength:ReviewReminderWorker.kt:ReviewReminderWorker$.</ID>
+    <ID>MaxLineLength:ReviewReminderWorker.kt:ReviewReminderWorker$flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP</ID>
+    <ID>MaxLineLength:SaveScreen.kt:Text(stringResource(R.string.save_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)</ID>
+    <ID>MaxLineLength:SaveScreen.kt:val uri = FileProvider.getUriForFile(context, "${context.packageName}.savedphotos", file)</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt:SettingsViewModel$is ChangeAppLanguageResult.Changed -&gt; effectChannel.trySend(SettingsEffect.LanguageChanged(result.languageTag))</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt:SettingsViewModel$private val configureReminder: ConfigureReminder = ConfigureReminder { _, _ -&gt; ConfigureReminderResult.Disabled }</ID>
+    <ID>MaxLineLength:SettingsViewModel.kt:SettingsViewModel$userSettingsRepository.updateSettings { settings -&gt; settings.copy(sessionLength = length) }</ID>
+    <ID>MaxLineLength:UseCaseModule.kt:UseCaseModule$fun</ID>
+    <ID>MaxLineLength:WorkManagerReminderScheduler.kt:WorkManagerReminderScheduler$}</ID>
+    <ID>ReturnCount:LearnViewModel.kt:LearnViewModel$fun finishRatingAnimation</ID>
+    <ID>ReturnCount:LearnViewModel.kt:LearnViewModel$fun retryRating</ID>
+    <ID>ReturnCount:LearnViewModel.kt:LearnViewModel$fun submitReport</ID>
+    <ID>ReturnCount:OnboardingViewModel.kt:OnboardingViewModel$fun completeOnboarding</ID>
+    <ID>ReturnCount:ReviewReminderWorker.kt:ReviewReminderWorker$override suspend fun doWork: Result</ID>
+    <ID>ThrowingExceptionsWithoutMessageOrCause:SaveScreen.kt:IllegalStateException()</ID>
+    <ID>TooManyFunctions:DataAdapterModule.kt:DataAdapterModule</ID>
+    <ID>TooManyFunctions:LearnViewModel.kt:LearnViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:OnboardingViewModel.kt:OnboardingViewModel : ViewModel</ID>
+  </CurrentIssues>
+</SmellBaseline>

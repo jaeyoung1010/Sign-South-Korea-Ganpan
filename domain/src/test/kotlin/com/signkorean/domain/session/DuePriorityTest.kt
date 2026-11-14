@@ -35,12 +35,13 @@ class DuePriorityTest {
         reviewCount: Int = 0,
     ) = SessionCandidate(
         cardId = id,
-        order = when (id) {
-            "a" -> 1
-            "b" -> 2
-            "c" -> 3
-            else -> 0
-        },
+        order =
+            when (id) {
+                "a" -> 1
+                "b" -> 2
+                "c" -> 3
+                else -> 0
+            },
         category = "MARKET",
         isDue = true,
         isNew = false,

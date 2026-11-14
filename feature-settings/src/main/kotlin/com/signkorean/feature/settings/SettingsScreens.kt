@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -24,8 +24,8 @@ import com.signkorean.designsystem.components.GameButton
 import com.signkorean.designsystem.components.GameButtonStyle
 import com.signkorean.designsystem.components.GameCard
 import com.signkorean.designsystem.testing.SignKoreanTestTags
-import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.designsystem.theme.SignKoreanPalette
+import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.model.GuestAccount
 import com.signkorean.domain.model.PolicyDocument
 import com.signkorean.domain.model.PolicyDocumentId
@@ -118,7 +118,14 @@ fun SettingsScreen(
         )
         SettingsSwitchRow(
             label = stringResource(R.string.settings_reduce_motion),
-            description = if (state.followSystemReduceMotion) stringResource(R.string.settings_system_setting) else stringResource(R.string.settings_app_preference),
+            description =
+                if (state.followSystemReduceMotion) {
+                    stringResource(
+                        R.string.settings_system_setting,
+                    )
+                } else {
+                    stringResource(R.string.settings_app_preference)
+                },
             checked = state.reduceMotion,
             onCheckedChange = { onAction(SettingsUiAction.ToggleReduceMotion) },
             modifier = Modifier.testTag(SignKoreanTestTags.SETTINGS_REDUCE_MOTION),
@@ -229,8 +236,14 @@ fun LegalScreen(
             )
         }
         when {
-            state.isLoading -> Text(stringResource(R.string.legal_loading), style = MaterialTheme.typography.bodyLarge)
-            selectedDocument == null -> Text(stringResource(R.string.legal_unavailable), style = MaterialTheme.typography.bodyLarge)
+            state.isLoading -> {
+                Text(stringResource(R.string.legal_loading), style = MaterialTheme.typography.bodyLarge)
+            }
+
+            selectedDocument == null -> {
+                Text(stringResource(R.string.legal_unavailable), style = MaterialTheme.typography.bodyLarge)
+            }
+
             else -> {
                 if (state.usingBundledFallback) {
                     Text(
@@ -275,7 +288,9 @@ private fun String.languageDisplayName(): String =
     }
 
 sealed interface LegalUiAction {
-    data class SelectDocument(val id: PolicyDocumentId) : LegalUiAction
+    data class SelectDocument(
+        val id: PolicyDocumentId,
+    ) : LegalUiAction
 
     data object OpenOnline : LegalUiAction
 

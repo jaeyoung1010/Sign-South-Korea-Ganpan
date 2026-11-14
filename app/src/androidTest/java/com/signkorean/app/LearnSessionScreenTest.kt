@@ -279,7 +279,8 @@ class LearnSessionScreenTest {
         widths.forEach { width ->
             locales.forEach { locale ->
                 fontScales.forEach { fontScale ->
-                    val case = ScreenshotCase("learn-answer-$locale-$width-${fontScale.toString().replace('.', '-')}", width, locale, fontScale)
+                    val case =
+                        ScreenshotCase("learn-answer-$locale-$width-${fontScale.toString().replace('.', '-')}", width, locale, fontScale)
                     composeRule.setContent {
                         CompositionLocalProvider(LocalDensity provides Density(density = 1f, fontScale = fontScale)) {
                             SignKoreanTheme {

@@ -16,8 +16,8 @@ import com.signkorean.domain.port.output.LearningRepository
 import com.signkorean.domain.reminder.ReminderPolicy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.time.LocalTime
 import kotlinx.coroutines.flow.first
+import java.time.LocalTime
 
 @HiltWorker
 class ReviewReminderWorker
@@ -54,7 +54,8 @@ class ReviewReminderWorker
             NotificationChannels.ensure(applicationContext)
             val localizedContext = applicationContext.localized(languageTag)
             val notification =
-                Notification.Builder(localizedContext, NotificationChannels.REVIEW_CHANNEL_ID)
+                Notification
+                    .Builder(localizedContext, NotificationChannels.REVIEW_CHANNEL_ID)
                     .setSmallIcon(com.signkorean.app.R.drawable.ic_app_icon)
                     .setContentTitle(localizedContext.getString(com.signkorean.app.R.string.reminder_notification_title))
                     .setContentText(
@@ -92,10 +93,12 @@ class ReviewReminderWorker
             val now = clock.now()
             val nextTrigger = ReminderPolicy.nextTrigger(true, 1, localTime, now, clock.zoneId()) ?: return
             val request =
-                androidx.work.OneTimeWorkRequestBuilder<ReviewReminderWorker>()
+                androidx.work
+                    .OneTimeWorkRequestBuilder<ReviewReminderWorker>()
                     .setInitialDelay(java.time.Duration.between(now, nextTrigger))
                     .setInputData(
-                        Data.Builder()
+                        Data
+                            .Builder()
                             .putString(KEY_LANGUAGE_TAG, languageTag)
                             .putString(KEY_LOCAL_TIME, localTime.toString())
                             .putString(KEY_ZONE_ID, clock.zoneId().id)

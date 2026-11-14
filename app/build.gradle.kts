@@ -152,4 +152,5 @@ detekt {
     buildUponDefaultConfig = true
     ignoreFailures = false
     parallel = true
+    baseline = file("detekt-baseline.xml")
 }

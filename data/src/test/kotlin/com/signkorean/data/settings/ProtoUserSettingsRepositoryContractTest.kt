@@ -1,7 +1,7 @@
 package com.signkorean.data.settings
 
-import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.domain.port.output.AppLocalePort
+import com.signkorean.domain.port.output.UserSettingsRepository
 import com.signkorean.testsupport.contract.UserSettingsRepositoryContract
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

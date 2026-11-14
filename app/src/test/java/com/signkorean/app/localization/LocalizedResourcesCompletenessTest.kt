@@ -1,11 +1,11 @@
 package com.signkorean.app.localization
 
-import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 
 class LocalizedResourcesCompletenessTest {
     @Test
@@ -31,8 +31,9 @@ class LocalizedResourcesCompletenessTest {
 
     private fun resourceDirectories(): List<File> {
         val start = File(requireNotNull(System.getProperty("user.dir")))
-        val root = generateSequence(start) { it.parentFile }
-            .first { it.resolve("settings.gradle.kts").isFile }
+        val root =
+            generateSequence(start) { it.parentFile }
+                .first { it.resolve("settings.gradle.kts").isFile }
         return listOf("app", "feature-learn", "feature-onboarding", "feature-progress", "feature-settings")
             .map { root.resolve("$it/src/main/res") }
             .filter { it.resolve("values/strings.xml").isFile }
@@ -46,21 +47,28 @@ class LocalizedResourcesCompletenessTest {
             val node = resources.item(index)
             if (node.nodeType != org.w3c.dom.Node.ELEMENT_NODE) continue
             val name = node.attributes.getNamedItem("name")?.nodeValue ?: continue
-            val value = when (node.nodeName) {
-                "string" -> node.textContent
-                "plurals" -> (0 until node.childNodes.length)
-                    .mapNotNull { childIndex ->
-                        val child = node.childNodes.item(childIndex)
-                        if (child.nodeName == "item") child.textContent else null
+            val value =
+                when (node.nodeName) {
+                    "string" -> {
+                        node.textContent
                     }
-                    .joinToString(" ")
-                else -> continue
-            }
+
+                    "plurals" -> {
+                        (0 until node.childNodes.length)
+                            .mapNotNull { childIndex ->
+                                val child = node.childNodes.item(childIndex)
+                                if (child.nodeName == "item") child.textContent else null
+                            }.joinToString(" ")
+                    }
+
+                    else -> {
+                        continue
+                    }
+                }
             result[name] = value
         }
         return result
     }
 
-    private fun placeholders(value: String): Set<String> =
-        Regex("%\\d+\\$[a-zA-Z]").findAll(value).map { it.value }.toSet()
+    private fun placeholders(value: String): Set<String> = Regex("%\\d+\\$[a-zA-Z]").findAll(value).map { it.value }.toSet()
 }

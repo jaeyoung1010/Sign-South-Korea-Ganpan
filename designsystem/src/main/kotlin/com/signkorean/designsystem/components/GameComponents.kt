@@ -54,6 +54,7 @@ fun GameButton(
             GameButtonStyle.Primary,
             GameButtonStyle.GotIt,
             -> Color(SignKoreanPalette.PRIMARY) to Color(SignKoreanPalette.INK)
+
             GameButtonStyle.Review,
             GameButtonStyle.Secondary,
             -> Color(SignKoreanPalette.SURFACE_SOFT) to Color(SignKoreanPalette.INK)

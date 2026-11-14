@@ -1,9 +1,9 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "ktlint:standard:function-naming")
 
 package com.signkorean.feature.learn
 
-import androidx.annotation.StringRes
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +51,7 @@ import coil3.compose.AsyncImage
 import com.signkorean.designsystem.theme.SignKoreanPalette
 import com.signkorean.designsystem.theme.SignKoreanSpacing
 import com.signkorean.domain.model.ProfileAvatar
+
 private data class TipPhrase(
     val korean: String,
     @StringRes val meaningRes: Int,
@@ -71,68 +72,73 @@ private val tipCards =
             titleRes = R.string.learn_tip_price_title,
             descriptionRes = R.string.learn_tip_price_description,
             imageAssetUri = "file:///android_asset/tips/price-numbers-helper-card.png",
-            phrases = listOf(
-                TipPhrase("₩5,000  →  오천 원", R.string.learn_tip_price_five_thousand),
-                TipPhrase("₩12,000  →  만 이천 원", R.string.learn_tip_price_twelve_thousand),
-                TipPhrase("2인분  →  이 인분", R.string.learn_tip_price_two_servings),
-                TipPhrase("1+1  →  원 플러스 원", R.string.learn_tip_price_one_plus_one),
-            ),
+            phrases =
+                listOf(
+                    TipPhrase("₩5,000  →  오천 원", R.string.learn_tip_price_five_thousand),
+                    TipPhrase("₩12,000  →  만 이천 원", R.string.learn_tip_price_twelve_thousand),
+                    TipPhrase("2인분  →  이 인분", R.string.learn_tip_price_two_servings),
+                    TipPhrase("1+1  →  원 플러스 원", R.string.learn_tip_price_one_plus_one),
+                ),
         ),
         TipCard(
             id = "dietary-allergy",
             titleRes = R.string.learn_tip_dietary_title,
             descriptionRes = R.string.learn_tip_dietary_description,
             imageAssetUri = "file:///android_asset/tips/dietary-allergy-card-cover.png",
-            phrases = listOf(
-                TipPhrase("저는 채식주의자입니다.", R.string.learn_tip_dietary_vegetarian),
-                TipPhrase("돼지고기를 먹지 않습니다.", R.string.learn_tip_dietary_no_pork),
-                TipPhrase("매운 음식을 못 먹습니다.", R.string.learn_tip_dietary_not_spicy),
-                TipPhrase("땅콩이 들어갔나요?", R.string.learn_tip_dietary_peanuts),
-                TipPhrase("할랄 음식인가요?", R.string.learn_tip_dietary_halal),
-                TipPhrase("고수는 빼 주세요.", R.string.learn_tip_dietary_no_cilantro),
-            ),
+            phrases =
+                listOf(
+                    TipPhrase("저는 채식주의자입니다.", R.string.learn_tip_dietary_vegetarian),
+                    TipPhrase("돼지고기를 먹지 않습니다.", R.string.learn_tip_dietary_no_pork),
+                    TipPhrase("매운 음식을 못 먹습니다.", R.string.learn_tip_dietary_not_spicy),
+                    TipPhrase("땅콩이 들어갔나요?", R.string.learn_tip_dietary_peanuts),
+                    TipPhrase("할랄 음식인가요?", R.string.learn_tip_dietary_halal),
+                    TipPhrase("고수는 빼 주세요.", R.string.learn_tip_dietary_no_cilantro),
+                ),
         ),
         TipCard(
             id = "staff-phrases",
             titleRes = R.string.learn_tip_staff_title,
             descriptionRes = R.string.learn_tip_staff_description,
             imageAssetUri = "file:///android_asset/tips/staff-phrase-board-card.png",
-            phrases = listOf(
-                TipPhrase("천천히 말해 주세요.", R.string.learn_tip_staff_slowly),
-                TipPhrase("영어를 할 수 있나요?", R.string.learn_tip_staff_english),
-                TipPhrase("메뉴판을 보여 주세요.", R.string.learn_tip_staff_menu),
-                TipPhrase("포장해 주세요.", R.string.learn_tip_staff_takeaway),
-                TipPhrase("여기서 먹을게요.", R.string.learn_tip_staff_dine_in),
-                TipPhrase("화장실이 어디예요?", R.string.learn_tip_staff_restroom),
-                TipPhrase("예약하지 않았어요.", R.string.learn_tip_staff_no_reservation),
-            ),
+            phrases =
+                listOf(
+                    TipPhrase("천천히 말해 주세요.", R.string.learn_tip_staff_slowly),
+                    TipPhrase("영어를 할 수 있나요?", R.string.learn_tip_staff_english),
+                    TipPhrase("메뉴판을 보여 주세요.", R.string.learn_tip_staff_menu),
+                    TipPhrase("포장해 주세요.", R.string.learn_tip_staff_takeaway),
+                    TipPhrase("여기서 먹을게요.", R.string.learn_tip_staff_dine_in),
+                    TipPhrase("화장실이 어디예요?", R.string.learn_tip_staff_restroom),
+                    TipPhrase("예약하지 않았어요.", R.string.learn_tip_staff_no_reservation),
+                ),
         ),
         TipCard(
             id = "emergency",
             titleRes = R.string.learn_tip_emergency_title,
             descriptionRes = R.string.learn_tip_emergency_description,
             imageAssetUri = "file:///android_asset/tips/emergency-phrases-card.png",
-            phrases = listOf(
-                TipPhrase("도와주세요.", R.string.learn_tip_emergency_help),
-                TipPhrase("경찰을 불러 주세요.", R.string.learn_tip_emergency_police),
-                TipPhrase("병원이 어디예요?", R.string.learn_tip_emergency_hospital),
-                TipPhrase("여권을 잃어버렸어요.", R.string.learn_tip_emergency_passport),
-                TipPhrase("길을 잃었어요.", R.string.learn_tip_emergency_lost),
-                TipPhrase("알레르기가 있어요.", R.string.learn_tip_emergency_allergy),
-            ),
+            phrases =
+                listOf(
+                    TipPhrase("도와주세요.", R.string.learn_tip_emergency_help),
+                    TipPhrase("경찰을 불러 주세요.", R.string.learn_tip_emergency_police),
+                    TipPhrase("병원이 어디예요?", R.string.learn_tip_emergency_hospital),
+                    TipPhrase("여권을 잃어버렸어요.", R.string.learn_tip_emergency_passport),
+                    TipPhrase("길을 잃었어요.", R.string.learn_tip_emergency_lost),
+                    TipPhrase("알레르기가 있어요.", R.string.learn_tip_emergency_allergy),
+                ),
         ),
         TipCard(
             id = "transport",
             titleRes = R.string.learn_tip_transport_title,
             descriptionRes = R.string.learn_tip_transport_description,
             imageAssetUri = "file:///android_asset/tips/transport-mini-card-cover.png",
-            phrases = listOf(
-                TipPhrase("어느 역에서 내려요?", R.string.learn_tip_transport_stop),
-                TipPhrase("몇 호선이에요?", R.string.learn_tip_transport_line),
-                TipPhrase("환승해야 하나요?", R.string.learn_tip_transport_transfer),
-                TipPhrase("막차가 몇 시예요?", R.string.learn_tip_transport_last_train),
-                TipPhrase("이 버스가 명동에 가나요?", R.string.learn_tip_transport_myeongdong),
-            ),
+            phrases =
+                listOf(
+                    TipPhrase("어느 역에서 내려요?", R.string.learn_tip_transport_stop),
+                    TipPhrase("몇 호선이에요?", R.string.learn_tip_transport_line),
+                    TipPhrase("환승해야 하나요?", R.string.learn_tip_transport_transfer),
+                    TipPhrase("막차가 몇 시예요?", R.string.learn_tip_transport_last_train),
+                    TipPhrase("이 버스가 명동에 가나요?", R.string.learn_tip_transport_myeongdong),
+                ),
         ),
     )
 
@@ -209,7 +215,10 @@ private fun ColumnScope.TipsOverview(onOpenCard: (TipCard) -> Unit) {
 }
 
 @Composable
-private fun TipsCarousel(cards: List<TipCard>, onOpenCard: (TipCard) -> Unit) {
+private fun TipsCarousel(
+    cards: List<TipCard>,
+    onOpenCard: (TipCard) -> Unit,
+) {
     val pagerState = rememberPagerState(pageCount = { cards.size })
     HorizontalPager(
         state = pagerState,
@@ -224,7 +233,10 @@ private fun TipsCarousel(cards: List<TipCard>, onOpenCard: (TipCard) -> Unit) {
 }
 
 @Composable
-private fun TipFeatureCard(card: TipCard, onClick: () -> Unit) {
+private fun TipFeatureCard(
+    card: TipCard,
+    onClick: () -> Unit,
+) {
     Surface(
         modifier = Modifier.fillMaxSize().clickable(onClick = onClick),
         color = Color(SignKoreanPalette.SURFACE),
@@ -263,7 +275,10 @@ private fun TipFeatureCard(card: TipCard, onClick: () -> Unit) {
 }
 
 @Composable
-private fun TipThumbnail(card: TipCard, onClick: () -> Unit) {
+private fun TipThumbnail(
+    card: TipCard,
+    onClick: () -> Unit,
+) {
     Surface(
         modifier = Modifier.height(168.dp).clickable(onClick = onClick),
         color = Color(SignKoreanPalette.SURFACE),
@@ -277,8 +292,12 @@ private fun TipThumbnail(card: TipCard, onClick: () -> Unit) {
                 modifier = Modifier.fillMaxSize(),
             )
             Box(
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                    .background(Color.Black.copy(alpha = 0.58f)).padding(SignKoreanSpacing.small),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .background(Color.Black.copy(alpha = 0.58f))
+                        .padding(SignKoreanSpacing.small),
             ) {
                 Text(
                     text = stringResource(card.titleRes),
@@ -292,10 +311,17 @@ private fun TipThumbnail(card: TipCard, onClick: () -> Unit) {
 }
 
 @Composable
-private fun TipDetail(card: TipCard, onBack: () -> Unit, onShowPhrase: (TipPhrase) -> Unit) {
+private fun TipDetail(
+    card: TipCard,
+    onBack: () -> Unit,
+    onShowPhrase: (TipPhrase) -> Unit,
+) {
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-            .padding(horizontal = SignKoreanSpacing.xSmall),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = SignKoreanSpacing.xSmall),
     ) {
         Button(
             onClick = onBack,
@@ -334,7 +360,10 @@ private fun TipDetail(card: TipCard, onBack: () -> Unit, onShowPhrase: (TipPhras
 }
 
 @Composable
-private fun PhraseRow(phrase: TipPhrase, onClick: () -> Unit) {
+private fun PhraseRow(
+    phrase: TipPhrase,
+    onClick: () -> Unit,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         color = Color(SignKoreanPalette.SURFACE),
@@ -354,7 +383,10 @@ private fun PhraseRow(phrase: TipPhrase, onClick: () -> Unit) {
 }
 
 @Composable
-private fun PhraseBoard(phrase: TipPhrase, onDismiss: () -> Unit) {
+private fun PhraseBoard(
+    phrase: TipPhrase,
+    onDismiss: () -> Unit,
+) {
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color(SignKoreanPalette.BACKGROUND)) {
             Column(

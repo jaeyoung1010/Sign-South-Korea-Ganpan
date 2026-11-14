@@ -2,17 +2,17 @@ package com.signkorean.app.settings
 
 import com.signkorean.domain.model.AudioPlayRequest
 import com.signkorean.domain.model.AudioPlaybackState
+import com.signkorean.domain.model.ProfileAvatar
 import com.signkorean.domain.model.ProgressCategory
 import com.signkorean.domain.model.ProgressSnapshot
 import com.signkorean.domain.model.ReminderChangedEvent
-import com.signkorean.domain.model.ProfileAvatar
-import com.signkorean.domain.port.input.ConfigureReminder
-import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ChangeAppLanguage
 import com.signkorean.domain.port.input.ChangeAppLanguageResult
+import com.signkorean.domain.port.input.ConfigureReminder
+import com.signkorean.domain.port.input.ConfigureReminderResult
 import com.signkorean.domain.port.input.ObserveProgress
-import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.domain.port.output.AnalyticsSink
+import com.signkorean.domain.port.output.AudioPlayerPort
 import com.signkorean.testsupport.FakeUserSettingsRepository
 import com.signkorean.testsupport.MainDispatcherRule
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -234,7 +234,10 @@ class SettingsViewModelTest {
     private class RecordingConfigureReminder(
         private val repository: FakeUserSettingsRepository,
     ) : ConfigureReminder {
-        override suspend fun invoke(enabled: Boolean, dueCount: Int): ConfigureReminderResult {
+        override suspend fun invoke(
+            enabled: Boolean,
+            dueCount: Int,
+        ): ConfigureReminderResult {
             repository.updateSettings { it.copy(reminderEnabled = enabled) }
             return if (!enabled) ConfigureReminderResult.Disabled else ConfigureReminderResult.Scheduled
         }
