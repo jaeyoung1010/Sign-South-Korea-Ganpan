@@ -69,7 +69,11 @@ class ReportSheetTest {
 
         composeRule.onNodeWithText("Please do not include personal information.").assertIsDisplayed()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REPORT_DETAILS).performTextInput("The photo is blurry.")
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REPORT_CANCEL).performScrollTo().assertIsDisplayed().performClick()
+        composeRule
+            .onNodeWithTag(SignKoreanTestTags.LEARN_REPORT_CANCEL)
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
 
         composeRule.runOnIdle {
             assertEquals("The photo is blurry.", details.single())
