@@ -97,14 +97,16 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
+          disk-size: 4096M
+          ram-size: 2048M
           disable-animations: true
           script: >-
             if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             for attempt in 1 2 3; do
             echo "Phase 44 emulator QA run $attempt/3";
-            ./gradlew connectedDebugAndroidTest --stacktrace || exit $?;
+            ./gradlew connectedDebugAndroidTest --max-workers=2 --stacktrace || exit $?;
             done;
-            else ./gradlew connectedDebugAndroidTest --stacktrace; fi
+            else ./gradlew connectedDebugAndroidTest --max-workers=2 --stacktrace; fi
 
       - name: Upload instrumentation reports
         if: always()
