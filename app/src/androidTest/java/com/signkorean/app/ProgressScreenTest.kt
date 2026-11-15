@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.designsystem.theme.SignKoreanTheme
 import com.signkorean.feature.progress.ProgressCardUiModel
@@ -40,7 +41,7 @@ class ProgressScreenTest {
         composeRule.onNodeWithTag(ProgressTestTags.STAT_LEARNED).assertIsDisplayed()
         composeRule.onNodeWithTag(ProgressTestTags.WEEK_CHART).assertIsDisplayed()
         composeRule.onNodeWithTag(ProgressTestTags.CATEGORY_PROGRESS).assertIsDisplayed()
-        composeRule.onNodeWithText("홍대입구").assertIsDisplayed()
+        composeRule.onNodeWithText("홍대입구").performScrollTo().assertIsDisplayed()
     }
 
     @Test

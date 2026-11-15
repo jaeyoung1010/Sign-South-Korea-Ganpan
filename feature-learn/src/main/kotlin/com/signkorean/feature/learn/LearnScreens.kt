@@ -118,6 +118,7 @@ data class WeekActivityUiModel(
 object HomeTestTags {
     const val SESSION_ACTION = "home-session-action"
     const val SEE_ALL = "home-see-all"
+    const val CATEGORY_ROW = "home-category-row"
     const val WEEK_CHART = "home-week-chart"
 }
 
@@ -685,7 +686,7 @@ private fun CategorySection(
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(SignKoreanSpacing.small),
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            modifier = Modifier.testTag(HomeTestTags.CATEGORY_ROW).horizontalScroll(rememberScrollState()),
         ) {
             categories.forEach { category ->
                 CategoryCard(
