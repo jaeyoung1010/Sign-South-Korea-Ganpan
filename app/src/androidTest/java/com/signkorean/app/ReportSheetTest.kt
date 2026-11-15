@@ -10,6 +10,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.signkorean.designsystem.testing.SignKoreanTestTags
@@ -68,7 +69,7 @@ class ReportSheetTest {
 
         composeRule.onNodeWithText("Please do not include personal information.").assertIsDisplayed()
         composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REPORT_DETAILS).performTextInput("The photo is blurry.")
-        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REPORT_CANCEL).performClick()
+        composeRule.onNodeWithTag(SignKoreanTestTags.LEARN_REPORT_CANCEL).performScrollTo().assertIsDisplayed().performClick()
 
         composeRule.runOnIdle {
             assertEquals("The photo is blurry.", details.single())

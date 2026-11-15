@@ -66,6 +66,14 @@ jobs:
       matrix:
         api-level: [26, 35]
     steps:
+      # GitHub-hosted runners are ephemeral. Free space before installing the
+      # emulator image and creating its userdata partition.
+      - name: Free disk space for Android emulator
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost
+          df -h /
+
       - name: Check out repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
